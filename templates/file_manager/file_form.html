@@ -1,0 +1,106 @@
+{% extends "file_manager/base_files.html" %}
+
+{% block title %}📁 {{ title }}{% endblock %}
+{% block files_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3">{{ title }}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'file_manager:file_list' %}">Файлы</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {% if file %}
+                    <input type="hidden" name="file_id" value="{{ file.id }}">
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="id_title" class="form-label">Название файла *</label>
+                        <input type="text" name="title" id="id_title" class="form-control" 
+                               value="{{ form.title.value|default:"" }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_description" class="form-label">Описание</label>
+                        <textarea name="description" id="id_description" class="form-control" rows="3">{{ form.description.value|default:"" }}</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_file" class="form-label">Файл *</label>
+                        <input type="file" name="file" id="id_file" class="form-control" required>
+                        <div class="form-text">Поддерживаются: PDF, TXT, DOCX, XLSX, PPTX, JPG, PNG, MP4, MP3, ZIP</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_course" class="form-label">Курс</label>
+                        <select name="course" id="id_course" class="form-select">
+                            <option value="">Не выбрано</option>
+                            {% for course in form.fields.course.queryset %}
+                            <option value="{{ course.id }}" {% if form.course.value|add:"0" == course.id %}selected{% endif %}>
+                                {{ course.title }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Опционально: привязать файл к курсу</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_visibility" class="form-label">Видимость *</label>
+                        <select name="visibility" id="id_visibility" class="form-select" required>
+                            <option value="private" {% if form.visibility.value == 'private' %}selected{% endif %}>Приватный - Только я</option>
+                            <option value="shared" {% if form.visibility.value == 'shared' %}selected{% endif %}>Общий - С определенными пользователями</option>
+                            <option value="public" {% if form.visibility.value == 'public' %}selected{% endif %}>Публичный - Все пользователи</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_shared_with" class="form-label">Общий доступ</label>
+                        <select name="shared_with" id="id_shared_with" class="form-select" multiple>
+                            {% for user in form.fields.shared_with.queryset %}
+                            <option value="{{ user.id }}" {% if user.id in form.shared_with.value|default:"" %}selected{% endif %}>
+                                {{ user.username }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Выберите пользователей для общего доступа</div>
+                    </div>
+                    
+                    {% if form.folder %}
+                    <div class="mb-3">
+                        <label for="id_folder" class="form-label">Папка</label>
+                        <select name="folder" id="id_folder" class="form-select">
+                            <option value="">Нет (корневая папка)</option>
+                            {% for folder in form.fields.folder.queryset %}
+                            <option value="{{ folder.id }}" {% if form.folder.value|add:"0" == folder.id %}selected{% endif %}>
+                                {{ folder.title }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Сохранить
+                        </button>
+                        <a href="{% if file %}{% url 'file_manager:file_detail' file.id %}{% else %}{% url 'file_manager:file_list' %}{% endif %}" class="btn btn-secondary">
+                            Отмена
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

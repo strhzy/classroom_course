@@ -1,0 +1,59 @@
+{% extends "file_manager/base_files.html" %}
+
+{% block title %}📁 Создать папку{% endblock %}
+{% block page_name %}Создать папку{% endblock %}
+{% block breadcrumb_extra %}
+<a class="breadcrumb-item" href="{% url 'file_manager:file_list' %}">Файлы</a>
+{% endblock %}
+
+{% block files_content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="page-title">
+            <h1><i class="bi bi-folder-plus"></i> Создать папку</h1>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Название папки *</label>
+                        <input type="text" name="title" class="form-control" required>
+                        <small class="form-text text-muted">Введите название для новой папки</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Описание</label>
+                        <textarea name="description" class="form-control" rows="3"></textarea>
+                        <small class="form-text text-muted">Необязательное поле</small>
+                    </div>
+                    
+                    {% if folders %}
+                    <div class="mb-3">
+                        <label class="form-label">Родительская папка</label>
+                        <select name="parent_folder" class="form-select">
+                            <option value="">Нет (корневая папка)</option>
+                            {% for folder in folders %}
+                            <option value="{{ folder.id }}">{{ folder.title }}</option>
+                            {% endfor %}
+                        </select>
+                        <small class="form-text text-muted">Опционально: разместить папку внутри другой</small>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-folder-plus"></i> Создать папку
+                        </button>
+                        <a href="{% url 'file_manager:file_list' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Отмена
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

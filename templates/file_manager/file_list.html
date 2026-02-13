@@ -1,0 +1,187 @@
+{% extends "file_manager/base_files.html" %}
+
+{% block title %}📁 Мои файлы{% endblock %}
+{% block files_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">Мои файлы</h1>
+    <div>
+        <a href="{% url 'file_manager:file_upload' %}" class="btn btn-primary">
+            <i class="bi bi-upload"></i> Загрузить
+        </a>
+        <a href="{% url 'file_manager:folder_create' %}" class="btn btn-outline-secondary ms-2">
+            <i class="bi bi-folder-plus"></i> Папка
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-3">
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <h6 class="card-title text-muted mb-3">Фильтры</h6>
+                <form method="get">
+                    <div class="mb-3">
+                        <input type="text" name="query" value="{{ search_form.query.value|default:"" }}" 
+                               class="form-control" placeholder="Поиск...">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <select name="file_type" class="form-select">
+                            <option value="">Все типы</option>
+                            <option value="pdf" {% if search_form.file_type.value == 'pdf' %}selected{% endif %}>PDF</option>
+                            <option value="txt" {% if search_form.file_type.value == 'txt' %}selected{% endif %}>Текст</option>
+                            <option value="docx" {% if search_form.file_type.value == 'docx' %}selected{% endif %}>Word</option>
+                            <option value="xlsx" {% if search_form.file_type.value == 'xlsx' %}selected{% endif %}>Excel</option>
+                            <option value="pptx" {% if search_form.file_type.value == 'pptx' %}selected{% endif %}>PowerPoint</option>
+                            <option value="jpg" {% if search_form.file_type.value == 'jpg' %}selected{% endif %}>Изображения</option>
+                            <option value="other" {% if search_form.file_type.value == 'other' %}selected{% endif %}>Другие</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <select name="course" class="form-select">
+                            <option value="">Все курсы</option>
+                            {% for course in courses %}
+                            <option value="{{ course.id }}" {% if search_form.course.value|add:"0" == course.id %}selected{% endif %}>
+                                {{ course.title }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input type="checkbox" name="favorites_only" id="favorites_only" 
+                               class="form-check-input" {% if search_form.favorites_only.value %}checked{% endif %}>
+                        <label for="favorites_only" class="form-check-label">Только избранное</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">Применить</button>
+                    <a href="{% url 'file_manager:file_list' %}" class="btn btn-outline-secondary w-100 mt-2">Сбросить</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-9">
+        {% if folders %}
+        <div class="mb-4">
+            <h6 class="text-muted mb-3">Папки</h6>
+            <div class="row">
+                {% for folder in folders %}
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width:48px;height:48px;">
+                                    <i class="bi bi-folder2"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">{{ folder.title }}</h6>
+                                    <small class="text-muted">{{ folder.get_file_count }} файлов</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <h6 class="text-muted mb-3">Файлы</h6>
+        
+        {% if page_obj %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Файл</th>
+                        <th>Тип</th>
+                        <th>Размер</th>
+                        <th>Дата</th>
+                        <th class="text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in page_obj %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width:40px;height:40px;">
+                                    <i class="bi bi-file-earmark"></i>
+                                </div>
+                                <div>
+                                    <strong>{{ file.title }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ file.description|truncatechars:50 }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark">{{ file.get_file_type_display }}</span>
+                        </td>
+                        <td>{{ file.get_file_size_display }}</td>
+                        <td>{{ file.uploaded_at|date:"d.m.Y" }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'file_manager:file_detail' file.id %}" class="btn btn-sm btn-outline-primary" title="Подробнее">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{% url 'file_manager:file_download' file.id %}" class="btn btn-sm btn-outline-success" title="Скачать">
+                                <i class="bi bi-download"></i>
+                            </a>
+                            {% if file.can_edit or file.can_delete %}
+                            <a href="{% url 'file_manager:file_edit' file.id %}" class="btn btn-sm btn-outline-secondary" title="Редактировать">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4">
+                            <i class="bi bi-inbox" style="font-size: 2rem; color: #6c757d;"></i>
+                            <p class="mt-2 text-muted">Нет файлов</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Страницы">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&query={{ request.GET.query }}">
+                        Предыдущая
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}&query={{ request.GET.query }}">{{ num }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&query={{ request.GET.query }}">
+                        Следующая
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

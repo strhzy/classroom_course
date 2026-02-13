@@ -1,0 +1,46 @@
+{% extends "file_manager/base_files.html" %}
+
+{% block title %}🗑️ Удалить файл{% endblock %}
+{% block page_name %}Подтверждение удаления{% endblock %}
+{% block breadcrumb_extra %}
+<a class="breadcrumb-item" href="{% url 'file_manager:file_list' %}">Файлы</a>
+<a class="breadcrumb-item" href="{% url 'file_manager:file_detail' file.id %}">{{ file.title }}</a>
+{% endblock %}
+
+{% block files_content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <i class="bi bi-exclamation-triangle-fill"></i> Подтверждение удаления
+            </div>
+            <div class="card-body text-center">
+                <i class="bi bi-file-earmark-x text-danger" style="font-size: 4rem;"></i>
+                <h3 class="mt-3 mb-4">Вы уверены, что хотите удалить файл?</h3>
+                
+                <div class="alert alert-warning">
+                    <strong>{{ file.title }}</strong>
+                    <br>
+                    <small class="text-muted">{{ file.description|truncatechars:100 }}</small>
+                </div>
+                
+                <p class="text-muted">
+                    Это действие нельзя отменить. Файл будет удален безвозвратно.
+                </p>
+                
+                <div class="d-flex gap-2 justify-content-center mt-4">
+                    <form method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Да, удалить
+                        </button>
+                    </form>
+                    <a href="{% url 'file_manager:file_detail' file.id %}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Отмена
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

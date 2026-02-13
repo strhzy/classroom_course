@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm">
+    <div class="container-fluid">
+        <div class="navbar-nav">
+            <a class="nav-link {% if request.resolver_match.url_name == 'course_list' %}active{% endif %} text-dark" 
+               href="{% url 'file_manager:file_list' %}">
+                <i class="bi bi-files me-1"></i> По курсам
+            </a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'file_list_all' %}active{% endif %} text-dark" 
+               href="{% url 'file_manager:file_list_all' %}">
+                <i class="bi bi-archive me-1"></i> Все файлы
+            </a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'file_upload' %}active{% endif %} text-dark" 
+               href="{% url 'file_manager:file_upload' %}">
+                <i class="bi bi-upload me-1"></i> Загрузить
+            </a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'folder_create' %}active{% endif %} text-dark" 
+               href="{% url 'file_manager:folder_create' %}">
+                <i class="bi bi-folder-plus me-1"></i> Папка
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+            <div class="col-12 mt-4">
+            {% block files_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}

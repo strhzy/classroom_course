@@ -1,0 +1,94 @@
+{% extends "file_manager/base_files.html" %}
+
+{% block title %}🔄 Новая версия{% endblock %}
+{% block page_name %}Создать версию{% endblock %}
+{% block breadcrumb_extra %}
+<a class="breadcrumb-item" href="{% url 'file_manager:file_list' %}">Файлы</a>
+<a class="breadcrumb-item" href="{% url 'file_manager:file_detail' file.id %}">{{ file.title }}</a>
+{% endblock %}
+
+{% block files_content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="page-title">
+            <h1><i class="bi bi-arrow-repeat"></i> Создать новую версию</h1>
+            <p>Текущая версия: <strong>{{ file.version }}</strong></p>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.version_file.id_for_label }}" class="form-label">Новый файл *</label>
+                        {{ form.version_file }}
+                        {% if form.version_file.errors %}
+                        <div class="text-danger mt-1">{{ form.version_file.errors }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">Загрузите новую версию файла</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.change_description.id_for_label }}" class="form-label">Описание изменений</label>
+                        {{ form.change_description }}
+                        {% if form.change_description.errors %}
+                        <div class="text-danger mt-1">{{ form.change_description.errors }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">Опишите, что изменилось в новой версии</small>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>Информация:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Текущая версия файла будет заменена новой</li>
+                            <li>Старый файл будет удален с сервера</li>
+                            <li>Номер версии увеличится на 1</li>
+                            <li>Текст будет автоматически извлечен из нового файла</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Создать версию
+                        </button>
+                        <a href="{% url 'file_manager:file_detail' file.id %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Отмена
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-file-earmark"></i> Текущий файл
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ file.title }}</h5>
+                <p class="card-text">{{ file.description|truncatechars:100 }}</p>
+                
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Тип файла:</dt>
+                    <dd class="col-sm-7">{{ file.get_file_type_display }}</dd>
+                    
+                    <dt class="col-sm-5">Размер:</dt>
+                    <dd class="col-sm-7">{{ file.get_file_size_display }}</dd>
+                    
+                    <dt class="col-sm-5">Текущая версия:</dt>
+                    <dd class="col-sm-7">{{ file.version }}</dd>
+                    
+                    <dt class="col-sm-5">Загружен:</dt>
+                    <dd class="col-sm-7">{{ file.uploaded_at|date:"d.m.Y" }}</dd>
+                </dl>
+                
+                <a href="{% url 'file_manager:file_detail' file.id %}" class="btn btn-outline-primary w-100 mt-3">
+                    <i class="bi bi-eye"></i> Посмотреть детали
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

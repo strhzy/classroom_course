@@ -1,0 +1,174 @@
+{% extends "file_manager/base_files.html" %}
+
+{% block title %}📄 {{ file.title }}{% endblock %}
+{% block files_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3">{{ file.title }}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'file_manager:file_list' %}">Файлы</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Детали</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="{% url 'file_manager:file_download' file.id %}" class="btn btn-success">
+            <i class="bi bi-download"></i> Скачать
+        </a>
+        {% if can_edit %}
+        <a href="{% url 'file_manager:file_edit' file.id %}" class="btn btn-primary ms-2">
+            <i class="bi bi-pencil"></i> Редактировать
+        </a>
+        {% endif %}
+        {% if can_delete %}
+        <a href="{% url 'file_manager:file_delete' file.id %}" class="btn btn-danger ms-2">
+            <i class="bi bi-trash"></i> Удалить
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h6 class="card-title mb-3">Информация о файле</h6>
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">Название:</dt>
+                    <dd class="col-sm-9">{{ file.title }}</dd>
+                    
+                    <dt class="col-sm-3">Описание:</dt>
+                    <dd class="col-sm-9">{{ file.description|default:"Нет описания" }}</dd>
+                    
+                    <dt class="col-sm-3">Тип файла:</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge bg-light text-dark">{{ file.get_file_type_display }}</span>
+                        <span class="badge bg-light text-dark">{{ file.get_extension }}</span>
+                    </dd>
+                    
+                    <dt class="col-sm-3">Размер:</dt>
+                    <dd class="col-sm-9">{{ file.get_file_size_display }}</dd>
+                    
+                    <dt class="col-sm-3">Загружен:</dt>
+                    <dd class="col-sm-9">
+                        {{ file.uploaded_at|date:"d.m.Y H:i" }} пользователем {{ file.uploaded_by.username }}
+                    </dd>
+                    
+                    <dt class="col-sm-3">Версия:</dt>
+                    <dd class="col-sm-9">{{ file.version }}</dd>
+                    
+                    <dt class="col-sm-3">Курс:</dt>
+                    <dd class="col-sm-9">
+                        {% if file.course %}
+                        <a href="{% url 'file_manager:course_files' file.course.id %}">{{ file.course.title }}</a>
+                        {% else %}
+                        <span class="text-muted">Не привязан</span>
+                        {% endif %}
+                    </dd>
+                </dl>
+            </div>
+        </div>
+        
+        {% if file.extracted_text %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h6 class="card-title mb-3">Извлеченный текст</h6>
+                <pre style="white-space: pre-wrap; word-wrap: break-word; background: #f8f9fa; padding: 15px; border-radius: 5px; max-height: 300px; overflow-y: auto; font-size: 0.875rem;">
+{{ file.extracted_text|truncatechars:1000 }}
+                </pre>
+                {% if file.extracted_text|length > 1000 %}
+                <small class="text-muted">Показаны первые 1000 символов</small>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title mb-3">Комментарии ({{ file.comments.count }})</h6>
+                {% if comments %}
+                <div class="mb-4">
+                    {% for comment in comments %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>{{ comment.author.username }}</strong>
+                                    <small class="text-muted ms-2">{{ comment.created_at|date:"d.m.Y H:i" }}</small>
+                                </div>
+                                {% if comment.can_delete %}
+                                <a href="{% url 'file_manager:file_comment_delete' comment.id %}" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                            <p class="mt-2 mb-0">{{ comment.content }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-3">Нет комментариев</p>
+                {% endif %}
+                
+                <hr>
+                <h6 class="mb-3">Добавить комментарий</h6>
+                <form method="post" action="{% url 'file_manager:file_comment_create' file.id %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <textarea name="content" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Отправить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body text-center">
+                {% if is_favorite %}
+                <a href="{% url 'file_manager:favorite_toggle' file.id %}" class="btn btn-danger w-100 mb-3">
+                    <i class="bi bi-heart-fill"></i> В избранном
+                </a>
+                {% else %}
+                <a href="{% url 'file_manager:favorite_toggle' file.id %}" class="btn btn-outline-danger w-100 mb-3">
+                    <i class="bi bi-heart"></i> Добавить в избранное
+                </a>
+                {% endif %}
+                
+                <div class="d-flex justify-content-around text-center">
+                    <div>
+                        <div class="h5">{{ file.download_count }}</div>
+                        <small class="text-muted">Скачиваний</small>
+                    </div>
+                    <div>
+                        <div class="h5">{{ file.comments.count }}</div>
+                        <small class="text-muted">Комментариев</small>
+                    </div>
+                    <div>
+                        <div class="h5">{{ file.version }}</div>
+                        <small class="text-muted">Версия</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if file.shared_with.all %}
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title mb-3">Общий доступ</h6>
+                <ul class="list-group list-group-flush">
+                    {% for user in file.shared_with.all %}
+                    <li class="list-group-item">
+                        <i class="bi bi-person-circle me-2"></i> {{ user.username }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
