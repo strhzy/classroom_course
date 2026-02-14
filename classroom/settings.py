@@ -48,7 +48,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+DEFAULT_STORAGE_QUOTA_BYTES = 5368709120
 ROOT_URLCONF = 'classroom.urls'
 
 TEMPLATES = [
@@ -99,7 +99,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 MEDIA_URL = '/media/'

@@ -2,9 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 import os
-from django.conf import settings
-from django.db.models import SET_NULL
-from classroom_core.models import Course
+from django.core.exceptions import ValidationError
 
 def file_upload_path(instance, filename):
     ext = filename.split('.')[-1].lower()
@@ -12,7 +10,33 @@ def file_upload_path(instance, filename):
     filename = f"{instance.title.replace(' ', '_')}_{timestamp}.{ext}"
     return os.path.join('files', str(instance.uploaded_by.id), filename)
 
-class File(models.Model):
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    color = models.CharField(max_length=7, default='#3498db')
+    
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+    
+    def __str__(self):
+        return self.name
+
+class FileCategory(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    icon = models.CharField(max_length=50, default='📄')
+    order = models.IntegerField(default=0)
+    
+    class Meta:
+        ordering = ['order', 'name']
+        verbose_name = 'Категория файлов'
+        verbose_name_plural = 'Категории файлов'
+    
+    def __str__(self):
+        return self.name
+
+class File(models.Model):    
     FILE_TYPE_CHOICES = [
         ('pdf', 'PDF Document'),
         ('txt', 'Text File'),
@@ -47,14 +71,15 @@ class File(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     version = models.IntegerField(default=1)
-    # Привязка к курсу (опционально)
-    course = models.ForeignKey(
-        Course,
-        on_delete=SET_NULL,
-        null=True,
+    
+    category = models.ForeignKey(
+        FileCategory, 
+        on_delete=models.SET_NULL, 
+        null=True, 
         blank=True,
         related_name='files'
     )
+    tags = models.ManyToManyField(Tag, blank=True, related_name='files')
     folder = models.ForeignKey(
         'self', 
         on_delete=models.CASCADE, 
@@ -94,6 +119,7 @@ class File(models.Model):
             models.Index(fields=['uploaded_by', '-uploaded_at']),
             models.Index(fields=['file_type']),
             models.Index(fields=['visibility']),
+            models.Index(fields=['extracted_text']),
         ]
     
     def __str__(self):
@@ -249,7 +275,8 @@ class FileVersion(models.Model):
     version_number = models.IntegerField()
     changed_by = models.ForeignKey(
         User, 
-        on_delete=models.CASCADE, 
+        on_delete=models.SET_NULL, 
+        null=True,
         related_name='file_versions'
     )
     change_description = models.TextField(blank=True)
@@ -272,11 +299,16 @@ class FileActivity(models.Model):
         ('delete', 'Deleted'),
         ('share', 'Shared'),
         ('comment', 'Commented'),
+        ('version_create', 'Created new version'),
+        ('favorite_add', 'Added to favorites'),
+        ('favorite_remove', 'Removed from favorites'),
     ]
     
     file = models.ForeignKey(
         File, 
-        on_delete=models.CASCADE, 
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name='activities'
     )
     user = models.ForeignKey(
@@ -293,6 +325,58 @@ class FileActivity(models.Model):
         ordering = ['-created_at']
         verbose_name = 'Активность с файлом'
         verbose_name_plural = 'Активность с файлами'
+        indexes = [
+            models.Index(fields=['user', '-created_at']),
+            models.Index(fields=['activity_type', '-created_at']),
+        ]
     
     def __str__(self):
-        return f"{self.user.username} {self.activity_type} {self.file.title}"
+        return f"{self.user.username} {self.activity_type} {self.file.title if self.file else 'deleted file'}"
+    
+    @classmethod
+    def log_activity(cls, file, user, activity_type, description="", ip_address=None):
+        return cls.objects.create(
+            file=file,
+            user=user,
+            activity_type=activity_type,
+            description=description,
+            ip_address=ip_address
+        )
+class UserStorageQuota(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='storage_quota')
+    total_quota_bytes = models.BigIntegerField(default=5368709120)
+    used_bytes = models.BigIntegerField(default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = 'Квота хранилища пользователя'
+        verbose_name_plural = 'Квоты хранилища пользователей'
+    
+    def __str__(self):
+        return f"{self.user.username}: {self.used_bytes} / {self.total_quota_bytes} bytes"
+    
+    def get_used_percentage(self):
+        if self.total_quota_bytes == 0:
+            return 0.0
+        return (self.used_bytes / self.total_quota_bytes) * 100
+    
+    def get_quota_display(self):
+        def format_bytes(bytes_value):
+            for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+                if bytes_value < 1024.0:
+                    return f"{bytes_value:.2f} {unit}"
+                bytes_value /= 1024.0
+            return f"{bytes_value:.2f} PB"
+        
+        return f"{format_bytes(self.used_bytes)} / {format_bytes(self.total_quota_bytes)}"
+    
+    def has_enough_space(self, additional_bytes):
+        return self.used_bytes + additional_bytes <= self.total_quota_bytes
+    
+    def update_usage(self):
+        total_size = File.objects.filter(
+            uploaded_by=self.user, 
+            is_folder=False
+        ).aggregate(total=models.Sum('file_size'))['total'] or 0
+        self.used_bytes = total_size
+        self.save(update_fields=['used_bytes', 'last_updated'])

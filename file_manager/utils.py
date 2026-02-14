@@ -2,6 +2,8 @@ import PyPDF2
 import docx
 import os
 from pathlib import Path
+from django.db.models import Q
+from .models import File
 
 def extract_text_from_pdf(file_path):
     try:
@@ -110,3 +112,51 @@ def generate_preview(file_path, output_dir):
         return None
     
     return None
+
+def search_files(query, user=None, file_types=None, categories=None, tags=None, date_from=None, date_to=None):
+    files = File.objects.filter(is_folder=False)
+    
+    if user:
+        files = files.filter(
+            Q(uploaded_by=user) | 
+            Q(visibility='public') | 
+            Q(shared_with=user)
+        ).distinct()
+    
+    if query:
+        files = files.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(extracted_text__icontains=query)
+        )
+    
+    if file_types:
+        files = files.filter(file_type__in=file_types)
+    
+    if categories:
+        files = files.filter(category__in=categories)
+    
+    if tags:
+        for tag in tags:
+            files = files.filter(tags=tag)
+    
+    if date_from:
+        files = files.filter(uploaded_at__date__gte=date_from)
+    
+    if date_to:
+        files = files.filter(uploaded_at__date__lte=date_to)
+    
+    return files.distinct()
+
+def get_user_storage_usage(user):
+    from .models import UserStorageQuota
+    
+    quota, created = UserStorageQuota.objects.get_or_create(
+        user=user,
+        defaults={'total_quota_bytes': 5368709120}
+    )
+    
+    if created:
+        quota.update_usage()
+    
+    return quota

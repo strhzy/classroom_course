@@ -1,0 +1,122 @@
+{% extends "file_manager/base_files.html" %}
+
+{% block title %}📋 Лог активности{% endblock %}
+{% block files_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">Лог активности</h1>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card classroom-card mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Фильтры</h5>
+                <form method="get" class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="activity_type" class="form-label">Тип активности</label>
+                        <select name="activity_type" id="activity_type" class="form-select">
+                            <option value="">Все типы</option>
+                            {% for value, display in activity_types %}
+                            <option value="{{ value }}" {% if selected_activity_type == value %}selected{% endif %}>
+                                {{ display }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <button type="submit" class="btn btn-primary w-100">Применить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card classroom-card">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Последние действия</h5>
+                
+                {% if page_obj %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Дата и время</th>
+                                <th>Пользователь</th>
+                                <th>Файл</th>
+                                <th>Действие</th>
+                                <th>Описание</th>
+                                <th>IP адрес</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for activity in page_obj %}
+                            <tr>
+                                <td>{{ activity.created_at|date:"d.m.Y H:i:s" }}</td>
+                                <td>
+                                    <span>{{ activity.user.username }}</span>
+                                </td>
+                                <td>
+                                    {% if activity.file %}
+                                    <a href="{% url 'file_manager:file_detail' activity.file.id %}">
+                                        {{ activity.file.title }}
+                                    </a>
+                                    {% else %}
+                                    <em>Удаленный файл</em>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ activity.get_activity_type_display }}</span>
+                                </td>
+                                <td>{{ activity.description }}</td>
+                                <td>{{ activity.ip_address|default:"—" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4">
+                                    <i class="bi bi-inbox" style="font-size: 2rem; color: #6c757d;"></i>
+                                    <p class="mt-2 text-muted">Нет записей в логе</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Страницы">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&activity_type={{ selected_activity_type }}">
+                                Предыдущая
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}&activity_type={{ selected_activity_type }}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}&activity_type={{ selected_activity_type }}">
+                                Следующая
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
