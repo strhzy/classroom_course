@@ -1,0 +1,285 @@
+{% extends "classroom_core/base_courses.html" %}
+
+{% block title %}🗑️ Удалить объявление{% endblock %}
+
+{% block courses_content %}
+<style>
+    .dark-theme {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    .delete-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.3);
+        transition: all 0.3s ease;
+        animation: cardAppear 0.5s ease-out;
+    }
+    
+    .delete-card:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.5);
+        transform: translateY(-5px);
+    }
+    
+    @keyframes cardAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .warning-icon {
+        font-size: 4rem;
+        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+        animation: pulseWarning 2s infinite;
+        filter: drop-shadow(0 0 15px rgba(255, 71, 87, 0.5));
+    }
+    
+    @keyframes pulseWarning {
+        0%, 100% {
+            transform: scale(1);
+            filter: drop-shadow(0 0 15px rgba(255, 71, 87, 0.5));
+        }
+        50% {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 25px rgba(255, 71, 87, 0.8));
+        }
+    }
+    
+    .delete-title {
+        color: #fff;
+        font-size: 2rem;
+        font-weight: 600;
+        text-shadow: 0 0 10px rgba(106, 90, 205, 0.5);
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .announcement-alert {
+        background: rgba(106, 90, 205, 0.15);
+        border: 1px solid rgba(106, 90, 205, 0.4);
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin: 1.5rem 0;
+        backdrop-filter: blur(5px);
+        animation: glowPulse 2s infinite;
+    }
+    
+    @keyframes glowPulse {
+        0%, 100% {
+            border-color: rgba(106, 90, 205, 0.4);
+            box-shadow: 0 0 10px rgba(106, 90, 205, 0.2);
+        }
+        50% {
+            border-color: rgba(106, 90, 205, 0.8);
+            box-shadow: 0 0 20px rgba(106, 90, 205, 0.4);
+        }
+    }
+    
+    .announcement-title {
+        color: #fff;
+        font-size: 1.3rem;
+        font-weight: 500;
+        margin: 0;
+        word-break: break-word;
+    }
+    
+    .warning-text {
+        color: #b0b0ff !important;
+        font-size: 1.1rem;
+        margin: 1.5rem 0;
+        line-height: 1.6;
+    }
+    
+    .btn-delete {
+        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        border: none;
+        border-radius: 12px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-delete:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 71, 87, 0.5);
+        background: linear-gradient(135deg, #ff6b81, #ff4757);
+    }
+    
+    .btn-delete:active {
+        transform: translateY(0);
+    }
+    
+    .btn-delete::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn-delete:hover::after {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .btn-cancel {
+        background: rgba(106, 90, 205, 0.2);
+        border: 1px solid rgba(106, 90, 205, 0.5);
+        border-radius: 12px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: #a8b8ff;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-cancel:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: rgba(106, 90, 205, 0.8);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(106, 90, 205, 0.4);
+    }
+    
+    .btn-cancel:active {
+        transform: translateY(0);
+    }
+    
+    .button-container {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .button-container form,
+    .button-container a {
+        flex: 0 1 auto;
+        min-width: 140px;
+    }
+    
+    /* Мобильная адаптация */
+    @media (max-width: 576px) {
+        .dark-theme {
+            padding: 1rem 0.5rem;
+        }
+        
+        .delete-card {
+            border-radius: 15px;
+        }
+        
+        .delete-title {
+            font-size: 1.5rem;
+        }
+        
+        .warning-icon {
+            font-size: 3rem;
+        }
+        
+        .announcement-title {
+            font-size: 1.1rem;
+        }
+        
+        .button-container {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.8rem;
+        }
+        
+        .button-container form,
+        .button-container a {
+            width: 100%;
+            min-width: auto;
+        }
+        
+        .btn-delete,
+        .btn-cancel {
+            width: 100%;
+            text-align: center;
+            padding: 0.7rem 1.5rem;
+        }
+    }
+    
+    /* Планшеты */
+    @media (min-width: 577px) and (max-width: 768px) {
+        .delete-card {
+            margin: 0 1rem;
+        }
+        
+        .delete-title {
+            font-size: 1.8rem;
+        }
+    }
+    
+    /* Большие экраны */
+    @media (min-width: 1400px) {
+        .delete-card {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+    }
+</style>
+
+<div class="dark-theme">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10 col-sm-12">
+            <div class="delete-card">
+                <div class="card-body text-center p-4 p-md-5">
+                    <div class="warning-icon mb-3">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                    
+                    <h3 class="delete-title">Удалить объявление?</h3>
+                    
+                    <div class="announcement-alert">
+                        <strong class="announcement-title">{{ announcement.title }}</strong>
+                    </div>
+                    
+                    <p class="warning-text">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Объявление будет удалено безвозвратно. Это действие нельзя отменить.
+                    </p>
+                    
+                    <div class="button-container">
+                        <form method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-delete">
+                                <i class="bi bi-trash me-2"></i>Да, удалить
+                            </button>
+                        </form>
+                        <a href="{% url 'classroom_core:course_detail' course.id %}" class="btn-cancel">
+                            <i class="bi bi-x-circle me-2"></i>Отмена
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

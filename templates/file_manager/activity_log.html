@@ -1,120 +1,535 @@
 {% extends "file_manager/base_files.html" %}
 
 {% block title %}📋 Лог активности{% endblock %}
-{% block files_content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3">Лог активности</h1>
-</div>
 
-<div class="row">
-    <div class="col-lg-12">
-        <div class="card classroom-card mb-4">
-            <div class="card-body">
-                <h5 class="card-title mb-3">Фильтры</h5>
-                <form method="get" class="row">
-                    <div class="col-md-4 mb-3">
-                        <label for="activity_type" class="form-label">Тип активности</label>
-                        <select name="activity_type" id="activity_type" class="form-select">
-                            <option value="">Все типы</option>
-                            {% for value, display in activity_types %}
-                            <option value="{{ value }}" {% if selected_activity_type == value %}selected{% endif %}>
-                                {{ display }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-2 mb-3">
-                        <button type="submit" class="btn btn-primary w-100">Применить</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+{% block files_content %}
+<style>
+    .dark-theme-log {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    /* Заголовок */
+    .page-header {
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .page-title i {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 2.5rem;
+    }
+    
+    /* Карточка фильтров */
+    .filters-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+    
+    .card-header-custom {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1.2rem 1.5rem;
+    }
+    
+    .card-header-custom h5 {
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .card-header-custom h5 i {
+        color: #6a5acd;
+        font-size: 1.3rem;
+    }
+    
+    .card-body-custom {
+        padding: 1.5rem;
+    }
+    
+    /* Форма фильтров */
+    .filter-label {
+        color: #a8b8ff;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .filter-label i {
+        color: #6a5acd;
+    }
+    
+    .custom-select {
+        background: rgba(20, 20, 35, 0.8);
+        border: 2px solid rgba(106, 90, 205, 0.3);
+        border-radius: 10px;
+        padding: 0.7rem 1rem;
+        color: #fff;
+        font-size: 0.95rem;
+        transition: border-color 0.2s ease;
+        width: 100%;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236a5acd' viewBox='0 0 16 16'%3E%3Cpath d='M8 11.5l-5-5h10l-5 5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+    }
+    
+    .custom-select:focus {
+        outline: none;
+        border-color: #6a5acd;
+    }
+    
+    .custom-select:hover {
+        border-color: rgba(106, 90, 205, 0.6);
+    }
+    
+    .custom-select option {
+        background: #1a1a2e;
+        color: #fff;
+    }
+    
+    .btn-apply {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 10px;
+        padding: 0.7rem 1.5rem;
+        font-weight: 600;
+        color: white;
+        transition: background-color 0.2s ease;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-apply:hover {
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+    }
+    
+    /* Карточка с логом */
+    .log-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+    }
+    
+    /* Таблица */
+    .log-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .log-table thead th {
+        background: rgba(106, 90, 205, 0.15);
+        color: #a8b8ff;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem;
+        border-bottom: 2px solid rgba(106, 90, 205, 0.3);
+        white-space: nowrap;
+        text-align: left;
+    }
+    
+    .log-table tbody tr {
+        transition: background-color 0.2s ease;
+        border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+    }
+    
+    .log-table tbody tr:hover {
+        background: rgba(106, 90, 205, 0.1);
+    }
+    
+    .log-table tbody td {
+        padding: 1rem;
+        color: #e0e0ff;
+        vertical-align: middle;
+    }
+    
+    /* Бейджи для типов активности */
+    .activity-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+    
+    .badge-upload {
+        background: rgba(76, 175, 80, 0.15);
+        color: #4caf50;
+        border: 1px solid #4caf50;
+    }
+    
+    .badge-download {
+        background: rgba(33, 150, 243, 0.15);
+        color: #2196f3;
+        border: 1px solid #2196f3;
+    }
+    
+    .badge-delete {
+        background: rgba(255, 71, 87, 0.15);
+        color: #ff6b81;
+        border: 1px solid #ff4757;
+    }
+    
+    .badge-edit {
+        background: rgba(255, 165, 2, 0.15);
+        color: #ffa502;
+        border: 1px solid #ffa502;
+    }
+    
+    .badge-view {
+        background: rgba(106, 90, 205, 0.15);
+        color: #a8b8ff;
+        border: 1px solid #6a5acd;
+    }
+    
+    .badge-share {
+        background: rgba(156, 39, 176, 0.15);
+        color: #9c27b0;
+        border: 1px solid #9c27b0;
+    }
+    
+    /* Ссылки на файлы */
+    .file-link {
+        color: #a8b8ff;
+        text-decoration: none;
+        transition: color 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .file-link:hover {
+        color: #6a5acd;
+    }
+    
+    .file-link i {
+        color: #6a5acd;
+        font-size: 0.9rem;
+    }
+    
+    .deleted-file {
+        color: #8080b0;
+        font-style: italic;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .deleted-file i {
+        color: #ff6b81;
+    }
+    
+    /* IP адрес */
+    .ip-address {
+        font-family: 'Courier New', monospace;
+        color: #b0b0ff;
+        background: rgba(106, 90, 205, 0.1);
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+    
+    /* Пустое состояние */
+    .empty-state {
+        text-align: center;
+        padding: 4rem;
+        color: #8080b0;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        color: #6a5acd;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .empty-state p {
+        font-size: 1.1rem;
+        margin: 0;
+    }
+    
+    /* Пагинация */
+    .custom-pagination {
+        margin-top: 2rem;
+    }
+    
+    .pagination .page-link {
+        background: rgba(30, 30, 46, 0.95);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        color: #a8b8ff;
+        margin: 0 0.2rem;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    
+    .pagination .page-link:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: #6a5acd;
+        color: #fff;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border-color: #6a5acd;
+        color: white;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-theme-log {
+            padding: 1rem 0.5rem;
+        }
         
-        <div class="card classroom-card">
-            <div class="card-body">
-                <h5 class="card-title mb-3">Последние действия</h5>
-                
-                {% if page_obj %}
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Дата и время</th>
-                                <th>Пользователь</th>
-                                <th>Файл</th>
-                                <th>Действие</th>
-                                <th>Описание</th>
-                                <th>IP адрес</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for activity in page_obj %}
-                            <tr>
-                                <td>{{ activity.created_at|date:"d.m.Y H:i:s" }}</td>
-                                <td>
-                                    <span>{{ activity.user.username }}</span>
-                                </td>
-                                <td>
-                                    {% if activity.file %}
-                                    <a href="{% url 'file_manager:file_detail' activity.file.id %}">
-                                        {{ activity.file.title }}
-                                    </a>
-                                    {% else %}
-                                    <em>Удаленный файл</em>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <span class="badge bg-info">{{ activity.get_activity_type_display }}</span>
-                                </td>
-                                <td>{{ activity.description }}</td>
-                                <td>{{ activity.ip_address|default:"—" }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="5" class="text-center py-4">
-                                    <i class="bi bi-inbox" style="font-size: 2rem; color: #6c757d;"></i>
-                                    <p class="mt-2 text-muted">Нет записей в логе</p>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+        .page-title {
+            font-size: 1.8rem;
+        }
+        
+        .page-title i {
+            font-size: 2rem;
+        }
+        
+        .log-table thead {
+            display: none;
+        }
+        
+        .log-table tbody tr {
+            display: block;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(106, 90, 205, 0.3);
+            border-radius: 10px;
+            background: rgba(30, 30, 46, 0.8);
+            padding: 1rem;
+        }
+        
+        .log-table tbody td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border: none;
+            border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+        }
+        
+        .log-table tbody td:last-child {
+            border-bottom: none;
+        }
+        
+        .log-table tbody td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: #a8b8ff;
+            margin-right: 1rem;
+        }
+        
+        .activity-badge {
+            white-space: normal;
+        }
+    }
+</style>
+
+<div class="dark-theme-log">
+    <div class="container">
+        <!-- Заголовок -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-clock-history"></i>
+                Лог активности
+            </h1>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <!-- Карточка фильтров -->
+                <div class="filters-card">
+                    <div class="card-header-custom">
+                        <h5>
+                            <i class="bi bi-funnel-fill"></i>
+                            Фильтры
+                        </h5>
+                    </div>
+                    <div class="card-body-custom">
+                        <form method="get" class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="activity_type" class="filter-label">
+                                    <i class="bi bi-tag"></i>
+                                    Тип активности
+                                </label>
+                                <select name="activity_type" id="activity_type" class="custom-select">
+                                    <option value="">📋 Все типы</option>
+                                    {% for value, display in activity_types %}
+                                    <option value="{{ value }}" {% if selected_activity_type == value %}selected{% endif %}>
+                                        {{ display }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2 mb-3 d-flex align-items-end">
+                                <button type="submit" class="btn-apply">
+                                    <i class="bi bi-check-lg"></i>
+                                    Применить
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
                 
-                {% if page_obj.has_other_pages %}
-                <nav aria-label="Страницы">
-                    <ul class="pagination justify-content-center">
-                        {% if page_obj.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&activity_type={{ selected_activity_type }}">
-                                Предыдущая
-                            </a>
-                        </li>
+                <!-- Карточка с логом -->
+                <div class="log-card">
+                    <div class="card-header-custom">
+                        <h5>
+                            <i class="bi bi-list-check"></i>
+                            Последние действия
+                        </h5>
+                    </div>
+                    <div class="card-body-custom">
+                        {% if page_obj %}
+                        <div class="table-responsive">
+                            <table class="log-table">
+                                <thead>
+                                    <tr>
+                                        <th>Дата и время</th>
+                                        <th>Пользователь</th>
+                                        <th>Файл</th>
+                                        <th>Действие</th>
+                                        <th>Описание</th>
+                                        <th>IP адрес</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for activity in page_obj %}
+                                    <tr>
+                                        <td data-label="Дата и время">
+                                            <i class="bi bi-calendar3" style="color: #6a5acd; margin-right: 0.3rem;"></i>
+                                            {{ activity.created_at|date:"d.m.Y H:i:s" }}
+                                        </td>
+                                        <td data-label="Пользователь">
+                                            <i class="bi bi-person-circle" style="color: #6a5acd; margin-right: 0.3rem;"></i>
+                                            {{ activity.user.username }}
+                                        </td>
+                                        <td data-label="Файл">
+                                            {% if activity.file %}
+                                            <a href="{% url 'file_manager:file_detail' activity.file.id %}" class="file-link">
+                                                <i class="bi bi-file-earmark"></i>
+                                                {{ activity.file.title }}
+                                            </a>
+                                            {% else %}
+                                            <span class="deleted-file">
+                                                <i class="bi bi-trash"></i>
+                                                Удаленный файл
+                                            </span>
+                                            {% endif %}
+                                        </td>
+                                        <td data-label="Действие">
+                                            {% with type=activity.activity_type %}
+                                            <span class="activity-badge 
+                                                {% if type == 'upload' %}badge-upload
+                                                {% elif type == 'download' %}badge-download
+                                                {% elif type == 'delete' %}badge-delete
+                                                {% elif type == 'edit' %}badge-edit
+                                                {% elif type == 'view' %}badge-view
+                                                {% elif type == 'share' %}badge-share
+                                                {% endif %}">
+                                                <i class="bi 
+                                                    {% if type == 'upload' %}bi-cloud-upload
+                                                    {% elif type == 'download' %}bi-cloud-download
+                                                    {% elif type == 'delete' %}bi-trash
+                                                    {% elif type == 'edit' %}bi-pencil
+                                                    {% elif type == 'view' %}bi-eye
+                                                    {% elif type == 'share' %}bi-share
+                                                    {% endif %}">
+                                                </i>
+                                                {{ activity.get_activity_type_display }}
+                                            </span>
+                                            {% endwith %}
+                                        </td>
+                                        <td data-label="Описание">{{ activity.description }}</td>
+                                        <td data-label="IP адрес">
+                                            <span class="ip-address">{{ activity.ip_address|default:"—" }}</span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Пагинация -->
+                        {% if page_obj.has_other_pages %}
+                        <nav aria-label="Страницы" class="custom-pagination">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&activity_type={{ selected_activity_type }}" aria-label="Предыдущая">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+                                
+                                {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}&activity_type={{ selected_activity_type }}">{{ num }}</a>
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+                                
+                                {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&activity_type={{ selected_activity_type }}" aria-label="Следующая">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
                         {% endif %}
                         
-                        {% for num in page_obj.paginator.page_range %}
-                        {% if page_obj.number == num %}
-                        <li class="page-item active">
-                            <span class="page-link">{{ num }}</span>
-                        </li>
-                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ num }}&activity_type={{ selected_activity_type }}">{{ num }}</a>
-                        </li>
+                        {% else %}
+                        <div class="empty-state">
+                            <i class="bi bi-inbox"></i>
+                            <p>Нет записей в логе</p>
+                        </div>
                         {% endif %}
-                        {% endfor %}
-                        
-                        {% if page_obj.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.next_page_number }}&activity_type={{ selected_activity_type }}">
-                                Следующая
-                            </a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-                {% endif %}
-                {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

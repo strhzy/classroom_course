@@ -1,0 +1,747 @@
+{% extends "classroom_core/base_courses.html" %}
+
+{% block title %}👤 {{ title }}{% endblock %}
+
+{% block courses_content %}
+<style>
+    .dark-theme-profile-edit {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    /* Хлебные крошки */
+    .custom-breadcrumb {
+        background: rgba(106, 90, 205, 0.1);
+        padding: 0.8rem 1.2rem;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        display: inline-block;
+        animation: breadcrumbSlide 0.5s ease-out;
+    }
+    
+    @keyframes breadcrumbSlide {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .custom-breadcrumb .breadcrumb {
+        margin: 0;
+        background: transparent;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a {
+        color: #a8b8ff;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a:hover {
+        color: #6a5acd;
+        text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
+    }
+    
+    .custom-breadcrumb .breadcrumb-item.active {
+        color: #fff;
+        font-weight: 500;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+        color: #6a5acd;
+        content: "›";
+        font-size: 1.2rem;
+    }
+    
+    /* Заголовок */
+    .page-header {
+        animation: headerFade 0.5s ease-out;
+    }
+    
+    @keyframes headerFade {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .page-title i {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 2rem;
+    }
+    
+    /* Карточка формы */
+    .form-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.2);
+        transition: all 0.3s ease;
+        animation: cardAppear 0.6s ease-out 0.2s both;
+        overflow: hidden;
+    }
+    
+    @keyframes cardAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .form-card:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
+    }
+    
+    .card-header-gradient {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1.2rem 1.5rem;
+    }
+    
+    .card-header-gradient h5 {
+        color: #fff;
+        font-size: 1.3rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .card-header-gradient h5 i {
+        color: #6a5acd;
+        font-size: 1.5rem;
+    }
+    
+    .card-body-custom {
+        padding: 2rem;
+    }
+    
+    /* Поля формы */
+    .form-group {
+        margin-bottom: 1.8rem;
+        animation: fieldAppear 0.5s ease-out;
+        animation-fill-mode: both;
+    }
+    
+    .form-group:nth-child(1) { animation-delay: 0.2s; }
+    .form-group:nth-child(2) { animation-delay: 0.25s; }
+    .form-group:nth-child(3) { animation-delay: 0.3s; }
+    .form-group:nth-child(4) { animation-delay: 0.35s; }
+    .form-group:nth-child(5) { animation-delay: 0.4s; }
+    .form-group:nth-child(6) { animation-delay: 0.45s; }
+    
+    @keyframes fieldAppear {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .form-label {
+        color: #a8b8ff;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+    }
+    
+    .form-label i {
+        color: #6a5acd;
+        font-size: 1.1rem;
+    }
+    
+    .form-label .required {
+        color: #ff6b81;
+        margin-left: 0.3rem;
+        font-size: 1.2rem;
+    }
+    
+    /* Стили для полей ввода */
+    .custom-input {
+        background: rgba(20, 20, 35, 0.8);
+        border: 2px solid rgba(106, 90, 205, 0.3);
+        border-radius: 12px;
+        padding: 0.8rem 1.2rem;
+        color: #fff;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .custom-input:focus {
+        outline: none;
+        border-color: #6a5acd;
+        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2), 0 0 20px rgba(106, 90, 205, 0.3);
+        background: rgba(30, 30, 50, 0.9);
+        transform: translateY(-2px);
+    }
+    
+    .custom-input:hover {
+        border-color: rgba(106, 90, 205, 0.6);
+    }
+    
+    /* Стили для select */
+    .custom-select {
+        background: rgba(20, 20, 35, 0.8);
+        border: 2px solid rgba(106, 90, 205, 0.3);
+        border-radius: 12px;
+        padding: 0.8rem 1.2rem;
+        color: #fff;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236a5acd' viewBox='0 0 16 16'%3E%3Cpath d='M8 11.5l-5-5h10l-5 5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+    }
+    
+    .custom-select:focus {
+        outline: none;
+        border-color: #6a5acd;
+        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2);
+    }
+    
+    .custom-select:hover {
+        border-color: rgba(106, 90, 205, 0.6);
+    }
+    
+    .custom-select option {
+        background: #1a1a2e;
+        color: #fff;
+    }
+    
+    /* File input для аватара */
+    .avatar-container {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .avatar-preview {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        font-weight: 600;
+        border: 3px solid rgba(106, 90, 205, 0.5);
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .avatar-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+    
+    .avatar-preview i {
+        font-size: 2.5rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .avatar-upload {
+        flex: 1;
+    }
+    
+    .file-input-container {
+        position: relative;
+    }
+    
+    .file-input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        z-index: 2;
+    }
+    
+    .file-label {
+        background: rgba(20, 20, 35, 0.8);
+        border: 2px dashed rgba(106, 90, 205, 0.4);
+        border-radius: 12px;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        color: #a8b8ff;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .file-label:hover {
+        border-color: #6a5acd;
+        background: rgba(106, 90, 205, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .file-label i {
+        color: #6a5acd;
+        font-size: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .file-label:hover i {
+        transform: scale(1.1) rotate(5deg);
+    }
+    
+    .file-name {
+        color: #6a5acd;
+        font-weight: 600;
+        margin-left: 0.5rem;
+    }
+    
+    /* Подсказки */
+    .form-text {
+        color: #8080b0;
+        font-size: 0.85rem;
+        margin-top: 0.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .form-text i {
+        color: #6a5acd;
+        font-size: 0.9rem;
+    }
+    
+    /* Индикатор обязательных полей */
+    .required-note {
+        color: #b0b0ff;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        text-align: right;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.3rem;
+    }
+    
+    .required-note i {
+        color: #ff6b81;
+    }
+    
+    /* Кнопки */
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        animation: buttonsAppear 0.5s ease-out 0.5s both;
+    }
+    
+    @keyframes buttonsAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .btn-save {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 12px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        position: relative;
+        overflow: hidden;
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+        text-decoration: none;
+    }
+    
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        color: white;
+    }
+    
+    .btn-save::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn-save:hover::after {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .btn-save i {
+        transition: transform 0.3s ease;
+    }
+    
+    .btn-save:hover i {
+        transform: scale(1.1);
+    }
+    
+    .btn-cancel {
+        background: rgba(106, 90, 205, 0.2);
+        border: 1px solid rgba(106, 90, 205, 0.5);
+        border-radius: 12px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: #a8b8ff;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+    }
+    
+    .btn-cancel:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: #6a5acd;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+    }
+    
+    .btn-cancel i {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-cancel:hover i {
+        transform: rotate(90deg);
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-theme-profile-edit {
+            padding: 1rem 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.6rem;
+        }
+        
+        .custom-breadcrumb {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .card-body-custom {
+            padding: 1.5rem;
+        }
+        
+        .button-group {
+            flex-direction: column;
+        }
+        
+        .btn-save,
+        .btn-cancel {
+            width: 100%;
+        }
+        
+        .avatar-container {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .avatar-upload {
+            width: 100%;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+        
+        .card-body-custom {
+            padding: 1.8rem;
+        }
+    }
+</style>
+
+<div class="dark-theme-profile-edit">
+    <div class="container">
+        <!-- Заголовок и хлебные крошки -->
+        <div class="page-header mb-4">
+            <h1 class="page-title">
+                <i class="bi bi-person-circle"></i>
+                {{ title }}
+            </h1>
+            <nav aria-label="breadcrumb" class="custom-breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'classroom_core:profile_view' %}">
+                            <i class="bi bi-person me-1"></i>Профиль
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        {{ title }}
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="form-card">
+                    <div class="card-header-gradient">
+                        <h5>
+                            <i class="bi bi-pencil-square"></i>
+                            Редактирование профиля
+                        </h5>
+                    </div>
+                    
+                    <div class="card-body-custom">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <!-- Роль -->
+                            <div class="form-group">
+                                <label for="id_role" class="form-label">
+                                    <i class="bi bi-person-badge"></i>
+                                    Роль <span class="required">*</span>
+                                </label>
+                                <select name="role" id="id_role" class="custom-select" required>
+                                    <option value="student" {% if form.role.value == 'student' %}selected{% endif %}>🎓 Студент</option>
+                                    <option value="teacher" {% if form.role.value == 'teacher' %}selected{% endif %}>👨‍🏫 Преподаватель</option>
+                                    <option value="staff" {% if form.role.value == 'staff' %}selected{% endif %}>👥 Сотрудник учебной части</option>
+                                </select>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i>
+                                    Роль определяет доступные функции в системе
+                                </div>
+                            </div>
+                            
+                            <!-- Кафедра/Отдел -->
+                            <div class="form-group">
+                                <label for="id_department" class="form-label">
+                                    <i class="bi bi-building"></i>
+                                    Кафедра/Отдел
+                                </label>
+                                <input type="text" 
+                                       name="department" 
+                                       id="id_department" 
+                                       class="custom-input" 
+                                       value="{{ form.department.value|default:'' }}"
+                                       placeholder="Например: Кафедра информатики">
+                            </div>
+                            
+                            <!-- Должность -->
+                            <div class="form-group">
+                                <label for="id_position" class="form-label">
+                                    <i class="bi bi-briefcase"></i>
+                                    Должность
+                                </label>
+                                <input type="text" 
+                                       name="position" 
+                                       id="id_position" 
+                                       class="custom-input" 
+                                       value="{{ form.position.value|default:'' }}"
+                                       placeholder="Например: Доцент">
+                            </div>
+                            
+                            <!-- Группа для студентов -->
+                            <div class="form-group">
+                                <label for="id_student_group" class="form-label">
+                                    <i class="bi bi-people"></i>
+                                    Группа (для студентов)
+                                </label>
+                                <input type="text" 
+                                       name="student_group" 
+                                       id="id_student_group" 
+                                       class="custom-input" 
+                                       value="{{ form.student_group.value|default:'' }}"
+                                       placeholder="Например: ИТ-21">
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i>
+                                    Укажите учебную группу, если вы студент
+                                </div>
+                            </div>
+                            
+                            <!-- Телефон -->
+                            <div class="form-group">
+                                <label for="id_phone" class="form-label">
+                                    <i class="bi bi-telephone"></i>
+                                    Телефон
+                                </label>
+                                <input type="text" 
+                                       name="phone" 
+                                       id="id_phone" 
+                                       class="custom-input" 
+                                       value="{{ form.phone.value|default:'' }}"
+                                       placeholder="+7 (999) 123-45-67">
+                            </div>
+                            
+                            <!-- Аватар -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="bi bi-image"></i>
+                                    Аватар
+                                </label>
+                                <div class="avatar-container">
+                                    <div class="avatar-preview">
+                                        {% if user.profile.avatar %}
+                                        <img src="{{ user.profile.avatar.url }}" alt="Avatar">
+                                        {% else %}
+                                        <i class="bi bi-person-circle"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="avatar-upload">
+                                        <div class="file-input-container">
+                                            <input type="file" 
+                                                   name="avatar" 
+                                                   id="id_avatar" 
+                                                   class="file-input"
+                                                   accept="image/*"
+                                                   onchange="updateFileName(this)">
+                                            <div class="file-label">
+                                                <i class="bi bi-cloud-upload"></i>
+                                                <span>Выберите изображение</span>
+                                                <span id="file-name-display" class="file-name"></span>
+                                            </div>
+                                        </div>
+                                        <div class="form-text">
+                                            <i class="bi bi-info-circle"></i>
+                                            Рекомендуемый размер: 200x200 пикселей
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Обязательные поля -->
+                            <div class="required-note">
+                                <i class="bi bi-asterisk"></i>
+                                Поля, отмеченные звездочкой, обязательны для заполнения
+                            </div>
+                            
+                            <!-- Кнопки -->
+                            <div class="button-group">
+                                <button type="submit" class="btn-save">
+                                    <i class="bi bi-save"></i>
+                                    Сохранить
+                                </button>
+                                <a href="{% url 'classroom_core:profile_view' %}" class="btn-cancel">
+                                    <i class="bi bi-x-circle"></i>
+                                    Отмена
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Функция для отображения имени выбранного файла
+    function updateFileName(input) {
+        const fileNameDisplay = document.getElementById('file-name-display');
+        const fileLabel = document.querySelector('.file-label');
+        const avatarPreview = document.querySelector('.avatar-preview');
+        
+        if (input.files && input.files.length > 0) {
+            const file = input.files[0];
+            fileNameDisplay.textContent = `🖼️ ${file.name}`;
+            fileNameDisplay.style.display = 'inline';
+            
+            // Визуальная обратная связь
+            fileLabel.style.borderColor = '#4caf50';
+            fileLabel.style.background = 'rgba(76, 175, 80, 0.1)';
+            
+            // Предпросмотр изображения
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarPreview.innerHTML = `<img src="${e.target.result}" alt="Avatar">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        } else {
+            fileNameDisplay.textContent = '';
+            fileNameDisplay.style.display = 'none';
+            fileLabel.style.borderColor = '';
+            fileLabel.style.background = '';
+            
+            // Восстанавливаем стандартный аватар
+            avatarPreview.innerHTML = '{% if user.profile.avatar %}<img src="{{ user.profile.avatar.url }}" alt="Avatar">{% else %}<i class="bi bi-person-circle"></i>{% endif %}';
+        }
+    }
+    
+    // Анимация при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        const formGroups = document.querySelectorAll('.form-group');
+        formGroups.forEach((group, index) => {
+            group.style.animationDelay = `${0.1 + (index * 0.05)}s`;
+        });
+    });
+</script>
+{% endblock %}

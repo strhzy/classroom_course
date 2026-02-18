@@ -1,0 +1,834 @@
+{% extends "classroom_core/base_courses.html" %}
+
+{% block title %}📝 {{ title }}{% endblock %}
+
+{% block courses_content %}
+<style>
+    .dark-theme-assignment-form {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    /* Хлебные крошки */
+    .custom-breadcrumb {
+        background: rgba(106, 90, 205, 0.1);
+        padding: 0.8rem 1.2rem;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        display: inline-block;
+        animation: breadcrumbSlide 0.5s ease-out;
+    }
+    
+    @keyframes breadcrumbSlide {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .custom-breadcrumb .breadcrumb {
+        margin: 0;
+        background: transparent;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a {
+        color: #a8b8ff;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a:hover {
+        color: #6a5acd;
+        text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #6a5acd, #4a90e2);
+        transition: width 0.3s ease;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a:hover::after {
+        width: 100%;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item.active {
+        color: #fff;
+        font-weight: 500;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+        color: #6a5acd;
+        content: "›";
+        font-size: 1.2rem;
+        line-height: 1;
+    }
+    
+    /* Заголовок */
+    .form-header {
+        animation: headerFade 0.5s ease-out 0.1s both;
+    }
+    
+    @keyframes headerFade {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+    }
+    
+    /* Карточка формы */
+    .form-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.2);
+        transition: all 0.3s ease;
+        animation: cardAppear 0.6s ease-out 0.2s both;
+        overflow: hidden;
+    }
+    
+    @keyframes cardAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .form-card:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
+    }
+    
+    .card-header-gradient {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1.2rem 1.5rem;
+    }
+    
+    .card-header-gradient h5 {
+        color: #fff;
+        font-size: 1.3rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+    
+    .card-header-gradient h5 i {
+        color: #6a5acd;
+        margin-right: 0.8rem;
+        font-size: 1.5rem;
+    }
+    
+    /* Поля формы */
+    .form-group {
+        margin-bottom: 1.8rem;
+        animation: fieldAppear 0.5s ease-out;
+        animation-fill-mode: both;
+    }
+    
+    .form-group:nth-child(1) { animation-delay: 0.3s; }
+    .form-group:nth-child(2) { animation-delay: 0.4s; }
+    .form-group:nth-child(3) { animation-delay: 0.5s; }
+    .form-group:nth-child(4) { animation-delay: 0.6s; }
+    .form-group:nth-child(5) { animation-delay: 0.7s; }
+    .form-group:nth-child(6) { animation-delay: 0.8s; }
+    .form-group:nth-child(7) { animation-delay: 0.9s; }
+    .form-group:nth-child(8) { animation-delay: 1.0s; }
+    
+    @keyframes fieldAppear {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .form-label {
+        color: #a8b8ff;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+        letter-spacing: 0.3px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .form-label i {
+        color: #6a5acd;
+        margin-right: 0.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .form-label .required {
+        color: #ff6b81;
+        margin-left: 0.3rem;
+        font-size: 1.2rem;
+    }
+    
+    /* Стили для полей ввода */
+    .custom-input {
+        background: rgba(20, 20, 35, 0.8);
+        border: 2px solid rgba(106, 90, 205, 0.3);
+        border-radius: 12px;
+        padding: 0.8rem 1.2rem;
+        color: #fff;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .custom-input:focus {
+        outline: none;
+        border-color: #6a5acd;
+        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2), 0 0 20px rgba(106, 90, 205, 0.3);
+        background: rgba(30, 30, 50, 0.9);
+        transform: translateY(-2px);
+    }
+    
+    .custom-input:hover {
+        border-color: rgba(106, 90, 205, 0.6);
+    }
+    
+    textarea.custom-input {
+        resize: vertical;
+        min-height: 150px;
+        line-height: 1.6;
+    }
+    
+    /* Стили для select */
+    .custom-select {
+        background: rgba(20, 20, 35, 0.8);
+        border: 2px solid rgba(106, 90, 205, 0.3);
+        border-radius: 12px;
+        padding: 0.8rem 1.2rem;
+        color: #fff;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236a5acd' viewBox='0 0 16 16'%3E%3Cpath d='M8 11.5l-5-5h10l-5 5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1.2rem;
+    }
+    
+    .custom-select:focus {
+        outline: none;
+        border-color: #6a5acd;
+        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2);
+        background-color: rgba(30, 30, 50, 0.9);
+    }
+    
+    .custom-select:hover {
+        border-color: rgba(106, 90, 205, 0.6);
+    }
+    
+    .custom-select option {
+        background: #1a1a2e;
+        color: #fff;
+    }
+    
+    /* Стили для file input */
+    .custom-file-input {
+        position: relative;
+        width: 100%;
+    }
+    
+    .custom-file-input input[type="file"] {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        z-index: 2;
+    }
+    
+    .file-label {
+        background: rgba(20, 20, 35, 0.8);
+        border: 2px dashed rgba(106, 90, 205, 0.4);
+        border-radius: 12px;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        color: #a8b8ff;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .file-label:hover {
+        border-color: #6a5acd;
+        background: rgba(106, 90, 205, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .file-label i {
+        color: #6a5acd;
+        font-size: 1.2rem;
+    }
+    
+    .file-name {
+        color: #fff;
+        margin-left: 0.5rem;
+        font-weight: 500;
+    }
+    
+    /* Чекбокс */
+    .checkbox-wrapper {
+        background: rgba(106, 90, 205, 0.1);
+        border-radius: 15px;
+        padding: 1.2rem;
+        border: 1px solid rgba(106, 90, 205, 0.2);
+        transition: all 0.3s ease;
+        animation: checkboxAppear 0.5s ease-out 1.1s both;
+    }
+    
+    @keyframes checkboxAppear {
+        0% {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    .checkbox-wrapper:hover {
+        background: rgba(106, 90, 205, 0.15);
+        border-color: rgba(106, 90, 205, 0.4);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .custom-checkbox {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+    
+    .custom-checkbox input[type="checkbox"] {
+        width: 1.3rem;
+        height: 1.3rem;
+        margin-right: 0.8rem;
+        cursor: pointer;
+        accent-color: #6a5acd;
+        transition: all 0.2s ease;
+    }
+    
+    .custom-checkbox input[type="checkbox"]:checked {
+        transform: scale(1.1);
+    }
+    
+    .custom-checkbox label {
+        color: #e0e0ff;
+        font-size: 1rem;
+        cursor: pointer;
+        user-select: none;
+    }
+    
+    .checkbox-description {
+        color: #b0b0ff;
+        font-size: 0.9rem;
+        margin-left: 2.1rem;
+        margin-top: 0.3rem;
+    }
+    
+    /* Кнопки */
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        animation: buttonsAppear 0.5s ease-out 1.2s both;
+    }
+    
+    @keyframes buttonsAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .btn-save {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 12px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        position: relative;
+        overflow: hidden;
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+    }
+    
+    .btn-save:active {
+        transform: translateY(0);
+    }
+    
+    .btn-save::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn-save:hover::after {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .btn-cancel {
+        background: rgba(106, 90, 205, 0.2);
+        border: 1px solid rgba(106, 90, 205, 0.5);
+        border-radius: 12px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: #a8b8ff;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-cancel:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: rgba(106, 90, 205, 0.8);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(106, 90, 205, 0.4);
+    }
+    
+    .btn-cancel:active {
+        transform: translateY(0);
+    }
+    
+    /* Индикатор обязательных полей */
+    .required-note {
+        color: #b0b0ff;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        text-align: right;
+    }
+    
+    .required-note i {
+        color: #ff6b81;
+        margin-right: 0.2rem;
+    }
+    
+    /* Подсказки для полей */
+    .field-hint {
+        color: #8080b0;
+        font-size: 0.85rem;
+        margin-top: 0.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .field-hint i {
+        color: #6a5acd;
+        font-size: 0.9rem;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-theme-assignment-form {
+            padding: 1rem 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.6rem;
+        }
+        
+        .custom-breadcrumb {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .form-card {
+            margin: 0;
+        }
+        
+        .button-group {
+            flex-direction: column;
+        }
+        
+        .btn-save,
+        .btn-cancel {
+            width: 100%;
+        }
+        
+        .checkbox-wrapper {
+            padding: 1rem;
+        }
+        
+        .form-label {
+            font-size: 0.95rem;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+        
+        .button-group {
+            gap: 0.8rem;
+        }
+    }
+    
+    /* Анимация для иконок */
+    .bi-save, .bi-x-circle {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-save:hover .bi-save {
+        transform: scale(1.1);
+    }
+    
+    .btn-cancel:hover .bi-x-circle {
+        transform: rotate(90deg);
+    }
+    
+    /* Индикация текущего файла */
+    .current-file {
+        background: rgba(106, 90, 205, 0.15);
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #a8b8ff;
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        animation: filePulse 2s infinite;
+    }
+    
+    @keyframes filePulse {
+        0%, 100% {
+            border-color: rgba(106, 90, 205, 0.3);
+        }
+        50% {
+            border-color: rgba(106, 90, 205, 0.6);
+        }
+    }
+    
+    .current-file i {
+        color: #6a5acd;
+    }
+</style>
+
+<div class="dark-theme-assignment-form">
+    <div class="container">
+        <!-- Заголовок и хлебные крошки -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+            <div class="form-header">
+                <h1 class="page-title">{{ title }}</h1>
+                <nav aria-label="breadcrumb" class="custom-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'classroom_core:course_list' %}">
+                                <i class="bi bi-grid me-1"></i>Мои курсы
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'classroom_core:course_detail' course.id %}">
+                                <i class="bi bi-book me-1"></i>{{ course.title|truncatechars:30 }}
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <i class="bi bi-pencil-square me-1"></i>{{ title }}
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="form-card">
+                    <div class="card-header-gradient">
+                        <h5>
+                            <i class="bi bi-file-earmark-text"></i>
+                            {% if 'Создание' in title %}Создание нового задания{% else %}Редактирование задания{% endif %}
+                        </h5>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <div class="form-group">
+                                <label for="id_title" class="form-label">
+                                    <i class="bi bi-type"></i>Название задания <span class="required">*</span>
+                                </label>
+                                <input type="text" 
+                                       name="title" 
+                                       id="id_title" 
+                                       class="custom-input" 
+                                       value="{{ form.title.value|default:"" }}" 
+                                       required
+                                       placeholder="Введите название задания">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_description" class="form-label">
+                                    <i class="bi bi-text-paragraph"></i>Описание задания <span class="required">*</span>
+                                </label>
+                                <textarea name="description" 
+                                          id="id_description" 
+                                          class="custom-input" 
+                                          rows="8" 
+                                          required
+                                          placeholder="Опишите задание, укажите требования и критерии оценки...">{{ form.description.value|default:"" }}</textarea>
+                                <div class="field-hint">
+                                    <i class="bi bi-info-circle"></i>
+                                    Вы можете использовать HTML для форматирования текста
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_due_date" class="form-label">
+                                    <i class="bi bi-calendar-event"></i>Срок выполнения <span class="required">*</span>
+                                </label>
+                                <input type="datetime-local" 
+                                       name="due_date" 
+                                       id="id_due_date" 
+                                       class="custom-input" 
+                                       value="{{ form.due_date.value|default:"" }}" 
+                                       required>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="id_max_points" class="form-label">
+                                            <i class="bi bi-trophy"></i>Макс. баллов
+                                        </label>
+                                        <input type="number" 
+                                               name="max_points" 
+                                               id="id_max_points" 
+                                               class="custom-input" 
+                                               value="{{ form.max_points.value|default:"100" }}"
+                                               min="0"
+                                               max="1000">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="id_passing_score" class="form-label">
+                                            <i class="bi bi-check-circle"></i>Проходной балл
+                                        </label>
+                                        <input type="number" 
+                                               name="passing_score" 
+                                               id="id_passing_score" 
+                                               class="custom-input" 
+                                               value="{{ form.passing_score.value|default:"50" }}"
+                                               min="0"
+                                               max="1000">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_status" class="form-label">
+                                    <i class="bi bi-flag"></i>Статус <span class="required">*</span>
+                                </label>
+                                <select name="status" id="id_status" class="custom-select" required>
+                                    <option value="draft" {% if form.status.value == 'draft' %}selected{% endif %}>📝 Черновик</option>
+                                    <option value="published" {% if form.status.value == 'published' %}selected{% endif %}>📢 Опубликовано</option>
+                                    <option value="closed" {% if form.status.value == 'closed' %}selected{% endif %}>🔒 Закрыто</option>
+                                </select>
+                                <div class="field-hint">
+                                    <i class="bi bi-info-circle"></i>
+                                    Черновик видят только преподаватели
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_attachment" class="form-label">
+                                    <i class="bi bi-paperclip"></i>Прикрепленный файл
+                                </label>
+                                <div class="custom-file-input">
+                                    <input type="file" name="attachment" id="id_attachment" onchange="updateFileName(this)">
+                                    <div class="file-label">
+                                        <i class="bi bi-cloud-upload"></i>
+                                        <span>Выберите файл или перетащите его сюда</span>
+                                        <span class="file-name" id="file-name-display"></span>
+                                    </div>
+                                </div>
+                                {% if assignment.attachment %}
+                                <div class="current-file">
+                                    <i class="bi bi-file-check"></i>
+                                    Текущий файл: {{ assignment.attachment.name|truncatechars:40 }}
+                                </div>
+                                {% endif %}
+                                <div class="field-hint">
+                                    <i class="bi bi-info-circle"></i>
+                                    Максимальный размер: 10 MB
+                                </div>
+                            </div>
+                            
+                            <div class="checkbox-wrapper">
+                                <div class="custom-checkbox">
+                                    <input type="checkbox" name="is_group_assignment" id="id_is_group_assignment" class="form-check-input" {% if form.is_group_assignment.value %}checked{% endif %}>
+                                    <label for="id_is_group_assignment">
+                                        <i class="bi bi-people-fill me-1" style="color: #6a5acd;"></i>
+                                        Групповое задание
+                                    </label>
+                                </div>
+                                <div class="checkbox-description">
+                                    Студенты могут выполнять задание в группах
+                                </div>
+                            </div>
+                            
+                            <div class="required-note">
+                                <i class="bi bi-asterisk"></i> Поля, отмеченные звездочкой, обязательны для заполнения
+                            </div>
+                            
+                            <div class="button-group">
+                                <button type="submit" class="btn-save">
+                                    <i class="bi bi-save"></i> Сохранить
+                                </button>
+                                <a href="{% url 'classroom_core:course_detail' course.id %}" class="btn-cancel">
+                                    <i class="bi bi-x-circle"></i> Отмена
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Функция для отображения имени выбранного файла
+    function updateFileName(input) {
+        const fileNameDisplay = document.getElementById('file-name-display');
+        if (input.files && input.files.length > 0) {
+            fileNameDisplay.textContent = `📄 ${input.files[0].name}`;
+            fileNameDisplay.style.color = '#6a5acd';
+            
+            // Анимация для выбранного файла
+            const fileLabel = document.querySelector('.file-label');
+            fileLabel.style.borderColor = '#6a5acd';
+            fileLabel.style.background = 'rgba(106, 90, 205, 0.15)';
+        } else {
+            fileNameDisplay.textContent = '';
+            const fileLabel = document.querySelector('.file-label');
+            fileLabel.style.borderColor = '';
+            fileLabel.style.background = '';
+        }
+    }
+    
+    // Drag & drop для файла
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('id_attachment');
+        const fileLabel = document.querySelector('.file-label');
+        
+        if (fileInput && fileLabel) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                fileLabel.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                fileLabel.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                fileLabel.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                fileLabel.style.borderColor = '#6a5acd';
+                fileLabel.style.background = 'rgba(106, 90, 205, 0.2)';
+                fileLabel.style.transform = 'scale(1.02)';
+            }
+            
+            function unhighlight() {
+                fileLabel.style.borderColor = '';
+                fileLabel.style.background = '';
+                fileLabel.style.transform = '';
+            }
+            
+            fileLabel.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                fileInput.files = files;
+                updateFileName(fileInput);
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,792 @@
+{% extends "classroom_core/base_courses.html" %}
+
+{% block title %}📝 Отправить решение{% endblock %}
+
+{% block courses_content %}
+<style>
+    .dark-theme-submit {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    /* Хлебные крошки */
+    .custom-breadcrumb {
+        background: rgba(106, 90, 205, 0.1);
+        padding: 0.8rem 1.2rem;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        display: inline-block;
+        animation: breadcrumbSlide 0.5s ease-out;
+    }
+    
+    @keyframes breadcrumbSlide {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .custom-breadcrumb .breadcrumb {
+        margin: 0;
+        background: transparent;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a {
+        color: #a8b8ff;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a:hover {
+        color: #6a5acd;
+        text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #6a5acd, #4a90e2);
+        transition: width 0.3s ease;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a:hover::after {
+        width: 100%;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item.active {
+        color: #fff;
+        font-weight: 500;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+        color: #6a5acd;
+        content: "›";
+        font-size: 1.2rem;
+        line-height: 1;
+    }
+    
+    /* Заголовок */
+    .page-header {
+        animation: headerFade 0.5s ease-out;
+    }
+    
+    @keyframes headerFade {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+    }
+    
+    /* Карточка */
+    .submit-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.2);
+        transition: all 0.3s ease;
+        animation: cardAppear 0.6s ease-out 0.2s both;
+        overflow: hidden;
+    }
+    
+    @keyframes cardAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .submit-card:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
+    }
+    
+    .card-header-gradient {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1.2rem 1.5rem;
+    }
+    
+    .card-header-gradient h5 {
+        color: #fff;
+        font-size: 1.3rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .card-header-gradient h5 i {
+        color: #6a5acd;
+        font-size: 1.5rem;
+    }
+    
+    .card-body-custom {
+        padding: 2rem;
+    }
+    
+    /* Заголовок задания */
+    .assignment-title {
+        color: #fff;
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid rgba(106, 90, 205, 0.3);
+        word-break: break-word;
+    }
+    
+    /* Информация о сроке */
+    .deadline-info {
+        background: rgba(106, 90, 205, 0.15);
+        border: 1px solid rgba(106, 90, 205, 0.4);
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        animation: deadlinePulse 2s infinite;
+    }
+    
+    @keyframes deadlinePulse {
+        0%, 100% {
+            border-color: rgba(106, 90, 205, 0.4);
+            box-shadow: 0 0 15px rgba(106, 90, 205, 0.2);
+        }
+        50% {
+            border-color: rgba(106, 90, 205, 0.8);
+            box-shadow: 0 0 25px rgba(106, 90, 205, 0.4);
+        }
+    }
+    
+    .deadline-icon {
+        color: #6a5acd;
+        font-size: 1.8rem;
+    }
+    
+    .deadline-text {
+        flex: 1;
+        color: #a8b8ff;
+        font-size: 1.1rem;
+    }
+    
+    .deadline-text strong {
+        color: #fff;
+        font-size: 1.2rem;
+    }
+    
+    .overdue-badge {
+        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 50px;
+        color: white;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+    }
+    
+    /* Поля формы */
+    .form-group {
+        margin-bottom: 2rem;
+        animation: fieldAppear 0.5s ease-out;
+        animation-fill-mode: both;
+    }
+    
+    .form-group:nth-child(1) { animation-delay: 0.3s; }
+    .form-group:nth-child(2) { animation-delay: 0.4s; }
+    
+    @keyframes fieldAppear {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .form-label {
+        color: #a8b8ff;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .form-label i {
+        color: #6a5acd;
+        font-size: 1.2rem;
+    }
+    
+    .custom-textarea {
+        background: rgba(20, 20, 35, 0.8);
+        border: 2px solid rgba(106, 90, 205, 0.3);
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        color: #fff;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        resize: vertical;
+        min-height: 150px;
+        font-family: inherit;
+    }
+    
+    .custom-textarea:focus {
+        outline: none;
+        border-color: #6a5acd;
+        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2), 0 0 20px rgba(106, 90, 205, 0.3);
+        background: rgba(30, 30, 50, 0.9);
+        transform: translateY(-2px);
+    }
+    
+    .custom-textarea:hover {
+        border-color: rgba(106, 90, 205, 0.6);
+    }
+    
+    /* File input */
+    .file-input-container {
+        position: relative;
+    }
+    
+    .file-input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        z-index: 2;
+    }
+    
+    .file-label {
+        background: rgba(20, 20, 35, 0.8);
+        border: 2px dashed rgba(106, 90, 205, 0.4);
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        color: #a8b8ff;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+    
+    .file-label:hover {
+        border-color: #6a5acd;
+        background: rgba(106, 90, 205, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .file-label i {
+        color: #6a5acd;
+        font-size: 2.5rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .file-label:hover i {
+        transform: scale(1.1) rotate(10deg);
+    }
+    
+    .file-label span {
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+    
+    .file-hint {
+        color: #8080b0;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+    
+    .file-name {
+        color: #6a5acd;
+        font-weight: 600;
+        margin-top: 0.5rem;
+        padding: 0.3rem 1rem;
+        background: rgba(106, 90, 205, 0.15);
+        border-radius: 50px;
+        display: inline-block;
+    }
+    
+    /* Поддерживаемые форматы */
+    .supported-formats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    .format-badge {
+        background: rgba(106, 90, 205, 0.15);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        padding: 0.2rem 1rem;
+        color: #a8b8ff;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .format-badge:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: #6a5acd;
+        transform: translateY(-2px);
+    }
+    
+    /* Предупреждение */
+    .warning-alert {
+        background: rgba(255, 165, 2, 0.1);
+        border: 1px solid rgba(255, 165, 2, 0.4);
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin: 2rem 0;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        animation: warningPulse 2s infinite;
+    }
+    
+    @keyframes warningPulse {
+        0%, 100% {
+            border-color: rgba(255, 165, 2, 0.4);
+        }
+        50% {
+            border-color: rgba(255, 165, 2, 0.8);
+        }
+    }
+    
+    .warning-icon {
+        color: #ffa502;
+        font-size: 1.8rem;
+    }
+    
+    .warning-text {
+        flex: 1;
+        color: #ffd;
+    }
+    
+    .warning-text strong {
+        color: #ffa502;
+        display: block;
+        margin-bottom: 0.3rem;
+        font-size: 1.1rem;
+    }
+    
+    .warning-text p {
+        color: #b0b0ff;
+        margin: 0;
+        line-height: 1.6;
+    }
+    
+    /* Кнопки */
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        animation: buttonsAppear 0.5s ease-out 0.5s both;
+    }
+    
+    @keyframes buttonsAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 12px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        position: relative;
+        overflow: hidden;
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        font-size: 1.1rem;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+    }
+    
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+    
+    .btn-submit::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn-submit:hover::after {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .btn-cancel {
+        background: rgba(106, 90, 205, 0.2);
+        border: 1px solid rgba(106, 90, 205, 0.5);
+        border-radius: 12px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: #a8b8ff;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        font-size: 1.1rem;
+    }
+    
+    .btn-cancel:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: rgba(106, 90, 205, 0.8);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(106, 90, 205, 0.4);
+    }
+    
+    .btn-cancel:active {
+        transform: translateY(0);
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-theme-submit {
+            padding: 1rem 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.6rem;
+        }
+        
+        .custom-breadcrumb {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .card-body-custom {
+            padding: 1.5rem;
+        }
+        
+        .assignment-title {
+            font-size: 1.2rem;
+        }
+        
+        .deadline-info {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .deadline-text {
+            text-align: center;
+        }
+        
+        .button-group {
+            flex-direction: column;
+        }
+        
+        .btn-submit,
+        .btn-cancel {
+            width: 100%;
+        }
+        
+        .warning-alert {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .supported-formats {
+            justify-content: center;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+        
+        .card-body-custom {
+            padding: 1.8rem;
+        }
+    }
+</style>
+
+<div class="dark-theme-submit">
+    <div class="container">
+        <!-- Заголовок и хлебные крошки -->
+        <div class="page-header mb-4">
+            <h1 class="page-title">
+                <i class="bi bi-cloud-upload me-2"></i>
+                Отправить решение
+            </h1>
+            <nav aria-label="breadcrumb" class="custom-breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'classroom_core:assignment_list' %}">
+                            <i class="bi bi-list-task me-1"></i>Задания
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'classroom_core:assignment_detail' assignment.id %}">
+                            {{ assignment.title|truncatechars:30 }}
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Отправить решение
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="submit-card">
+                    <div class="card-header-gradient">
+                        <h5>
+                            <i class="bi bi-pencil-square"></i>
+                            Решение задания
+                        </h5>
+                    </div>
+                    
+                    <div class="card-body-custom">
+                        <div class="assignment-title">
+                            {{ assignment.title }}
+                        </div>
+                        
+                        <!-- Информация о сроке -->
+                        <div class="deadline-info">
+                            <i class="bi bi-calendar-check deadline-icon"></i>
+                            <div class="deadline-text">
+                                <strong>Срок сдачи:</strong> {{ assignment.due_date|date:"d.m.Y H:i" }}
+                            </div>
+                            {% if assignment.is_overdue %}
+                            <span class="overdue-badge">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                Просрочено
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <!-- Текстовое описание -->
+                            <div class="form-group">
+                                <label for="id_text_response" class="form-label">
+                                    <i class="bi bi-chat-text"></i>
+                                    Текстовое описание решения
+                                </label>
+                                <textarea name="text_response" 
+                                          id="id_text_response" 
+                                          class="custom-textarea" 
+                                          rows="6"
+                                          placeholder="Опишите ваше решение, добавьте пояснения или комментарии..."></textarea>
+                            </div>
+                            
+                            <!-- Файл с решением -->
+                            <div class="form-group">
+                                <label for="id_file_submission" class="form-label">
+                                    <i class="bi bi-file-earmark"></i>
+                                    Файл с решением
+                                </label>
+                                <div class="file-input-container">
+                                    <input type="file" 
+                                           name="file_submission" 
+                                           id="id_file_submission" 
+                                           class="file-input" 
+                                           onchange="updateFileName(this)">
+                                    <div class="file-label">
+                                        <i class="bi bi-cloud-upload"></i>
+                                        <span>Выберите файл или перетащите его сюда</span>
+                                        <div class="file-hint">Максимальный размер: 10 MB</div>
+                                        <div id="file-name-display" class="file-name"></div>
+                                    </div>
+                                </div>
+                                <div class="supported-formats mt-3">
+                                    <span class="format-badge">PDF</span>
+                                    <span class="format-badge">DOCX</span>
+                                    <span class="format-badge">XLSX</span>
+                                    <span class="format-badge">JPG</span>
+                                    <span class="format-badge">PNG</span>
+                                    <span class="format-badge">ZIP</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Предупреждение -->
+                            <div class="warning-alert">
+                                <i class="bi bi-exclamation-triangle-fill warning-icon"></i>
+                                <div class="warning-text">
+                                    <strong>Важно!</strong>
+                                    <p>После отправки решения вы не сможете его изменить, если только преподаватель не вернет его на доработку. Проверьте все файлы перед отправкой.</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Кнопки -->
+                            <div class="button-group">
+                                <button type="submit" class="btn-submit">
+                                    <i class="bi bi-send"></i>
+                                    Отправить решение
+                                </button>
+                                <a href="{% url 'classroom_core:assignment_detail' assignment.id %}" class="btn-cancel">
+                                    <i class="bi bi-x-circle"></i>
+                                    Отмена
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Функция для отображения имени выбранного файла
+    function updateFileName(input) {
+        const fileNameDisplay = document.getElementById('file-name-display');
+        const fileLabel = document.querySelector('.file-label');
+        
+        if (input.files && input.files.length > 0) {
+            const file = input.files[0];
+            fileNameDisplay.textContent = `📄 ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+            fileNameDisplay.style.display = 'inline-block';
+            
+            // Визуальная обратная связь
+            fileLabel.style.borderColor = '#4caf50';
+            fileLabel.style.background = 'rgba(76, 175, 80, 0.1)';
+        } else {
+            fileNameDisplay.textContent = '';
+            fileNameDisplay.style.display = 'none';
+            fileLabel.style.borderColor = '';
+            fileLabel.style.background = '';
+        }
+    }
+    
+    // Drag & drop для файла
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('id_file_submission');
+        const fileLabel = document.querySelector('.file-label');
+        
+        if (fileInput && fileLabel) {
+            // Предотвращаем стандартное поведение браузера
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                fileLabel.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            // Подсветка при перетаскивании
+            ['dragenter', 'dragover'].forEach(eventName => {
+                fileLabel.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                fileLabel.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                fileLabel.style.borderColor = '#6a5acd';
+                fileLabel.style.background = 'rgba(106, 90, 205, 0.2)';
+                fileLabel.style.transform = 'scale(1.02)';
+            }
+            
+            function unhighlight() {
+                fileLabel.style.borderColor = '';
+                fileLabel.style.background = '';
+                fileLabel.style.transform = '';
+            }
+            
+            // Обработка сброшенных файлов
+            fileLabel.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                fileInput.files = files;
+                updateFileName(fileInput);
+            }
+        }
+    });
+</script>
+{% endblock %}

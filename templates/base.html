@@ -6,55 +6,329 @@
     <title>{% block title %}Classroom{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+            min-height: 100vh;
+        }
+        
+        /* Темная тема для навбара */
+        .dark-navbar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            padding: 0.5rem 1rem;
+        }
+        
+        .dark-navbar .navbar-brand {
+            color: #fff !important;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+        
+        .dark-navbar .navbar-brand i {
+            color: #6a5acd;
+        }
+        
+        .dark-navbar .navbar-brand:hover {
+            color: #a8b8ff !important;
+        }
+        
+        .dark-navbar .nav-link {
+            color: #a8b8ff !important;
+            font-weight: 500;
+            padding: 0.6rem 1rem !important;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .dark-navbar .nav-link:hover {
+            color: #fff !important;
+            background: rgba(106, 90, 205, 0.15);
+        }
+        
+        .dark-navbar .nav-link i {
+            color: #6a5acd;
+        }
+        
+        .dark-navbar .nav-link:hover i {
+            color: #fff;
+        }
+        
+        .dark-navbar .dropdown-menu {
+            background: rgba(30, 30, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(106, 90, 205, 0.3);
+            border-radius: 12px;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .dark-navbar .dropdown-item {
+            color: #a8b8ff;
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .dark-navbar .dropdown-item:hover {
+            background: rgba(106, 90, 205, 0.15);
+            color: #fff;
+        }
+        
+        .dark-navbar .dropdown-item i {
+            color: #6a5acd;
+        }
+        
+        .dark-navbar .dropdown-item:hover i {
+            color: #fff;
+        }
+        
+        .dark-navbar .dropdown-divider {
+            border-top: 1px solid rgba(106, 90, 205, 0.3);
+            margin: 0.5rem 0;
+        }
+        
+        .dark-navbar .navbar-toggler {
+            background: rgba(106, 90, 205, 0.2);
+            border: 1px solid rgba(106, 90, 205, 0.3);
+        }
+        
+        .dark-navbar .navbar-toggler-icon {
+            filter: invert(1);
+        }
+        
+        /* Аватар пользователя */
+        .user-avatar {
+            background: linear-gradient(135deg, #6a5acd, #4a90e2) !important;
+            color: white !important;
+            font-weight: 600;
+            border: 2px solid rgba(106, 90, 205, 0.5);
+            transition: all 0.2s ease;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.05);
+            border-color: #6a5acd;
+        }
+        
+        .username-text {
+            color: #a8b8ff;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        
+        .username-text:hover {
+            color: #fff;
+        }
+        
+        /* Основной контент */
+        .main-content {
+            background: transparent;
+            padding: 2rem 1rem;
+        }
+        
+        /* Сообщения */
+        .custom-alert {
+            background: rgba(30, 30, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(106, 90, 205, 0.3);
+            border-radius: 12px;
+            color: #a8b8ff;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .custom-alert i {
+            color: #6a5acd;
+            margin-right: 0.5rem;
+        }
+        
+        .btn-close-custom {
+            background: none;
+            border: none;
+            color: #8080b0;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0 0.5rem;
+            transition: color 0.2s ease;
+        }
+        
+        .btn-close-custom:hover {
+            color: #fff;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .dark-navbar .navbar-collapse {
+                background: rgba(30, 30, 46, 0.95);
+                border-radius: 12px;
+                padding: 1rem;
+                margin-top: 1rem;
+            }
+            
+            .dark-navbar .nav-link {
+                padding: 0.6rem !important;
+            }
+            
+            .dark-navbar .dropdown-menu {
+                background: transparent;
+                border: none;
+                padding-left: 1rem;
+            }
+            
+            .main-content {
+                padding: 1rem 0.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Top Navigation -->
-    <nav class="navbar navbar-expand-lg bg-success navbar-dark">
+    <!-- Навбар -->
+    <nav class="navbar navbar-expand-lg dark-navbar">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" href="{% url 'file_manager:file_list' %}">
-                <i class="bi bi-mortarboard me-2"></i>
+                <i class="bi bi-mortarboard-fill me-2"></i>
                 Classroom
             </a>
             
-            <div class="d-flex align-items-center">
-                {% if user.is_authenticated %}
-                <div class="dropdown">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-                        <div class="bg-white text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.875rem;">
-                            {{ user.username|slice:":1"|upper }}
-                        </div>
-                        <span class="ms-2 d-none d-md-inline">{{ user.username }}</span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <!-- Files Section -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-folder2"></i> Файлы
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'file_manager:file_list' %}"><i class="bi bi-files"></i> Все файлы</a></li>
+                            <li><a class="dropdown-item" href="{% url 'file_manager:file_upload' %}"><i class="bi bi-upload"></i> Загрузить файл</a></li>
+                            <li><a class="dropdown-item" href="{% url 'file_manager:folder_create' %}"><i class="bi bi-folder-plus"></i> Создать папку</a></li>
+                            <li><a class="dropdown-item" href="{% url 'file_manager:category_list' %}"><i class="bi bi-tags"></i> Категории</a></li>
+                            <li><a class="dropdown-item" href="{% url 'file_manager:tag_list' %}"><i class="bi bi-tag"></i> Теги</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Courses Section -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-book"></i> Курсы
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'classroom_core:course_list' %}"><i class="bi bi-grid"></i> Мои курсы</a></li>
+                            {% if user.is_authenticated and user.profile.is_teacher or user.profile.is_staff or user.is_superuser %}
+                            <li><a class="dropdown-item" href="{% url 'classroom_core:course_create' %}"><i class="bi bi-plus-circle"></i> Создать курс</a></li>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="{% url 'classroom_core:assignment_list' %}"><i class="bi bi-journal-text"></i> Задания</a></li>
+                            <li><a class="dropdown-item" href="{% url 'classroom_core:announcement_list' %}"><i class="bi bi-megaphone"></i> Объявления</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Admin Section (only for staff/superuser) -->
+                    {% if user.is_authenticated and user.is_staff or user.is_superuser %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-shield"></i> Админка
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'admin:index' %}" target="_blank"><i class="bi bi-gear"></i> Админ панель</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:file_manager_file_changelist' %}" target="_blank"><i class="bi bi-files"></i> Файлы</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:classroom_core_course_changelist' %}" target="_blank"><i class="bi bi-book"></i> Курсы</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+                
+                <!-- Authentication Links -->
+                <div class="d-flex align-items-center">
+                    {% if user.is_authenticated %}
+                    <div class="dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                            <div class="user-avatar rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.875rem;">
+                                {{ user.username|slice:":1"|upper }}
+                            </div>
+                            <span class="ms-2 d-none d-md-inline username-text">{{ user.username }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'classroom_core:profile_view' %}"><i class="bi bi-person"></i> Профиль</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="post" action="{% url 'classroom_core:logout' %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item" style="cursor: pointer;">
+                                        <i class="bi bi-box-arrow-right"></i> Выйти
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <a class="nav-link" href="{% url 'classroom_core:login' %}">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Войти
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="{% url 'admin:logout' %}">Выйти</a></li>
-                    </ul>
+                    {% endif %}
                 </div>
-                {% else %}
-                <a class="nav-link" href="{% url 'admin:login' %}">Войти</a>
-                {% endif %}
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="container-fluid bg-light py-4">
-        {% if messages %}
-        <div class="row">
-            <div class="col-12">
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <!-- Основной контент -->
+    <div class="main-content">
+        <div class="container-fluid">
+            {% if messages %}
+            <div class="row">
+                <div class="col-12">
+                    {% for message in messages %}
+                    <div class="custom-alert" role="alert">
+                        <div>
+                            {% if message.tags == 'success' %}
+                            <i class="bi bi-check-circle-fill"></i>
+                            {% elif message.tags == 'error' %}
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            {% elif message.tags == 'warning' %}
+                            <i class="bi bi-exclamation-circle-fill"></i>
+                            {% else %}
+                            <i class="bi bi-info-circle-fill"></i>
+                            {% endif %}
+                            {{ message }}
+                        </div>
+                        <button type="button" class="btn-close-custom" onclick="this.parentElement.remove()">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
+            {% endif %}
+            
+            {% block content %}{% endblock %}
         </div>
-        {% endif %}
-        
-        {% block content %}{% endblock %}
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Автоматическое закрытие сообщений через 5 секунд
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.custom-alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.remove();
+                }, 5000);
+            });
+        });
+    </script>
+    
     {% block extra_js %}{% endblock %}
 </body>
 </html>

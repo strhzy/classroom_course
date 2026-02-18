@@ -8,87 +8,531 @@
 {% endblock %}
 
 {% block files_content %}
-<div class="row">
-    <div class="col-md-8">
-        <div class="page-title">
-            <h1><i class="bi bi-arrow-repeat"></i> Создать новую версию</h1>
+<style>
+    .dark-theme-version {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    .version-title {
+        margin-bottom: 2rem;
+    }
+    
+    .version-title h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .version-title h1 i {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .version-title p {
+        color: #a8b8ff;
+        font-size: 1.1rem;
+        margin-left: 3rem;
+    }
+    
+    .version-title strong {
+        color: #6a5acd;
+        background: rgba(106, 90, 205, 0.15);
+        padding: 0.2rem 0.8rem;
+        border-radius: 50px;
+        border: 1px solid rgba(106, 90, 205, 0.3);
+    }
+    
+    /* Карточка формы */
+    .form-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+    }
+    
+    .card-header-custom {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1.2rem 1.5rem;
+    }
+    
+    .card-header-custom h5 {
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .card-header-custom i {
+        color: #6a5acd;
+    }
+    
+    .card-body-custom {
+        padding: 2rem;
+    }
+    
+    /* Поля формы */
+    .form-group {
+        margin-bottom: 1.8rem;
+    }
+    
+    .form-label {
+        color: #a8b8ff;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .form-label i {
+        color: #6a5acd;
+    }
+    
+    /* File input */
+    .file-input-container {
+        position: relative;
+    }
+    
+    .file-input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        z-index: 2;
+    }
+    
+    .file-label {
+        background: rgba(20, 20, 35, 0.8);
+        border: 2px dashed rgba(106, 90, 205, 0.4);
+        border-radius: 10px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        color: #a8b8ff;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+    
+    .file-label:hover {
+        border-color: #6a5acd;
+        background: rgba(106, 90, 205, 0.1);
+    }
+    
+    .file-label i {
+        color: #6a5acd;
+        font-size: 2rem;
+    }
+    
+    .file-name {
+        color: #6a5acd;
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+    
+    /* Текстовое поле */
+    .custom-textarea {
+        background: rgba(20, 20, 35, 0.8);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 10px;
+        padding: 0.8rem 1rem;
+        color: #fff;
+        width: 100%;
+        min-height: 120px;
+        transition: border-color 0.2s ease;
+    }
+    
+    .custom-textarea:focus {
+        outline: none;
+        border-color: #6a5acd;
+    }
+    
+    /* Подсказки */
+    .form-text {
+        color: #8080b0;
+        font-size: 0.85rem;
+        margin-top: 0.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .form-text i {
+        color: #6a5acd;
+    }
+    
+    /* Информационный блок */
+    .info-alert {
+        background: rgba(74, 144, 226, 0.15);
+        border: 1px solid rgba(74, 144, 226, 0.3);
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin: 1.5rem 0;
+    }
+    
+    .info-alert strong {
+        color: #4a90e2;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .info-alert ul {
+        color: #b0b0ff;
+        margin-top: 0.8rem;
+        padding-left: 1.5rem;
+    }
+    
+    .info-alert li {
+        margin-bottom: 0.3rem;
+    }
+    
+    /* Кнопки */
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .btn-create {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 10px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: white;
+        transition: background-color 0.2s ease;
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-create:hover {
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+    }
+    
+    .btn-cancel {
+        background: rgba(106, 90, 205, 0.15);
+        border: 1px solid rgba(106, 90, 205, 0.5);
+        border-radius: 10px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: #a8b8ff;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-cancel:hover {
+        background: rgba(106, 90, 205, 0.25);
+        border-color: #6a5acd;
+        color: #fff;
+    }
+    
+    /* Карточка с информацией о файле */
+    .file-info-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+    }
+    
+    .file-info-header {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1rem 1.5rem;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .file-info-header i {
+        color: #6a5acd;
+    }
+    
+    .file-info-body {
+        padding: 1.5rem;
+    }
+    
+    .file-info-title {
+        color: #fff;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .file-info-desc {
+        color: #a8b8ff;
+        font-size: 0.9rem;
+        margin-bottom: 1.2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(106, 90, 205, 0.2);
+    }
+    
+    .file-details-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.3rem 0;
+    }
+    
+    .detail-label {
+        color: #a8b8ff;
+    }
+    
+    .detail-value {
+        color: #fff;
+        font-weight: 500;
+    }
+    
+    .btn-view {
+        background: rgba(106, 90, 205, 0.15);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 8px;
+        padding: 0.6rem;
+        color: #a8b8ff;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-view:hover {
+        background: rgba(106, 90, 205, 0.25);
+        border-color: #6a5acd;
+        color: #fff;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-theme-version {
+            padding: 1rem 0.5rem;
+        }
+        
+        .version-title h1 {
+            font-size: 1.6rem;
+        }
+        
+        .version-title p {
+            margin-left: 0;
+        }
+        
+        .card-body-custom {
+            padding: 1.5rem;
+        }
+        
+        .button-group {
+            flex-direction: column;
+        }
+        
+        .btn-create,
+        .btn-cancel {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="dark-theme-version">
+    <div class="container">
+        <!-- Заголовок -->
+        <div class="version-title">
+            <h1>
+                <i class="bi bi-arrow-repeat"></i>
+                Создать новую версию
+            </h1>
             <p>Текущая версия: <strong>{{ file.version }}</strong></p>
         </div>
-        
-        <div class="card">
-            <div class="card-body">
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.version_file.id_for_label }}" class="form-label">Новый файл *</label>
-                        {{ form.version_file }}
-                        {% if form.version_file.errors %}
-                        <div class="text-danger mt-1">{{ form.version_file.errors }}</div>
-                        {% endif %}
-                        <small class="form-text text-muted">Загрузите новую версию файла</small>
+
+        <div class="row">
+            <!-- Основная форма -->
+            <div class="col-md-8">
+                <div class="form-card">
+                    <div class="card-header-custom">
+                        <h5>
+                            <i class="bi bi-upload"></i>
+                            Загрузка новой версии
+                        </h5>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="{{ form.change_description.id_for_label }}" class="form-label">Описание изменений</label>
-                        {{ form.change_description }}
-                        {% if form.change_description.errors %}
-                        <div class="text-danger mt-1">{{ form.change_description.errors }}</div>
-                        {% endif %}
-                        <small class="form-text text-muted">Опишите, что изменилось в новой версии</small>
+                    <div class="card-body-custom">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <!-- Загрузка файла -->
+                            <div class="form-group">
+                                <label for="{{ form.version_file.id_for_label }}" class="form-label">
+                                    <i class="bi bi-file-earmark"></i>
+                                    Новый файл <span style="color: #ff6b81;">*</span>
+                                </label>
+                                <div class="file-input-container">
+                                    <input type="file" 
+                                           name="{{ form.version_file.name }}" 
+                                           id="{{ form.version_file.id_for_label }}" 
+                                           class="file-input" 
+                                           required
+                                           onchange="updateFileName(this)">
+                                    <div class="file-label">
+                                        <i class="bi bi-cloud-upload"></i>
+                                        <span>Выберите новый файл или перетащите его сюда</span>
+                                        <div id="file-name-display" class="file-name"></div>
+                                    </div>
+                                </div>
+                                {% if form.version_file.errors %}
+                                <div class="text-danger mt-1">
+                                    <i class="bi bi-exclamation-circle"></i>
+                                    {{ form.version_file.errors.0 }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i>
+                                    Загрузите новую версию файла
+                                </div>
+                            </div>
+                            
+                            <!-- Описание изменений -->
+                            <div class="form-group">
+                                <label for="{{ form.change_description.id_for_label }}" class="form-label">
+                                    <i class="bi bi-card-text"></i>
+                                    Описание изменений
+                                </label>
+                                <textarea name="{{ form.change_description.name }}" 
+                                          id="{{ form.change_description.id_for_label }}" 
+                                          class="custom-textarea"
+                                          placeholder="Опишите, что изменилось в новой версии...">{{ form.change_description.value|default:'' }}</textarea>
+                                {% if form.change_description.errors %}
+                                <div class="text-danger mt-1">
+                                    <i class="bi bi-exclamation-circle"></i>
+                                    {{ form.change_description.errors.0 }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i>
+                                    Опишите, что изменилось в новой версии
+                                </div>
+                            </div>
+                            
+                            <!-- Информационный блок -->
+                            <div class="info-alert">
+                                <strong>
+                                    <i class="bi bi-info-circle"></i>
+                                    Информация
+                                </strong>
+                                <ul class="mb-0">
+                                    <li>Текущая версия файла будет заменена новой</li>
+                                    <li>Старый файл будет удален с сервера</li>
+                                    <li>Номер версии увеличится на 1</li>
+                                    <li>Текст будет автоматически извлечен из нового файла</li>
+                                </ul>
+                            </div>
+                            
+                            <!-- Кнопки -->
+                            <div class="button-group">
+                                <button type="submit" class="btn-create">
+                                    <i class="bi bi-save"></i>
+                                    Создать версию
+                                </button>
+                                <a href="{% url 'file_manager:file_detail' file.id %}" class="btn-cancel">
+                                    <i class="bi bi-x-circle"></i>
+                                    Отмена
+                                </a>
+                            </div>
+                        </form>
                     </div>
-                    
-                    <div class="alert alert-info">
-                        <strong>Информация:</strong>
-                        <ul class="mb-0 mt-2">
-                            <li>Текущая версия файла будет заменена новой</li>
-                            <li>Старый файл будет удален с сервера</li>
-                            <li>Номер версии увеличится на 1</li>
-                            <li>Текст будет автоматически извлечен из нового файла</li>
-                        </ul>
+                </div>
+            </div>
+            
+            <!-- Информация о текущем файле -->
+            <div class="col-md-4">
+                <div class="file-info-card">
+                    <div class="file-info-header">
+                        <i class="bi bi-file-earmark"></i>
+                        Текущий файл
                     </div>
-                    
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-save"></i> Создать версию
-                        </button>
-                        <a href="{% url 'file_manager:file_detail' file.id %}" class="btn btn-secondary">
-                            <i class="bi bi-x-circle"></i> Отмена
+                    <div class="file-info-body">
+                        <div class="file-info-title">{{ file.title }}</div>
+                        <div class="file-info-desc">{{ file.description|truncatechars:100 }}</div>
+                        
+                        <div class="file-details-grid">
+                            <div class="detail-row">
+                                <span class="detail-label">Тип файла:</span>
+                                <span class="detail-value">{{ file.get_file_type_display }}</span>
+                            </div>
+                            
+                            <div class="detail-row">
+                                <span class="detail-label">Размер:</span>
+                                <span class="detail-value">{{ file.get_file_size_display }}</span>
+                            </div>
+                            
+                            <div class="detail-row">
+                                <span class="detail-label">Текущая версия:</span>
+                                <span class="detail-value">{{ file.version }}</span>
+                            </div>
+                            
+                            <div class="detail-row">
+                                <span class="detail-label">Загружен:</span>
+                                <span class="detail-value">{{ file.uploaded_at|date:"d.m.Y" }}</span>
+                            </div>
+                        </div>
+                        
+                        <a href="{% url 'file_manager:file_detail' file.id %}" class="btn-view">
+                            <i class="bi bi-eye"></i>
+                            Посмотреть детали
                         </a>
                     </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">
-                <i class="bi bi-file-earmark"></i> Текущий файл
-            </div>
-            <div class="card-body">
-                <h5 class="card-title">{{ file.title }}</h5>
-                <p class="card-text">{{ file.description|truncatechars:100 }}</p>
-                
-                <dl class="row mb-0">
-                    <dt class="col-sm-5">Тип файла:</dt>
-                    <dd class="col-sm-7">{{ file.get_file_type_display }}</dd>
-                    
-                    <dt class="col-sm-5">Размер:</dt>
-                    <dd class="col-sm-7">{{ file.get_file_size_display }}</dd>
-                    
-                    <dt class="col-sm-5">Текущая версия:</dt>
-                    <dd class="col-sm-7">{{ file.version }}</dd>
-                    
-                    <dt class="col-sm-5">Загружен:</dt>
-                    <dd class="col-sm-7">{{ file.uploaded_at|date:"d.m.Y" }}</dd>
-                </dl>
-                
-                <a href="{% url 'file_manager:file_detail' file.id %}" class="btn btn-outline-primary w-100 mt-3">
-                    <i class="bi bi-eye"></i> Посмотреть детали
-                </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    function updateFileName(input) {
+        const fileNameDisplay = document.getElementById('file-name-display');
+        const fileLabel = document.querySelector('.file-label');
+        
+        if (input.files && input.files.length > 0) {
+            const file = input.files[0];
+            fileNameDisplay.textContent = `📄 ${file.name}`;
+            fileLabel.style.borderColor = '#4caf50';
+        } else {
+            fileNameDisplay.textContent = '';
+            fileLabel.style.borderColor = '';
+        }
+    }
+</script>
 {% endblock %}

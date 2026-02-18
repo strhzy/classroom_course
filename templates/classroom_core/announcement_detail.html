@@ -1,0 +1,448 @@
+{% extends "classroom_core/base_courses.html" %}
+
+{% block title %}📢 {{ announcement.title }}{% endblock %}
+
+{% block courses_content %}
+<style>
+    .dark-theme-announcement {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    /* Хлебные крошки */
+    .custom-breadcrumb {
+        background: rgba(106, 90, 205, 0.1);
+        padding: 0.8rem 1.2rem;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        display: inline-block;
+        animation: breadcrumbAppear 0.5s ease-out;
+    }
+    
+    @keyframes breadcrumbAppear {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .custom-breadcrumb .breadcrumb {
+        margin: 0;
+        background: transparent;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a {
+        color: #a8b8ff;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a:hover {
+        color: #6a5acd;
+        text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #6a5acd, #4a90e2);
+        transition: width 0.3s ease;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a:hover::after {
+        width: 100%;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item.active {
+        color: #fff;
+        font-weight: 500;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+        color: #6a5acd;
+        content: "›";
+        font-size: 1.2rem;
+        line-height: 1;
+    }
+    
+    /* Заголовок */
+    .announcement-header {
+        animation: headerAppear 0.5s ease-out 0.2s both;
+    }
+    
+    @keyframes headerAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+    }
+    
+    /* Кнопка редактирования */
+    .btn-edit {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 12px;
+        padding: 0.6rem 1.8rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        position: relative;
+        overflow: hidden;
+        animation: buttonAppear 0.5s ease-out 0.3s both;
+    }
+    
+    @keyframes buttonAppear {
+        0% {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+    }
+    
+    .btn-edit:active {
+        transform: translateY(0);
+    }
+    
+    .btn-edit::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn-edit:hover::after {
+        width: 300px;
+        height: 300px;
+    }
+    
+    /* Карточка объявления */
+    .announcement-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.2);
+        transition: all 0.3s ease;
+        animation: cardAppear 0.6s ease-out 0.4s both;
+        overflow: hidden;
+    }
+    
+    @keyframes cardAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .announcement-card:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
+        transform: translateY(-5px);
+    }
+    
+    .card-header-gradient {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1.2rem 1.5rem;
+    }
+    
+    .announcement-title {
+        color: #fff;
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin: 0;
+        word-break: break-word;
+    }
+    
+    .author-info {
+        color: #b0b0ff;
+        font-size: 0.95rem;
+    }
+    
+    .author-info i {
+        color: #6a5acd;
+        margin-right: 0.3rem;
+    }
+    
+    .pinned-badge {
+        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        color: white;
+        box-shadow: 0 3px 10px rgba(255, 71, 87, 0.3);
+        animation: pulsePinned 2s infinite;
+    }
+    
+    @keyframes pulsePinned {
+        0%, 100% {
+            box-shadow: 0 3px 10px rgba(255, 71, 87, 0.3);
+        }
+        50% {
+            box-shadow: 0 5px 20px rgba(255, 71, 87, 0.6);
+        }
+    }
+    
+    .announcement-content {
+        color: #e0e0ff;
+        line-height: 1.8;
+        font-size: 1.1rem;
+        padding: 1.5rem;
+    }
+    
+    .announcement-content p {
+        margin-bottom: 1.2rem;
+    }
+    
+    .announcement-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        border: 2px solid rgba(106, 90, 205, 0.3);
+        margin: 1rem 0;
+    }
+    
+    .announcement-content a {
+        color: #6a5acd;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .announcement-content a:hover {
+        color: #4a90e2;
+        text-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
+    }
+    
+    .announcement-content blockquote {
+        border-left: 4px solid #6a5acd;
+        padding-left: 1.2rem;
+        margin: 1.2rem 0;
+        color: #b0b0ff;
+        font-style: italic;
+    }
+    
+    .announcement-content code {
+        background: rgba(106, 90, 205, 0.2);
+        color: #ff6b81;
+        padding: 0.2rem 0.4rem;
+        border-radius: 6px;
+        font-family: 'Courier New', monospace;
+    }
+    
+    .announcement-content pre {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 10px;
+        padding: 1rem;
+        overflow-x: auto;
+    }
+    
+    .announcement-content pre code {
+        background: transparent;
+        color: #a8b8ff;
+    }
+    
+    .announcement-content ul, 
+    .announcement-content ol {
+        padding-left: 1.5rem;
+        margin-bottom: 1.2rem;
+    }
+    
+    .announcement-content li {
+        margin-bottom: 0.3rem;
+    }
+    
+    .announcement-content h1,
+    .announcement-content h2,
+    .announcement-content h3,
+    .announcement-content h4,
+    .announcement-content h5,
+    .announcement-content h6 {
+        color: #fff;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Декоративные элементы */
+    .content-decoration {
+        position: relative;
+    }
+    
+    .content-decoration::before {
+        content: '';
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        width: 50px;
+        height: 50px;
+        background: radial-gradient(circle, rgba(106, 90, 205, 0.2) 0%, transparent 70%);
+        border-radius: 50%;
+        z-index: -1;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-theme-announcement {
+            padding: 1rem 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.6rem;
+        }
+        
+        .announcement-title {
+            font-size: 1.4rem;
+        }
+        
+        .custom-breadcrumb {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn-edit {
+            padding: 0.5rem 1.2rem;
+            font-size: 0.9rem;
+        }
+        
+        .announcement-content {
+            font-size: 1rem;
+            padding: 1rem;
+        }
+        
+        .d-flex.justify-content-between {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 1rem;
+        }
+        
+        .d-flex.justify-content-between > div:last-child {
+            width: 100%;
+        }
+        
+        .btn-edit {
+            width: 100%;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+        
+        .announcement-title {
+            font-size: 1.6rem;
+        }
+    }
+    
+    @media (min-width: 1600px) {
+        .container {
+            max-width: 1400px;
+        }
+    }
+</style>
+
+<div class="dark-theme-announcement">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+            <div class="announcement-header">
+                <h1 class="page-title">{{ announcement.title }}</h1>
+                <nav aria-label="breadcrumb" class="custom-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'classroom_core:announcement_list' %}">
+                                <i class="bi bi-megaphone me-1"></i>Объявления
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            {{ announcement.title|truncatechars:30 }}
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            
+            <div>
+                {% if announcement.can_edit %}
+                <a href="{% url 'classroom_core:announcement_edit' announcement.id %}" class="btn-edit">
+                    <i class="bi bi-pencil me-2"></i>Редактировать
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-10 col-xl-8 mx-auto">
+                <div class="announcement-card">
+                    <div class="card-header-gradient d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h5 class="announcement-title">{{ announcement.title }}</h5>
+                            <div class="author-info">
+                                <i class="bi bi-person-circle"></i> {{ announcement.author.username }}
+                                <i class="bi bi-calendar3 ms-3"></i> {{ announcement.created_at|date:"d.m.Y H:i" }}
+                            </div>
+                        </div>
+                        {% if announcement.is_pinned %}
+                        <span class="pinned-badge ms-3">
+                            <i class="bi bi-pin-fill me-1"></i>Закреплено
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="announcement-content content-decoration">
+                        {{ announcement.content|safe }}
+                    </div>
+                    
+                    <!-- Декоративная линия внизу карточки -->
+                    <div class="card-footer bg-transparent border-0 text-center pb-3">
+                        <div style="height: 2px; background: linear-gradient(90deg, transparent, #6a5acd, #4a90e2, #6a5acd, transparent); width: 80%; margin: 0 auto;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

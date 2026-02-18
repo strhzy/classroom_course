@@ -1,0 +1,632 @@
+{% extends "classroom_core/base_courses.html" %}
+
+{% block title %}👤 Профиль{% endblock %}
+
+{% block courses_content %}
+<style>
+    .dark-theme-profile {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    /* Заголовок */
+    .page-header {
+        animation: headerSlide 0.5s ease-out;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    @keyframes headerSlide {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0;
+        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .page-title i {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 2.5rem;
+        animation: floatIcon 3s infinite ease-in-out;
+    }
+    
+    @keyframes floatIcon {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-5px);
+        }
+    }
+    
+    /* Кнопка редактирования */
+    .btn-edit {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 12px;
+        padding: 0.7rem 1.8rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+    }
+    
+    .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        color: white;
+    }
+    
+    .btn-edit::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn-edit:hover::after {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .btn-edit i {
+        transition: transform 0.3s ease;
+    }
+    
+    .btn-edit:hover i {
+        transform: scale(1.1);
+    }
+    
+    /* Карточка профиля */
+    .profile-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.2);
+        transition: all 0.3s ease;
+        animation: cardAppear 0.6s ease-out 0.2s both;
+        overflow: hidden;
+    }
+    
+    @keyframes cardAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .profile-card:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
+        transform: translateY(-2px);
+    }
+    
+    .card-header-gradient {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1.2rem 2rem;
+    }
+    
+    .card-header-gradient h5 {
+        color: #fff;
+        font-size: 1.2rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .card-header-gradient h5 i {
+        color: #6a5acd;
+        font-size: 1.3rem;
+    }
+    
+    .card-body-custom {
+        padding: 2rem;
+    }
+    
+    /* Аватар */
+    .avatar-section {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 2.5rem;
+        padding: 1rem;
+        background: rgba(106, 90, 205, 0.1);
+        border-radius: 20px;
+        border: 1px solid rgba(106, 90, 205, 0.2);
+        flex-wrap: wrap;
+        animation: avatarAppear 0.5s ease-out 0.3s both;
+    }
+    
+    @keyframes avatarAppear {
+        0% {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    .avatar-wrapper {
+        position: relative;
+    }
+    
+    .avatar-circle {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, #6a5acd, #4a90e2, #ff6b81);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        border: 4px solid rgba(106, 90, 205, 0.5);
+        box-shadow: 0 5px 20px rgba(106, 90, 205, 0.4);
+        transition: all 0.3s ease;
+        animation: avatarPulse 3s infinite;
+    }
+    
+    @keyframes avatarPulse {
+        0%, 100% {
+            box-shadow: 0 5px 20px rgba(106, 90, 205, 0.4);
+        }
+        50% {
+            box-shadow: 0 10px 30px rgba(106, 90, 205, 0.7);
+        }
+    }
+    
+    .avatar-circle:hover {
+        transform: scale(1.05) rotate(5deg);
+    }
+    
+    .user-info h4 {
+        color: #fff;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+    }
+    
+    .user-info .full-name {
+        color: #a8b8ff;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .user-info .full-name i {
+        color: #6a5acd;
+    }
+    
+    .role-badge {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        padding: 0.4rem 1.2rem;
+        border-radius: 50px;
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    /* Информация о пользователе */
+    .info-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        animation: infoAppear 0.5s ease-out 0.4s both;
+    }
+    
+    @keyframes infoAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .info-row {
+        display: flex;
+        padding: 0.8rem;
+        border-bottom: 1px solid rgba(106, 90, 205, 0.2);
+        transition: all 0.3s ease;
+        border-radius: 10px;
+    }
+    
+    .info-row:hover {
+        background: rgba(106, 90, 205, 0.1);
+        transform: translateX(5px);
+    }
+    
+    .info-label {
+        min-width: 140px;
+        color: #a8b8ff;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .info-label i {
+        color: #6a5acd;
+        width: 20px;
+        font-size: 1.1rem;
+    }
+    
+    .info-value {
+        color: #fff;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .info-badge {
+        background: rgba(106, 90, 205, 0.2);
+        color: #a8b8ff;
+        padding: 0.2rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        border: 1px solid rgba(106, 90, 205, 0.3);
+    }
+    
+    /* Пустые значения */
+    .empty-value {
+        color: #8080b0;
+        font-style: italic;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .empty-value i {
+        color: #6a5acd;
+        opacity: 0.5;
+    }
+    
+    /* Статистика (можно добавить, если есть) */
+    .stats-section {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(106, 90, 205, 0.3);
+        flex-wrap: wrap;
+        animation: statsAppear 0.5s ease-out 0.5s both;
+    }
+    
+    @keyframes statsAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .stat-card {
+        flex: 1;
+        min-width: 100px;
+        background: rgba(106, 90, 205, 0.1);
+        border-radius: 15px;
+        padding: 1rem;
+        text-align: center;
+        border: 1px solid rgba(106, 90, 205, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        background: rgba(106, 90, 205, 0.15);
+        transform: translateY(-2px);
+        border-color: rgba(106, 90, 205, 0.5);
+    }
+    
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #6a5acd;
+        line-height: 1.2;
+    }
+    
+    .stat-label {
+        color: #a8b8ff;
+        font-size: 0.85rem;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-theme-profile {
+            padding: 1rem 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+        }
+        
+        .page-title i {
+            font-size: 2rem;
+        }
+        
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .btn-edit {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .avatar-section {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+        
+        .user-info {
+            text-align: center;
+        }
+        
+        .info-row {
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        
+        .info-label {
+            min-width: auto;
+        }
+        
+        .stats-section {
+            flex-direction: column;
+        }
+        
+        .stat-card {
+            width: 100%;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .info-label {
+            min-width: 120px;
+        }
+    }
+</style>
+
+<div class="dark-theme-profile">
+    <div class="container">
+        <!-- Заголовок и кнопка редактирования -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-person-circle"></i>
+                Профиль пользователя
+            </h1>
+            
+            {% if profile_user == user %}
+            <a href="{% url 'classroom_core:profile_edit' %}" class="btn-edit">
+                <i class="bi bi-pencil"></i>
+                Редактировать профиль
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="profile-card">
+                    <div class="card-header-gradient">
+                        <h5>
+                            <i class="bi bi-info-circle"></i>
+                            Информация о пользователе
+                        </h5>
+                    </div>
+                    
+                    <div class="card-body-custom">
+                        <!-- Аватар и основная информация -->
+                        <div class="avatar-section">
+                            <div class="avatar-wrapper">
+                                <div class="avatar-circle">
+                                    {% if profile_user.profile.avatar %}
+                                    <img src="{{ profile_user.profile.avatar.url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                    {% else %}
+                                    {{ profile_user.username|slice:":1"|upper }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="user-info">
+                                <h4>{{ profile_user.username }}</h4>
+                                <div class="full-name">
+                                    <i class="bi bi-person"></i>
+                                    {{ profile_user.first_name }} {{ profile_user.last_name }}
+                                </div>
+                                <span class="role-badge">
+                                    <i class="bi bi-{% if profile_user.profile.role == 'student' %}mortarboard{% elif profile_user.profile.role == 'teacher' %}easel{% else %}gear{% endif %}"></i>
+                                    {{ profile_user.profile.get_role_display }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Детальная информация -->
+                        <div class="info-grid">
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-envelope"></i>
+                                    Email:
+                                </span>
+                                <span class="info-value">
+                                    <i class="bi bi-envelope-fill" style="color: #6a5acd; opacity: 0.7;"></i>
+                                    {{ profile_user.email|default:"<span class='empty-value'><i class='bi bi-dash'></i>Не указан</span>" }}
+                                </span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-calendar3"></i>
+                                    Дата регистрации:
+                                </span>
+                                <span class="info-value">
+                                    <i class="bi bi-calendar-check" style="color: #6a5acd;"></i>
+                                    {{ profile_user.date_joined|date:"d.m.Y" }}
+                                </span>
+                            </div>
+                            
+                            {% if profile_user.profile.department %}
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-building"></i>
+                                    Кафедра/Отдел:
+                                </span>
+                                <span class="info-value">{{ profile_user.profile.department }}</span>
+                            </div>
+                            {% endif %}
+                            
+                            {% if profile_user.profile.position %}
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-briefcase"></i>
+                                    Должность:
+                                </span>
+                                <span class="info-value">{{ profile_user.profile.position }}</span>
+                            </div>
+                            {% endif %}
+                            
+                            {% if profile_user.profile.student_group %}
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-people"></i>
+                                    Группа:
+                                </span>
+                                <span class="info-value">
+                                    <span class="info-badge">
+                                        <i class="bi bi-people-fill me-1"></i>
+                                        {{ profile_user.profile.student_group }}
+                                    </span>
+                                </span>
+                            </div>
+                            {% endif %}
+                            
+                            {% if profile_user.profile.phone %}
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-telephone"></i>
+                                    Телефон:
+                                </span>
+                                <span class="info-value">
+                                    <i class="bi bi-telephone-fill" style="color: #6a5acd;"></i>
+                                    {{ profile_user.profile.phone }}
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Статистика (если есть данные для отображения) -->
+                        {% if profile_user.profile.role == 'student' %}
+                        <div class="stats-section">
+                            <div class="stat-card">
+                                <div class="stat-value">{{ profile_user.enrolled_courses.count }}</div>
+                                <div class="stat-label">Курсов</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">{{ profile_user.submissions.count }}</div>
+                                <div class="stat-label">Решений</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">{{ profile_user.groups.count }}</div>
+                                <div class="stat-label">Групп</div>
+                            </div>
+                        </div>
+                        {% elif profile_user.profile.role == 'teacher' %}
+                        <div class="stats-section">
+                            <div class="stat-card">
+                                <div class="stat-value">{{ profile_user.taught_courses.count }}</div>
+                                <div class="stat-label">Курсов</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">{{ profile_user.assignments.count }}</div>
+                                <div class="stat-label">Заданий</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">{{ profile_user.students.count }}</div>
+                                <div class="stat-label">Студентов</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Анимация для элементов
+    document.addEventListener('DOMContentLoaded', function() {
+        const infoRows = document.querySelectorAll('.info-row');
+        infoRows.forEach((row, index) => {
+            row.style.animation = `infoAppear 0.3s ease-out ${0.2 + index * 0.05}s both`;
+        });
+        
+        const statCards = document.querySelectorAll('.stat-card');
+        statCards.forEach((card, index) => {
+            card.style.animation = `statsAppear 0.3s ease-out ${0.5 + index * 0.1}s both`;
+        });
+    });
+</script>
+{% endblock %}

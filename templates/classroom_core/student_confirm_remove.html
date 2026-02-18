@@ -1,0 +1,675 @@
+{% extends "classroom_core/base_courses.html" %}
+
+{% block title %}🗑️ Удалить студента{% endblock %}
+
+{% block courses_content %}
+<style>
+    .dark-theme-delete-student {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .delete-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 71, 87, 0.3);
+        border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 71, 87, 0.3);
+        transition: all 0.3s ease;
+        animation: cardAppear 0.6s ease-out;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .delete-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, #ff4757, #ff6b81, #ff4757, #ff6b81, #ff4757);
+        background-size: 200% 100%;
+        animation: borderFlow 3s linear infinite;
+    }
+    
+    .delete-card::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 71, 87, 0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+        z-index: 0;
+    }
+    
+    @keyframes borderFlow {
+        0% { background-position: 0% 0; }
+        100% { background-position: 200% 0; }
+    }
+    
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    @keyframes cardAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    
+    .delete-card:hover {
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 50px rgba(255, 71, 87, 0.5);
+        transform: translateY(-5px);
+    }
+    
+    .card-content {
+        position: relative;
+        z-index: 1;
+        padding: 2.5rem 2rem;
+    }
+    
+    .warning-icon {
+        font-size: 5rem;
+        background: linear-gradient(135deg, #ff4757, #ff6b81, #ff4757);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+        animation: warningPulse 2s infinite;
+        filter: drop-shadow(0 0 30px rgba(255, 71, 87, 0.5));
+        margin-bottom: 1.5rem;
+    }
+    
+    @keyframes warningPulse {
+        0%, 100% {
+            transform: scale(1);
+            filter: drop-shadow(0 0 20px rgba(255, 71, 87, 0.5));
+        }
+        50% {
+            transform: scale(1.15);
+            filter: drop-shadow(0 0 40px rgba(255, 71, 87, 0.8));
+        }
+    }
+    
+    .delete-title {
+        color: #fff;
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
+        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: 1px;
+    }
+    
+    .student-info {
+        background: rgba(255, 71, 87, 0.1);
+        border: 2px solid rgba(255, 71, 87, 0.4);
+        border-radius: 20px;
+        padding: 1.8rem;
+        margin: 2rem 0;
+        backdrop-filter: blur(5px);
+        animation: infoGlow 2s infinite;
+    }
+    
+    @keyframes infoGlow {
+        0%, 100% {
+            border-color: rgba(255, 71, 87, 0.4);
+            box-shadow: 0 0 20px rgba(255, 71, 87, 0.2);
+        }
+        50% {
+            border-color: rgba(255, 71, 87, 0.8);
+            box-shadow: 0 0 40px rgba(255, 71, 87, 0.4);
+        }
+    }
+    
+    .student-name {
+        color: #fff;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        word-break: break-word;
+    }
+    
+    .student-details {
+        color: #ffa0a8;
+        font-size: 1.1rem;
+        margin-top: 0.8rem;
+        padding-top: 0.8rem;
+        border-top: 1px solid rgba(255, 71, 87, 0.3);
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+    
+    .student-details i {
+        color: #ff4757;
+        margin-right: 0.5rem;
+        width: 20px;
+    }
+    
+    .course-context {
+        background: rgba(106, 90, 205, 0.15);
+        border: 1px solid rgba(106, 90, 205, 0.4);
+        border-radius: 12px;
+        padding: 1rem;
+        margin: 1.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .course-context i {
+        color: #6a5acd;
+        font-size: 1.5rem;
+    }
+    
+    .course-context-text {
+        flex: 1;
+        color: #a8b8ff;
+    }
+    
+    .course-context-text strong {
+        color: #fff;
+        font-size: 1.1rem;
+    }
+    
+    .warning-details {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        border: 1px solid rgba(255, 71, 87, 0.3);
+    }
+    
+    .warning-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        color: #ffa0a8;
+        animation: slideIn 0.3s ease-out;
+        animation-fill-mode: both;
+        font-size: 1.1rem;
+    }
+    
+    .warning-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .warning-item:nth-child(1) { animation-delay: 0.2s; }
+    .warning-item:nth-child(2) { animation-delay: 0.3s; }
+    .warning-item:nth-child(3) { animation-delay: 0.4s; }
+    
+    @keyframes slideIn {
+        0% {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .warning-item i {
+        color: #ff4757;
+        font-size: 1.4rem;
+        margin-right: 1rem;
+        min-width: 1.8rem;
+    }
+    
+    .warning-text {
+        color: #ffa0a8 !important;
+        font-size: 1.1rem;
+        margin: 1.5rem 0;
+        line-height: 1.8;
+        padding: 1rem;
+        background: rgba(255, 71, 87, 0.1);
+        border-radius: 15px;
+        border-left: 5px solid #ff4757;
+        font-weight: 500;
+    }
+    
+    .warning-text i {
+        color: #ff4757;
+        margin-right: 0.8rem;
+        font-size: 1.4rem;
+    }
+    
+    .student-stats {
+        display: flex;
+        justify-content: space-around;
+        margin: 2rem 0;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 12px;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .stat-item {
+        text-align: center;
+        flex: 1;
+        min-width: 100px;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ff4757;
+        line-height: 1.2;
+    }
+    
+    .stat-label {
+        font-size: 0.85rem;
+        color: #a8b8ff;
+    }
+    
+    .button-container {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        margin-top: 2.5rem;
+        flex-wrap: wrap;
+        animation: buttonsAppear 0.5s ease-out 0.5s both;
+    }
+    
+    @keyframes buttonsAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .btn-delete {
+        background: linear-gradient(135deg, #ff4757, #ff6b81, #ff4757);
+        background-size: 200% 100%;
+        border: none;
+        border-radius: 15px;
+        padding: 1rem 2.5rem;
+        font-weight: 700;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(255, 71, 87, 0.4);
+        position: relative;
+        overflow: hidden;
+        min-width: 180px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+        animation: buttonPulse 2s infinite;
+    }
+    
+    @keyframes buttonPulse {
+        0%, 100% {
+            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.4);
+        }
+        50% {
+            box-shadow: 0 12px 30px rgba(255, 71, 87, 0.7);
+        }
+    }
+    
+    .btn-delete:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 15px 35px rgba(255, 71, 87, 0.7);
+        background-position: 100% 0;
+    }
+    
+    .btn-delete:active {
+        transform: translateY(-2px);
+    }
+    
+    .btn-delete::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        transform: translate(-50%, -50%);
+        transition: width 0.8s, height 0.8s;
+    }
+    
+    .btn-delete:hover::after {
+        width: 400px;
+        height: 400px;
+    }
+    
+    .btn-cancel {
+        background: rgba(106, 90, 205, 0.2);
+        border: 2px solid rgba(106, 90, 205, 0.6);
+        border-radius: 15px;
+        padding: 1rem 2.5rem;
+        font-weight: 700;
+        color: #a8b8ff;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+        min-width: 180px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+        backdrop-filter: blur(5px);
+    }
+    
+    .btn-cancel:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: #6a5acd;
+        color: #fff;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(106, 90, 205, 0.5);
+    }
+    
+    .btn-cancel:active {
+        transform: translateY(-2px);
+    }
+    
+    .btn-cancel i, .btn-delete i {
+        transition: all 0.3s ease;
+        font-size: 1.3rem;
+    }
+    
+    .btn-delete:hover i {
+        transform: scale(1.2) rotate(15deg);
+    }
+    
+    .btn-cancel:hover i {
+        transform: scale(1.2);
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 576px) {
+        .dark-theme-delete-student {
+            padding: 1rem 0.5rem;
+        }
+        
+        .delete-card {
+            border-radius: 20px;
+        }
+        
+        .card-content {
+            padding: 1.5rem;
+        }
+        
+        .delete-title {
+            font-size: 1.8rem;
+        }
+        
+        .warning-icon {
+            font-size: 4rem;
+        }
+        
+        .student-name {
+            font-size: 1.4rem;
+        }
+        
+        .student-details {
+            font-size: 1rem;
+        }
+        
+        .warning-text {
+            font-size: 1rem;
+        }
+        
+        .button-container {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .btn-delete,
+        .btn-cancel {
+            width: 100%;
+            min-width: auto;
+            padding: 0.8rem 1.5rem;
+        }
+        
+        .warning-item {
+            font-size: 1rem;
+        }
+        
+        .warning-item i {
+            font-size: 1.2rem;
+        }
+        
+        .student-stats {
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-align: left;
+        }
+        
+        .stat-value {
+            font-size: 1.2rem;
+        }
+        
+        .course-context {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+    
+    @media (min-width: 577px) and (max-width: 768px) {
+        .delete-card {
+            margin: 0 1rem;
+        }
+        
+        .delete-title {
+            font-size: 2rem;
+        }
+        
+        .button-container {
+            gap: 1rem;
+        }
+        
+        .btn-delete,
+        .btn-cancel {
+            min-width: 150px;
+            padding: 0.8rem 1.5rem;
+        }
+    }
+    
+    /* Дополнительные эффекты */
+    .student-avatar-mini {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin: 0 auto 1rem;
+        border: 3px solid rgba(255, 71, 87, 0.5);
+        box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+    }
+</style>
+
+<div class="dark-theme-delete-student">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8 col-sm-10">
+                <div class="delete-card">
+                    <!-- Фоновые эффекты -->
+                    <div class="card-content">
+                        <div class="text-center">
+                            <!-- Мини-аватар студента -->
+                            <div class="student-avatar-mini">
+                                {{ student.username|slice:":1"|upper }}
+                            </div>
+                            
+                            <!-- Иконка предупреждения -->
+                            <div class="warning-icon">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                            </div>
+                            
+                            <!-- Заголовок -->
+                            <h3 class="delete-title">Удалить студента с курса?</h3>
+                            
+                            <!-- Информация о студенте -->
+                            <div class="student-info">
+                                <div class="student-name">{{ student.username }}</div>
+                                <div class="student-details">
+                                    <span>
+                                        <i class="bi bi-person"></i>
+                                        {{ student.first_name }} {{ student.last_name }}
+                                    </span>
+                                    <span>
+                                        <i class="bi bi-envelope"></i>
+                                        {{ student.email }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Контекст курса -->
+                            <div class="course-context">
+                                <i class="bi bi-book-fill"></i>
+                                <div class="course-context-text">
+                                    <strong>{{ course.title }}</strong>
+                                    <br>
+                                    <small>Удаление студента с этого курса</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Детали удаления -->
+                            <div class="warning-details">
+                                <div class="warning-item">
+                                    <i class="bi bi-person-dash-fill"></i>
+                                    <span>Студент будет удален с курса "{{ course.title }}"</span>
+                                </div>
+                                <div class="warning-item">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    <span>Аккаунт студента останется в системе</span>
+                                </div>
+                                <div class="warning-item">
+                                    <i class="bi bi-journal-text"></i>
+                                    <span>Прогресс студента на этом курсе будет потерян</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Статистика студента на курсе -->
+                            <div class="student-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">{{ student.submissions.count|default:"0" }}</div>
+                                    <div class="stat-label">Решений</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">{{ student.completed_assignments|default:"0" }}</div>
+                                    <div class="stat-label">Выполнено</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">{{ student.progress|default:"0" }}%</div>
+                                    <div class="stat-label">Прогресс</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Предупреждение -->
+                            <p class="warning-text">
+                                <i class="bi bi-info-circle-fill"></i>
+                                Студент будет удален с курса "{{ course.title }}", но его аккаунт останется в системе.
+                            </p>
+                            
+                            <!-- Кнопки -->
+                            <div class="button-container">
+                                <form method="post" style="display: inline; width: auto;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-delete" onclick="return confirmDeletion(event)">
+                                        <i class="bi bi-trash-fill"></i>
+                                        Да, удалить
+                                    </button>
+                                </form>
+                                <a href="{% url 'classroom_core:student_list' course.id %}" class="btn-cancel">
+                                    <i class="bi bi-x-circle-fill"></i>
+                                    Отмена
+                                </a>
+                            </div>
+                            
+                            <!-- Дополнительная информация -->
+                            <div class="mt-3" style="color: #8080b0; font-size: 0.85rem;">
+                                <i class="bi bi-info-circle"></i>
+                                ID студента: #{{ student.id }} • ID курса: #{{ course.id }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Дополнительное подтверждение перед удалением
+    function confirmDeletion(event) {
+        const studentName = "{{ student.username|escapejs }}";
+        const courseTitle = "{{ course.title|escapejs }}";
+        const fullName = "{{ student.first_name }} {{ student.last_name }}".trim();
+        
+        let displayName = studentName;
+        if (fullName) {
+            displayName = `${studentName} (${fullName})`;
+        }
+        
+        const confirmMessage = `Вы уверены, что хотите удалить студента ${displayName} с курса "${courseTitle}"?\n\nПрогресс студента на этом курсе будет потерян, но аккаунт останется в системе.`;
+        
+        if (!confirm(confirmMessage)) {
+            event.preventDefault();
+            return false;
+        }
+        
+        // Эффект для карточки при подтверждении
+        const card = document.querySelector('.delete-card');
+        card.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            card.style.transform = '';
+        }, 200);
+        
+        return true;
+    }
+    
+    // Анимация при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        const card = document.querySelector('.delete-card');
+        card.style.opacity = '0';
+        setTimeout(() => {
+            card.style.opacity = '1';
+        }, 100);
+        
+        // Анимация для статистики
+        const statItems = document.querySelectorAll('.stat-item');
+        statItems.forEach((item, index) => {
+            item.style.animation = `slideIn 0.3s ease-out ${0.3 + index * 0.1}s both`;
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,609 @@
+{% extends "classroom_core/base_courses.html" %}
+
+{% block title %}📢 Объявления{% endblock %}
+
+{% block courses_content %}
+<style>
+    .dark-theme-announcements {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    /* Заголовок */
+    .page-header {
+        animation: headerSlide 0.5s ease-out;
+    }
+    
+    @keyframes headerSlide {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0;
+        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+        display: flex;
+        align-items: center;
+    }
+    
+    .page-title i {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-right: 0.8rem;
+        font-size: 2.5rem;
+    }
+    
+    /* Фильтр */
+    .filter-section {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        animation: filterAppear 0.6s ease-out 0.1s both;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    @keyframes filterAppear {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .filter-label {
+        color: #a8b8ff;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .filter-label i {
+        color: #6a5acd;
+        margin-right: 0.5rem;
+        font-size: 1.2rem;
+    }
+    
+    .custom-select {
+        background: rgba(20, 20, 35, 0.8);
+        border: 2px solid rgba(106, 90, 205, 0.3);
+        border-radius: 10px;
+        padding: 0.7rem 1rem;
+        color: #fff;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        cursor: pointer;
+    }
+    
+    .custom-select:focus {
+        outline: none;
+        border-color: #6a5acd;
+        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2);
+    }
+    
+    .custom-select:hover {
+        border-color: rgba(106, 90, 205, 0.6);
+    }
+    
+    .custom-select option {
+        background: #1a1a2e;
+        color: #fff;
+    }
+    
+    .btn-filter {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 10px;
+        padding: 0.7rem 1.5rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-filter:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+    }
+    
+    .btn-filter::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn-filter:hover::after {
+        width: 300px;
+        height: 300px;
+    }
+    
+    /* Карточки объявлений */
+    .announcement-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        animation: cardAppear 0.5s ease-out;
+        animation-fill-mode: both;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .announcement-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #6a5acd, #4a90e2, #ff6b81, #4a90e2, #6a5acd);
+        transform: translateX(-100%);
+        transition: transform 0.6s ease;
+    }
+    
+    .announcement-card:hover::before {
+        transform: translateX(0);
+    }
+    
+    .announcement-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(106, 90, 205, 0.3);
+        border-color: rgba(106, 90, 205, 0.6);
+    }
+    
+    @keyframes cardAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .announcement-card[data-index="{{ forloop.counter }}"] {
+        animation-delay: 1s;
+    }
+        
+    .card-content {
+        padding: 1.5rem;
+    }
+    
+    .card-header-custom {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+    
+    .announcement-title {
+        color: #fff;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0;
+        word-break: break-word;
+        flex: 1;
+    }
+    
+    .pinned-badge {
+        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        border: none;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: white;
+        margin-left: 0.8rem;
+        white-space: nowrap;
+        animation: pulse 2s infinite;
+        box-shadow: 0 2px 8px rgba(255, 71, 87, 0.3);
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+    }
+    
+    .announcement-preview {
+        color: #b0b0ff;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1.2rem;
+        display: -webkit-box;
+        line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .card-footer-custom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(106, 90, 205, 0.2);
+    }
+    
+    .announcement-date {
+        color: #8080b0;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .announcement-date i {
+        color: #6a5acd;
+        margin-right: 0.3rem;
+        font-size: 0.9rem;
+    }
+    
+    .btn-view {
+        background: rgba(106, 90, 205, 0.15);
+        border: 1px solid rgba(106, 90, 205, 0.4);
+        border-radius: 8px;
+        padding: 0.4rem 1.2rem;
+        color: #a8b8ff;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-view:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: #6a5acd;
+        color: #fff;
+        transform: translateX(3px);
+    }
+    
+    .btn-view i {
+        margin-right: 0.3rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .btn-view:hover i {
+        transform: translateX(3px);
+    }
+    
+    /* Пустое состояние */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 1rem;
+        animation: emptyAppear 0.8s ease-out;
+    }
+    
+    @keyframes emptyAppear {
+        0% {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    .empty-icon {
+        font-size: 5rem;
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1.5rem;
+        animation: floatIcon 3s infinite ease-in-out;
+    }
+    
+    @keyframes floatIcon {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    
+    .empty-title {
+        color: #fff;
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-text {
+        color: #b0b0ff;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .btn-create {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 12px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        color: white;
+    }
+    
+    .btn-create i {
+        margin-right: 0.5rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .btn-create:hover i {
+        transform: rotate(90deg);
+    }
+    
+    /* Пагинация */
+    .custom-pagination {
+        margin-top: 2rem;
+        animation: paginationAppear 0.6s ease-out 0.5s both;
+    }
+    
+    @keyframes paginationAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .pagination .page-link {
+        background: rgba(30, 30, 46, 0.95);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        color: #a8b8ff;
+        margin: 0 0.2rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination .page-link:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: #6a5acd;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+    }
+    
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border-color: #6a5acd;
+        color: white;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+    }
+    
+    .pagination .page-item.disabled .page-link {
+        background: rgba(30, 30, 46, 0.5);
+        border-color: rgba(106, 90, 205, 0.1);
+        color: #8080b0;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-theme-announcements {
+            padding: 1rem 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+        }
+        
+        .page-title i {
+            font-size: 2rem;
+        }
+        
+        .filter-section .row {
+            flex-direction: column;
+        }
+        
+        .filter-section .col-md-8,
+        .filter-section .col-md-4 {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-title {
+            font-size: 1.4rem;
+        }
+        
+        .empty-text {
+            font-size: 1rem;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .announcement-title {
+            font-size: 1.1rem;
+        }
+    }
+</style>
+
+<div class="dark-theme-announcements">
+    <div class="container">
+        <!-- Заголовок -->
+        <div class="page-header mb-4">
+            <h1 class="page-title">
+                <i class="bi bi-megaphone-fill"></i>
+                Объявления
+            </h1>
+        </div>
+
+        <!-- Фильтр по курсам -->
+        <div class="filter-section">
+            <div class="filter-label">
+                <i class="bi bi-funnel-fill"></i>
+                Фильтр объявлений
+            </div>
+            <form method="get" class="row g-3">
+                <div class="col-md-8">
+                    <select name="course_id" class="custom-select">
+                        <option value="">Все курсы</option>
+                        {% for course in user.courses_created.all %}
+                        <option value="{{ course.id }}" {% if course_id|add:"0" == course.id %}selected{% endif %}>
+                            {{ course.title }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn-filter">
+                        <i class="bi bi-search me-2"></i>Применить
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Список объявлений -->
+        <div class="row g-4">
+            {% for announcement in page_obj %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="announcement-card" data-index="{{ forloop.counter }}">
+                    <div class="card-content">
+                        <div class="card-header-custom">
+                            <h6 class="announcement-title">{{ announcement.title }}</h6>
+                            {% if announcement.is_pinned %}
+                            <span class="pinned-badge">
+                                <i class="bi bi-pin-fill me-1"></i>Закреплено
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <p class="announcement-preview">
+                            {{ announcement.content|striptags|truncatechars:100 }}
+                        </p>
+                        
+                        <div class="card-footer-custom">
+                            <span class="announcement-date">
+                                <i class="bi bi-calendar3"></i>
+                                {{ announcement.created_at|date:"d.m.Y" }}
+                            </span>
+                            <a href="{% url 'classroom_core:announcement_detail' announcement.id %}" class="btn-view">
+                                <i class="bi bi-arrow-right-circle"></i>
+                                Просмотреть
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="bi bi-megaphone"></i>
+                    </div>
+                    <h2 class="empty-title">Нет объявлений</h2>
+                    <p class="empty-text">Создайте первое объявление для курса</p>
+                    {% if user.profile.is_teacher or user.profile.is_staff or user.is_superuser %}
+                    <a href="{% url 'classroom_core:announcement_create' %}" class="btn-create">
+                        <i class="bi bi-plus-circle"></i>
+                        Создать объявление
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Пагинация -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Страницы" class="custom-pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&course_id={{ course_id }}" aria-label="Предыдущая">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}&course_id={{ course_id }}">{{ num }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&course_id={{ course_id }}" aria-label="Следующая">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Добавляем анимацию для карточек
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.announcement-card');
+        cards.forEach((card, index) => {
+            card.style.animationDelay = `${0.2 + (index * 0.1)}s`;
+        });
+    });
+</script>
+{% endblock %}

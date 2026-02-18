@@ -1,0 +1,811 @@
+{% extends "classroom_core/base_courses.html" %}
+
+{% block title %}📝 Оценить решение{% endblock %}
+
+{% block courses_content %}
+<style>
+    .dark-theme-grade {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    /* Хлебные крошки */
+    .custom-breadcrumb {
+        background: rgba(106, 90, 205, 0.1);
+        padding: 0.8rem 1.2rem;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        display: inline-block;
+        animation: breadcrumbSlide 0.5s ease-out;
+    }
+    
+    @keyframes breadcrumbSlide {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .custom-breadcrumb .breadcrumb {
+        margin: 0;
+        background: transparent;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a {
+        color: #a8b8ff;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a:hover {
+        color: #6a5acd;
+        text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
+    }
+    
+    .custom-breadcrumb .breadcrumb-item.active {
+        color: #fff;
+        font-weight: 500;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+        color: #6a5acd;
+        content: "›";
+        font-size: 1.2rem;
+    }
+    
+    /* Заголовок */
+    .page-header {
+        animation: headerFade 0.5s ease-out;
+    }
+    
+    @keyframes headerFade {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+    }
+    
+    /* Карточки */
+    .custom-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.2);
+        transition: all 0.3s ease;
+        animation: cardAppear 0.5s ease-out;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+    
+    .custom-card:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
+        transform: translateY(-2px);
+    }
+    
+    @keyframes cardAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .card-header-gradient {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1.2rem 1.5rem;
+    }
+    
+    .card-header-gradient h5 {
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .card-header-gradient i {
+        color: #6a5acd;
+        font-size: 1.3rem;
+    }
+    
+    .card-body-custom {
+        padding: 1.5rem;
+    }
+    
+    /* Информация о решении */
+    .info-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    .info-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 0.5rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .info-row:hover {
+        background: rgba(106, 90, 205, 0.1);
+        transform: translateX(5px);
+    }
+    
+    .info-label {
+        min-width: 120px;
+        color: #a8b8ff;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .info-label i {
+        color: #6a5acd;
+        width: 20px;
+    }
+    
+    .info-value {
+        color: #fff;
+        flex: 1;
+    }
+    
+    .status-badge {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .late-badge {
+        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        border: none;
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+    }
+    
+    /* Решение студента */
+    .solution-text {
+        background: rgba(20, 20, 35, 0.6);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        color: #e0e0ff;
+        line-height: 1.8;
+    }
+    
+    .file-attachment {
+        background: rgba(106, 90, 205, 0.15);
+        border: 1px solid rgba(106, 90, 205, 0.4);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        animation: fileGlow 2s infinite;
+    }
+    
+    @keyframes fileGlow {
+        0%, 100% {
+            border-color: rgba(106, 90, 205, 0.4);
+        }
+        50% {
+            border-color: rgba(106, 90, 205, 0.8);
+        }
+    }
+    
+    .file-icon {
+        color: #6a5acd;
+        font-size: 2rem;
+    }
+    
+    .file-info {
+        flex: 1;
+        color: #a8b8ff;
+    }
+    
+    .file-link {
+        background: rgba(106, 90, 205, 0.2);
+        border: 1px solid rgba(106, 90, 205, 0.5);
+        border-radius: 8px;
+        padding: 0.5rem 1.2rem;
+        color: #fff;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .file-link:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: #6a5acd;
+        transform: translateY(-2px);
+        color: #fff;
+    }
+    
+    /* Форма оценивания */
+    .grade-section {
+        margin-top: 1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.8rem;
+        animation: fieldAppear 0.5s ease-out;
+        animation-fill-mode: both;
+    }
+    
+    .form-group:nth-child(1) { animation-delay: 0.2s; }
+    .form-group:nth-child(2) { animation-delay: 0.3s; }
+    .form-group:nth-child(3) { animation-delay: 0.4s; }
+    
+    @keyframes fieldAppear {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .form-label {
+        color: #a8b8ff;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .form-label i {
+        color: #6a5acd;
+    }
+    
+    .form-label .required {
+        color: #ff6b81;
+        margin-left: 0.3rem;
+    }
+    
+    .custom-input {
+        background: rgba(20, 20, 35, 0.8);
+        border: 2px solid rgba(106, 90, 205, 0.3);
+        border-radius: 12px;
+        padding: 0.8rem 1.2rem;
+        color: #fff;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .custom-input:focus {
+        outline: none;
+        border-color: #6a5acd;
+        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2), 0 0 20px rgba(106, 90, 205, 0.3);
+        background: rgba(30, 30, 50, 0.9);
+        transform: translateY(-2px);
+    }
+    
+    .custom-input:hover {
+        border-color: rgba(106, 90, 205, 0.6);
+    }
+    
+    textarea.custom-input {
+        resize: vertical;
+        min-height: 120px;
+    }
+    
+    .custom-select {
+        background: rgba(20, 20, 35, 0.8);
+        border: 2px solid rgba(106, 90, 205, 0.3);
+        border-radius: 12px;
+        padding: 0.8rem 1.2rem;
+        color: #fff;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236a5acd' viewBox='0 0 16 16'%3E%3Cpath d='M8 11.5l-5-5h10l-5 5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+    }
+    
+    .custom-select:focus {
+        outline: none;
+        border-color: #6a5acd;
+        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2);
+    }
+    
+    .form-text {
+        color: #8080b0;
+        font-size: 0.9rem;
+        margin-top: 0.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .form-text i {
+        color: #6a5acd;
+    }
+    
+    /* Шкала баллов */
+    .points-scale {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+        padding: 0.8rem;
+        margin-bottom: 1rem;
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .point-item {
+        flex: 1;
+        text-align: center;
+        padding: 0.5rem;
+        border-radius: 8px;
+        background: rgba(106, 90, 205, 0.1);
+    }
+    
+    .point-value {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #6a5acd;
+    }
+    
+    .point-label {
+        font-size: 0.8rem;
+        color: #a8b8ff;
+    }
+    
+    /* Кнопки */
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        animation: buttonsAppear 0.5s ease-out 0.5s both;
+    }
+    
+    @keyframes buttonsAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .btn-save-grade {
+        background: linear-gradient(135deg, #4caf50, #45a049);
+        border: none;
+        border-radius: 12px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        position: relative;
+        overflow: hidden;
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-save-grade:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+        background: linear-gradient(135deg, #45a049, #4caf50);
+    }
+    
+    .btn-save-grade::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn-save-grade:hover::after {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .btn-cancel {
+        background: rgba(106, 90, 205, 0.2);
+        border: 1px solid rgba(106, 90, 205, 0.5);
+        border-radius: 12px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: #a8b8ff;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-cancel:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: rgba(106, 90, 205, 0.8);
+        color: #fff;
+        transform: translateY(-2px);
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-theme-grade {
+            padding: 1rem 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.6rem;
+        }
+        
+        .custom-breadcrumb {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .info-row {
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        
+        .info-label {
+            min-width: auto;
+        }
+        
+        .button-group {
+            flex-direction: column;
+        }
+        
+        .btn-save-grade,
+        .btn-cancel {
+            width: 100%;
+        }
+        
+        .points-scale {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+    }
+    
+    /* Анимация для иконок */
+    .bi-check-circle, .bi-x-circle {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-save-grade:hover .bi-check-circle {
+        transform: scale(1.2);
+    }
+    
+    .btn-cancel:hover .bi-x-circle {
+        transform: rotate(90deg);
+    }
+</style>
+
+<div class="dark-theme-grade">
+    <div class="container">
+        <!-- Заголовок и хлебные крошки -->
+        <div class="page-header mb-4">
+            <h1 class="page-title">
+                <i class="bi bi-star-fill me-2"></i>
+                Оценить решение
+            </h1>
+            <nav aria-label="breadcrumb" class="custom-breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'classroom_core:assignment_list' %}">
+                            <i class="bi bi-list-task me-1"></i>Задания
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'classroom_core:assignment_detail' assignment.id %}">
+                            {{ assignment.title|truncatechars:30 }}
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Оценить
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <!-- Информация о решении -->
+                <div class="custom-card">
+                    <div class="card-header-gradient">
+                        <h5>
+                            <i class="bi bi-info-circle"></i>
+                            Информация о решении
+                        </h5>
+                    </div>
+                    <div class="card-body-custom">
+                        <div class="info-grid">
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-person-circle"></i> Студент:
+                                </span>
+                                <span class="info-value">{{ submission.student.username }}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-file-text"></i> Задание:
+                                </span>
+                                <span class="info-value">{{ assignment.title }}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-calendar"></i> Отправлено:
+                                </span>
+                                <span class="info-value">{{ submission.submitted_at|date:"d.m.Y H:i" }}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-flag"></i> Статус:
+                                </span>
+                                <span class="info-value">
+                                    <span class="status-badge">
+                                        <i class="bi bi-{% if submission.status == 'submitted' %}clock{% elif submission.status == 'graded' %}check-circle{% elif submission.status == 'returned' %}arrow-return-left{% endif %}"></i>
+                                        {{ submission.get_status_display }}
+                                    </span>
+                                    {% if submission.is_late %}
+                                    <span class="late-badge">
+                                        <i class="bi bi-alarm"></i> С опозданием
+                                    </span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Решение студента -->
+                {% if submission.text_response or submission.file_submission %}
+                <div class="custom-card">
+                    <div class="card-header-gradient">
+                        <h5>
+                            <i class="bi bi-file-earmark-text"></i>
+                            Решение студента
+                        </h5>
+                    </div>
+                    <div class="card-body-custom">
+                        {% if submission.text_response %}
+                        <div class="mb-4">
+                            <div class="info-label mb-2">
+                                <i class="bi bi-chat-text"></i> Текстовое описание:
+                            </div>
+                            <div class="solution-text">
+                                {{ submission.text_response|linebreaks }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if submission.file_submission %}
+                        <div class="file-attachment">
+                            <i class="bi bi-file-earmark-arrow-down file-icon"></i>
+                            <div class="file-info">
+                                <strong>Прикрепленный файл:</strong>
+                                <div class="small">{{ submission.file_submission.name }}</div>
+                            </div>
+                            <a href="{{ submission.file_submission.url }}" class="file-link" download>
+                                <i class="bi bi-download"></i> Скачать
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Форма оценивания -->
+                <div class="custom-card">
+                    <div class="card-header-gradient">
+                        <h5>
+                            <i class="bi bi-star"></i>
+                            Оценка
+                        </h5>
+                    </div>
+                    <div class="card-body-custom">
+                        <!-- Шкала баллов -->
+                        <div class="points-scale">
+                            <div class="point-item">
+                                <div class="point-value">{{ assignment.max_points }}</div>
+                                <div class="point-label">Максимум баллов</div>
+                            </div>
+                            <div class="point-item">
+                                <div class="point-value">{{ assignment.passing_score }}</div>
+                                <div class="point-label">Проходной балл</div>
+                            </div>
+                        </div>
+                        
+                        <form method="post" class="grade-section">
+                            {% csrf_token %}
+                            
+                            <div class="form-group">
+                                <label for="id_score" class="form-label">
+                                    <i class="bi bi-trophy"></i>
+                                    Баллы <span class="required">*</span>
+                                </label>
+                                <input type="number" 
+                                       name="score" 
+                                       id="id_score" 
+                                       class="custom-input" 
+                                       value="{{ form.score.value|default:"" }}" 
+                                       min="0" 
+                                       max="{{ assignment.max_points }}" 
+                                       required
+                                       placeholder="Введите количество баллов"
+                                       data-max-points="{{ assignment.max_points }}"
+                                       data-passing-score="{{ assignment.passing_score }}">
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i>
+                                    Максимум: {{ assignment.max_points }} баллов. Проходной балл: {{ assignment.passing_score }}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_feedback" class="form-label">
+                                    <i class="bi bi-chat-text"></i>
+                                    Обратная связь
+                                </label>
+                                <textarea name="feedback" 
+                                          id="id_feedback" 
+                                          class="custom-input" 
+                                          rows="5"
+                                          placeholder="Напишите комментарии к работе студента, укажите на ошибки или отметьте сильные стороны...">{{ form.feedback.value|default:"" }}</textarea>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i>
+                                    Подробный отзыв поможет студенту улучшить свои навыки
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_status" class="form-label">
+                                    <i class="bi bi-flag"></i>
+                                    Статус решения <span class="required">*</span>
+                                </label>
+                                <select name="status" id="id_status" class="custom-select" required>
+                                    <option value="submitted" {% if form.status.value == 'submitted' %}selected{% endif %}>📝 Отправлено (ожидает проверки)</option>
+                                    <option value="graded" {% if form.status.value == 'graded' %}selected{% endif %}>✅ Оценено</option>
+                                    <option value="returned" {% if form.status.value == 'returned' %}selected{% endif %}>🔄 Возвращено на доработку</option>
+                                </select>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i>
+                                    Возврат на доработку позволяет студенту исправить ошибки
+                                </div>
+                            </div>
+                            
+                            <div class="button-group">
+                                <button type="submit" class="btn-save-grade">
+                                    <i class="bi bi-check-circle"></i> Сохранить оценку
+                                </button>
+                                <a href="{% url 'classroom_core:assignment_detail' assignment.id %}" class="btn-cancel">
+                                    <i class="bi bi-x-circle"></i> Отмена
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Валидация баллов на клиенте
+    document.addEventListener('DOMContentLoaded', function() {
+        const scoreInput = document.getElementById('id_score');
+        
+        if (scoreInput) {
+            // Получаем значения из data-атрибутов
+            const maxPoints = parseInt(scoreInput.getAttribute('data-max-points')) || 100;
+            const passingScore = parseInt(scoreInput.getAttribute('data-passing-score')) || 50;
+            
+            scoreInput.addEventListener('input', function() {
+                let value = parseInt(this.value);
+                if (value > maxPoints) {
+                    this.value = maxPoints;
+                } else if (value < 0 || isNaN(value)) {
+                    this.value = 0;
+                }
+            });
+            
+            // Подсветка границ в зависимости от оценки
+            scoreInput.addEventListener('focus', function() {
+                this.style.borderColor = '#6a5acd';
+            });
+            
+            scoreInput.addEventListener('blur', function() {
+                let value = parseInt(this.value);
+                if (isNaN(value)) {
+                    this.style.borderColor = 'rgba(106, 90, 205, 0.3)';
+                    return;
+                }
+                
+                if (value >= passingScore) {
+                    this.style.borderColor = '#4caf50';
+                } else if (value > 0) {
+                    this.style.borderColor = '#ffa502';
+                } else {
+                    this.style.borderColor = 'rgba(106, 90, 205, 0.3)';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

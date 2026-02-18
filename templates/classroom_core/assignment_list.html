@@ -1,0 +1,728 @@
+{% extends "classroom_core/base_courses.html" %}
+
+{% block title %}📝 Задания{% endblock %}
+
+{% block courses_content %}
+<style>
+    .dark-theme-assignments {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    /* Заголовок */
+    .page-header {
+        animation: headerSlide 0.5s ease-out;
+        margin-bottom: 2rem;
+    }
+    
+    @keyframes headerSlide {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0;
+        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+        display: flex;
+        align-items: center;
+    }
+    
+    .page-title i {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-right: 0.8rem;
+        font-size: 2.5rem;
+    }
+    
+    /* Фильтры */
+    .filters-section {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        animation: filterAppear 0.6s ease-out 0.1s both;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    @keyframes filterAppear {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .filter-label {
+        color: #a8b8ff;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .filter-label i {
+        color: #6a5acd;
+        font-size: 1.2rem;
+    }
+    
+    .custom-select {
+        background: rgba(20, 20, 35, 0.8);
+        border: 2px solid rgba(106, 90, 205, 0.3);
+        border-radius: 10px;
+        padding: 0.7rem 1rem;
+        color: #fff;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236a5acd' viewBox='0 0 16 16'%3E%3Cpath d='M8 11.5l-5-5h10l-5 5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+    }
+    
+    .custom-select:focus {
+        outline: none;
+        border-color: #6a5acd;
+        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2);
+    }
+    
+    .custom-select:hover {
+        border-color: rgba(106, 90, 205, 0.6);
+    }
+    
+    .custom-select option {
+        background: #1a1a2e;
+        color: #fff;
+    }
+    
+    .btn-filter {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 10px;
+        padding: 0.7rem 1.5rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-filter:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+    }
+    
+    .btn-filter::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn-filter:hover::after {
+        width: 300px;
+        height: 300px;
+    }
+    
+    /* Карточка с таблицей */
+    .table-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.2);
+        transition: all 0.3s ease;
+        animation: cardAppear 0.6s ease-out 0.2s both;
+        overflow: hidden;
+    }
+    
+    @keyframes cardAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .card-header-gradient {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1.2rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .card-header-gradient h5 {
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .card-header-gradient h5 i {
+        color: #6a5acd;
+        font-size: 1.3rem;
+    }
+    
+    .btn-create {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 10px;
+        padding: 0.5rem 1.2rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        color: white;
+    }
+    
+    .btn-create i {
+        transition: transform 0.3s ease;
+    }
+    
+    .btn-create:hover i {
+        transform: rotate(90deg);
+    }
+    
+    /* Таблица */
+    .custom-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    .custom-table thead th {
+        background: rgba(106, 90, 205, 0.15);
+        color: #a8b8ff;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem 1.5rem;
+        border-bottom: 2px solid rgba(106, 90, 205, 0.3);
+        white-space: nowrap;
+    }
+    
+    .custom-table tbody tr {
+        transition: all 0.3s ease;
+        animation: rowAppear 0.5s ease-out;
+        animation-fill-mode: both;
+    }
+    
+
+    
+    
+    @keyframes rowAppear {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .custom-table tbody tr:hover {
+        background: rgba(106, 90, 205, 0.15);
+        transform: scale(1.01);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .custom-table tbody td {
+        padding: 1.2rem 1.5rem;
+        color: #e0e0ff;
+        border-bottom: 1px solid rgba(106, 90, 205, 0.2);
+        vertical-align: middle;
+    }
+    
+    .assignment-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(106, 90, 205, 0.2);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6a5acd;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+    
+    tr:hover .assignment-icon {
+        background: rgba(106, 90, 205, 0.3);
+        transform: rotate(5deg) scale(1.1);
+    }
+    
+    .assignment-title {
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 0.2rem;
+    }
+    
+    .assignment-description {
+        color: #b0b0ff;
+        font-size: 0.85rem;
+        display: -webkit-box;
+        line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    /* Бейджи статусов */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    
+    .status-draft {
+        background: rgba(255, 165, 2, 0.15);
+        color: #ffa502;
+        border: 1px solid #ffa502;
+    }
+    
+    .status-published {
+        background: rgba(76, 175, 80, 0.15);
+        color: #4caf50;
+        border: 1px solid #4caf50;
+    }
+    
+    .status-closed {
+        background: rgba(108, 117, 125, 0.15);
+        color: #a8b8ff;
+        border: 1px solid #6c757d;
+    }
+    
+    .due-date {
+        color: #b0b0ff;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .due-date i {
+        color: #6a5acd;
+    }
+    
+    .btn-view {
+        background: rgba(106, 90, 205, 0.15);
+        border: 1px solid rgba(106, 90, 205, 0.4);
+        border-radius: 8px;
+        padding: 0.4rem 1.2rem;
+        color: #a8b8ff;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+    
+    .btn-view:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: #6a5acd;
+        color: #fff;
+        transform: translateX(3px);
+    }
+    
+    .btn-view i {
+        transition: transform 0.3s ease;
+    }
+    
+    .btn-view:hover i {
+        transform: translateX(3px);
+    }
+    
+    /* Пустое состояние */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 1rem;
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1.5rem;
+        animation: floatIcon 3s infinite ease-in-out;
+    }
+    
+    @keyframes floatIcon {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    
+    .empty-text {
+        color: #b0b0ff;
+        font-size: 1.1rem;
+        margin-top: 1rem;
+    }
+    
+    /* Пагинация */
+    .custom-pagination {
+        margin-top: 2rem;
+        animation: paginationAppear 0.6s ease-out 0.5s both;
+    }
+    
+    @keyframes paginationAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .pagination .page-link {
+        background: rgba(30, 30, 46, 0.95);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        color: #a8b8ff;
+        margin: 0 0.2rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination .page-link:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: #6a5acd;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+    }
+    
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border-color: #6a5acd;
+        color: white;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-theme-assignments {
+            padding: 1rem 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+        }
+        
+        .page-title i {
+            font-size: 2rem;
+        }
+        
+        .filters-section .row {
+            flex-direction: column;
+        }
+        
+        .filters-section [class*="col-"] {
+            margin-bottom: 0.5rem;
+        }
+        
+        .custom-table thead {
+            display: none;
+        }
+        
+        .custom-table tbody tr {
+            display: block;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(106, 90, 205, 0.3);
+            border-radius: 10px;
+            background: rgba(30, 30, 46, 0.8);
+        }
+        
+        .custom-table tbody td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            border: none;
+            border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+        }
+        
+        .custom-table tbody td:last-child {
+            border-bottom: none;
+        }
+        
+        .custom-table tbody td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: #a8b8ff;
+            margin-right: 1rem;
+        }
+        
+        .card-header-gradient {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .btn-create {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .custom-table td {
+            padding: 1rem;
+        }
+        
+        .btn-view {
+            padding: 0.3rem 1rem;
+        }
+    }
+</style>
+
+<div class="dark-theme-assignments">
+    <div class="container">
+        <!-- Заголовок -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-journal-bookmark-fill"></i>
+                Задания
+            </h1>
+        </div>
+
+        <!-- Фильтры -->
+        <div class="filters-section">
+            <div class="filter-label">
+                <i class="bi bi-funnel-fill"></i>
+                Фильтры
+            </div>
+            <form method="get" class="row g-3">
+                <div class="col-md-5">
+                    <select name="course_id" class="custom-select">
+                        <option value="">📚 Все курсы</option>
+                        {% for course in user.courses_created.all %}
+                        <option value="{{ course.id }}" {% if course_id|add:"0" == course.id %}selected{% endif %}>
+                            {{ course.title }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <select name="status" class="custom-select">
+                        <option value="">📌 Все статусы</option>
+                        <option value="draft" {% if status == 'draft' %}selected{% endif %}>📝 Черновик</option>
+                        <option value="published" {% if status == 'published' %}selected{% endif %}>📢 Опубликовано</option>
+                        <option value="closed" {% if status == 'closed' %}selected{% endif %}>🔒 Закрыто</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn-filter">
+                        <i class="bi bi-search"></i>
+                        Применить
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Таблица с заданиями -->
+        <div class="table-card">
+            <div class="card-header-gradient">
+                <h5>
+                    <i class="bi bi-list-task"></i>
+                    Мои задания
+                </h5>
+                
+            </div>
+            
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Курс</th>
+                            <th>Срок</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assignment in page_obj %}
+                        <tr>
+                            <td data-label="Название">
+                                <div class="d-flex align-items-center">
+                                    <div class="assignment-icon me-3">
+                                        <i class="bi bi-journal-text"></i>
+                                    </div>
+                                    <div>
+                                        <div class="assignment-title">{{ assignment.title }}</div>
+                                        <div class="assignment-description">{{ assignment.description|striptags|truncatechars:50 }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td data-label="Курс">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-book me-2" style="color: #6a5acd;"></i>
+                                    {{ assignment.course.title }}
+                                </div>
+                            </td>
+                            <td data-label="Срок">
+                                <span class="due-date">
+                                    <i class="bi bi-calendar3"></i>
+                                    {{ assignment.due_date|date:"d.m.Y H:i" }}
+                                </span>
+                            </td>
+                            <td data-label="Статус">
+                                {% if assignment.status == 'draft' %}
+                                <span class="status-badge status-draft">
+                                    <i class="bi bi-pencil"></i> Черновик
+                                </span>
+                                {% elif assignment.status == 'published' %}
+                                <span class="status-badge status-published">
+                                    <i class="bi bi-check-circle"></i> Опубликовано
+                                </span>
+                                {% elif assignment.status == 'closed' %}
+                                <span class="status-badge status-closed">
+                                    <i class="bi bi-lock"></i> Закрыто
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td data-label="Действия">
+                                <a href="{% url 'classroom_core:assignment_detail' assignment.id %}" class="btn-view">
+                                    <i class="bi bi-eye"></i>
+                                    Просмотреть
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                <div class="empty-state">
+                                    <div class="empty-icon">
+                                        <i class="bi bi-journal-text"></i>
+                                    </div>
+                                    <p class="empty-text">Нет заданий</p>
+                                    {% if user.profile.is_teacher or user.profile.is_staff or user.is_superuser %}
+                                    <a href="{% url 'classroom_core:assignment_create' %}" class="btn-create mt-3" style="display: inline-flex;">
+                                        <i class="bi bi-plus-lg"></i>
+                                        Создать задание
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Пагинация -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Страницы" class="custom-pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&course_id={{ course_id }}&status={{ status }}" aria-label="Предыдущая">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}&course_id={{ course_id }}&status={{ status }}">{{ num }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&course_id={{ course_id }}&status={{ status }}" aria-label="Следующая">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Добавляем анимацию для строк таблицы
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('.custom-table tbody tr');
+        rows.forEach((row, index) => {
+            row.style.animationDelay = `${0.2 + (index * 0.1)}s`;
+        });
+    });
+</script>
+{% endblock %}

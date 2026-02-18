@@ -1,0 +1,833 @@
+{% extends "classroom_core/base_courses.html" %}
+
+{% block title %}📚 {{ course.title }}{% endblock %}
+
+{% block courses_content %}
+<style>
+    .dark-theme-course-detail {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    /* Хлебные крошки */
+    .custom-breadcrumb {
+        background: rgba(106, 90, 205, 0.1);
+        padding: 0.8rem 1.2rem;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        display: inline-block;
+        animation: breadcrumbSlide 0.5s ease-out;
+    }
+    
+    @keyframes breadcrumbSlide {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .custom-breadcrumb .breadcrumb {
+        margin: 0;
+        background: transparent;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a {
+        color: #a8b8ff;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a:hover {
+        color: #6a5acd;
+        text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
+    }
+    
+    .custom-breadcrumb .breadcrumb-item.active {
+        color: #fff;
+        font-weight: 500;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+        color: #6a5acd;
+        content: "›";
+        font-size: 1.2rem;
+    }
+    
+    /* Заголовок */
+    .course-header {
+        animation: headerFade 0.5s ease-out;
+    }
+    
+    @keyframes headerFade {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+    }
+    
+    /* Кнопки */
+    .btn-edit {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 12px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        text-decoration: none;
+    }
+    
+    .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        color: white;
+    }
+    
+    .btn-students {
+        background: rgba(106, 90, 205, 0.15);
+        border: 1px solid rgba(106, 90, 205, 0.5);
+        border-radius: 12px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        color: #a8b8ff;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-students:hover {
+        background: rgba(106, 90, 205, 0.25);
+        border-color: #6a5acd;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+    
+    /* Карточки */
+    .section-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.2);
+        transition: all 0.3s ease;
+        animation: cardAppear 0.5s ease-out;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+    
+    .section-card:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
+        transform: translateY(-2px);
+    }
+    
+    @keyframes cardAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .card-header-custom {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .card-header-custom h5 {
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .card-header-custom h5 i {
+        color: #6a5acd;
+        font-size: 1.3rem;
+    }
+    
+    .btn-add {
+        background: rgba(106, 90, 205, 0.2);
+        border: 1px solid rgba(106, 90, 205, 0.5);
+        border-radius: 8px;
+        padding: 0.4rem 1rem;
+        color: #a8b8ff;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-add:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: #6a5acd;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+    
+    /* Элементы внутри карточек */
+    .item-card {
+        background: rgba(20, 20, 35, 0.6);
+        border: 1px solid rgba(106, 90, 205, 0.2);
+        border-radius: 15px;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        animation: itemAppear 0.5s ease-out;
+        animation-fill-mode: both;
+    }
+    
+    .item-card:hover {
+        background: rgba(30, 30, 50, 0.8);
+        border-color: rgba(106, 90, 205, 0.5);
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    @keyframes itemAppear {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .item-content {
+        padding: 1.2rem;
+    }
+    
+    .item-title {
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .item-description {
+        color: #b0b0ff;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 0.5rem;
+    }
+    
+    .item-meta {
+        color: #8080b0;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .item-meta i {
+        color: #6a5acd;
+        margin-right: 0.3rem;
+    }
+    
+    .badge-custom {
+        background: rgba(106, 90, 205, 0.2);
+        color: #a8b8ff;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .badge-active {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4caf50;
+        border: 1px solid #4caf50;
+    }
+    
+    .badge-inactive {
+        background: rgba(255, 165, 2, 0.2);
+        color: #ffa502;
+        border: 1px solid #ffa502;
+    }
+    
+    .overdue-badge {
+        background: rgba(255, 71, 87, 0.2);
+        color: #ff6b81;
+        padding: 0.2rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        border: 1px solid #ff4757;
+        animation: pulse 2s infinite;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Сайдбар */
+    .info-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        animation: sidebarAppear 0.6s ease-out 0.2s both;
+    }
+    
+    @keyframes sidebarAppear {
+        0% {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .info-title {
+        color: #a8b8ff;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding-bottom: 0.8rem;
+    }
+    
+    .info-title i {
+        color: #6a5acd;
+    }
+    
+    .info-content {
+        color: #e0e0ff;
+    }
+    
+    .info-label {
+        color: #a8b8ff;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+    }
+    
+    .info-text {
+        color: #fff;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+    
+    .student-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .student-item {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(106, 90, 205, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .student-item:hover {
+        background: rgba(106, 90, 205, 0.1);
+        transform: translateX(5px);
+    }
+    
+    .student-avatar {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        margin-right: 0.8rem;
+    }
+    
+    .student-name {
+        flex: 1;
+        color: #fff;
+    }
+    
+    .student-badge {
+        background: rgba(106, 90, 205, 0.2);
+        color: #a8b8ff;
+        padding: 0.2rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+    }
+    
+    /* Прогресс */
+    .progress-container {
+        background: rgba(20, 20, 35, 0.6);
+        border-radius: 15px;
+        padding: 1.2rem;
+    }
+    
+    .progress-bar-custom {
+        height: 10px;
+        background: rgba(106, 90, 205, 0.2);
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 0.8rem 0;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #6a5acd, #4a90e2);
+        border-radius: 10px;
+        transition: width 1s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .progress-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% {
+            transform: translateX(-100%);
+        }
+        100% {
+            transform: translateX(100%);
+        }
+    }
+    
+    .progress-stats {
+        display: flex;
+        justify-content: space-between;
+        color: #a8b8ff;
+        font-size: 0.9rem;
+    }
+    
+    /* Пустые состояния */
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: #8080b0;
+    }
+    
+    .empty-state i {
+        font-size: 2.5rem;
+        color: #6a5acd;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-theme-course-detail {
+            padding: 1rem 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.6rem;
+        }
+        
+        .custom-breadcrumb {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .d-flex.justify-content-between {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 1rem;
+        }
+        
+        .btn-edit,
+        .btn-students {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .card-header-custom {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .btn-add {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .item-meta {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.3rem;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+
+<!-- ОСНОВНОЙ HTML КОНТЕНТ -->
+<div class="dark-theme-course-detail">
+    <div class="container">
+        <!-- Заголовок и хлебные крошки -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+            <div class="course-header">
+                <h1 class="page-title">
+                    <i class="bi bi-book-fill me-2"></i>
+                    {{ course.title }}
+                </h1>
+                <nav aria-label="breadcrumb" class="custom-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'classroom_core:course_list' %}">
+                                <i class="bi bi-grid me-1"></i>Мои курсы
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            {{ course.title|truncatechars:30 }}
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            
+            <div>
+                {% if course.can_edit %}
+                <a href="{% url 'classroom_core:course_edit' course.id %}" class="btn-edit me-2">
+                    <i class="bi bi-pencil me-2"></i>Редактировать
+                </a>
+                {% endif %}
+                <a href="{% url 'classroom_core:student_list' course.id %}" class="btn-students">
+                    <i class="bi bi-people me-2"></i>Студенты
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Основной контент -->
+            <div class="col-lg-8">
+                <!-- Объявления -->
+                <div class="section-card">
+                    <div class="card-header-custom">
+                        <h5>
+                            <i class="bi bi-megaphone-fill"></i>
+                            Объявления
+                        </h5>
+                        <a href="{% url 'classroom_core:announcement_create' course.id %}" class="btn-add">
+                            <i class="bi bi-plus-lg"></i> Новое объявление
+                        </a>
+                    </div>
+                    <div class="p-3">
+                        {% for announcement in announcements %}
+                        <div class="item-card">
+                            <div class="item-content">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="item-title">{{ announcement.title }}</div>
+                                        <div class="item-description">{{ announcement.content|striptags|truncatechars:150 }}</div>
+                                        <div class="item-meta">
+                                            <span><i class="bi bi-calendar3"></i> {{ announcement.created_at|date:"d.m.Y H:i" }}</span>
+                                            <span><i class="bi bi-person"></i> {{ announcement.author.username }}</span>
+                                        </div>
+                                    </div>
+                                    {% if announcement.is_pinned %}
+                                    <span class="badge-custom">
+                                        <i class="bi bi-pin-fill"></i> Закреплено
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="empty-state">
+                            <i class="bi bi-megaphone"></i>
+                            <p>Нет объявлений</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Разделы курса -->
+                <div class="section-card">
+                    <div class="card-header-custom">
+                        <h5>
+                            <i class="bi bi-folder-fill"></i>
+                            Разделы курса
+                        </h5>
+                        {% if course.can_edit %}
+                        <a href="{% url 'classroom_core:section_create' course.id %}" class="btn-add">
+                            <i class="bi bi-plus-lg"></i> Новый раздел
+                        </a>
+                        {% endif %}
+                    </div>
+                    <div class="p-3">
+                        {% for section in sections %}
+                        <div class="item-card">
+                            <div class="item-content">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div style="flex: 1;">
+                                        <div class="item-title">{{ section.title }}</div>
+                                        <div class="item-description">{{ section.description|truncatechars:100 }}</div>
+                                        <div class="item-meta">
+                                            <span><i class="bi bi-files"></i> Материалов: {{ section.materials.count }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {% if course.can_edit %}
+                                <div class="mt-2 d-flex gap-2">
+                                    <a href="{% url 'classroom_core:material_create' section.id %}" class="btn-add" style="padding: 0.3rem 1rem;">
+                                        <i class="bi bi-plus"></i> Материал
+                                    </a>
+                                    <a href="{% url 'classroom_core:section_edit' section.id %}" class="btn-add" style="padding: 0.3rem 1rem;">
+                                        <i class="bi bi-pencil"></i> Редактировать
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="empty-state">
+                            <i class="bi bi-folder"></i>
+                            <p>Нет разделов</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Задания -->
+                <div class="section-card">
+                    <div class="card-header-custom">
+                        <h5>
+                            <i class="bi bi-journal-text"></i>
+                            Задания
+                        </h5>
+                        <a href="{% url 'classroom_core:assignment_create' course.id %}" class="btn-add">
+                            <i class="bi bi-plus-lg"></i> Новое задание
+                        </a>
+                    </div>
+                    <div class="p-3">
+                        {% for assignment in assignments %}
+                        <div class="item-card">
+                            <div class="item-content">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div style="flex: 1;">
+                                        <div class="item-title">{{ assignment.title }}</div>
+                                        <div class="item-description">{{ assignment.description|striptags|truncatechars:150 }}</div>
+                                        <div class="item-meta">
+                                            <span><i class="bi bi-calendar-check"></i> Срок: {{ assignment.due_date|date:"d.m.Y H:i" }}</span>
+                                            {% if assignment.is_overdue %}
+                                            <span class="overdue-badge">
+                                                <i class="bi bi-exclamation-triangle"></i> Просрочено
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <span class="badge-custom">
+                                        <i class="bi bi-trophy"></i> {{ assignment.max_points }} баллов
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="empty-state">
+                            <i class="bi bi-journal-text"></i>
+                            <p>Нет заданий</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Сайдбар -->
+            <div class="col-lg-4">
+                <!-- Информация о курсе -->
+                <div class="info-card">
+                    <div class="info-title">
+                        <i class="bi bi-info-circle"></i>
+                        Информация о курсе
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Описание:</div>
+                        <div class="info-text">{{ course.description }}</div>
+                        
+                        <div class="info-label">Статус:</div>
+                        <div class="info-text">
+                            {% if course.status == 'active' %}
+                            <span class="badge-custom badge-active">
+                                <i class="bi bi-check-circle"></i>
+                                {{ course.get_status_display }}
+                            </span>
+                            {% else %}
+                            <span class="badge-custom badge-inactive">
+                                <i class="bi bi-clock"></i>
+                                {{ course.get_status_display }}
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="info-label">Студенты:</div>
+                        <div class="info-text d-flex align-items-center gap-2">
+                            <div class="student-avatar" style="width: 40px; height: 40px;">
+                                {{ course.get_student_count }}
+                            </div>
+                            <span>{{ course.get_student_count }} {{ course.get_student_count|pluralize:"человек,человека,человек" }}</span>
+                        </div>
+                        
+                        <div class="info-label">Даты:</div>
+                        <div class="info-text">
+                            <i class="bi bi-calendar-plus"></i> {{ course.start_date|date:"d.m.Y" }}<br>
+                            <i class="bi bi-calendar-check"></i> {{ course.end_date|date:"d.m.Y" }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Студенты -->
+                <div class="info-card">
+                    <div class="info-title">
+                        <i class="bi bi-people-fill"></i>
+                        Студенты ({{ students|length }})
+                    </div>
+                    <div class="info-content">
+                        <ul class="student-list">
+                            {% for student in students|slice:":5" %}
+                            <li class="student-item">
+                                <div class="student-avatar">
+                                    {{ student.username|first|upper }}
+                                </div>
+                                <span class="student-name">{{ student.username }}</span>
+                                <span class="student-badge">Студент</span>
+                            </li>
+                            {% empty %}
+                            <li class="empty-state">
+                                <i class="bi bi-people"></i>
+                                <p>Нет студентов</p>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% if students|length > 5 %}
+                        <div class="text-center mt-2">
+                            <a href="{% url 'classroom_core:student_list' course.id %}" class="btn-add" style="display: inline-block;">
+                                Показать всех ({{ students|length }})
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Прогресс курса -->
+                <div class="info-card">
+                    <div class="info-title">
+                        <i class="bi bi-graph-up"></i>
+                        Прогресс курса
+                    </div>
+                    <div class="progress-container">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span style="color: #a8b8ff;">Выполнено</span>
+                            <span style="color: #6a5acd; font-weight: 600;">{{ course.get_progress }}%</span>
+                        </div>
+                       
+                        <div class="progress-stats mt-2">
+                            <span><i class="bi bi-check-circle"></i> {{ course.get_completed_items }} заданий</span>
+                            <span><i class="bi bi-clock"></i> {{ course.get_remaining_days }} дней осталось</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Действия (для преподавателя) -->
+                {% if course.can_edit %}
+                <div class="info-card">
+                    <div class="info-title">
+                        <i class="bi bi-tools"></i>
+                        Управление
+                    </div>
+                    <div class="d-flex flex-column gap-2">
+                        <a href="{% url 'classroom_core:course_edit' course.id %}" class="btn-add w-100 justify-content-center">
+                            <i class="bi bi-pencil"></i> Редактировать курс
+                        </a>
+                        <a href="{% url 'classroom_core:course_delete' course.id %}" class="btn-add w-100 justify-content-center" style="border-color: #ff4757; color: #ff6b81;">
+                            <i class="bi bi-trash"></i> Удалить курс
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Анимация для элементов списка
+    document.addEventListener('DOMContentLoaded', function() {
+        const items = document.querySelectorAll('.item-card');
+        items.forEach((item, index) => {
+            item.style.animationDelay = `${0.1 + (index * 0.05)}s`;
+        });
+        
+        // Анимация для прогресс-бара
+        const progressBar = document.querySelector('.progress-fill');
+        if (progressBar) {
+            setTimeout(() => {
+                progressBar.style.width = progressBar.style.width;
+            }, 500);
+        }
+    });
+</script>
+{% endblock %}

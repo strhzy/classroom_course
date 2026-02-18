@@ -1,0 +1,544 @@
+{% extends "classroom_core/base_courses.html" %}
+
+{% block title %}📢 {{ title }}{% endblock %}
+
+{% block courses_content %}
+<style>
+    .dark-theme-form {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    /* Хлебные крошки */
+    .custom-breadcrumb {
+        background: rgba(106, 90, 205, 0.1);
+        padding: 0.8rem 1.2rem;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        display: inline-block;
+        animation: breadcrumbSlide 0.5s ease-out;
+    }
+    
+    @keyframes breadcrumbSlide {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .custom-breadcrumb .breadcrumb {
+        margin: 0;
+        background: transparent;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a {
+        color: #a8b8ff;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a:hover {
+        color: #6a5acd;
+        text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #6a5acd, #4a90e2);
+        transition: width 0.3s ease;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a:hover::after {
+        width: 100%;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item.active {
+        color: #fff;
+        font-weight: 500;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+        color: #6a5acd;
+        content: "›";
+        font-size: 1.2rem;
+        line-height: 1;
+    }
+    
+    /* Заголовок */
+    .form-header {
+        animation: headerFade 0.5s ease-out 0.2s both;
+    }
+    
+    @keyframes headerFade {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+    }
+    
+    /* Карточка формы */
+    .form-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.2);
+        transition: all 0.3s ease;
+        animation: cardAppear 0.6s ease-out 0.3s both;
+        overflow: hidden;
+    }
+    
+    @keyframes cardAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .form-card:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
+    }
+    
+    .card-header-gradient {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1.2rem 1.5rem;
+    }
+    
+    .card-header-gradient h5 {
+        color: #fff;
+        font-size: 1.3rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+    
+    .card-header-gradient h5 i {
+        color: #6a5acd;
+        margin-right: 0.8rem;
+        font-size: 1.5rem;
+    }
+    
+    /* Поля формы */
+    .form-group {
+        margin-bottom: 1.8rem;
+        animation: fieldAppear 0.5s ease-out;
+        animation-fill-mode: both;
+    }
+    
+    .form-group:nth-child(1) { animation-delay: 0.4s; }
+    .form-group:nth-child(2) { animation-delay: 0.5s; }
+    .form-group:nth-child(3) { animation-delay: 0.6s; }
+    
+    @keyframes fieldAppear {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .form-label {
+        color: #a8b8ff;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+        letter-spacing: 0.3px;
+    }
+    
+    .form-label i {
+        color: #6a5acd;
+        margin-right: 0.4rem;
+    }
+    
+    .form-label .required {
+        color: #ff6b81;
+        margin-left: 0.2rem;
+    }
+    
+    /* Стили для полей ввода */
+    .custom-input {
+        background: rgba(20, 20, 35, 0.8);
+        border: 2px solid rgba(106, 90, 205, 0.3);
+        border-radius: 12px;
+        padding: 0.8rem 1.2rem;
+        color: #fff;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .custom-input:focus {
+        outline: none;
+        border-color: #6a5acd;
+        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2), 0 0 20px rgba(106, 90, 205, 0.3);
+        background: rgba(30, 30, 50, 0.9);
+        transform: translateY(-2px);
+    }
+    
+    .custom-input:hover {
+        border-color: rgba(106, 90, 205, 0.6);
+    }
+    
+    textarea.custom-input {
+        resize: vertical;
+        min-height: 200px;
+        line-height: 1.6;
+    }
+    
+    /* Чекбоксы */
+    .checkbox-group {
+        background: rgba(106, 90, 205, 0.1);
+        border-radius: 15px;
+        padding: 1.2rem;
+        border: 1px solid rgba(106, 90, 205, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .checkbox-group:hover {
+        background: rgba(106, 90, 205, 0.15);
+        border-color: rgba(106, 90, 205, 0.4);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .custom-checkbox {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        border-radius: 10px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .custom-checkbox:hover {
+        background: rgba(106, 90, 205, 0.1);
+        transform: translateX(5px);
+    }
+    
+    .custom-checkbox input[type="checkbox"] {
+        width: 1.3rem;
+        height: 1.3rem;
+        margin-right: 0.8rem;
+        cursor: pointer;
+        accent-color: #6a5acd;
+        transition: all 0.2s ease;
+    }
+    
+    .custom-checkbox input[type="checkbox"]:checked {
+        transform: scale(1.1);
+    }
+    
+    .custom-checkbox label {
+        color: #e0e0ff;
+        font-size: 1rem;
+        cursor: pointer;
+        user-select: none;
+    }
+    
+    .checkbox-description {
+        color: #b0b0ff;
+        font-size: 0.9rem;
+        margin-left: 2.1rem;
+        margin-top: 0.2rem;
+    }
+    
+    /* Кнопки */
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        animation: buttonsAppear 0.5s ease-out 0.7s both;
+    }
+    
+    @keyframes buttonsAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .btn-publish {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 12px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        position: relative;
+        overflow: hidden;
+        flex: 1;
+    }
+    
+    .btn-publish:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+    }
+    
+    .btn-publish:active {
+        transform: translateY(0);
+    }
+    
+    .btn-publish::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn-publish:hover::after {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .btn-cancel {
+        background: rgba(106, 90, 205, 0.2);
+        border: 1px solid rgba(106, 90, 205, 0.5);
+        border-radius: 12px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: #a8b8ff;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+        flex: 1;
+        text-align: center;
+    }
+    
+    .btn-cancel:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: rgba(106, 90, 205, 0.8);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(106, 90, 205, 0.4);
+    }
+    
+    .btn-cancel:active {
+        transform: translateY(0);
+    }
+    
+    /* Индикатор обязательных полей */
+    .required-note {
+        color: #b0b0ff;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        text-align: right;
+    }
+    
+    .required-note i {
+        color: #ff6b81;
+        margin-right: 0.2rem;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-theme-form {
+            padding: 1rem 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.6rem;
+        }
+        
+        .custom-breadcrumb {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .form-card {
+            margin: 0 0.5rem;
+        }
+        
+        .button-group {
+            flex-direction: column;
+        }
+        
+        .btn-publish,
+        .btn-cancel {
+            width: 100%;
+        }
+        
+        .checkbox-group {
+            padding: 0.8rem;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+        
+        .button-group {
+            gap: 0.8rem;
+        }
+    }
+    
+    /* Анимация для иконок */
+    .bi-pencil, .bi-send, .bi-x-circle {
+        transition: transform 0.3s ease;
+    }
+    
+    .btn-publish:hover .bi-send {
+        transform: translateX(3px) rotate(10deg);
+    }
+    
+    .btn-cancel:hover .bi-x-circle {
+        transform: scale(1.2);
+    }
+</style>
+
+<div class="dark-theme-form">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="form-header">
+                <h1 class="page-title">{{ title }}</h1>
+                <nav aria-label="breadcrumb" class="custom-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'classroom_core:course_list' %}">
+                                <i class="bi bi-grid me-1"></i>Мои курсы
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'classroom_core:course_detail' course.id %}">
+                                <i class="bi bi-book me-1"></i>{{ course.title|truncatechars:30 }}
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <i class="bi bi-megaphone me-1"></i>{{ title }}
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="form-card">
+                    <div class="card-header-gradient">
+                        <h5>
+                            <i class="bi bi-pencil-square"></i>
+                            Заполните форму объявления
+                        </h5>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="form-group">
+                                <label for="id_title" class="form-label">
+                                    <i class="bi bi-type"></i>Заголовок <span class="required">*</span>
+                                </label>
+                                <input type="text" 
+                                       name="title" 
+                                       id="id_title" 
+                                       class="custom-input" 
+                                       value="{{ form.title.value|default:"" }}" 
+                                       required
+                                       placeholder="Введите заголовок объявления">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_content" class="form-label">
+                                    <i class="bi bi-text-paragraph"></i>Содержание <span class="required">*</span>
+                                </label>
+                                <textarea name="content" 
+                                          id="id_content" 
+                                          class="custom-input" 
+                                          rows="10" 
+                                          required
+                                          placeholder="Напишите текст объявления...">{{ form.content.value|default:"" }}</textarea>
+                                <div class="required-note">
+                                    <i class="bi bi-info-circle"></i> Вы можете использовать HTML для форматирования
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <div class="custom-checkbox mb-3">
+                                        <input type="checkbox" name="is_pinned" id="id_is_pinned" class="form-check-input" {% if form.is_pinned.value %}checked{% endif %}>
+                                        <label for="id_is_pinned">
+                                            <i class="bi bi-pin-fill me-1" style="color: #ff6b81;"></i>
+                                            Закрепить объявление
+                                        </label>
+                                    </div>
+                                    <div class="checkbox-description mb-3">
+                                        Закрепленные объявления всегда отображаются вверху списка
+                                    </div>
+                                    
+                                    <div class="custom-checkbox">
+                                        <input type="checkbox" name="send_email_notification" id="id_send_email_notification" class="form-check-input" {% if form.send_email_notification.value %}checked{% endif %}>
+                                        <label for="id_send_email_notification">
+                                            <i class="bi bi-envelope-fill me-1" style="color: #4a90e2;"></i>
+                                            Отправить email-уведомление студентам
+                                        </label>
+                                    </div>
+                                    <div class="checkbox-description">
+                                        Студенты получат уведомление о новом объявлении на свою электронную почту
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="button-group">
+                                <button type="submit" class="btn-publish">
+                                    <i class="bi bi-send me-2"></i> Опубликовать
+                                </button>
+                                <a href="{% url 'classroom_core:course_detail' course.id %}" class="btn-cancel">
+                                    <i class="bi bi-x-circle me-2"></i> Отмена
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -7,53 +7,397 @@
 {% endblock %}
 
 {% block files_content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="page-title">
-            <h1><i class="bi bi-folder-plus"></i> Создать папку</h1>
-        </div>
+<style>
+    .dark-theme-folder-create {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    /* Заголовок */
+    .folder-title {
+        margin-bottom: 2rem;
+    }
+    
+    .folder-title h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .folder-title h1 i {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 2.2rem;
+    }
+    
+    /* Карточка формы */
+    .form-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+    }
+    
+    .card-header-custom {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1.2rem 1.5rem;
+    }
+    
+    .card-header-custom h5 {
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .card-header-custom i {
+        color: #6a5acd;
+        font-size: 1.3rem;
+    }
+    
+    .card-body-custom {
+        padding: 2rem;
+    }
+    
+    /* Поля формы */
+    .form-group {
+        margin-bottom: 1.8rem;
+    }
+    
+    .form-label {
+        color: #a8b8ff;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .form-label i {
+        color: #6a5acd;
+    }
+    
+    .form-label .required {
+        color: #ff6b81;
+        margin-left: 0.3rem;
+    }
+    
+    .custom-input {
+        background: rgba(20, 20, 35, 0.8);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 10px;
+        padding: 0.8rem 1rem;
+        color: #fff;
+        width: 100%;
+        transition: border-color 0.2s ease;
+    }
+    
+    .custom-input:focus {
+        outline: none;
+        border-color: #6a5acd;
+    }
+    
+    .custom-input:hover {
+        border-color: rgba(106, 90, 205, 0.6);
+    }
+    
+    .custom-textarea {
+        background: rgba(20, 20, 35, 0.8);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 10px;
+        padding: 0.8rem 1rem;
+        color: #fff;
+        width: 100%;
+        min-height: 100px;
+        transition: border-color 0.2s ease;
+    }
+    
+    .custom-textarea:focus {
+        outline: none;
+        border-color: #6a5acd;
+    }
+    
+    .custom-select {
+        background: rgba(20, 20, 35, 0.8);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 10px;
+        padding: 0.8rem 1rem;
+        color: #fff;
+        width: 100%;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236a5acd' viewBox='0 0 16 16'%3E%3Cpath d='M8 11.5l-5-5h10l-5 5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+    }
+    
+    .custom-select:focus {
+        outline: none;
+        border-color: #6a5acd;
+    }
+    
+    .custom-select option {
+        background: #1a1a2e;
+        color: #fff;
+    }
+    
+    /* Подсказки */
+    .form-text {
+        color: #8080b0;
+        font-size: 0.85rem;
+        margin-top: 0.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .form-text i {
+        color: #6a5acd;
+    }
+    
+    /* Индикатор обязательных полей */
+    .required-note {
+        color: #b0b0ff;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        text-align: right;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.3rem;
+    }
+    
+    .required-note i {
+        color: #ff6b81;
+    }
+    
+    /* Кнопки */
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .btn-create {
+        background: linear-gradient(135deg, #4caf50, #45a049);
+        border: none;
+        border-radius: 10px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: white;
+        transition: background-color 0.2s ease;
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-create:hover {
+        background: linear-gradient(135deg, #45a049, #4caf50);
+    }
+    
+    .btn-cancel {
+        background: rgba(106, 90, 205, 0.15);
+        border: 1px solid rgba(106, 90, 205, 0.5);
+        border-radius: 10px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: #a8b8ff;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-cancel:hover {
+        background: rgba(106, 90, 205, 0.25);
+        border-color: #6a5acd;
+        color: #fff;
+    }
+    
+    /* Декоративные элементы */
+    .folder-icon-preview {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #4caf50, #45a049);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        margin: 0 auto 1.5rem;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-theme-folder-create {
+            padding: 1rem 0.5rem;
+        }
         
-        <div class="card">
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Название папки *</label>
-                        <input type="text" name="title" class="form-control" required>
-                        <small class="form-text text-muted">Введите название для новой папки</small>
+        .folder-title h1 {
+            font-size: 1.6rem;
+        }
+        
+        .card-body-custom {
+            padding: 1.5rem;
+        }
+        
+        .button-group {
+            flex-direction: column;
+        }
+        
+        .btn-create,
+        .btn-cancel {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="dark-theme-folder-create">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <!-- Заголовок -->
+                <div class="folder-title">
+                    <h1>
+                        <i class="bi bi-folder-plus"></i>
+                        Создать папку
+                    </h1>
+                </div>
+                
+                <!-- Карточка формы -->
+                <div class="form-card">
+                    <div class="card-header-custom">
+                        <h5>
+                            <i class="bi bi-folder2"></i>
+                            Новая папка
+                        </h5>
                     </div>
                     
-                    <div class="mb-3">
-                        <label class="form-label">Описание</label>
-                        <textarea name="description" class="form-control" rows="3"></textarea>
-                        <small class="form-text text-muted">Необязательное поле</small>
+                    <div class="card-body-custom">
+                        <!-- Декоративная иконка -->
+                        <div class="folder-icon-preview">
+                            <i class="bi bi-folder2"></i>
+                        </div>
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <!-- Название папки -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="bi bi-tag"></i>
+                                    Название папки <span class="required">*</span>
+                                </label>
+                                <input type="text" 
+                                       name="title" 
+                                       class="custom-input" 
+                                       required
+                                       placeholder="Введите название папки"
+                                       autofocus>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i>
+                                    Введите название для новой папки
+                                </div>
+                            </div>
+                            
+                            <!-- Описание -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="bi bi-card-text"></i>
+                                    Описание
+                                </label>
+                                <textarea name="description" 
+                                          class="custom-textarea" 
+                                          rows="3"
+                                          placeholder="Краткое описание содержимого папки..."></textarea>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i>
+                                    Необязательное поле
+                                </div>
+                            </div>
+                            
+                            <!-- Родительская папка -->
+                            {% if folders %}
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="bi bi-folder"></i>
+                                    Родительская папка
+                                </label>
+                                <select name="parent_folder" class="custom-select">
+                                    <option value="">📁 Нет (корневая папка)</option>
+                                    {% for folder in folders %}
+                                    <option value="{{ folder.id }}">📁 {{ folder.title }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i>
+                                    Опционально: разместить папку внутри другой
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Обязательные поля -->
+                            <div class="required-note">
+                                <i class="bi bi-asterisk"></i>
+                                Поля, отмеченные звездочкой, обязательны для заполнения
+                            </div>
+                            
+                            <!-- Кнопки -->
+                            <div class="button-group">
+                                <button type="submit" class="btn-create">
+                                    <i class="bi bi-folder-plus"></i>
+                                    Создать папку
+                                </button>
+                                <a href="{% url 'file_manager:file_list' %}" class="btn-cancel">
+                                    <i class="bi bi-x-circle"></i>
+                                    Отмена
+                                </a>
+                            </div>
+                        </form>
                     </div>
-                    
-                    {% if folders %}
-                    <div class="mb-3">
-                        <label class="form-label">Родительская папка</label>
-                        <select name="parent_folder" class="form-select">
-                            <option value="">Нет (корневая папка)</option>
-                            {% for folder in folders %}
-                            <option value="{{ folder.id }}">{{ folder.title }}</option>
-                            {% endfor %}
-                        </select>
-                        <small class="form-text text-muted">Опционально: разместить папку внутри другой</small>
-                    </div>
-                    {% endif %}
-                    
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-folder-plus"></i> Создать папку
-                        </button>
-                        <a href="{% url 'file_manager:file_list' %}" class="btn btn-secondary">
-                            <i class="bi bi-x-circle"></i> Отмена
-                        </a>
-                    </div>
-                </form>
+                </div>
+                
+                <!-- Дополнительная информация -->
+                <div class="text-center mt-3" style="color: #8080b0; font-size: 0.9rem;">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Папки помогают организовать файлы по темам или проектам
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Подсветка обязательных полей
+    document.addEventListener('DOMContentLoaded', function() {
+        const requiredInput = document.querySelector('input[name="title"]');
+        if (requiredInput) {
+            requiredInput.addEventListener('blur', function() {
+                if (this.value.trim() === '') {
+                    this.style.borderColor = '#ff6b81';
+                } else {
+                    this.style.borderColor = 'rgba(106, 90, 205, 0.6)';
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

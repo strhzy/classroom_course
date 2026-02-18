@@ -1,0 +1,720 @@
+{% extends "base.html" %}
+
+{% block title %}👥 {{ group.name }}{% endblock %}
+
+{% block content %}
+<style>
+    .dark-theme-group-detail {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    /* Хлебные крошки */
+    .custom-breadcrumb {
+        background: rgba(106, 90, 205, 0.1);
+        padding: 0.8rem 1.2rem;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        display: inline-block;
+        animation: breadcrumbSlide 0.5s ease-out;
+    }
+    
+    @keyframes breadcrumbSlide {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .custom-breadcrumb .breadcrumb {
+        margin: 0;
+        background: transparent;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a {
+        color: #a8b8ff;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a:hover {
+        color: #6a5acd;
+        text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
+    }
+    
+    .custom-breadcrumb .breadcrumb-item.active {
+        color: #fff;
+        font-weight: 500;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+        color: #6a5acd;
+        content: "›";
+        font-size: 1.2rem;
+    }
+    
+    /* Заголовок */
+    .page-header {
+        animation: headerFade 0.5s ease-out;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    @keyframes headerFade {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+    }
+    
+    /* Кнопки */
+    .btn-edit {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 12px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+    
+    .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        color: white;
+    }
+    
+    .btn-edit::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn-edit:hover::after {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .btn-add-student {
+        background: linear-gradient(135deg, #4caf50, #45a049);
+        border: none;
+        border-radius: 12px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        margin-left: 0.5rem;
+    }
+    
+    .btn-add-student:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+        background: linear-gradient(135deg, #45a049, #4caf50);
+        color: white;
+    }
+    
+    /* Карточки */
+    .info-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.2);
+        transition: all 0.3s ease;
+        animation: cardAppear 0.5s ease-out;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+    
+    @keyframes cardAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .info-card:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
+        transform: translateY(-2px);
+    }
+    
+    .card-header-gradient {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1rem 1.5rem;
+    }
+    
+    .card-header-gradient h5 {
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        font-size: 1.2rem;
+    }
+    
+    .card-header-gradient h5 i {
+        color: #6a5acd;
+        font-size: 1.3rem;
+    }
+    
+    .card-body-custom {
+        padding: 1.5rem;
+    }
+    
+    /* Информация о группе */
+    .info-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .info-row {
+        display: flex;
+        padding: 0.5rem;
+        border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .info-row:hover {
+        background: rgba(106, 90, 205, 0.1);
+        border-radius: 10px;
+        transform: translateX(5px);
+    }
+    
+    .info-label {
+        min-width: 140px;
+        color: #a8b8ff;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .info-label i {
+        color: #6a5acd;
+        width: 20px;
+    }
+    
+    .info-value {
+        color: #fff;
+        flex: 1;
+    }
+    
+    .student-count-badge {
+        background: rgba(106, 90, 205, 0.2);
+        color: #6a5acd;
+        padding: 0.2rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+    }
+    
+    /* Таблица студентов */
+    .students-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    .students-table thead th {
+        background: rgba(106, 90, 205, 0.15);
+        color: #a8b8ff;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem;
+        border-bottom: 2px solid rgba(106, 90, 205, 0.3);
+        white-space: nowrap;
+    }
+    
+    .students-table tbody tr {
+        transition: all 0.3s ease;
+        animation: rowAppear 0.5s ease-out;
+        animation-fill-mode: both;
+        cursor: pointer;
+    }
+    
+    @keyframes rowAppear {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .students-table tbody tr:hover {
+        background: rgba(106, 90, 205, 0.15);
+        transform: scale(1.01);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .students-table tbody td {
+        padding: 1rem;
+        color: #e0e0ff;
+        border-bottom: 1px solid rgba(106, 90, 205, 0.2);
+        vertical-align: middle;
+    }
+    
+    .student-avatar-small {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-right: 0.5rem;
+    }
+    
+    .student-info-cell {
+        display: flex;
+        align-items: center;
+    }
+    
+    .student-email {
+        color: #b0b0ff;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .student-email i {
+        color: #6a5acd;
+        font-size: 0.8rem;
+    }
+    
+    .date-badge {
+        background: rgba(106, 90, 205, 0.15);
+        color: #a8b8ff;
+        padding: 0.2rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .date-badge i {
+        color: #6a5acd;
+    }
+    
+    /* Пустое состояние */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #8080b0;
+    }
+    
+    .empty-state i {
+        font-size: 3.5rem;
+        color: #6a5acd;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+        animation: floatIcon 3s infinite ease-in-out;
+    }
+    
+    @keyframes floatIcon {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    
+    .empty-state p {
+        font-size: 1.1rem;
+        margin: 0;
+    }
+    
+    /* Пагинация */
+    .custom-pagination {
+        margin-top: 2rem;
+        animation: paginationAppear 0.6s ease-out 0.3s both;
+    }
+    
+    @keyframes paginationAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .pagination .page-link {
+        background: rgba(30, 30, 46, 0.95);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        color: #a8b8ff;
+        margin: 0 0.2rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination .page-link:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: #6a5acd;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+    }
+    
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border-color: #6a5acd;
+        color: white;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-theme-group-detail {
+            padding: 1rem 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.6rem;
+        }
+        
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .header-buttons {
+            width: 100%;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-edit,
+        .btn-add-student {
+            flex: 1;
+            justify-content: center;
+            margin-left: 0;
+        }
+        
+        .custom-breadcrumb {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .info-row {
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        
+        .info-label {
+            min-width: auto;
+        }
+        
+        .students-table thead {
+            display: none;
+        }
+        
+        .students-table tbody tr {
+            display: block;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(106, 90, 205, 0.3);
+            border-radius: 10px;
+            background: rgba(30, 30, 46, 0.8);
+        }
+        
+        .students-table tbody td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            border: none;
+            border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+        }
+        
+        .students-table tbody td:last-child {
+            border-bottom: none;
+        }
+        
+        .students-table tbody td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: #a8b8ff;
+            margin-right: 1rem;
+        }
+        
+        .student-info-cell {
+            width: 100%;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+        
+        .info-label {
+            min-width: 120px;
+        }
+    }
+</style>
+
+<div class="dark-theme-group-detail">
+    <div class="container">
+        <!-- Заголовок и хлебные крошки -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">
+                    <i class="bi bi-people-fill me-2"></i>
+                    {{ group.name }}
+                </h1>
+                <nav aria-label="breadcrumb" class="custom-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'classroom_core:group_list' %}">
+                                <i class="bi bi-people me-1"></i>Группы студентов
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            {{ group.name|truncatechars:30 }}
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            
+            <div class="header-buttons">
+                {% if user == group.created_by or user.profile.is_staff or user.is_superuser %}
+                <a href="{% url 'classroom_core:group_edit' group.id %}" class="btn-edit">
+                    <i class="bi bi-pencil"></i> Редактировать
+                </a>
+                <a href="{% url 'classroom_core:group_add_students' group.id %}" class="btn-add-student">
+                    <i class="bi bi-person-plus"></i> Добавить студентов
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <!-- Информация о группе -->
+                <div class="info-card">
+                    <div class="card-header-gradient">
+                        <h5>
+                            <i class="bi bi-info-circle"></i>
+                            Информация о группе
+                        </h5>
+                    </div>
+                    <div class="card-body-custom">
+                        <div class="info-grid">
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-tag"></i> Название:
+                                </span>
+                                <span class="info-value">{{ group.name }}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-card-text"></i> Описание:
+                                </span>
+                                <span class="info-value">{{ group.description|default:"Нет описания" }}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-person-circle"></i> Создатель:
+                                </span>
+                                <span class="info-value">{{ group.created_by.username }}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-calendar-plus"></i> Дата создания:
+                                </span>
+                                <span class="info-value">{{ group.created_at|date:"d.m.Y H:i" }}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-people"></i> Студентов:
+                                </span>
+                                <span class="info-value">
+                                    {{ group.get_student_count }}
+                                    <span class="student-count-badge">
+                                        {{ group.get_student_count|pluralize:"человек,человека,человек" }}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Студенты группы -->
+                <div class="info-card">
+                    <div class="card-header-gradient">
+                        <h5>
+                            <i class="bi bi-person-rolodex"></i>
+                            Студенты группы ({{ page_obj.paginator.count }})
+                        </h5>
+                    </div>
+                    <div class="card-body-custom">
+                        {% if page_obj %}
+                        <div class="table-responsive">
+                            <table class="students-table">
+                                <thead>
+                                    <tr>
+                                        <th>Студент</th>
+                                        <th>Контактная информация</th>
+                                        <th>Дата регистрации</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for profile in page_obj %}
+                        <tr data-url="{% url 'classroom_core:profile_view' profile.user.id %}" onclick="window.location.href=this.dataset.url">
+                                        <td data-label="Студент">
+                                            <div class="student-info-cell">
+                                                <div class="student-avatar-small">
+                                                    {{ profile.user.username|first|upper }}
+                                                </div>
+                                                <div>
+                                                    <strong style="color: #fff;">{{ profile.user.username }}</strong>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td data-label="Контактная информация">
+                                            <div>
+                                                <div style="color: #fff;">
+                                                    {{ profile.user.first_name }} {{ profile.user.last_name }}
+                                                </div>
+                                                <div class="student-email">
+                                                    <i class="bi bi-envelope"></i>
+                                                    {{ profile.user.email }}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td data-label="Дата регистрации">
+                                            <span class="date-badge">
+                                                <i class="bi bi-calendar3"></i>
+                                                {{ profile.user.date_joined|date:"d.m.Y" }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="empty-state">
+                            <i class="bi bi-people"></i>
+                            <p>Нет студентов в группе</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Пагинация -->
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Страницы" class="custom-pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Предыдущая">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Следующая">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Анимация для строк таблицы
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('.students-table tbody tr');
+        rows.forEach((row, index) => {
+            row.style.animationDelay = `${0.1 + (index * 0.05)}s`;
+        });
+    });
+</script>
+{% endblock %}

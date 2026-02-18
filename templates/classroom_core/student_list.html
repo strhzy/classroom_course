@@ -1,0 +1,569 @@
+{% extends "classroom_core/base_courses.html" %}
+
+{% block title %}👥 Студенты{% endblock %}
+
+{% block courses_content %}
+<style>
+    .dark-theme-students {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    /* Хлебные крошки */
+    .custom-breadcrumb {
+        background: rgba(106, 90, 205, 0.1);
+        padding: 0.8rem 1.2rem;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        display: inline-block;
+    }
+    
+    .custom-breadcrumb .breadcrumb {
+        margin: 0;
+        background: transparent;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a {
+        color: #a8b8ff;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a:hover {
+        color: #6a5acd;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item.active {
+        color: #fff;
+        font-weight: 500;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+        color: #6a5acd;
+        content: "›";
+        font-size: 1.2rem;
+    }
+    
+    /* Заголовок */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+    
+    .course-name {
+        color: #6a5acd;
+        font-weight: 600;
+        font-size: 1.2rem;
+        margin-left: 0.5rem;
+    }
+    
+    /* Кнопка зачисления */
+    .btn-enroll {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 12px;
+        padding: 0.7rem 1.5rem;
+        font-weight: 600;
+        color: white;
+        transition: background-color 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-enroll:hover {
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        color: white;
+    }
+    
+    /* Поиск */
+    .search-section {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .search-input {
+        background: rgba(20, 20, 35, 0.8);
+        border: 2px solid rgba(106, 90, 205, 0.3);
+        border-radius: 10px;
+        padding: 0.7rem 1rem;
+        color: #fff;
+        font-size: 0.95rem;
+        transition: border-color 0.2s ease;
+        width: 100%;
+    }
+    
+    .search-input:focus {
+        outline: none;
+        border-color: #6a5acd;
+    }
+    
+    .search-input::placeholder {
+        color: #8080b0;
+    }
+    
+    .btn-search {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 10px;
+        padding: 0.7rem 1.5rem;
+        font-weight: 600;
+        color: white;
+        transition: background-color 0.2s ease;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-search:hover {
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+    }
+    
+    /* Карточка с таблицей */
+    .table-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+    }
+    
+    .card-header-custom {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1.2rem 1.5rem;
+    }
+    
+    .card-header-custom h5 {
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .card-header-custom h5 i {
+        color: #6a5acd;
+        font-size: 1.3rem;
+    }
+    
+    /* Таблица */
+    .students-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .students-table thead th {
+        background: rgba(106, 90, 205, 0.15);
+        color: #a8b8ff;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem;
+        border-bottom: 2px solid rgba(106, 90, 205, 0.3);
+        white-space: nowrap;
+        text-align: left;
+    }
+    
+    .students-table tbody tr {
+        transition: background-color 0.2s ease;
+        border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+    }
+    
+    .students-table tbody tr:hover {
+        background: rgba(106, 90, 205, 0.1);
+    }
+    
+    .students-table tbody td {
+        padding: 1rem;
+        color: #e0e0ff;
+        vertical-align: middle;
+    }
+    
+    .student-avatar {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1.2rem;
+        margin-right: 10px;
+    }
+    
+    .student-info {
+        display: flex;
+        align-items: center;
+    }
+    
+    .student-username {
+        color: #fff;
+        font-weight: 600;
+    }
+    
+    .group-badge {
+        background: rgba(106, 90, 205, 0.2);
+        color: #a8b8ff;
+        padding: 0.2rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        border: 1px solid rgba(106, 90, 205, 0.3);
+    }
+    
+    .group-badge i {
+        color: #6a5acd;
+        font-size: 0.9rem;
+    }
+    
+    .btn-action {
+        background: rgba(106, 90, 205, 0.15);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 8px;
+        padding: 0.4rem 0.8rem;
+        color: #a8b8ff;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 2px;
+    }
+    
+    .btn-action:hover {
+        background: rgba(106, 90, 205, 0.25);
+        border-color: #6a5acd;
+        color: #fff;
+    }
+    
+    .btn-action.danger:hover {
+        border-color: #ff4757;
+        background: rgba(255, 71, 87, 0.2);
+        color: #ff6b81;
+    }
+    
+    /* Пустое состояние */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #8080b0;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        color: #6a5acd;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .empty-state p {
+        font-size: 1rem;
+        margin: 0;
+    }
+    
+    /* Пагинация */
+    .custom-pagination {
+        margin-top: 2rem;
+    }
+    
+    .pagination .page-link {
+        background: rgba(30, 30, 46, 0.95);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        color: #a8b8ff;
+        margin: 0 0.2rem;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    
+    .pagination .page-link:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: #6a5acd;
+        color: #fff;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border-color: #6a5acd;
+        color: white;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-theme-students {
+            padding: 1rem 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.6rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .course-name {
+            margin-left: 0;
+            margin-top: 0.3rem;
+            font-size: 1rem;
+        }
+        
+        .custom-breadcrumb {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .btn-enroll {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .students-table thead {
+            display: none;
+        }
+        
+        .students-table tbody tr {
+            display: block;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(106, 90, 205, 0.3);
+            border-radius: 10px;
+            background: rgba(30, 30, 46, 0.8);
+            padding: 1rem;
+        }
+        
+        .students-table tbody td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border: none;
+            border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+        }
+        
+        .students-table tbody td:last-child {
+            border-bottom: none;
+        }
+        
+        .students-table tbody td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: #a8b8ff;
+            margin-right: 1rem;
+        }
+        
+        .student-info {
+            width: 100%;
+        }
+        
+        .btn-action {
+            padding: 0.3rem 0.6rem;
+        }
+    }
+</style>
+
+<div class="dark-theme-students">
+    <div class="container">
+        <!-- Заголовок и хлебные крошки -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">
+                    Студенты
+                    <span class="course-name">{{ course.title }}</span>
+                </h1>
+                <nav aria-label="breadcrumb" class="custom-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'classroom_core:course_list' %}">
+                                <i class="bi bi-grid me-1"></i>Мои курсы
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'classroom_core:course_detail' course.id %}">
+                                {{ course.title|truncatechars:30 }}
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Студенты
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            
+            <div>
+                {% if course.can_edit %}
+                <a href="{% url 'classroom_core:student_enroll' course.id %}" class="btn-enroll">
+                    <i class="bi bi-person-plus"></i> Зачислить студентов
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Поиск -->
+        <div class="search-section">
+            <form method="get" class="row g-3">
+                <div class="col-md-8">
+                    <input type="text" 
+                           name="query" 
+                           value="{{ query }}" 
+                           class="search-input" 
+                           placeholder="🔍 Поиск по имени, фамилии или email...">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn-search">
+                        <i class="bi bi-search"></i>
+                        Найти
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Таблица студентов -->
+        <div class="table-card">
+            <div class="card-header-custom">
+                <h5>
+                    <i class="bi bi-people"></i>
+                    Список студентов ({{ page_obj.paginator.count }})
+                </h5>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="students-table">
+                    <thead>
+                        <tr>
+                            <th>Имя пользователя</th>
+                            <th>ФИО</th>
+                            <th>Email</th>
+                            <th>Группа</th>
+                            <th>Дата регистрации</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in page_obj %}
+                        <tr>
+                            <td data-label="Имя пользователя">
+                                <div class="student-info">
+                                    <div class="student-avatar">
+                                        {{ student.username|slice:":1"|upper }}
+                                    </div>
+                                    <div class="student-username">{{ student.username }}</div>
+                                </div>
+                            </td>
+                            <td data-label="ФИО">{{ student.first_name }} {{ student.last_name }}</td>
+                            <td data-label="Email">
+                                <i class="bi bi-envelope" style="color: #6a5acd; margin-right: 0.3rem;"></i>
+                                {{ student.email }}
+                            </td>
+                            <td data-label="Группа">
+                                {% if student.profile.student_group %}
+                                <span class="group-badge">
+                                    <i class="bi bi-people"></i>
+                                    {{ student.profile.student_group }}
+                                </span>
+                                {% else %}
+                                <span style="color: #8080b0;">—</span>
+                                {% endif %}
+                            </td>
+                            <td data-label="Дата регистрации">
+                                <i class="bi bi-calendar3" style="color: #6a5acd; margin-right: 0.3rem;"></i>
+                                {{ student.date_joined|date:"d.m.Y" }}
+                            </td>
+                            <td data-label="Действия">
+                                {% if course.can_edit %}
+                                <a href="{% url 'classroom_core:profile_view_user' student.id %}" 
+                                   class="btn-action" 
+                                   title="Просмотреть профиль">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% url 'classroom_core:student_remove' course.id student.id %}" 
+                                   class="btn-action danger" 
+                                   title="Удалить с курса">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">
+                                <div class="empty-state">
+                                    <i class="bi bi-people"></i>
+                                    <p>Нет студентов на курсе</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Пагинация -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Страницы" class="custom-pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&query={{ query }}" aria-label="Предыдущая">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}&query={{ query }}">{{ num }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&query={{ query }}" aria-label="Следующая">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

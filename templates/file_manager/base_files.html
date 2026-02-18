@@ -1,47 +1,248 @@
 {% extends "base.html" %}
 
 {% block content %}
-<nav class="navbar navbar-expand-lg navbar-light sidebar">
+<style>
+    /* Темная тема для навигации файлового менеджера */
+    .file-nav {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        padding: 0.8rem 1rem;
+    }
+    
+    .file-nav .navbar-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .file-nav .nav-link {
+        color: #a8b8ff !important;
+        padding: 0.6rem 1.2rem !important;
+        border-radius: 12px;
+        transition: background-color 0.2s ease, color 0.2s ease;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .file-nav .nav-link:hover {
+        color: #fff !important;
+        background: rgba(106, 90, 205, 0.15);
+    }
+    
+    .file-nav .nav-link.active {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.25), rgba(74, 144, 226, 0.25));
+        color: #fff !important;
+        border: 1px solid rgba(106, 90, 205, 0.5);
+    }
+    
+    .file-nav .nav-link i {
+        color: #6a5acd;
+        font-size: 1.2rem;
+    }
+    
+    .file-nav .nav-link.active i {
+        color: #fff;
+    }
+    
+    /* Индикатор хранилища */
+    .storage-alert {
+        background: rgba(30, 30, 46, 0.95) !important;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3) !important;
+        border-radius: 15px !important;
+        color: #fff !important;
+        margin: 1rem 1.5rem !important;
+        padding: 1rem 1.5rem !important;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .storage-alert.alert-success {
+        border-left: 5px solid #4caf50 !important;
+    }
+    
+    .storage-alert.alert-warning {
+        border-left: 5px solid #ffa502 !important;
+    }
+    
+    .storage-alert.alert-danger {
+        border-left: 5px solid #ff4757 !important;
+    }
+    
+    .storage-label {
+        color: #a8b8ff;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .storage-label i {
+        color: #6a5acd;
+        font-size: 1.2rem;
+    }
+    
+    .storage-value {
+        color: #fff;
+        font-weight: 500;
+        background: rgba(106, 90, 205, 0.15);
+        padding: 0.3rem 1rem;
+        border-radius: 50px;
+        margin-left: 0.5rem;
+    }
+    
+    .storage-progress {
+        width: 250px;
+        height: 30px;
+        background: rgba(20, 20, 35, 0.8) !important;
+        border-radius: 15px !important;
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        overflow: hidden;
+    }
+    
+    .storage-progress-bar {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: width 0.3s ease;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+    
+    .storage-progress-bar.bg-success {
+        background: linear-gradient(90deg, #4caf50, #45a049) !important;
+    }
+    
+    .storage-progress-bar.bg-warning {
+        background: linear-gradient(90deg, #ffa502, #ffb822) !important;
+        color: #1a1a2e;
+    }
+    
+    .storage-progress-bar.bg-danger {
+        background: linear-gradient(90deg, #ff4757, #ff6b81) !important;
+    }
+    
+    /* Основной контент */
+    .file-main-content {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: calc(100vh - 70px);
+        padding: 2rem 1rem;
+    }
+    
+    .file-content-container {
+        background: rgba(30, 30, 46, 0.3);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.2);
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .file-nav .navbar-nav {
+            flex-direction: column;
+            width: 100%;
+            gap: 0.3rem;
+        }
+        
+        .file-nav .nav-link {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .storage-alert .d-flex {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 1rem;
+        }
+        
+        .storage-progress {
+            width: 100%;
+        }
+        
+        .file-main-content {
+            padding: 1rem 0.5rem;
+        }
+        
+        .file-content-container {
+            padding: 1rem;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .file-nav .nav-link {
+            padding: 0.5rem 1rem !important;
+            font-size: 0.9rem;
+        }
+        
+        .file-nav .nav-link i {
+            font-size: 1rem;
+        }
+        
+        .storage-progress {
+            width: 200px;
+        }
+    }
+</style>
+
+<!-- Навигация файлового менеджера -->
+<nav class="navbar navbar-expand-lg file-nav">
     <div class="container-fluid">
-        <div class="navbar-nav">
-            <a class="nav-link {% if request.resolver_match.url_name == 'file_list' %}active{% endif %}" 
-               href="{% url 'file_manager:file_list' %}">
-                <i class="bi bi-files me-1"></i> Все файлы
-            </a>
-            <a class="nav-link {% if request.resolver_match.url_name == 'file_upload' %}active{% endif %}" 
-               href="{% url 'file_manager:file_upload' %}">
-                <i class="bi bi-upload me-1"></i> Загрузить
-            </a>
-            <a class="nav-link {% if request.resolver_match.url_name == 'folder_create' %}active{% endif %}" 
-               href="{% url 'file_manager:folder_create' %}">
-                <i class="bi bi-folder-plus me-1"></i> Папка
-            </a>
-            <a class="nav-link {% if request.resolver_match.url_name == 'activity_log' %}active{% endif %}" 
-               href="{% url 'file_manager:activity_log' %}">
-                <i class="bi bi-clock-history me-1"></i> Активность
-            </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fileNavbar" 
+                style="background: rgba(106, 90, 205, 0.3); border: 1px solid rgba(106, 90, 205, 0.5);">
+            <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="fileNavbar">
+            <div class="navbar-nav">
+                <a class="nav-link {% if request.resolver_match.url_name == 'file_list' %}active{% endif %}" 
+                   href="{% url 'file_manager:file_list' %}">
+                    <i class="bi bi-files"></i>
+                    <span>Все файлы</span>
+                </a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'file_upload' %}active{% endif %}" 
+                   href="{% url 'file_manager:file_upload' %}">
+                    <i class="bi bi-upload"></i>
+                    <span>Загрузить</span>
+                </a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'folder_create' %}active{% endif %}" 
+                   href="{% url 'file_manager:folder_create' %}">
+                    <i class="bi bi-folder-plus"></i>
+                    <span>Папка</span>
+                </a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'activity_log' %}active{% endif %}" 
+                   href="{% url 'file_manager:activity_log' %}">
+                    <i class="bi bi-clock-history"></i>
+                    <span>Активность</span>
+                </a>
+            </div>
         </div>
     </div>
 </nav>
 
+<!-- Индикатор хранилища -->
 {% if storage_quota %}
-<div class="alert alert-info mt-3 mx-3" id="storage-quota-alert">
+<div class="storage-alert alert" id="storage-quota-alert">
     <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <strong>Хранилище:</strong> 
-            <span id="storage-quota-display">Загрузка...</span>
+        <div class="storage-label">
+            <i class="bi bi-database"></i>
+            <span>Хранилище:</span>
+            <span class="storage-value" id="storage-quota-display">Загрузка...</span>
         </div>
-        <div style="width: 200px;">
-            <div class="progress" id="storage-quota-progress">
-                <div class="progress-bar bg-success" 
-                     role="progressbar" 
-                     id="storage-quota-bar"
-                     style="width: 0%"
-                     aria-valuenow="0" 
-                     aria-valuemin="0" 
-                     aria-valuemax="100">
-                    0%
-                </div>
+        <div class="storage-progress" id="storage-quota-progress">
+            <div class="storage-progress-bar bg-success" 
+                 id="storage-quota-bar"
+                 role="progressbar" 
+                 style="width: 0%"
+                 aria-valuenow="0" 
+                 aria-valuemin="0" 
+                 aria-valuemax="100">
+                0%
             </div>
         </div>
     </div>
@@ -58,7 +259,13 @@
     }
     
     function getAlertClass(percentage) {
-        return percentage >= 80 ? 'alert-warning' : 'alert-success';
+        if (percentage >= 95) {
+            return 'alert-danger';
+        } else if (percentage >= 80) {
+            return 'alert-warning';
+        } else {
+            return 'alert-success';
+        }
     }
     
     function getProgressBarClass(percentage) {
@@ -96,7 +303,7 @@
             const currentClasses = alertElement.className.split(' ');
             const newClasses = currentClasses.filter(cls => !cls.startsWith('alert-') && cls !== '');
             newClasses.push(getAlertClass(percentage));
-            alertElement.className = newClasses.join(' ') + ' mt-3 mx-3';
+            alertElement.className = newClasses.join(' ') + ' storage-alert';
         }
     }
     
@@ -156,12 +363,32 @@
 </script>
 {% endif %}
 
-<!-- Page Content -->
-<div class="container-fluid main-content">
-    <div class="row">
-        <div class="col-12">
-            {% block files_content %}{% endblock %}
+<!-- Основной контент -->
+<div class="file-main-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="file-content-container">
+                    {% block files_content %}{% endblock %}
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Скрипт для мобильного меню -->
+<script>
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 768) {
+            const navbarCollapse = document.getElementById('fileNavbar');
+            const toggler = document.querySelector('.navbar-toggler');
+            
+            if (navbarCollapse && toggler) {
+                if (!navbarCollapse.contains(e.target) && !toggler.contains(e.target)) {
+                    navbarCollapse.classList.remove('show');
+                }
+            }
+        }
+    });
+</script>
 {% endblock %}

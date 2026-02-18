@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Темная тема для навигации */
+    .dark-nav {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        padding: 0.8rem 1rem;
+    }
+    
+    /* Стили для навигационных ссылок */
+    .dark-nav .navbar-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .dark-nav .nav-link {
+        color: #a8b8ff !important;
+        padding: 0.6rem 1.2rem !important;
+        border-radius: 12px;
+        transition: background-color 0.2s ease, color 0.2s ease;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .dark-nav .nav-link:hover {
+        color: #fff !important;
+        background: rgba(106, 90, 205, 0.15);
+    }
+    
+    .dark-nav .nav-link.active {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.25), rgba(74, 144, 226, 0.25));
+        color: #fff !important;
+        border: 1px solid rgba(106, 90, 205, 0.5);
+    }
+    
+    /* Иконки в навигации */
+    .dark-nav .nav-link i {
+        color: #6a5acd;
+        font-size: 1.2rem;
+    }
+    
+    .dark-nav .nav-link.active i {
+        color: #fff;
+    }
+    
+    /* Основной контент */
+    .dark-main-content {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: calc(100vh - 70px);
+        padding: 2rem 1rem;
+    }
+    
+    /* Контейнер для контента */
+    .dark-content-container {
+        background: rgba(30, 30, 46, 0.3);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.2);
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-nav .navbar-nav {
+            flex-direction: column;
+            width: 100%;
+            gap: 0.3rem;
+        }
+        
+        .dark-nav .nav-link {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .dark-main-content {
+            padding: 1rem 0.5rem;
+        }
+        
+        .dark-content-container {
+            padding: 1rem;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .dark-nav .nav-link {
+            padding: 0.5rem 1rem !important;
+            font-size: 0.9rem;
+        }
+        
+        .dark-nav .nav-link i {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<!-- Навигация -->
+<nav class="navbar navbar-expand-lg dark-nav">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                style="background: rgba(106, 90, 205, 0.3); border: 1px solid rgba(106, 90, 205, 0.5);">
+            <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav">
+                <a class="nav-link {% if request.resolver_match.url_name == 'course_list' %}active{% endif %}" 
+                   href="{% url 'classroom_core:course_list' %}">
+                    <i class="bi bi-journal-bookmark-fill"></i>
+                    <span>Мои курсы</span>
+                </a>
+                
+                {% if user.profile.is_teacher or user.profile.is_staff or user.is_superuser %}
+                <a class="nav-link {% if request.resolver_match.url_name == 'course_create' %}active{% endif %}" 
+                   href="{% url 'classroom_core:course_create' %}">
+                    <i class="bi bi-plus-circle-fill"></i>
+                    <span>Создать курс</span>
+                </a>
+                {% endif %}
+                
+                <a class="nav-link {% if request.resolver_match.url_name == 'assignment_list' %}active{% endif %}" 
+                   href="{% url 'classroom_core:assignment_list' %}">
+                    <i class="bi bi-journal-text"></i>
+                    <span>Задания</span>
+                </a>
+                
+                <a class="nav-link {% if request.resolver_match.url_name == 'announcement_list' %}active{% endif %}" 
+                   href="{% url 'classroom_core:announcement_list' %}">
+                    <i class="bi bi-megaphone-fill"></i>
+                    <span>Объявления</span>
+                </a>
+                
+                {% if user.profile.is_teacher or user.profile.is_staff or user.is_superuser %}
+                <a class="nav-link {% if request.resolver_match.url_name == 'student_list' %}active{% endif %}" 
+                   href="{% url 'classroom_core:student_list' 1 %}">
+                    <i class="bi bi-people-fill"></i>
+                    <span>Студенты</span>
+                </a>
+                {% endif %}
+                
+                <a class="nav-link {% if request.resolver_match.url_name == 'profile_view' %}active{% endif %}" 
+                   href="{% url 'classroom_core:profile_view' %}">
+                    <i class="bi bi-person-fill"></i>
+                    <span>Профиль</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Основной контент -->
+<div class="dark-main-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="dark-content-container">
+                    {% block courses_content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Скрипт для мобильного меню -->
+<script>
+    // Обработка для мобильного меню
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 768) {
+            const navbarCollapse = document.getElementById('navbarNav');
+            const toggler = document.querySelector('.navbar-toggler');
+            
+            if (navbarCollapse && toggler) {
+                if (!navbarCollapse.contains(e.target) && !toggler.contains(e.target)) {
+                    navbarCollapse.classList.remove('show');
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

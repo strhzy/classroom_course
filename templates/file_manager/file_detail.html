@@ -1,174 +1,722 @@
 {% extends "file_manager/base_files.html" %}
 
 {% block title %}📄 {{ file.title }}{% endblock %}
-{% block files_content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="h3">{{ file.title }}</h1>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{% url 'file_manager:file_list' %}">Файлы</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Детали</li>
-            </ol>
-        </nav>
-    </div>
-    <div>
-        <a href="{% url 'file_manager:file_download' file.id %}" class="btn btn-success">
-            <i class="bi bi-download"></i> Скачать
-        </a>
-        {% if can_edit %}
-        <a href="{% url 'file_manager:file_edit' file.id %}" class="btn btn-primary ms-2">
-            <i class="bi bi-pencil"></i> Редактировать
-        </a>
-        {% endif %}
-        {% if can_delete %}
-        <a href="{% url 'file_manager:file_delete' file.id %}" class="btn btn-danger ms-2">
-            <i class="bi bi-trash"></i> Удалить
-        </a>
-        {% endif %}
-    </div>
-</div>
 
-<div class="row">
-    <div class="col-lg-8">
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <h6 class="card-title mb-3">Информация о файле</h6>
-                <dl class="row mb-0">
-                    <dt class="col-sm-3">Название:</dt>
-                    <dd class="col-sm-9">{{ file.title }}</dd>
-                    
-                    <dt class="col-sm-3">Описание:</dt>
-                    <dd class="col-sm-9">{{ file.description|default:"Нет описания" }}</dd>
-                    
-                    <dt class="col-sm-3">Тип файла:</dt>
-                    <dd class="col-sm-9">
-                        <span class="badge bg-light text-dark">{{ file.get_file_type_display }}</span>
-                        <span class="badge bg-light text-dark">{{ file.get_extension }}</span>
-                    </dd>
-                    
-                    <dt class="col-sm-3">Размер:</dt>
-                    <dd class="col-sm-9">{{ file.get_file_size_display }}</dd>
-                    
-                    <dt class="col-sm-3">Загружен:</dt>
-                    <dd class="col-sm-9">
-                        {{ file.uploaded_at|date:"d.m.Y H:i" }} пользователем {{ file.uploaded_by.username }}
-                    </dd>
-                    
-                    <dt class="col-sm-3">Версия:</dt>
-                    <dd class="col-sm-9">{{ file.version }}</dd>
-                    
-                    <dt class="col-sm-3">Курс:</dt>
-                    <dd class="col-sm-9">
-                        {% if file.course %}
-                        <a href="{% url 'file_manager:course_files' file.course.id %}">{{ file.course.title }}</a>
-                        {% else %}
-                        <span class="text-muted">Не привязан</span>
-                        {% endif %}
-                    </dd>
-                </dl>
-            </div>
-        </div>
+{% block files_content %}
+<style>
+    .dark-theme-file-detail {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    /* Хлебные крошки */
+    .custom-breadcrumb {
+        background: rgba(106, 90, 205, 0.1);
+        padding: 0.8rem 1.2rem;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        display: inline-block;
+    }
+    
+    .custom-breadcrumb .breadcrumb {
+        margin: 0;
+        background: transparent;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a {
+        color: #a8b8ff;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a:hover {
+        color: #6a5acd;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item.active {
+        color: #fff;
+        font-weight: 500;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+        color: #6a5acd;
+        content: "›";
+        font-size: 1.2rem;
+    }
+    
+    /* Заголовок */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Кнопки действий */
+    .action-btn {
+        border: none;
+        border-radius: 10px;
+        padding: 0.5rem 1.2rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-left: 0.5rem;
+    }
+    
+    .btn-download {
+        background: linear-gradient(135deg, #4caf50, #45a049);
+        color: white;
+    }
+    
+    .btn-download:hover {
+        background: linear-gradient(135deg, #45a049, #4caf50);
+        color: white;
+    }
+    
+    .btn-edit {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        color: white;
+    }
+    
+    .btn-edit:hover {
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        color: white;
+    }
+    
+    .btn-delete {
+        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        color: white;
+    }
+    
+    .btn-delete:hover {
+        background: linear-gradient(135deg, #ff6b81, #ff4757);
+        color: white;
+    }
+    
+    /* Карточки */
+    .detail-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+    
+    .card-header-custom {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1rem 1.5rem;
+    }
+    
+    .card-header-custom h6 {
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    .card-header-custom i {
+        color: #6a5acd;
+    }
+    
+    .card-body-custom {
+        padding: 1.5rem;
+    }
+    
+    /* Информация о файле */
+    .info-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    .info-row {
+        display: flex;
+        padding: 0.5rem;
+        border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+        transition: background-color 0.2s ease;
+        border-radius: 8px;
+    }
+    
+    .info-row:hover {
+        background: rgba(106, 90, 205, 0.1);
+    }
+    
+    .info-label {
+        min-width: 120px;
+        color: #a8b8ff;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .info-label i {
+        color: #6a5acd;
+        width: 20px;
+    }
+    
+    .info-value {
+        color: #fff;
+        flex: 1;
+    }
+    
+    .badge-file {
+        background: rgba(106, 90, 205, 0.2);
+        color: #a8b8ff;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        margin-right: 0.3rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .badge-file i {
+        color: #6a5acd;
+    }
+    
+    /* Извлеченный текст */
+    .extracted-text {
+        background: rgba(20, 20, 35, 0.8);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 12px;
+        padding: 1rem;
+        color: #b0b0ff;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        max-height: 300px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+    
+    .extracted-text::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .extracted-text::-webkit-scrollbar-track {
+        background: rgba(106, 90, 205, 0.1);
+        border-radius: 10px;
+    }
+    
+    .extracted-text::-webkit-scrollbar-thumb {
+        background: rgba(106, 90, 205, 0.3);
+        border-radius: 10px;
+    }
+    
+    /* Комментарии */
+    .comment-card {
+        background: rgba(20, 20, 35, 0.8);
+        border: 1px solid rgba(106, 90, 205, 0.2);
+        border-radius: 15px;
+        margin-bottom: 1rem;
+        transition: all 0.2s ease;
+    }
+    
+    .comment-card:hover {
+        background: rgba(30, 30, 50, 0.9);
+        border-color: rgba(106, 90, 205, 0.4);
+    }
+    
+    .comment-header {
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+    }
+    
+    .comment-author {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .comment-author i {
+        color: #6a5acd;
+        font-size: 1.2rem;
+    }
+    
+    .comment-author strong {
+        color: #fff;
+    }
+    
+    .comment-date {
+        color: #a8b8ff;
+        font-size: 0.85rem;
+    }
+    
+    .comment-content {
+        padding: 1rem;
+        color: #e0e0ff;
+    }
+    
+    .btn-delete-comment {
+        background: rgba(255, 71, 87, 0.15);
+        border: 1px solid rgba(255, 71, 87, 0.3);
+        border-radius: 6px;
+        padding: 0.3rem 0.6rem;
+        color: #ff6b81;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+    
+    .btn-delete-comment:hover {
+        background: rgba(255, 71, 87, 0.25);
+        border-color: #ff4757;
+        color: #fff;
+    }
+    
+    /* Форма комментария */
+    .comment-form textarea {
+        background: rgba(20, 20, 35, 0.8);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 12px;
+        padding: 0.8rem 1rem;
+        color: #fff;
+        transition: border-color 0.2s ease;
+        width: 100%;
+    }
+    
+    .comment-form textarea:focus {
+        outline: none;
+        border-color: #6a5acd;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 10px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 500;
+        color: white;
+        transition: background-color 0.2s ease;
+    }
+    
+    .btn-submit:hover {
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+    }
+    
+    /* Сайдбар */
+    .stats-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    
+    .btn-favorite {
+        width: 100%;
+        padding: 0.8rem;
+        border-radius: 12px;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-favorite.active {
+        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        color: white;
+    }
+    
+    .btn-favorite.inactive {
+        background: rgba(255, 71, 87, 0.15);
+        border: 1px solid rgba(255, 71, 87, 0.3);
+        color: #ff6b81;
+    }
+    
+    .btn-favorite.inactive:hover {
+        background: rgba(255, 71, 87, 0.25);
+        border-color: #ff4757;
+    }
+    
+    .stats-grid {
+        display: flex;
+        justify-content: space-around;
+    }
+    
+    .stat-item {
+        text-align: center;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #6a5acd;
+    }
+    
+    .stat-label {
+        color: #a8b8ff;
+        font-size: 0.8rem;
+    }
+    
+    /* Список пользователей */
+    .users-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .user-item {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+    }
+    
+    .user-item:last-child {
+        border-bottom: none;
+    }
+    
+    .user-item i {
+        color: #6a5acd;
+        margin-right: 0.5rem;
+        font-size: 1rem;
+    }
+    
+    .user-name {
+        color: #fff;
+    }
+    
+    /* Пустое состояние */
+    .empty-text {
+        color: #8080b0;
+        text-align: center;
+        padding: 1.5rem;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-theme-file-detail {
+            padding: 1rem 0.5rem;
+        }
         
-        {% if file.extracted_text %}
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <h6 class="card-title mb-3">Извлеченный текст</h6>
-                <pre style="white-space: pre-wrap; word-wrap: break-word; background: #f8f9fa; padding: 15px; border-radius: 5px; max-height: 300px; overflow-y: auto; font-size: 0.875rem;">
-{{ file.extracted_text|truncatechars:1000 }}
-                </pre>
-                {% if file.extracted_text|length > 1000 %}
-                <small class="text-muted">Показаны первые 1000 символов</small>
+        .page-title {
+            font-size: 1.5rem;
+        }
+        
+        .custom-breadcrumb {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            width: 100%;
+        }
+        
+        .action-btn {
+            flex: 1;
+            justify-content: center;
+            margin-left: 0;
+        }
+        
+        .info-row {
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        
+        .info-label {
+            min-width: auto;
+        }
+    }
+</style>
+
+<div class="dark-theme-file-detail">
+    <div class="container">
+        <!-- Заголовок и хлебные крошки -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">{{ file.title }}</h1>
+                <nav aria-label="breadcrumb" class="custom-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'file_manager:file_list' %}">
+                                <i class="bi bi-files me-1"></i>Файлы
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Детали
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="{% url 'file_manager:file_download' file.id %}" class="action-btn btn-download">
+                    <i class="bi bi-download"></i> Скачать
+                </a>
+                {% if can_edit %}
+                <a href="{% url 'file_manager:file_edit' file.id %}" class="action-btn btn-edit">
+                    <i class="bi bi-pencil"></i> Редактировать
+                </a>
+                {% endif %}
+                {% if can_delete %}
+                <a href="{% url 'file_manager:file_delete' file.id %}" class="action-btn btn-delete">
+                    <i class="bi bi-trash"></i> Удалить
+                </a>
                 {% endif %}
             </div>
         </div>
-        {% endif %}
-        
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6 class="card-title mb-3">Комментарии ({{ file.comments.count }})</h6>
-                {% if comments %}
-                <div class="mb-4">
-                    {% for comment in comments %}
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <strong>{{ comment.author.username }}</strong>
-                                    <small class="text-muted ms-2">{{ comment.created_at|date:"d.m.Y H:i" }}</small>
-                                </div>
-                                {% if comment.can_delete %}
-                                <a href="{% url 'file_manager:file_comment_delete' comment.id %}" class="btn btn-sm btn-outline-danger">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                                {% endif %}
+
+        <div class="row">
+            <!-- Основной контент -->
+            <div class="col-lg-8">
+                <!-- Информация о файле -->
+                <div class="detail-card">
+                    <div class="card-header-custom">
+                        <h6>
+                            <i class="bi bi-info-circle"></i>
+                            Информация о файле
+                        </h6>
+                    </div>
+                    <div class="card-body-custom">
+                        <div class="info-grid">
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-tag"></i> Название:
+                                </span>
+                                <span class="info-value">{{ file.title }}</span>
                             </div>
-                            <p class="mt-2 mb-0">{{ comment.content }}</p>
+                            
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-card-text"></i> Описание:
+                                </span>
+                                <span class="info-value">{{ file.description|default:"<span class='empty-text'>Нет описания</span>" }}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-file-earmark"></i> Тип файла:
+                                </span>
+                                <span class="info-value">
+                                    <span class="badge-file">
+                                        <i class="bi bi-file"></i>
+                                        {{ file.get_file_type_display }}
+                                    </span>
+                                    <span class="badge-file">
+                                        <i class="bi bi-code"></i>
+                                        {{ file.get_extension }}
+                                    </span>
+                                </span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-hdd"></i> Размер:
+                                </span>
+                                <span class="info-value">{{ file.get_file_size_display }}</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-calendar-plus"></i> Загружен:
+                                </span>
+                                <span class="info-value">
+                                    <i class="bi bi-clock" style="color: #6a5acd;"></i>
+                                    {{ file.uploaded_at|date:"d.m.Y H:i" }} 
+                                    <i class="bi bi-person-circle" style="color: #6a5acd; margin-left: 1rem;"></i>
+                                    {{ file.uploaded_by.username }}
+                                </span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-tag"></i> Версия:
+                                </span>
+                                <span class="info-value">
+                                    <span class="badge-file">
+                                        <i class="bi bi-tag"></i>
+                                        {{ file.version }}
+                                    </span>
+                                </span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-book"></i> Курс:
+                                </span>
+                                <span class="info-value">
+                                    {% if file.course %}
+                                    <a href="{% url 'file_manager:course_files' file.course.id %}" style="color: #a8b8ff; text-decoration: none;">
+                                        <i class="bi bi-book-fill"></i>
+                                        {{ file.course.title }}
+                                    </a>
+                                    {% else %}
+                                    <span class="empty-text">Не привязан</span>
+                                    {% endif %}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                    {% endfor %}
                 </div>
-                {% else %}
-                <p class="text-muted text-center py-3">Нет комментариев</p>
-                {% endif %}
                 
-                <hr>
-                <h6 class="mb-3">Добавить комментарий</h6>
-                <form method="post" action="{% url 'file_manager:file_comment_create' file.id %}">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <textarea name="content" class="form-control" rows="3" required></textarea>
+                <!-- Извлеченный текст -->
+                {% if file.extracted_text %}
+                <div class="detail-card">
+                    <div class="card-header-custom">
+                        <h6>
+                            <i class="bi bi-file-text"></i>
+                            Извлеченный текст
+                        </h6>
                     </div>
-                    <button type="submit" class="btn btn-primary">Отправить</button>
-                </form>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-lg-4">
-        <div class="card shadow-sm mb-4">
-            <div class="card-body text-center">
-                {% if is_favorite %}
-                <a href="{% url 'file_manager:favorite_toggle' file.id %}" class="btn btn-danger w-100 mb-3">
-                    <i class="bi bi-heart-fill"></i> В избранном
-                </a>
-                {% else %}
-                <a href="{% url 'file_manager:favorite_toggle' file.id %}" class="btn btn-outline-danger w-100 mb-3">
-                    <i class="bi bi-heart"></i> Добавить в избранное
-                </a>
-                {% endif %}
-                
-                <div class="d-flex justify-content-around text-center">
-                    <div>
-                        <div class="h5">{{ file.download_count }}</div>
-                        <small class="text-muted">Скачиваний</small>
-                    </div>
-                    <div>
-                        <div class="h5">{{ file.comments.count }}</div>
-                        <small class="text-muted">Комментариев</small>
-                    </div>
-                    <div>
-                        <div class="h5">{{ file.version }}</div>
-                        <small class="text-muted">Версия</small>
+                    <div class="card-body-custom">
+                        <div class="extracted-text">
+                            {{ file.extracted_text|truncatechars:1000 }}
+                        </div>
+                        {% if file.extracted_text|length > 1000 %}
+                        <small class="text-muted mt-2">Показаны первые 1000 символов</small>
+                        {% endif %}
                     </div>
                 </div>
+                {% endif %}
+                
+                <!-- Комментарии -->
+                <div class="detail-card">
+                    <div class="card-header-custom">
+                        <h6>
+                            <i class="bi bi-chat"></i>
+                            Комментарии ({{ file.comments.count }})
+                        </h6>
+                    </div>
+                    <div class="card-body-custom">
+                        {% if comments %}
+                        <div class="mb-4">
+                            {% for comment in comments %}
+                            <div class="comment-card">
+                                <div class="comment-header">
+                                    <div class="comment-author">
+                                        <i class="bi bi-person-circle"></i>
+                                        <strong>{{ comment.author.username }}</strong>
+                                        <span class="comment-date">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+                                    </div>
+                                    {% if comment.can_delete %}
+                                    <a href="{% url 'file_manager:file_comment_delete' comment.id %}" class="btn-delete-comment">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                <div class="comment-content">
+                                    {{ comment.content }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="empty-text">
+                            <i class="bi bi-chat-dots" style="font-size: 2rem;"></i>
+                            <p>Нет комментариев</p>
+                        </div>
+                        {% endif %}
+                        
+                        <hr style="border-color: rgba(106, 90, 205, 0.3);">
+                        
+                        <h6 class="mb-3" style="color: #a8b8ff;">Добавить комментарий</h6>
+                        <form method="post" action="{% url 'file_manager:file_comment_create' file.id %}" class="comment-form">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <textarea name="content" class="form-control" rows="3" required placeholder="Напишите комментарий..."></textarea>
+                            </div>
+                            <button type="submit" class="btn-submit">Отправить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Сайдбар -->
+            <div class="col-lg-4">
+                <!-- Избранное и статистика -->
+                <div class="stats-card">
+                    {% if is_favorite %}
+                    <a href="{% url 'file_manager:favorite_toggle' file.id %}" class="btn-favorite active">
+                        <i class="bi bi-heart-fill"></i> В избранном
+                    </a>
+                    {% else %}
+                    <a href="{% url 'file_manager:favorite_toggle' file.id %}" class="btn-favorite inactive">
+                        <i class="bi bi-heart"></i> Добавить в избранное
+                    </a>
+                    {% endif %}
+                    
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">{{ file.download_count }}</div>
+                            <div class="stat-label">Скачиваний</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">{{ file.comments.count }}</div>
+                            <div class="stat-label">Комментариев</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">{{ file.version }}</div>
+                            <div class="stat-label">Версия</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Общий доступ -->
+                {% if file.shared_with.all %}
+                <div class="detail-card">
+                    <div class="card-header-custom">
+                        <h6>
+                            <i class="bi bi-share"></i>
+                            Общий доступ
+                        </h6>
+                    </div>
+                    <div class="card-body-custom">
+                        <ul class="users-list">
+                            {% for user in file.shared_with.all %}
+                            <li class="user-item">
+                                <i class="bi bi-person-circle"></i>
+                                <span class="user-name">{{ user.username }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
-        
-        {% if file.shared_with.all %}
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6 class="card-title mb-3">Общий доступ</h6>
-                <ul class="list-group list-group-flush">
-                    {% for user in file.shared_with.all %}
-                    <li class="list-group-item">
-                        <i class="bi bi-person-circle me-2"></i> {{ user.username }}
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-        {% endif %}
     </div>
 </div>
 {% endblock %}

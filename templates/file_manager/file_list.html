@@ -1,187 +1,638 @@
 {% extends "file_manager/base_files.html" %}
 
 {% block title %}📁 Мои файлы{% endblock %}
-{% block files_content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3">Мои файлы</h1>
-    <div>
-        <a href="{% url 'file_manager:file_upload' %}" class="btn btn-primary">
-            <i class="bi bi-upload"></i> Загрузить
-        </a>
-        <a href="{% url 'file_manager:folder_create' %}" class="btn btn-outline-secondary ms-2">
-            <i class="bi bi-folder-plus"></i> Папка
-        </a>
-    </div>
-</div>
 
-<div class="row">
-    <div class="col-lg-3">
-        <div class="card shadow-sm mb-3">
-            <div class="card-body">
-                <h6 class="card-title text-muted mb-3">Фильтры</h6>
-                <form method="get">
-                    <div class="mb-3">
-                        <input type="text" name="query" value="{{ search_form.query.value|default:"" }}" 
-                               class="form-control" placeholder="Поиск...">
-                    </div>
-                    
-                    <div class="mb-3">
-                        <select name="file_type" class="form-select">
-                            <option value="">Все типы</option>
-                            <option value="pdf" {% if search_form.file_type.value == 'pdf' %}selected{% endif %}>PDF</option>
-                            <option value="txt" {% if search_form.file_type.value == 'txt' %}selected{% endif %}>Текст</option>
-                            <option value="docx" {% if search_form.file_type.value == 'docx' %}selected{% endif %}>Word</option>
-                            <option value="xlsx" {% if search_form.file_type.value == 'xlsx' %}selected{% endif %}>Excel</option>
-                            <option value="pptx" {% if search_form.file_type.value == 'pptx' %}selected{% endif %}>PowerPoint</option>
-                            <option value="jpg" {% if search_form.file_type.value == 'jpg' %}selected{% endif %}>Изображения</option>
-                            <option value="other" {% if search_form.file_type.value == 'other' %}selected{% endif %}>Другие</option>
-                        </select>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <select name="course" class="form-select">
-                            <option value="">Все курсы</option>
-                            {% for course in courses %}
-                            <option value="{{ course.id }}" {% if search_form.course.value|add:"0" == course.id %}selected{% endif %}>
-                                {{ course.title }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    
-                    <div class="form-check mb-3">
-                        <input type="checkbox" name="favorites_only" id="favorites_only" 
-                               class="form-check-input" {% if search_form.favorites_only.value %}checked{% endif %}>
-                        <label for="favorites_only" class="form-check-label">Только избранное</label>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary w-100">Применить</button>
-                    <a href="{% url 'file_manager:file_list' %}" class="btn btn-outline-secondary w-100 mt-2">Сбросить</a>
-                </form>
+{% block files_content %}
+<style>
+    .dark-theme-files {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    /* Заголовок */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .page-title i {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 2.5rem;
+    }
+    
+    /* Кнопки действий */
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn-upload {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 10px;
+        padding: 0.6rem 1.2rem;
+        font-weight: 500;
+        color: white;
+        transition: background-color 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-upload:hover {
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        color: white;
+    }
+    
+    .btn-folder {
+        background: rgba(106, 90, 205, 0.15);
+        border: 1px solid rgba(106, 90, 205, 0.5);
+        border-radius: 10px;
+        padding: 0.6rem 1.2rem;
+        font-weight: 500;
+        color: #a8b8ff;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-folder:hover {
+        background: rgba(106, 90, 205, 0.25);
+        border-color: #6a5acd;
+        color: #fff;
+    }
+    
+    /* Фильтры */
+    .filters-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 15px;
+        padding: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .filters-title {
+        color: #a8b8ff;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .filters-title i {
+        color: #6a5acd;
+    }
+    
+    .filter-input {
+        background: rgba(20, 20, 35, 0.8);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 8px;
+        padding: 0.6rem 1rem;
+        color: #fff;
+        width: 100%;
+        transition: border-color 0.2s ease;
+    }
+    
+    .filter-input:focus {
+        outline: none;
+        border-color: #6a5acd;
+    }
+    
+    .filter-select {
+        background: rgba(20, 20, 35, 0.8);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 8px;
+        padding: 0.6rem 1rem;
+        color: #fff;
+        width: 100%;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236a5acd' viewBox='0 0 16 16'%3E%3Cpath d='M8 11.5l-5-5h10l-5 5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.8rem center;
+    }
+    
+    .filter-select option {
+        background: #1a1a2e;
+        color: #fff;
+    }
+    
+    .filter-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #a8b8ff;
+        cursor: pointer;
+    }
+    
+    .filter-checkbox input {
+        accent-color: #6a5acd;
+        width: 1.1rem;
+        height: 1.1rem;
+    }
+    
+    .btn-apply {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 8px;
+        padding: 0.6rem;
+        color: white;
+        width: 100%;
+        transition: background-color 0.2s ease;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-apply:hover {
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+    }
+    
+    .btn-reset {
+        background: rgba(106, 90, 205, 0.15);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 8px;
+        padding: 0.6rem;
+        color: #a8b8ff;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-reset:hover {
+        background: rgba(106, 90, 205, 0.25);
+        border-color: #6a5acd;
+        color: #fff;
+    }
+    
+    /* Папки */
+    .folders-section {
+        margin-bottom: 2rem;
+    }
+    
+    .section-title {
+        color: #a8b8ff;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .section-title i {
+        color: #6a5acd;
+    }
+    
+    .folder-card {
+        background: rgba(30, 30, 46, 0.9);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 12px;
+        padding: 1rem;
+        transition: all 0.2s ease;
+        height: 100%;
+    }
+    
+    .folder-card:hover {
+        transform: translateY(-2px);
+        border-color: #6a5acd;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.2);
+    }
+    
+    .folder-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #4caf50, #45a049);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin-right: 1rem;
+    }
+    
+    .folder-title {
+        color: #fff;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+    }
+    
+    .folder-stats {
+        color: #a8b8ff;
+        font-size: 0.85rem;
+    }
+    
+    /* Таблица */
+    .files-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .files-table thead th {
+        background: rgba(106, 90, 205, 0.15);
+        color: #a8b8ff;
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 1rem;
+        border-bottom: 2px solid rgba(106, 90, 205, 0.3);
+        text-align: left;
+    }
+    
+    .files-table tbody tr {
+        transition: background-color 0.2s ease;
+        border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+    }
+    
+    .files-table tbody tr:hover {
+        background: rgba(106, 90, 205, 0.1);
+    }
+    
+    .files-table tbody td {
+        padding: 1rem;
+        color: #e0e0ff;
+        vertical-align: middle;
+    }
+    
+    .file-info {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .file-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+    
+    .file-details {
+        flex: 1;
+    }
+    
+    .file-name {
+        color: #fff;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+    }
+    
+    .file-desc {
+        color: #a8b8ff;
+        font-size: 0.85rem;
+    }
+    
+    .type-badge {
+        background: rgba(106, 90, 205, 0.15);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        color: #a8b8ff;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+    }
+    
+    .btn-table-action {
+        background: rgba(106, 90, 205, 0.15);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 6px;
+        padding: 0.3rem 0.6rem;
+        color: #a8b8ff;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        margin: 0 2px;
+    }
+    
+    .btn-table-action:hover {
+        background: rgba(106, 90, 205, 0.25);
+        border-color: #6a5acd;
+        color: #fff;
+    }
+    
+    /* Пустое состояние */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #8080b0;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        color: #6a5acd;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .empty-state p {
+        margin: 0;
+    }
+    
+    /* Пагинация */
+    .custom-pagination {
+        margin-top: 2rem;
+    }
+    
+    .pagination .page-link {
+        background: rgba(30, 30, 46, 0.95);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        color: #a8b8ff;
+        margin: 0 0.2rem;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    
+    .pagination .page-link:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: #6a5acd;
+        color: #fff;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border-color: #6a5acd;
+        color: white;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .dark-theme-files {
+            padding: 1rem 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+        }
+        
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .action-buttons {
+            width: 100%;
+        }
+        
+        .btn-upload,
+        .btn-folder {
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .files-table thead {
+            display: none;
+        }
+        
+        .files-table tbody tr {
+            display: block;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(106, 90, 205, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+        
+        .files-table tbody td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border: none;
+        }
+        
+        .files-table tbody td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: #a8b8ff;
+            margin-right: 1rem;
+        }
+        
+        .file-info {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="dark-theme-files">
+    <div class="container-fluid">
+        <!-- Заголовок -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-files"></i>
+                Мои файлы
+            </h1>
+            <div class="action-buttons">
+                <a href="{% url 'file_manager:file_upload' %}" class="btn-upload">
+                    <i class="bi bi-upload"></i> Загрузить
+                </a>
+                <a href="{% url 'file_manager:folder_create' %}" class="btn-folder">
+                    <i class="bi bi-folder-plus"></i> Папка
+                </a>
             </div>
         </div>
-    </div>
-    
-    <div class="col-lg-9">
-        {% if folders %}
-        <div class="mb-4">
-            <h6 class="text-muted mb-3">Папки</h6>
-            <div class="row">
-                {% for folder in folders %}
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm mb-3">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width:48px;height:48px;">
-                                    <i class="bi bi-folder2"></i>
-                                </div>
-                                <div>
-                                    <h6 class="mb-0">{{ folder.title }}</h6>
-                                    <small class="text-muted">{{ folder.get_file_count }} файлов</small>
+
+        <div class="row">
+            <!-- Фильтры -->
+            <div class="col-lg-3">
+                <div class="filters-card">
+                    <div class="filters-title">
+                        <i class="bi bi-funnel"></i>
+                        Фильтры
+                    </div>
+                    <form method="get">
+                        <div class="mb-3">
+                            <input type="text" name="query" value="{{ search_form.query.value|default:"" }}" 
+                                   class="filter-input" placeholder="Поиск...">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <select name="file_type" class="filter-select">
+                                <option value="">Все типы</option>
+                                <option value="pdf" {% if search_form.file_type.value == 'pdf' %}selected{% endif %}>PDF</option>
+                                <option value="txt" {% if search_form.file_type.value == 'txt' %}selected{% endif %}>Текст</option>
+                                <option value="docx" {% if search_form.file_type.value == 'docx' %}selected{% endif %}>Word</option>
+                                <option value="xlsx" {% if search_form.file_type.value == 'xlsx' %}selected{% endif %}>Excel</option>
+                                <option value="pptx" {% if search_form.file_type.value == 'pptx' %}selected{% endif %}>PowerPoint</option>
+                                <option value="jpg" {% if search_form.file_type.value == 'jpg' %}selected{% endif %}>Изображения</option>
+                                <option value="other" {% if search_form.file_type.value == 'other' %}selected{% endif %}>Другие</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <select name="course" class="filter-select">
+                                <option value="">Все курсы</option>
+                                {% for course in courses %}
+                                <option value="{{ course.id }}" {% if search_form.course.value|add:"0" == course.id %}selected{% endif %}>
+                                    {{ course.title }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="filter-checkbox mb-3">
+                            <input type="checkbox" name="favorites_only" id="favorites_only" 
+                                   {% if search_form.favorites_only.value %}checked{% endif %}>
+                            <label for="favorites_only">Только избранное</label>
+                        </div>
+                        
+                        <button type="submit" class="btn-apply">Применить</button>
+                        <a href="{% url 'file_manager:file_list' %}" class="btn-reset">Сбросить</a>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Список файлов -->
+            <div class="col-lg-9">
+                {% if folders %}
+                <div class="folders-section">
+                    <div class="section-title">
+                        <i class="bi bi-folders"></i>
+                        Папки
+                    </div>
+                    <div class="row g-3">
+                        {% for folder in folders %}
+                        <div class="col-md-4">
+                            <div class="folder-card">
+                                <div class="d-flex align-items-center">
+                                    <div class="folder-icon">
+                                        <i class="bi bi-folder2"></i>
+                                    </div>
+                                    <div>
+                                        <div class="folder-title">{{ folder.title }}</div>
+                                        <div class="folder-stats">{{ folder.get_file_count }} файлов</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        {% endfor %}
                     </div>
                 </div>
-                {% endfor %}
+                {% endif %}
+                
+                <div class="section-title">
+                    <i class="bi bi-files"></i>
+                    Файлы
+                </div>
+                
+                {% if page_obj %}
+                <div class="table-responsive">
+                    <table class="files-table">
+                        <thead>
+                            <tr>
+                                <th>Файл</th>
+                                <th>Тип</th>
+                                <th>Размер</th>
+                                <th>Дата</th>
+                                <th class="text-end">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file in page_obj %}
+                            <tr>
+                                <td data-label="Файл">
+                                    <div class="file-info">
+                                        <div class="file-icon">
+                                            <i class="bi bi-file-earmark"></i>
+                                        </div>
+                                        <div class="file-details">
+                                            <div class="file-name">{{ file.title }}</div>
+                                            <div class="file-desc">{{ file.description|truncatechars:50 }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td data-label="Тип">
+                                    <span class="type-badge">{{ file.get_file_type_display }}</span>
+                                </td>
+                                <td data-label="Размер">{{ file.get_file_size_display }}</td>
+                                <td data-label="Дата">{{ file.uploaded_at|date:"d.m.Y" }}</td>
+                                <td data-label="Действия" class="text-end">
+                                    <a href="{% url 'file_manager:file_detail' file.id %}" class="btn-table-action" title="Подробнее">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'file_manager:file_download' file.id %}" class="btn-table-action" title="Скачать">
+                                        <i class="bi bi-download"></i>
+                                    </a>
+                                    {% if file.can_edit or file.can_delete %}
+                                    <a href="{% url 'file_manager:file_edit' file.id %}" class="btn-table-action" title="Редактировать">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    <div class="empty-state">
+                                        <i class="bi bi-inbox"></i>
+                                        <p>Нет файлов</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Страницы" class="custom-pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&query={{ request.GET.query }}">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}&query={{ request.GET.query }}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}&query={{ request.GET.query }}">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                {% endif %}
             </div>
         </div>
-        {% endif %}
-        
-        <h6 class="text-muted mb-3">Файлы</h6>
-        
-        {% if page_obj %}
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Файл</th>
-                        <th>Тип</th>
-                        <th>Размер</th>
-                        <th>Дата</th>
-                        <th class="text-end">Действия</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for file in page_obj %}
-                    <tr>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width:40px;height:40px;">
-                                    <i class="bi bi-file-earmark"></i>
-                                </div>
-                                <div>
-                                    <strong>{{ file.title }}</strong>
-                                    <br>
-                                    <small class="text-muted">{{ file.description|truncatechars:50 }}</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge bg-light text-dark">{{ file.get_file_type_display }}</span>
-                        </td>
-                        <td>{{ file.get_file_size_display }}</td>
-                        <td>{{ file.uploaded_at|date:"d.m.Y" }}</td>
-                        <td class="text-end">
-                            <a href="{% url 'file_manager:file_detail' file.id %}" class="btn btn-sm btn-outline-primary" title="Подробнее">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                            <a href="{% url 'file_manager:file_download' file.id %}" class="btn btn-sm btn-outline-success" title="Скачать">
-                                <i class="bi bi-download"></i>
-                            </a>
-                            {% if file.can_edit or file.can_delete %}
-                            <a href="{% url 'file_manager:file_edit' file.id %}" class="btn btn-sm btn-outline-secondary" title="Редактировать">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center py-4">
-                            <i class="bi bi-inbox" style="font-size: 2rem; color: #6c757d;"></i>
-                            <p class="mt-2 text-muted">Нет файлов</p>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        
-        {% if page_obj.has_other_pages %}
-        <nav aria-label="Страницы">
-            <ul class="pagination justify-content-center">
-                {% if page_obj.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&query={{ request.GET.query }}">
-                        Предыдущая
-                    </a>
-                </li>
-                {% endif %}
-                
-                {% for num in page_obj.paginator.page_range %}
-                {% if page_obj.number == num %}
-                <li class="page-item active">
-                    <span class="page-link">{{ num }}</span>
-                </li>
-                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ num }}&query={{ request.GET.query }}">{{ num }}</a>
-                </li>
-                {% endif %}
-                {% endfor %}
-                
-                {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&query={{ request.GET.query }}">
-                        Следующая
-                    </a>
-                </li>
-                {% endif %}
-            </ul>
-        </nav>
-        {% endif %}
-        {% endif %}
     </div>
 </div>
 {% endblock %}
