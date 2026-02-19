@@ -1,7 +1,7 @@
-from django .db import models 
-from django .contrib .auth .models import User ,AbstractUser 
-from django .utils import timezone 
-from django .core .validators import FileExtensionValidator 
+from django.db import models 
+from django.contrib.auth.models import User ,AbstractUser 
+from django.utils import timezone 
+from django.core.validators import FileExtensionValidator 
 
 class StudentGroup(models.Model):
     """Модель группы студентов"""
@@ -30,10 +30,10 @@ class UserProfile(models.Model):
     """Профиль пользователя с ролями"""
     
     ROLE_CHOICES = [
-        ('student', 'Студент'),
-        ('teacher', 'Преподаватель'),
-        ('staff', 'Сотрудник учебной части'),
-        ('admin', 'Администратор'),
+       ('student', 'Студент'),
+       ('teacher', 'Преподаватель'),
+       ('staff', 'Сотрудник учебной части'),
+       ('admin', 'Администратор'),
     ]
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -75,10 +75,10 @@ class Course(models.Model):
     """Модель курса"""
     
     STATUS_CHOICES = [
-        ('draft', 'Черновик'),
-        ('active', 'Активный'),
-        ('archived', 'Архивирован'),
-        ('completed', 'Завершен'),
+       ('draft', 'Черновик'),
+       ('active', 'Активный'),
+       ('archived', 'Архивирован'),
+       ('completed', 'Завершен'),
     ]
     
     title = models.CharField(max_length=255)
@@ -155,8 +155,8 @@ class Course(models.Model):
         if not self.start_date or not self.end_date:
             return 0
         
-        total_duration = (self.end_date - self.start_date).total_seconds()
-        elapsed_duration = (timezone.now() - self.start_date).total_seconds()
+        total_duration =(self.end_date - self.start_date).total_seconds()
+        elapsed_duration =(timezone.now() - self.start_date).total_seconds()
         
         if elapsed_duration <= 0:
             return 0
@@ -227,7 +227,7 @@ class Course(models.Model):
         return True, f"Группа '{group.name}' удалена с курса"
     
     def get_all_enrolled_students(self):
-        """Получить всех студентов, зачисленных на курс (индивидуально + через группы)"""
+        """Получить всех студентов, зачисленных на курс(индивидуально + через группы)"""
         individual_students = set(self.students.all())
         group_students = set()
         
@@ -237,204 +237,204 @@ class Course(models.Model):
         
         return individual_students.union(group_students)
 
-class CourseSection (models .Model ):
-    """Раздел курса (например, 'Неделя 1', 'Тема 1')"""
+class CourseSection(models.Model ):
+    """Раздел курса(например, 'Неделя 1', 'Тема 1')"""
 
-    course =models .ForeignKey (
+    course =models.ForeignKey(
     Course ,
-    on_delete =models .CASCADE ,
+    on_delete =models.CASCADE ,
     related_name ='sections'
     )
-    title =models .CharField (max_length =255 )
-    description =models .TextField (blank =True )
-    order =models .IntegerField (default =0 )
-    is_visible =models .BooleanField (default =True )
+    title =models.CharField(max_length =255 )
+    description =models.TextField(blank =True )
+    order =models.IntegerField(default =0 )
+    is_visible =models.BooleanField(default =True )
 
     class Meta :
         ordering =['course','order']
         verbose_name ='Раздел курса'
         verbose_name_plural ='Разделы курса'
 
-    def __str__ (self ):
-        return f"{self .course .title } - {self .title }"
+    def __str__(self ):
+        return f"{self.course.title } - {self.title }"
 
-class CourseMaterial (models .Model ):
+class CourseMaterial(models.Model ):
     """Учебные материалы курса"""
 
     MATERIAL_TYPE_CHOICES =[
-    ('file','Файл'),
-    ('link','Ссылка'),
-    ('video','Видео'),
-    ('text','Текст'),
-    ('assignment','Задание'),
+   ('file','Файл'),
+   ('link','Ссылка'),
+   ('video','Видео'),
+   ('text','Текст'),
+   ('assignment','Задание'),
     ]
 
-    section =models .ForeignKey (
+    section =models.ForeignKey(
     CourseSection ,
-    on_delete =models .CASCADE ,
+    on_delete =models.CASCADE ,
     related_name ='materials'
     )
-    title =models .CharField (max_length =255 )
-    description =models .TextField (blank =True )
+    title =models.CharField(max_length =255 )
+    description =models.TextField(blank =True )
 
-    material_type =models .CharField (
+    material_type =models.CharField(
     max_length =20 ,
     choices =MATERIAL_TYPE_CHOICES 
     )
 
-    file =models .FileField (
+    file =models.FileField(
     upload_to ='course_materials/',
     null =True ,
     blank =True ,
-    validators =[FileExtensionValidator (allowed_extensions =['pdf','docx','xlsx','pptx','txt','zip','jpg','png','mp4','mp3'])]
+    validators =[FileExtensionValidator(allowed_extensions =['pdf','docx','xlsx','pptx','txt','zip','jpg','png','mp4','mp3'])]
     )
 
-    url =models .URLField (blank =True )
+    url =models.URLField(blank =True )
 
-    content =models .TextField (blank =True )
+    content =models.TextField(blank =True )
 
-    order =models .IntegerField (default =0 )
-    is_visible =models .BooleanField (default =True )
-    is_required =models .BooleanField (default =False )
+    order =models.IntegerField(default =0 )
+    is_visible =models.BooleanField(default =True )
+    is_required =models.BooleanField(default =False )
 
-    created_at =models .DateTimeField (auto_now_add =True )
-    updated_at =models .DateTimeField (auto_now =True )
+    created_at =models.DateTimeField(auto_now_add =True )
+    updated_at =models.DateTimeField(auto_now =True )
 
     class Meta :
         ordering =['section','order']
         verbose_name ='Учебный материал'
         verbose_name_plural ='Учебные материалы'
 
-    def __str__ (self ):
-        return f"{self .section .title } - {self .title }"
+    def __str__(self ):
+        return f"{self.section.title } - {self.title }"
 
-class Assignment (models .Model ):
+class Assignment(models.Model ):
     """Задание курса"""
 
     STATUS_CHOICES =[
-    ('draft','Черновик'),
-    ('published','Опубликовано'),
-    ('closed','Закрыто'),
+   ('draft','Черновик'),
+   ('published','Опубликовано'),
+   ('closed','Закрыто'),
     ]
 
-    course =models .ForeignKey (
+    course =models.ForeignKey(
     Course ,
-    on_delete =models .CASCADE ,
+    on_delete =models.CASCADE ,
     related_name ='assignments'
     )
-    section =models .ForeignKey (
+    section =models.ForeignKey(
     CourseSection ,
-    on_delete =models .SET_NULL ,
+    on_delete =models.SET_NULL ,
     null =True ,
     blank =True ,
     related_name ='assignments'
     )
 
-    title =models .CharField (max_length =255 )
-    description =models .TextField ()
+    title =models.CharField(max_length =255 )
+    description =models.TextField()
 
-    status =models .CharField (
+    status =models.CharField(
     max_length =20 ,
     choices =STATUS_CHOICES ,
     default ='draft'
     )
 
-    due_date =models .DateTimeField (null =True ,blank =True )
-    allow_late_submissions =models .BooleanField (default =False )
+    due_date =models.DateTimeField(null =True ,blank =True )
+    allow_late_submissions =models.BooleanField(default =False )
 
-    max_points =models .IntegerField (default =100 )
-    passing_score =models .IntegerField (default =50 )
+    max_points =models.IntegerField(default =100 )
+    passing_score =models.IntegerField(default =50 )
 
-    is_group_assignment =models .BooleanField (default =False )
-    group_size_min =models .IntegerField (default =1 )
-    group_size_max =models .IntegerField (default =1 )
+    is_group_assignment =models.BooleanField(default =False )
+    group_size_min =models.IntegerField(default =1 )
+    group_size_max =models.IntegerField(default =1 )
 
-    attachment =models .FileField (
+    attachment =models.FileField(
     upload_to ='assignment_attachments/',
     null =True ,
     blank =True 
     )
 
-    created_at =models .DateTimeField (auto_now_add =True )
-    updated_at =models .DateTimeField (auto_now =True )
-    published_at =models .DateTimeField (null =True ,blank =True )
+    created_at =models.DateTimeField(auto_now_add =True )
+    updated_at =models.DateTimeField(auto_now =True )
+    published_at =models.DateTimeField(null =True ,blank =True )
 
     class Meta :
         ordering =['-due_date','-created_at']
         verbose_name ='Задание'
         verbose_name_plural ='Задания'
 
-    def __str__ (self ):
-        return self .title 
+    def __str__(self ):
+        return self.title 
 
-    def is_overdue (self ):
-        if not self .due_date :
+    def is_overdue(self ):
+        if not self.due_date :
             return False 
-        return timezone .now ()>self .due_date 
+        return timezone.now()>self.due_date 
 
-    def can_submit (self ):
-        if self .status !='published':
+    def can_submit(self ):
+        if self.status !='published':
             return False 
-        if self .is_overdue ()and not self .allow_late_submissions :
+        if self.is_overdue()and not self.allow_late_submissions :
             return False 
         return True 
 
-    def can_grade (self ,user ):
+    def can_grade(self ,user ):
         """Проверка, может ли пользователь оценивать задание"""
-        return user ==self .course .instructor or user in self .course .teaching_assistants .all ()or user .is_superuser or user .profile .is_staff ()
+        return user ==self.course.instructor or user in self.course.teaching_assistants.all()or user.is_superuser or user.profile.is_staff()
 
-class AssignmentSubmission (models .Model ):
+class AssignmentSubmission(models.Model ):
     """Решение задания от студента"""
 
     STATUS_CHOICES =[
-    ('submitted','Отправлено'),
-    ('graded','Оценено'),
-    ('returned','Возвращено на доработку'),
+   ('submitted','Отправлено'),
+   ('graded','Оценено'),
+   ('returned','Возвращено на доработку'),
     ]
 
-    assignment =models .ForeignKey (
+    assignment =models.ForeignKey(
     Assignment ,
-    on_delete =models .CASCADE ,
+    on_delete =models.CASCADE ,
     related_name ='submissions'
     )
-    student =models .ForeignKey (
+    student =models.ForeignKey(
     User ,
-    on_delete =models .CASCADE ,
+    on_delete =models.CASCADE ,
     related_name ='assignment_submissions'
     )
 
-    text_response =models .TextField (blank =True )
-    file_submission =models .FileField (
+    text_response =models.TextField(blank =True )
+    file_submission =models.FileField(
     upload_to ='assignment_submissions/',
     null =True ,
     blank =True 
     )
 
-    group_members =models .ManyToManyField (
+    group_members =models.ManyToManyField(
     User ,
     blank =True ,
     related_name ='group_submissions'
     )
 
-    status =models .CharField (
+    status =models.CharField(
     max_length =20 ,
     choices =STATUS_CHOICES ,
     default ='submitted'
     )
 
-    score =models .IntegerField (null =True ,blank =True )
-    feedback =models .TextField (blank =True )
-    graded_by =models .ForeignKey (
+    score =models.IntegerField(null =True ,blank =True )
+    feedback =models.TextField(blank =True )
+    graded_by =models.ForeignKey(
     User ,
-    on_delete =models .SET_NULL ,
+    on_delete =models.SET_NULL ,
     null =True ,
     blank =True ,
     related_name ='graded_submissions'
     )
-    graded_at =models .DateTimeField (null =True ,blank =True )
+    graded_at =models.DateTimeField(null =True ,blank =True )
 
-    submitted_at =models .DateTimeField (auto_now_add =True )
-    updated_at =models .DateTimeField (auto_now =True )
+    submitted_at =models.DateTimeField(auto_now_add =True )
+    updated_at =models.DateTimeField(auto_now =True )
 
     class Meta :
         ordering =['-submitted_at']
@@ -442,195 +442,195 @@ class AssignmentSubmission (models .Model ):
         verbose_name_plural ='Решения заданий'
         unique_together =['assignment','student']
 
-    def __str__ (self ):
-        return f"{self .student .username } - {self .assignment .title }"
+    def __str__(self ):
+        return f"{self.student.username } - {self.assignment.title }"
 
-    def is_late (self ):
-        if not self .assignment .due_date :
+    def is_late(self ):
+        if not self.assignment.due_date :
             return False 
-        return self .submitted_at >self .assignment .due_date 
+        return self.submitted_at >self.assignment.due_date 
 
-    def get_status_display_with_late (self ):
-        status =self .get_status_display ()
-        if self .is_late ():
-            status +=" (с опозданием)"
+    def get_status_display_with_late(self ):
+        status =self.get_status_display()
+        if self.is_late():
+            status +="(с опозданием)"
         return status 
 
-    def can_view (self ,user ):
+    def can_view(self ,user ):
         """Проверка, может ли пользователь просматривать решение"""
-        return user ==self .student or self .assignment .can_grade (user )
+        return user ==self.student or self.assignment.can_grade(user )
 
-    def can_grade (self ,user ):
+    def can_grade(self ,user ):
         """Проверка, может ли пользователь оценивать решение"""
-        return self .assignment .can_grade (user )
+        return self.assignment.can_grade(user )
 
-class Announcement (models .Model ):
+class Announcement(models.Model ):
     """Объявление в курсе"""
 
-    course =models .ForeignKey (
+    course =models.ForeignKey(
     Course ,
-    on_delete =models .CASCADE ,
+    on_delete =models.CASCADE ,
     related_name ='announcements'
     )
 
-    title =models .CharField (max_length =255 )
-    content =models .TextField ()
+    title =models.CharField(max_length =255 )
+    content =models.TextField()
 
-    author =models .ForeignKey (
+    author =models.ForeignKey(
     User ,
-    on_delete =models .CASCADE ,
+    on_delete =models.CASCADE ,
     related_name ='announcements'
     )
 
-    is_pinned =models .BooleanField (default =False )
-    send_email_notification =models .BooleanField (default =False )
+    is_pinned =models.BooleanField(default =False )
+    send_email_notification =models.BooleanField(default =False )
 
-    created_at =models .DateTimeField (auto_now_add =True )
-    updated_at =models .DateTimeField (auto_now =True )
-    published_at =models .DateTimeField (null =True ,blank =True )
+    created_at =models.DateTimeField(auto_now_add =True )
+    updated_at =models.DateTimeField(auto_now =True )
+    published_at =models.DateTimeField(null =True ,blank =True )
 
     class Meta :
         ordering =['-is_pinned','-created_at']
         verbose_name ='Объявление'
         verbose_name_plural ='Объявления'
 
-    def __str__ (self ):
-        return self .title 
+    def __str__(self ):
+        return self.title 
 
-    def save (self ,*args ,**kwargs ):
-        if not self .published_at and self .pk :
-            self .published_at =timezone .now ()
-        super ().save (*args ,**kwargs )
+    def save(self ,*args ,**kwargs ):
+        if not self.published_at and self.pk :
+            self.published_at =timezone.now()
+        super().save(*args ,**kwargs )
 
-    def can_edit (self ,user ):
+    def can_edit(self ,user ):
         """Проверка, может ли пользователь редактировать объявление"""
-        return user ==self .author or user ==self .course .instructor or user .is_superuser or user .profile .is_staff ()
+        return user ==self.author or user ==self.course.instructor or user.is_superuser or user.profile.is_staff()
 
-class CourseDiscussion (models .Model ):
+class CourseDiscussion(models.Model ):
     """Обсуждение в курсе"""
 
-    course =models .ForeignKey (
+    course =models.ForeignKey(
     Course ,
-    on_delete =models .CASCADE ,
+    on_delete =models.CASCADE ,
     related_name ='discussions'
     )
 
-    title =models .CharField (max_length =255 )
-    content =models .TextField ()
+    title =models.CharField(max_length =255 )
+    content =models.TextField()
 
-    author =models .ForeignKey (
+    author =models.ForeignKey(
     User ,
-    on_delete =models .CASCADE ,
+    on_delete =models.CASCADE ,
     related_name ='course_discussions'
     )
 
-    is_pinned =models .BooleanField (default =False )
-    is_locked =models .BooleanField (default =False )
+    is_pinned =models.BooleanField(default =False )
+    is_locked =models.BooleanField(default =False )
 
-    created_at =models .DateTimeField (auto_now_add =True )
-    updated_at =models .DateTimeField (auto_now =True )
+    created_at =models.DateTimeField(auto_now_add =True )
+    updated_at =models.DateTimeField(auto_now =True )
 
     class Meta :
         ordering =['-is_pinned','-created_at']
         verbose_name ='Обсуждение'
         verbose_name_plural ='Обсуждения'
 
-    def __str__ (self ):
-        return self .title 
+    def __str__(self ):
+        return self.title 
 
-    def get_reply_count (self ):
-        return self .replies .count ()
+    def get_reply_count(self ):
+        return self.replies.count()
 
-    def can_edit (self ,user ):
+    def can_edit(self ,user ):
         """Проверка, может ли пользователь редактировать обсуждение"""
-        return user ==self .author or user ==self .course .instructor or user .is_superuser or user .profile .is_staff ()
+        return user ==self.author or user ==self.course.instructor or user.is_superuser or user.profile.is_staff()
 
-class DiscussionReply (models .Model ):
+class DiscussionReply(models.Model ):
     """Ответ на обсуждение"""
 
-    discussion =models .ForeignKey (
+    discussion =models.ForeignKey(
     CourseDiscussion ,
-    on_delete =models .CASCADE ,
+    on_delete =models.CASCADE ,
     related_name ='replies'
     )
 
-    content =models .TextField ()
-    author =models .ForeignKey (
+    content =models.TextField()
+    author =models.ForeignKey(
     User ,
-    on_delete =models .CASCADE ,
+    on_delete =models.CASCADE ,
     related_name ='discussion_replies'
     )
 
-    parent =models .ForeignKey (
+    parent =models.ForeignKey(
     'self',
-    on_delete =models .CASCADE ,
+    on_delete =models.CASCADE ,
     null =True ,
     blank =True ,
     related_name ='replies'
     )
 
-    created_at =models .DateTimeField (auto_now_add =True )
-    updated_at =models .DateTimeField (auto_now =True )
+    created_at =models.DateTimeField(auto_now_add =True )
+    updated_at =models.DateTimeField(auto_now =True )
 
     class Meta :
         ordering =['created_at']
         verbose_name ='Ответ на обсуждение'
         verbose_name_plural ='Ответы на обсуждения'
 
-    def __str__ (self ):
-        return f"Reply by {self .author .username }"
+    def __str__(self ):
+        return f"Reply by {self.author.username }"
 
-    def can_edit (self ,user ):
+    def can_edit(self ,user ):
         """Проверка, может ли пользователь редактировать ответ"""
-        return user ==self .author or user ==self .discussion .course .instructor or user .is_superuser or user .profile .is_staff ()
+        return user ==self.author or user ==self.discussion.course.instructor or user.is_superuser or user.profile.is_staff()
 
-class CourseGrade (models .Model ):
+class CourseGrade(models.Model ):
     """Оценка студента по курсу"""
 
-    course =models .ForeignKey (
+    course =models.ForeignKey(
     Course ,
-    on_delete =models .CASCADE ,
+    on_delete =models.CASCADE ,
     related_name ='grades'
     )
-    student =models .ForeignKey (
+    student =models.ForeignKey(
     User ,
-    on_delete =models .CASCADE ,
+    on_delete =models.CASCADE ,
     related_name ='course_grades'
     )
 
-    grade =models .DecimalField (
+    grade =models.DecimalField(
     max_digits =5 ,
     decimal_places =2 ,
     null =True ,
     blank =True 
     )
 
-    letter_grade =models .CharField (
+    letter_grade =models.CharField(
     max_length =2 ,
     blank =True 
     )
 
-    completion_percentage =models .IntegerField (default =0 )
+    completion_percentage =models.IntegerField(default =0 )
 
-    comments =models .TextField (blank =True )
-    is_passing =models .BooleanField (default =False )
+    comments =models.TextField(blank =True )
+    is_passing =models.BooleanField(default =False )
 
-    created_at =models .DateTimeField (auto_now_add =True )
-    updated_at =models .DateTimeField (auto_now =True )
+    created_at =models.DateTimeField(auto_now_add =True )
+    updated_at =models.DateTimeField(auto_now =True )
 
     class Meta :
         unique_together =['course','student']
         verbose_name ='Оценка курса'
         verbose_name_plural ='Оценки курса'
 
-    def __str__ (self ):
-        return f"{self .student .username } - {self .course .title }: {self .grade }"
+    def __str__(self ):
+        return f"{self.student.username } - {self.course.title }: {self.grade }"
 
-    def calculate_letter_grade (self ):
-        if self .grade is None :
+    def calculate_letter_grade(self ):
+        if self.grade is None :
             return ''
 
-        grade_value =float (self .grade )
+        grade_value =float(self.grade )
         if grade_value >=90 :
             return 'A'
         elif grade_value >=80 :
@@ -642,49 +642,207 @@ class CourseGrade (models .Model ):
         else :
             return 'F'
 
-class CourseNotification (models .Model ):
+class CourseNotification(models.Model ):
     """Уведомления курса"""
 
     NOTIFICATION_TYPE_CHOICES =[
-    ('announcement','Объявление'),
-    ('assignment','Задание'),
-    ('grade','Оценка'),
-    ('general','Общее'),
+   ('announcement','Объявление'),
+   ('assignment','Задание'),
+   ('grade','Оценка'),
+   ('general','Общее'),
     ]
 
-    course =models .ForeignKey (
+    course =models.ForeignKey(
     Course ,
-    on_delete =models .CASCADE ,
+    on_delete =models.CASCADE ,
     related_name ='notifications'
     )
 
-    title =models .CharField (max_length =255 )
-    message =models .TextField ()
-    notification_type =models .CharField (
+    title =models.CharField(max_length =255 )
+    message =models.TextField()
+    notification_type =models.CharField(
     max_length =20 ,
-    choices =NOTIFICATION_TYPE_CHOICES 
+    choices =NOTIFICATION_TYPE_CHOICES
     )
 
-    recipients =models .ManyToManyField (
+    recipients =models.ManyToManyField(
     User ,
     related_name ='course_notifications'
     )
 
-    is_read =models .ManyToManyField (
+    is_read =models.ManyToManyField(
     User ,
     blank =True ,
     related_name ='read_notifications'
     )
 
-    created_at =models .DateTimeField (auto_now_add =True )
+    created_at =models.DateTimeField(auto_now_add =True )
 
     class Meta :
         ordering =['-created_at']
         verbose_name ='Уведомление курса'
         verbose_name_plural ='Уведомления курса'
 
-    def __str__ (self ):
-        return self .title 
+    def __str__(self ):
+        return self.title
 
-    def mark_as_read (self ,user ):
-        self .is_read .add (user )
+    def mark_as_read(self ,user ):
+        self.is_read.add(user )
+
+
+class CourseEnrollmentRequest(models.Model ):
+    """Заявка студента на запись на курс"""
+
+    STATUS_CHOICES =[
+   ('pending','На рассмотрении'),
+   ('approved','Одобрена'),
+   ('rejected','Отклонена'),
+    ]
+
+    course =models.ForeignKey(
+    Course ,
+    on_delete =models.CASCADE ,
+    related_name ='enrollment_requests'
+    )
+    student =models.ForeignKey(
+    User ,
+    on_delete =models.CASCADE ,
+    related_name ='course_enrollment_requests'
+    )
+
+    status =models.CharField(
+    max_length =20 ,
+    choices =STATUS_CHOICES ,
+    default ='pending'
+    )
+
+    motivation =models.TextField(
+    blank =True ,
+    help_text ='Расскажите, почему вы хотите записаться на этот курс'
+    )
+
+    reviewed_by =models.ForeignKey(
+    User ,
+    on_delete =models.SET_NULL ,
+    null =True ,
+    blank =True ,
+    related_name ='reviewed_enrollment_requests'
+    )
+    review_comment =models.TextField(
+    blank =True ,
+    help_text ='Комментарий преподавателя к решению'
+    )
+
+    created_at =models.DateTimeField(auto_now_add =True )
+    updated_at =models.DateTimeField(auto_now =True )
+    reviewed_at =models.DateTimeField(null =True ,blank =True )
+
+    class Meta :
+        ordering =['-created_at']
+        verbose_name ='Заявка на запись на курс'
+        verbose_name_plural ='Заявки на запись на курсы'
+        unique_together =['course','student']
+
+    def __str__(self ):
+        return f"{self.student.username } - {self.course.title }({self.get_status_display()})"
+
+    def can_review(self ,user ):
+        """Проверка, может ли пользователь рассмотреть заявку"""
+        return user ==self.course.instructor or user.is_superuser or user.profile.is_staff()
+
+
+class AssignmentFile(models.Model ):
+    """Файл, прикрепленный к заданию студентом"""
+
+    assignment =models.ForeignKey(
+    Assignment ,
+    on_delete =models.CASCADE ,
+    related_name ='files'
+    )
+    student =models.ForeignKey(
+    User ,
+    on_delete =models.CASCADE ,
+    related_name ='assignment_files'
+    )
+
+    file =models.ForeignKey(
+    'file_manager.File',
+    on_delete =models.CASCADE ,
+    related_name ='assignment_submissions',
+    help_text ='Файл из файлового хранилища'
+    )
+
+    description =models.TextField(
+    blank =True ,
+    help_text ='Описание файла(опционально)'
+    )
+
+    uploaded_at =models.DateTimeField(auto_now_add =True )
+    updated_at =models.DateTimeField(auto_now =True )
+
+    class Meta :
+        ordering =['-uploaded_at']
+        verbose_name ='Файл задания'
+        verbose_name_plural ='Файлы заданий'
+
+    def __str__(self ):
+        return f"{self.file.title } - {self.student.username }({self.assignment.title })"
+
+    def can_delete(self ,user ):
+        """Проверка, может ли пользователь удалить файл"""
+        return user ==self.student or self.assignment.can_grade(user )
+
+
+class AssignmentFileReview(models.Model ):
+    """Проверка файла задания преподавателем"""
+
+    STATUS_CHOICES =[
+   ('pending','На проверке'),
+   ('approved','Принят'),
+   ('rejected','Отклонен'),
+   ('needs_revision','Требует доработки'),
+    ]
+
+    file =models.ForeignKey(
+    AssignmentFile ,
+    on_delete =models.CASCADE ,
+    related_name ='reviews'
+    )
+    reviewer =models.ForeignKey(
+    User ,
+    on_delete =models.CASCADE ,
+    related_name ='file_reviews'
+    )
+
+    status =models.CharField(
+    max_length =20 ,
+    choices =STATUS_CHOICES ,
+    default ='pending'
+    )
+
+    feedback =models.TextField(
+    blank =True ,
+    help_text ='Комментарий преподавателя к файлу'
+    )
+
+    points =models.IntegerField(
+    null =True ,
+    blank =True ,
+    help_text ='Баллы за файл(опционально)'
+    )
+
+    reviewed_at =models.DateTimeField(auto_now_add =True )
+    updated_at =models.DateTimeField(auto_now =True )
+
+    class Meta :
+        ordering =['-reviewed_at']
+        verbose_name ='Проверка файла'
+        verbose_name_plural ='Проверки файлов'
+        unique_together =['file','reviewer']
+
+    def __str__(self ):
+        return f"Проверка {self.file.file.name } от {self.reviewer.username }({self.get_status_display()})"
+
+    def can_review(self ,user ):
+        """Проверка, может ли пользователь проверить файл"""
+        return self.file.assignment.can_grade(user )

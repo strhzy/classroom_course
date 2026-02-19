@@ -4,14 +4,14 @@
 
 {% block files_content %}
 <style>
-    .dark-theme-files {
+   .dark-theme-files {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Заголовок */
-    .page-header {
+   .page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -20,7 +20,7 @@
         margin-bottom: 2rem;
     }
     
-    .page-title {
+   .page-title {
         font-size: 2.2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
@@ -32,7 +32,7 @@
         gap: 0.8rem;
     }
     
-    .page-title i {
+   .page-title i {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -40,12 +40,12 @@
     }
     
     /* Кнопки действий */
-    .action-buttons {
+   .action-buttons {
         display: flex;
         gap: 0.5rem;
     }
     
-    .btn-upload {
+   .btn-upload {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 10px;
@@ -59,12 +59,12 @@
         gap: 0.5rem;
     }
     
-    .btn-upload:hover {
+   .btn-upload:hover {
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
         color: white;
     }
     
-    .btn-folder {
+   .btn-folder {
         background: rgba(106, 90, 205, 0.15);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 10px;
@@ -78,14 +78,14 @@
         gap: 0.5rem;
     }
     
-    .btn-folder:hover {
+   .btn-folder:hover {
         background: rgba(106, 90, 205, 0.25);
         border-color: #6a5acd;
         color: #fff;
     }
     
     /* Фильтры */
-    .filters-card {
+   .filters-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -94,7 +94,7 @@
         margin-bottom: 1.5rem;
     }
     
-    .filters-title {
+   .filters-title {
         color: #a8b8ff;
         font-weight: 600;
         margin-bottom: 1rem;
@@ -103,11 +103,11 @@
         gap: 0.5rem;
     }
     
-    .filters-title i {
+   .filters-title i {
         color: #6a5acd;
     }
     
-    .filter-input {
+   .filter-input {
         background: rgba(20, 20, 35, 0.8);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 8px;
@@ -117,12 +117,12 @@
         transition: border-color 0.2s ease;
     }
     
-    .filter-input:focus {
+   .filter-input:focus {
         outline: none;
         border-color: #6a5acd;
     }
     
-    .filter-select {
+   .filter-select {
         background: rgba(20, 20, 35, 0.8);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 8px;
@@ -136,12 +136,12 @@
         background-position: right 0.8rem center;
     }
     
-    .filter-select option {
+   .filter-select option {
         background: #1a1a2e;
         color: #fff;
     }
     
-    .filter-checkbox {
+   .filter-checkbox {
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -149,13 +149,13 @@
         cursor: pointer;
     }
     
-    .filter-checkbox input {
+   .filter-checkbox input {
         accent-color: #6a5acd;
         width: 1.1rem;
         height: 1.1rem;
     }
     
-    .btn-apply {
+   .btn-apply {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 8px;
@@ -166,11 +166,11 @@
         margin-bottom: 0.5rem;
     }
     
-    .btn-apply:hover {
+   .btn-apply:hover {
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
     }
     
-    .btn-reset {
+   .btn-reset {
         background: rgba(106, 90, 205, 0.15);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 8px;
@@ -182,18 +182,18 @@
         transition: all 0.2s ease;
     }
     
-    .btn-reset:hover {
+   .btn-reset:hover {
         background: rgba(106, 90, 205, 0.25);
         border-color: #6a5acd;
         color: #fff;
     }
     
     /* Папки */
-    .folders-section {
+   .folders-section {
         margin-bottom: 2rem;
     }
     
-    .section-title {
+   .section-title {
         color: #a8b8ff;
         font-weight: 600;
         margin-bottom: 1rem;
@@ -202,11 +202,11 @@
         gap: 0.5rem;
     }
     
-    .section-title i {
+   .section-title i {
         color: #6a5acd;
     }
     
-    .folder-card {
+   .folder-card {
         background: rgba(30, 30, 46, 0.9);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 12px;
@@ -215,13 +215,13 @@
         height: 100%;
     }
     
-    .folder-card:hover {
+   .folder-card:hover {
         transform: translateY(-2px);
         border-color: #6a5acd;
         box-shadow: 0 5px 15px rgba(106, 90, 205, 0.2);
     }
     
-    .folder-icon {
+   .folder-icon {
         width: 48px;
         height: 48px;
         background: linear-gradient(135deg, #4caf50, #45a049);
@@ -234,24 +234,24 @@
         margin-right: 1rem;
     }
     
-    .folder-title {
+   .folder-title {
         color: #fff;
         font-weight: 600;
         margin-bottom: 0.2rem;
     }
     
-    .folder-stats {
+   .folder-stats {
         color: #a8b8ff;
         font-size: 0.85rem;
     }
     
     /* Таблица */
-    .files-table {
+   .files-table {
         width: 100%;
         border-collapse: collapse;
     }
     
-    .files-table thead th {
+   .files-table thead th {
         background: rgba(106, 90, 205, 0.15);
         color: #a8b8ff;
         font-weight: 600;
@@ -261,28 +261,28 @@
         text-align: left;
     }
     
-    .files-table tbody tr {
+   .files-table tbody tr {
         transition: background-color 0.2s ease;
         border-bottom: 1px solid rgba(106, 90, 205, 0.1);
     }
     
-    .files-table tbody tr:hover {
+   .files-table tbody tr:hover {
         background: rgba(106, 90, 205, 0.1);
     }
     
-    .files-table tbody td {
+   .files-table tbody td {
         padding: 1rem;
         color: #e0e0ff;
         vertical-align: middle;
     }
     
-    .file-info {
+   .file-info {
         display: flex;
         align-items: center;
         gap: 0.8rem;
     }
     
-    .file-icon {
+   .file-icon {
         width: 40px;
         height: 40px;
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
@@ -294,22 +294,22 @@
         font-size: 1.2rem;
     }
     
-    .file-details {
+   .file-details {
         flex: 1;
     }
     
-    .file-name {
+   .file-name {
         color: #fff;
         font-weight: 600;
         margin-bottom: 0.2rem;
     }
     
-    .file-desc {
+   .file-desc {
         color: #a8b8ff;
         font-size: 0.85rem;
     }
     
-    .type-badge {
+   .type-badge {
         background: rgba(106, 90, 205, 0.15);
         border: 1px solid rgba(106, 90, 205, 0.3);
         color: #a8b8ff;
@@ -318,7 +318,7 @@
         font-size: 0.85rem;
     }
     
-    .btn-table-action {
+   .btn-table-action {
         background: rgba(106, 90, 205, 0.15);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 6px;
@@ -329,36 +329,36 @@
         margin: 0 2px;
     }
     
-    .btn-table-action:hover {
+   .btn-table-action:hover {
         background: rgba(106, 90, 205, 0.25);
         border-color: #6a5acd;
         color: #fff;
     }
     
     /* Пустое состояние */
-    .empty-state {
+   .empty-state {
         text-align: center;
         padding: 3rem;
         color: #8080b0;
     }
     
-    .empty-state i {
+   .empty-state i {
         font-size: 3rem;
         color: #6a5acd;
         margin-bottom: 1rem;
         opacity: 0.5;
     }
     
-    .empty-state p {
+   .empty-state p {
         margin: 0;
     }
     
     /* Пагинация */
-    .custom-pagination {
+   .custom-pagination {
         margin-top: 2rem;
     }
     
-    .pagination .page-link {
+   .pagination.page-link {
         background: rgba(30, 30, 46, 0.95);
         border: 1px solid rgba(106, 90, 205, 0.3);
         color: #a8b8ff;
@@ -367,48 +367,48 @@
         transition: all 0.2s ease;
     }
     
-    .pagination .page-link:hover {
+   .pagination.page-link:hover {
         background: rgba(106, 90, 205, 0.3);
         border-color: #6a5acd;
         color: #fff;
     }
     
-    .pagination .page-item.active .page-link {
+   .pagination.page-item.active.page-link {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border-color: #6a5acd;
         color: white;
     }
     
     /* Адаптивность */
-    @media (max-width: 768px) {
-        .dark-theme-files {
+    @media(max-width: 768px) {
+       .dark-theme-files {
             padding: 1rem 0.5rem;
         }
         
-        .page-title {
+       .page-title {
             font-size: 1.8rem;
         }
         
-        .page-header {
+       .page-header {
             flex-direction: column;
             align-items: flex-start;
         }
         
-        .action-buttons {
+       .action-buttons {
             width: 100%;
         }
         
-        .btn-upload,
-        .btn-folder {
+       .btn-upload,
+       .btn-folder {
             flex: 1;
             justify-content: center;
         }
         
-        .files-table thead {
+       .files-table thead {
             display: none;
         }
         
-        .files-table tbody tr {
+       .files-table tbody tr {
             display: block;
             margin-bottom: 1rem;
             border: 1px solid rgba(106, 90, 205, 0.3);
@@ -416,7 +416,7 @@
             padding: 1rem;
         }
         
-        .files-table tbody td {
+       .files-table tbody td {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -424,14 +424,14 @@
             border: none;
         }
         
-        .files-table tbody td::before {
+       .files-table tbody td::before {
             content: attr(data-label);
             font-weight: 600;
             color: #a8b8ff;
             margin-right: 1rem;
         }
         
-        .file-info {
+       .file-info {
             width: 100%;
         }
     }

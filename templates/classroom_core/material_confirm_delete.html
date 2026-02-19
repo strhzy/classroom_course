@@ -4,7 +4,7 @@
 
 {% block courses_content %}
 <style>
-    .dark-theme-delete-material {
+   .dark-theme-delete-material {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
@@ -12,7 +12,7 @@
         align-items: center;
     }
     
-    .delete-card {
+   .delete-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 71, 87, 0.3);
@@ -24,7 +24,7 @@
         position: relative;
     }
     
-    .delete-card::before {
+   .delete-card::before {
         content: '';
         position: absolute;
         top: 0;
@@ -36,7 +36,7 @@
         animation: borderFlow 3s linear infinite;
     }
     
-    .delete-card::after {
+   .delete-card::after {
         content: '';
         position: absolute;
         top: -50%;
@@ -69,18 +69,18 @@
         }
     }
     
-    .delete-card:hover {
+   .delete-card:hover {
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 50px rgba(255, 71, 87, 0.5);
         transform: translateY(-5px);
     }
     
-    .card-content {
+   .card-content {
         position: relative;
         z-index: 1;
         padding: 2.5rem 2rem;
     }
     
-    .warning-icon {
+   .warning-icon {
         font-size: 5rem;
         background: linear-gradient(135deg, #ff4757, #ff6b81, #ff4757);
         background-clip: text;
@@ -102,7 +102,7 @@
         }
     }
     
-    .delete-title {
+   .delete-title {
         color: #fff;
         font-size: 2.5rem;
         font-weight: 800;
@@ -114,7 +114,7 @@
         letter-spacing: 1px;
     }
     
-    .material-info {
+   .material-info {
         background: rgba(255, 71, 87, 0.1);
         border: 2px solid rgba(255, 71, 87, 0.4);
         border-radius: 20px;
@@ -135,7 +135,7 @@
         }
     }
     
-    .material-title {
+   .material-title {
         color: #fff;
         font-size: 1.8rem;
         font-weight: 700;
@@ -143,7 +143,7 @@
         word-break: break-word;
     }
     
-    .material-type {
+   .material-type {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
@@ -155,11 +155,11 @@
         border: 1px solid rgba(106, 90, 205, 0.3);
     }
     
-    .material-type i {
+   .material-type i {
         color: #6a5acd;
     }
     
-    .warning-details {
+   .warning-details {
         background: rgba(0, 0, 0, 0.3);
         border-radius: 15px;
         padding: 1.5rem;
@@ -167,7 +167,7 @@
         border: 1px solid rgba(255, 71, 87, 0.3);
     }
     
-    .warning-item {
+   .warning-item {
         display: flex;
         align-items: center;
         margin-bottom: 1rem;
@@ -177,13 +177,13 @@
         font-size: 1.1rem;
     }
     
-    .warning-item:last-child {
+   .warning-item:last-child {
         margin-bottom: 0;
     }
     
-    .warning-item:nth-child(1) { animation-delay: 0.2s; }
-    .warning-item:nth-child(2) { animation-delay: 0.3s; }
-    .warning-item:nth-child(3) { animation-delay: 0.4s; }
+   .warning-item:nth-child(1) { animation-delay: 0.2s; }
+   .warning-item:nth-child(2) { animation-delay: 0.3s; }
+   .warning-item:nth-child(3) { animation-delay: 0.4s; }
     
     @keyframes slideIn {
         0% {
@@ -196,14 +196,14 @@
         }
     }
     
-    .warning-item i {
+   .warning-item i {
         color: #ff4757;
         font-size: 1.4rem;
         margin-right: 1rem;
         min-width: 1.8rem;
     }
     
-    .warning-text {
+   .warning-text {
         color: #ffa0a8 !important;
         font-size: 1.2rem;
         margin: 1.5rem 0;
@@ -215,13 +215,13 @@
         font-weight: 500;
     }
     
-    .warning-text i {
+   .warning-text i {
         color: #ff4757;
         margin-right: 0.8rem;
         font-size: 1.4rem;
     }
     
-    .material-meta {
+   .material-meta {
         display: flex;
         justify-content: space-around;
         margin: 2rem 0;
@@ -232,30 +232,30 @@
         gap: 1rem;
     }
     
-    .meta-item {
+   .meta-item {
         text-align: center;
         flex: 1;
         min-width: 100px;
     }
     
-    .meta-icon {
+   .meta-icon {
         color: #6a5acd;
         font-size: 1.5rem;
         margin-bottom: 0.3rem;
     }
     
-    .meta-value {
+   .meta-value {
         font-size: 1.1rem;
         font-weight: 600;
         color: #fff;
     }
     
-    .meta-label {
+   .meta-label {
         font-size: 0.8rem;
         color: #a8b8ff;
     }
     
-    .button-container {
+   .button-container {
         display: flex;
         gap: 1.5rem;
         justify-content: center;
@@ -275,7 +275,7 @@
         }
     }
     
-    .btn-delete {
+   .btn-delete {
         background: linear-gradient(135deg, #ff4757, #ff6b81, #ff4757);
         background-size: 200% 100%;
         border: none;
@@ -306,17 +306,17 @@
         }
     }
     
-    .btn-delete:hover {
+   .btn-delete:hover {
         transform: translateY(-5px) scale(1.02);
         box-shadow: 0 15px 35px rgba(255, 71, 87, 0.7);
         background-position: 100% 0;
     }
     
-    .btn-delete:active {
+   .btn-delete:active {
         transform: translateY(-2px);
     }
     
-    .btn-delete::after {
+   .btn-delete::after {
         content: '';
         position: absolute;
         top: 50%;
@@ -329,12 +329,12 @@
         transition: width 0.8s, height 0.8s;
     }
     
-    .btn-delete:hover::after {
+   .btn-delete:hover::after {
         width: 400px;
         height: 400px;
     }
     
-    .btn-cancel {
+   .btn-cancel {
         background: rgba(106, 90, 205, 0.2);
         border: 2px solid rgba(106, 90, 205, 0.6);
         border-radius: 15px;
@@ -355,7 +355,7 @@
         backdrop-filter: blur(5px);
     }
     
-    .btn-cancel:hover {
+   .btn-cancel:hover {
         background: rgba(106, 90, 205, 0.3);
         border-color: #6a5acd;
         color: #fff;
@@ -363,125 +363,125 @@
         box-shadow: 0 10px 25px rgba(106, 90, 205, 0.5);
     }
     
-    .btn-cancel:active {
+   .btn-cancel:active {
         transform: translateY(-2px);
     }
     
-    .btn-cancel i, .btn-delete i {
+   .btn-cancel i,.btn-delete i {
         transition: all 0.3s ease;
         font-size: 1.3rem;
     }
     
-    .btn-delete:hover i {
+   .btn-delete:hover i {
         transform: scale(1.2) rotate(15deg);
     }
     
-    .btn-cancel:hover i {
+   .btn-cancel:hover i {
         transform: scale(1.2);
     }
     
     /* Дополнительная информация */
-    .material-id {
+   .material-id {
         margin-top: 2rem;
         font-size: 0.9rem;
         color: #8080b0;
     }
     
-    .material-id i {
+   .material-id i {
         color: #6a5acd;
         margin-right: 0.3rem;
     }
     
     /* Адаптивность */
-    @media (max-width: 576px) {
-        .dark-theme-delete-material {
+    @media(max-width: 576px) {
+       .dark-theme-delete-material {
             padding: 1rem 0.5rem;
         }
         
-        .delete-card {
+       .delete-card {
             border-radius: 20px;
         }
         
-        .card-content {
+       .card-content {
             padding: 1.5rem;
         }
         
-        .delete-title {
+       .delete-title {
             font-size: 2rem;
         }
         
-        .warning-icon {
+       .warning-icon {
             font-size: 4rem;
         }
         
-        .material-title {
+       .material-title {
             font-size: 1.4rem;
         }
         
-        .warning-text {
+       .warning-text {
             font-size: 1rem;
         }
         
-        .button-container {
+       .button-container {
             flex-direction: column;
             gap: 1rem;
         }
         
-        .btn-delete,
-        .btn-cancel {
+       .btn-delete,
+       .btn-cancel {
             width: 100%;
             min-width: auto;
             padding: 0.8rem 1.5rem;
         }
         
-        .warning-item {
+       .warning-item {
             font-size: 1rem;
         }
         
-        .warning-item i {
+       .warning-item i {
             font-size: 1.2rem;
         }
         
-        .material-meta {
+       .material-meta {
             flex-direction: column;
             gap: 0.8rem;
         }
         
-        .meta-item {
+       .meta-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
             text-align: left;
         }
         
-        .meta-icon {
+       .meta-icon {
             margin-bottom: 0;
             margin-right: 0.5rem;
         }
     }
     
-    @media (min-width: 577px) and (max-width: 768px) {
-        .delete-card {
+    @media(min-width: 577px) and(max-width: 768px) {
+       .delete-card {
             margin: 0 1rem;
         }
         
-        .delete-title {
+       .delete-title {
             font-size: 2.2rem;
         }
         
-        .button-container {
+       .button-container {
             gap: 1rem;
         }
         
-        .btn-delete,
-        .btn-cancel {
+       .btn-delete,
+       .btn-cancel {
             min-width: 150px;
             padding: 0.8rem 1.5rem;
         }
     }
     
     /* Декоративные элементы */
-    .glowing-text {
+   .glowing-text {
         animation: glowing 2s infinite;
     }
     
@@ -603,7 +603,7 @@
         
         const confirmMessage = `Вы уверены, что хотите удалить материал "${materialTitle}" из курса "${courseName}"?\n\nЭто действие нельзя отменить. Материал будет безвозвратно удален.`;
         
-        if (!confirm(confirmMessage)) {
+        if(!confirm(confirmMessage)) {
             event.preventDefault();
             return false;
         }

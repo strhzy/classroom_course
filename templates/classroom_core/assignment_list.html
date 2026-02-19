@@ -4,14 +4,14 @@
 
 {% block courses_content %}
 <style>
-    .dark-theme-assignments {
+   .dark-theme-assignments {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Заголовок */
-    .page-header {
+   .page-header {
         animation: headerSlide 0.5s ease-out;
         margin-bottom: 2rem;
     }
@@ -27,7 +27,7 @@
         }
     }
     
-    .page-title {
+   .page-title {
         font-size: 2.2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
@@ -39,7 +39,7 @@
         align-items: center;
     }
     
-    .page-title i {
+   .page-title i {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -48,7 +48,7 @@
     }
     
     /* Фильтры */
-    .filters-section {
+   .filters-section {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -70,7 +70,7 @@
         }
     }
     
-    .filter-label {
+   .filter-label {
         color: #a8b8ff;
         font-weight: 600;
         margin-bottom: 0.8rem;
@@ -79,12 +79,12 @@
         gap: 0.5rem;
     }
     
-    .filter-label i {
+   .filter-label i {
         color: #6a5acd;
         font-size: 1.2rem;
     }
     
-    .custom-select {
+   .custom-select {
         background: rgba(20, 20, 35, 0.8);
         border: 2px solid rgba(106, 90, 205, 0.3);
         border-radius: 10px;
@@ -100,22 +100,22 @@
         background-position: right 1rem center;
     }
     
-    .custom-select:focus {
+   .custom-select:focus {
         outline: none;
         border-color: #6a5acd;
         box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2);
     }
     
-    .custom-select:hover {
+   .custom-select:hover {
         border-color: rgba(106, 90, 205, 0.6);
     }
     
-    .custom-select option {
+   .custom-select option {
         background: #1a1a2e;
         color: #fff;
     }
     
-    .btn-filter {
+   .btn-filter {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 10px;
@@ -133,13 +133,13 @@
         gap: 0.5rem;
     }
     
-    .btn-filter:hover {
+   .btn-filter:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
     }
     
-    .btn-filter::after {
+   .btn-filter::after {
         content: '';
         position: absolute;
         top: 50%;
@@ -152,13 +152,13 @@
         transition: width 0.6s, height 0.6s;
     }
     
-    .btn-filter:hover::after {
+   .btn-filter:hover::after {
         width: 300px;
         height: 300px;
     }
     
     /* Карточка с таблицей */
-    .table-card {
+   .table-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -180,7 +180,7 @@
         }
     }
     
-    .card-header-gradient {
+   .card-header-gradient {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
         border-bottom: 1px solid rgba(106, 90, 205, 0.3);
         padding: 1.2rem 1.5rem;
@@ -191,7 +191,7 @@
         gap: 1rem;
     }
     
-    .card-header-gradient h5 {
+   .card-header-gradient h5 {
         color: #fff;
         margin: 0;
         display: flex;
@@ -199,12 +199,12 @@
         gap: 0.8rem;
     }
     
-    .card-header-gradient h5 i {
+   .card-header-gradient h5 i {
         color: #6a5acd;
         font-size: 1.3rem;
     }
     
-    .btn-create {
+   .btn-create {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 10px;
@@ -219,29 +219,29 @@
         font-size: 0.9rem;
     }
     
-    .btn-create:hover {
+   .btn-create:hover {
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
         color: white;
     }
     
-    .btn-create i {
+   .btn-create i {
         transition: transform 0.3s ease;
     }
     
-    .btn-create:hover i {
+   .btn-create:hover i {
         transform: rotate(90deg);
     }
     
     /* Таблица */
-    .custom-table {
+   .custom-table {
         width: 100%;
         border-collapse: separate;
         border-spacing: 0;
     }
     
-    .custom-table thead th {
+   .custom-table thead th {
         background: rgba(106, 90, 205, 0.15);
         color: #a8b8ff;
         font-weight: 600;
@@ -253,7 +253,7 @@
         white-space: nowrap;
     }
     
-    .custom-table tbody tr {
+   .custom-table tbody tr {
         transition: all 0.3s ease;
         animation: rowAppear 0.5s ease-out;
         animation-fill-mode: both;
@@ -273,20 +273,20 @@
         }
     }
     
-    .custom-table tbody tr:hover {
+   .custom-table tbody tr:hover {
         background: rgba(106, 90, 205, 0.15);
         transform: scale(1.01);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
     
-    .custom-table tbody td {
+   .custom-table tbody td {
         padding: 1.2rem 1.5rem;
         color: #e0e0ff;
         border-bottom: 1px solid rgba(106, 90, 205, 0.2);
         vertical-align: middle;
     }
     
-    .assignment-icon {
+   .assignment-icon {
         width: 40px;
         height: 40px;
         background: rgba(106, 90, 205, 0.2);
@@ -299,18 +299,18 @@
         transition: all 0.3s ease;
     }
     
-    tr:hover .assignment-icon {
+    tr:hover.assignment-icon {
         background: rgba(106, 90, 205, 0.3);
         transform: rotate(5deg) scale(1.1);
     }
     
-    .assignment-title {
+   .assignment-title {
         font-weight: 600;
         color: #fff;
         margin-bottom: 0.2rem;
     }
     
-    .assignment-description {
+   .assignment-description {
         color: #b0b0ff;
         font-size: 0.85rem;
         display: -webkit-box;
@@ -320,7 +320,7 @@
     }
     
     /* Бейджи статусов */
-    .status-badge {
+   .status-badge {
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
@@ -331,25 +331,25 @@
         white-space: nowrap;
     }
     
-    .status-draft {
+   .status-draft {
         background: rgba(255, 165, 2, 0.15);
         color: #ffa502;
         border: 1px solid #ffa502;
     }
     
-    .status-published {
+   .status-published {
         background: rgba(76, 175, 80, 0.15);
         color: #4caf50;
         border: 1px solid #4caf50;
     }
     
-    .status-closed {
+   .status-closed {
         background: rgba(108, 117, 125, 0.15);
         color: #a8b8ff;
         border: 1px solid #6c757d;
     }
     
-    .due-date {
+   .due-date {
         color: #b0b0ff;
         font-size: 0.9rem;
         display: flex;
@@ -357,11 +357,11 @@
         gap: 0.3rem;
     }
     
-    .due-date i {
+   .due-date i {
         color: #6a5acd;
     }
     
-    .btn-view {
+   .btn-view {
         background: rgba(106, 90, 205, 0.15);
         border: 1px solid rgba(106, 90, 205, 0.4);
         border-radius: 8px;
@@ -377,28 +377,28 @@
         white-space: nowrap;
     }
     
-    .btn-view:hover {
+   .btn-view:hover {
         background: rgba(106, 90, 205, 0.3);
         border-color: #6a5acd;
         color: #fff;
         transform: translateX(3px);
     }
     
-    .btn-view i {
+   .btn-view i {
         transition: transform 0.3s ease;
     }
     
-    .btn-view:hover i {
+   .btn-view:hover i {
         transform: translateX(3px);
     }
     
     /* Пустое состояние */
-    .empty-state {
+   .empty-state {
         text-align: center;
         padding: 4rem 1rem;
     }
     
-    .empty-icon {
+   .empty-icon {
         font-size: 4rem;
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         background-clip: text;
@@ -416,14 +416,14 @@
         }
     }
     
-    .empty-text {
+   .empty-text {
         color: #b0b0ff;
         font-size: 1.1rem;
         margin-top: 1rem;
     }
     
     /* Пагинация */
-    .custom-pagination {
+   .custom-pagination {
         margin-top: 2rem;
         animation: paginationAppear 0.6s ease-out 0.5s both;
     }
@@ -439,7 +439,7 @@
         }
     }
     
-    .pagination .page-link {
+   .pagination.page-link {
         background: rgba(30, 30, 46, 0.95);
         border: 1px solid rgba(106, 90, 205, 0.3);
         color: #a8b8ff;
@@ -448,7 +448,7 @@
         transition: all 0.3s ease;
     }
     
-    .pagination .page-link:hover {
+   .pagination.page-link:hover {
         background: rgba(106, 90, 205, 0.3);
         border-color: #6a5acd;
         color: #fff;
@@ -456,7 +456,7 @@
         box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
     }
     
-    .pagination .page-item.active .page-link {
+   .pagination.page-item.active.page-link {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border-color: #6a5acd;
         color: white;
@@ -464,32 +464,32 @@
     }
     
     /* Адаптивность */
-    @media (max-width: 768px) {
-        .dark-theme-assignments {
+    @media(max-width: 768px) {
+       .dark-theme-assignments {
             padding: 1rem 0.5rem;
         }
         
-        .page-title {
+       .page-title {
             font-size: 1.8rem;
         }
         
-        .page-title i {
+       .page-title i {
             font-size: 2rem;
         }
         
-        .filters-section .row {
+       .filters-section.row {
             flex-direction: column;
         }
         
-        .filters-section [class*="col-"] {
+       .filters-section [class*="col-"] {
             margin-bottom: 0.5rem;
         }
         
-        .custom-table thead {
+       .custom-table thead {
             display: none;
         }
         
-        .custom-table tbody tr {
+       .custom-table tbody tr {
             display: block;
             margin-bottom: 1rem;
             border: 1px solid rgba(106, 90, 205, 0.3);
@@ -497,7 +497,7 @@
             background: rgba(30, 30, 46, 0.8);
         }
         
-        .custom-table tbody td {
+       .custom-table tbody td {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -506,38 +506,38 @@
             border-bottom: 1px solid rgba(106, 90, 205, 0.1);
         }
         
-        .custom-table tbody td:last-child {
+       .custom-table tbody td:last-child {
             border-bottom: none;
         }
         
-        .custom-table tbody td::before {
+       .custom-table tbody td::before {
             content: attr(data-label);
             font-weight: 600;
             color: #a8b8ff;
             margin-right: 1rem;
         }
         
-        .card-header-gradient {
+       .card-header-gradient {
             flex-direction: column;
             align-items: flex-start;
         }
         
-        .btn-create {
+       .btn-create {
             width: 100%;
             justify-content: center;
         }
         
-        .empty-icon {
+       .empty-icon {
             font-size: 3rem;
         }
     }
     
-    @media (min-width: 769px) and (max-width: 992px) {
-        .custom-table td {
+    @media(min-width: 769px) and(max-width: 992px) {
+       .custom-table td {
             padding: 1rem;
         }
         
-        .btn-view {
+       .btn-view {
             padding: 0.3rem 1rem;
         }
     }
@@ -721,7 +721,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const rows = document.querySelectorAll('.custom-table tbody tr');
         rows.forEach((row, index) => {
-            row.style.animationDelay = `${0.2 + (index * 0.1)}s`;
+            row.style.animationDelay = `${0.2 +(index * 0.1)}s`;
         });
     });
 </script>

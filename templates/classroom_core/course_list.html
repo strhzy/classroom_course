@@ -4,14 +4,14 @@
 
 {% block courses_content %}
 <style>
-    .dark-theme-courses {
+   .dark-theme-courses {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Заголовок */
-    .page-header {
+   .page-header {
         animation: headerSlide 0.5s ease-out;
         margin-bottom: 2rem;
         display: flex;
@@ -32,7 +32,7 @@
         }
     }
     
-    .page-title {
+   .page-title {
         font-size: 2.2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
@@ -44,7 +44,7 @@
         align-items: center;
     }
     
-    .page-title i {
+   .page-title i {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -53,7 +53,7 @@
     }
     
     /* Кнопка создания */
-    .btn-create {
+   .btn-create {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 12px;
@@ -70,14 +70,14 @@
         gap: 0.5rem;
     }
     
-    .btn-create:hover {
+   .btn-create:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
         color: white;
     }
     
-    .btn-create::after {
+   .btn-create::after {
         content: '';
         position: absolute;
         top: 50%;
@@ -90,21 +90,21 @@
         transition: width 0.6s, height 0.6s;
     }
     
-    .btn-create:hover::after {
+   .btn-create:hover::after {
         width: 300px;
         height: 300px;
     }
     
-    .btn-create i {
+   .btn-create i {
         transition: transform 0.3s ease;
     }
     
-    .btn-create:hover i {
+   .btn-create:hover i {
         transform: rotate(90deg);
     }
     
     /* Фильтры */
-    .filters-section {
+   .filters-section {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -126,7 +126,7 @@
         }
     }
     
-    .filter-label {
+   .filter-label {
         color: #a8b8ff;
         font-weight: 600;
         margin-bottom: 0.8rem;
@@ -135,12 +135,12 @@
         gap: 0.5rem;
     }
     
-    .filter-label i {
+   .filter-label i {
         color: #6a5acd;
         font-size: 1.2rem;
     }
     
-    .custom-input {
+   .custom-input {
         background: rgba(20, 20, 35, 0.8);
         border: 2px solid rgba(106, 90, 205, 0.3);
         border-radius: 10px;
@@ -151,21 +151,21 @@
         width: 100%;
     }
     
-    .custom-input:focus {
+   .custom-input:focus {
         outline: none;
         border-color: #6a5acd;
         box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2);
     }
     
-    .custom-input:hover {
+   .custom-input:hover {
         border-color: rgba(106, 90, 205, 0.6);
     }
     
-    .custom-input::placeholder {
+   .custom-input::placeholder {
         color: #8080b0;
     }
     
-    .custom-select {
+   .custom-select {
         background: rgba(20, 20, 35, 0.8);
         border: 2px solid rgba(106, 90, 205, 0.3);
         border-radius: 10px;
@@ -181,22 +181,22 @@
         background-position: right 1rem center;
     }
     
-    .custom-select:focus {
+   .custom-select:focus {
         outline: none;
         border-color: #6a5acd;
         box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2);
     }
     
-    .custom-select:hover {
+   .custom-select:hover {
         border-color: rgba(106, 90, 205, 0.6);
     }
     
-    .custom-select option {
+   .custom-select option {
         background: #1a1a2e;
         color: #fff;
     }
     
-    .btn-filter {
+   .btn-filter {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 10px;
@@ -214,18 +214,18 @@
         gap: 0.5rem;
     }
     
-    .btn-filter:hover {
+   .btn-filter:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
     }
     
-    .btn-filter:hover i {
+   .btn-filter:hover i {
         transform: scale(1.1);
     }
     
     /* Карточки курсов */
-    .course-card {
+   .course-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -238,7 +238,7 @@
         position: relative;
     }
     
-    .course-card::before {
+   .course-card::before {
         content: '';
         position: absolute;
         top: 0;
@@ -250,11 +250,11 @@
         transition: transform 0.6s ease;
     }
     
-    .course-card:hover::before {
+   .course-card:hover::before {
         transform: translateX(0);
     }
     
-    .course-card:hover {
+   .course-card:hover {
         transform: translateY(-8px);
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(106, 90, 205, 0.3);
         border-color: rgba(106, 90, 205, 0.6);
@@ -271,11 +271,11 @@
         }
     }
     
-    .card-body-custom {
+   .card-body-custom {
         padding: 1.5rem;
     }
     
-    .course-icon {
+   .course-icon {
         width: 50px;
         height: 50px;
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
@@ -288,19 +288,19 @@
         transition: all 0.3s ease;
     }
     
-    .course-card:hover .course-icon {
+   .course-card:hover.course-icon {
         transform: rotate(5deg) scale(1.1);
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.3), rgba(74, 144, 226, 0.3));
     }
     
-    .course-title {
+   .course-title {
         color: #fff;
         font-size: 1.2rem;
         font-weight: 600;
         margin-bottom: 0.3rem;
     }
     
-    .instructor-info {
+   .instructor-info {
         color: #a8b8ff;
         font-size: 0.85rem;
         display: flex;
@@ -308,11 +308,11 @@
         gap: 0.3rem;
     }
     
-    .instructor-info i {
+   .instructor-info i {
         color: #6a5acd;
     }
     
-    .course-description {
+   .course-description {
         color: #b0b0ff;
         font-size: 0.95rem;
         line-height: 1.5;
@@ -323,7 +323,7 @@
         overflow: hidden;
     }
     
-    .stats-row {
+   .stats-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -333,7 +333,7 @@
         margin: 0.8rem 0;
     }
     
-    .stat {
+   .stat {
         display: flex;
         align-items: center;
         gap: 0.3rem;
@@ -341,16 +341,16 @@
         font-size: 0.9rem;
     }
     
-    .stat i {
+   .stat i {
         color: #6a5acd;
     }
     
-    .stat strong {
+   .stat strong {
         color: #fff;
         margin-left: 0.2rem;
     }
     
-    .status-badge {
+   .status-badge {
         display: inline-flex;
         align-items: center;
         gap: 0.3rem;
@@ -360,31 +360,31 @@
         font-weight: 600;
     }
     
-    .badge-draft {
+   .badge-draft {
         background: rgba(255, 165, 2, 0.15);
         color: #ffa502;
         border: 1px solid #ffa502;
     }
     
-    .badge-active {
+   .badge-active {
         background: rgba(76, 175, 80, 0.15);
         color: #4caf50;
         border: 1px solid #4caf50;
     }
     
-    .badge-archived {
+   .badge-archived {
         background: rgba(108, 117, 125, 0.15);
         color: #a8b8ff;
         border: 1px solid #6c757d;
     }
     
-    .badge-completed {
+   .badge-completed {
         background: rgba(74, 144, 226, 0.15);
         color: #4a90e2;
         border: 1px solid #4a90e2;
     }
     
-    .btn-primary-course {
+   .btn-primary-course {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 10px;
@@ -400,14 +400,14 @@
         flex: 1;
     }
     
-    .btn-primary-course:hover {
+   .btn-primary-course:hover {
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
         color: white;
     }
     
-    .btn-outline-course {
+   .btn-outline-course {
         background: rgba(106, 90, 205, 0.1);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 10px;
@@ -423,21 +423,21 @@
         flex: 1;
     }
     
-    .btn-outline-course:hover {
+   .btn-outline-course:hover {
         background: rgba(106, 90, 205, 0.2);
         border-color: #6a5acd;
         color: #fff;
         transform: translateY(-2px);
     }
     
-    .button-group {
+   .button-group {
         display: flex;
         gap: 0.5rem;
         margin-top: 1rem;
     }
     
     /* Пустое состояние */
-    .empty-state {
+   .empty-state {
         text-align: center;
         padding: 4rem 1rem;
         animation: emptyAppear 0.8s ease-out;
@@ -454,7 +454,7 @@
         }
     }
     
-    .empty-icon {
+   .empty-icon {
         font-size: 5rem;
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         background-clip: text;
@@ -472,21 +472,21 @@
         }
     }
     
-    .empty-title {
+   .empty-title {
         color: #fff;
         font-size: 1.8rem;
         font-weight: 600;
         margin-bottom: 1rem;
     }
     
-    .empty-text {
+   .empty-text {
         color: #b0b0ff;
         font-size: 1.1rem;
         margin-bottom: 2rem;
     }
     
     /* Пагинация */
-    .custom-pagination {
+   .custom-pagination {
         margin-top: 2rem;
         animation: paginationAppear 0.6s ease-out 0.5s both;
     }
@@ -502,7 +502,7 @@
         }
     }
     
-    .pagination .page-link {
+   .pagination.page-link {
         background: rgba(30, 30, 46, 0.95);
         border: 1px solid rgba(106, 90, 205, 0.3);
         color: #a8b8ff;
@@ -511,7 +511,7 @@
         transition: all 0.3s ease;
     }
     
-    .pagination .page-link:hover {
+   .pagination.page-link:hover {
         background: rgba(106, 90, 205, 0.3);
         border-color: #6a5acd;
         color: #fff;
@@ -519,66 +519,66 @@
         box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
     }
     
-    .pagination .page-item.active .page-link {
+   .pagination.page-item.active.page-link {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border-color: #6a5acd;
         color: white;
         box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
     }
     
-    .pagination .page-item.disabled .page-link {
+   .pagination.page-item.disabled.page-link {
         background: rgba(30, 30, 46, 0.5);
         border-color: rgba(106, 90, 205, 0.1);
         color: #8080b0;
     }
     
     /* Адаптивность */
-    @media (max-width: 768px) {
-        .dark-theme-courses {
+    @media(max-width: 768px) {
+       .dark-theme-courses {
             padding: 1rem 0.5rem;
         }
         
-        .page-title {
+       .page-title {
             font-size: 1.8rem;
         }
         
-        .page-title i {
+       .page-title i {
             font-size: 2rem;
         }
         
-        .page-header {
+       .page-header {
             flex-direction: column;
             align-items: flex-start;
         }
         
-        .btn-create {
+       .btn-create {
             width: 100%;
             justify-content: center;
         }
         
-        .filters-section .row {
+       .filters-section.row {
             flex-direction: column;
         }
         
-        .filters-section [class*="col-"] {
+       .filters-section [class*="col-"] {
             margin-bottom: 0.5rem;
         }
         
-        .button-group {
+       .button-group {
             flex-direction: column;
         }
         
-        .empty-title {
+       .empty-title {
             font-size: 1.4rem;
         }
         
-        .empty-text {
+       .empty-text {
             font-size: 1rem;
         }
     }
     
-    @media (min-width: 769px) and (max-width: 992px) {
-        .course-title {
+    @media(min-width: 769px) and(max-width: 992px) {
+       .course-title {
             font-size: 1.1rem;
         }
     }
@@ -695,7 +695,7 @@
                             {% endif %}
                         </div>
                         
-                        <!-- ID курса (скрытый для отладки) -->
+                        <!-- ID курса(скрытый для отладки) -->
                         <div class="mt-2 text-end small" style="color: #8080b0;">
                             <i class="bi bi-hash"></i> ID: {{ course.id }}
                         </div>
@@ -763,7 +763,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const cards = document.querySelectorAll('.course-card');
         cards.forEach((card, index) => {
-            card.style.animationDelay = `${0.1 + (index * 0.1)}s`;
+            card.style.animationDelay = `${0.1 +(index * 0.1)}s`;
         });
         
         // Анимация для иконок статусов

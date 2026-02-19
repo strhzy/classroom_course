@@ -46,7 +46,23 @@ urlpatterns = [
     path('groups/<int:group_id>/delete/', views.group_delete, name='group_delete'),
     path('groups/<int:group_id>/', views.group_detail, name='group_detail'),
     path('groups/<int:group_id>/add-students/', views.group_add_students, name='group_add_students'),
-    
+
+    # Заявки на запись на курс
+    path('<int:course_id>/enrollment-request/', views.course_enrollment_request_create, name='course_enrollment_request_create'),
+    path('<int:course_id>/enrollment-requests/', views.course_enrollment_request_list, name='course_enrollment_request_list'),
+    path('enrollment-requests/<int:request_id>/', views.course_enrollment_request_detail, name='course_enrollment_request_detail'),
+    path('enrollment-requests/<int:request_id>/review/', views.course_enrollment_request_review, name='course_enrollment_request_review'),
+
+    # Файлы заданий
+    path('assignments/<int:assignment_id>/files/create/', views.assignment_file_create, name='assignment_file_create'),
+    path('assignments/<int:assignment_id>/files/', views.assignment_file_list, name='assignment_file_list'),
+    path('assignments/files/<int:file_id>/delete/', views.assignment_file_delete, name='assignment_file_delete'),
+
+    # Проверка файлов заданий
+    path('assignments/files/<int:file_id>/review/create/', views.assignment_file_review_create, name='assignment_file_review_create'),
+    path('assignments/files/reviews/<int:review_id>/', views.assignment_file_review_detail, name='assignment_file_review_detail'),
+    path('assignments/files/reviews/<int:review_id>/edit/', views.assignment_file_review_edit, name='assignment_file_review_edit'),
+
     path('profile/', views.profile_view, name='profile_view'),
     path('profile/<int:user_id>/', views.profile_view, name='profile_view_user'),
     path('profile/edit/', views.profile_edit, name='profile_edit'),

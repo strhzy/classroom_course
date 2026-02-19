@@ -4,14 +4,14 @@
 
 {% block courses_content %}
 <style>
-    .dark-theme-grade {
+   .dark-theme-grade {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Хлебные крошки */
-    .custom-breadcrumb {
+   .custom-breadcrumb {
         background: rgba(106, 90, 205, 0.1);
         padding: 0.8rem 1.2rem;
         border-radius: 50px;
@@ -32,35 +32,35 @@
         }
     }
     
-    .custom-breadcrumb .breadcrumb {
+   .custom-breadcrumb.breadcrumb {
         margin: 0;
         background: transparent;
     }
     
-    .custom-breadcrumb .breadcrumb-item a {
+   .custom-breadcrumb.breadcrumb-item a {
         color: #a8b8ff;
         text-decoration: none;
         transition: all 0.3s ease;
     }
     
-    .custom-breadcrumb .breadcrumb-item a:hover {
+   .custom-breadcrumb.breadcrumb-item a:hover {
         color: #6a5acd;
         text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
     }
     
-    .custom-breadcrumb .breadcrumb-item.active {
+   .custom-breadcrumb.breadcrumb-item.active {
         color: #fff;
         font-weight: 500;
     }
     
-    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
         color: #6a5acd;
         content: "›";
         font-size: 1.2rem;
     }
     
     /* Заголовок */
-    .page-header {
+   .page-header {
         animation: headerFade 0.5s ease-out;
     }
     
@@ -75,7 +75,7 @@
         }
     }
     
-    .page-title {
+   .page-title {
         font-size: 2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
@@ -86,7 +86,7 @@
     }
     
     /* Карточки */
-    .custom-card {
+   .custom-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -98,7 +98,7 @@
         overflow: hidden;
     }
     
-    .custom-card:hover {
+   .custom-card:hover {
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
         transform: translateY(-2px);
     }
@@ -114,13 +114,13 @@
         }
     }
     
-    .card-header-gradient {
+   .card-header-gradient {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
         border-bottom: 1px solid rgba(106, 90, 205, 0.3);
         padding: 1.2rem 1.5rem;
     }
     
-    .card-header-gradient h5 {
+   .card-header-gradient h5 {
         color: #fff;
         margin: 0;
         display: flex;
@@ -128,23 +128,23 @@
         gap: 0.8rem;
     }
     
-    .card-header-gradient i {
+   .card-header-gradient i {
         color: #6a5acd;
         font-size: 1.3rem;
     }
     
-    .card-body-custom {
+   .card-body-custom {
         padding: 1.5rem;
     }
     
     /* Информация о решении */
-    .info-grid {
+   .info-grid {
         display: flex;
         flex-direction: column;
         gap: 0.8rem;
     }
     
-    .info-row {
+   .info-row {
         display: flex;
         align-items: flex-start;
         gap: 1rem;
@@ -153,12 +153,12 @@
         transition: all 0.3s ease;
     }
     
-    .info-row:hover {
+   .info-row:hover {
         background: rgba(106, 90, 205, 0.1);
         transform: translateX(5px);
     }
     
-    .info-label {
+   .info-label {
         min-width: 120px;
         color: #a8b8ff;
         font-weight: 600;
@@ -167,17 +167,17 @@
         gap: 0.5rem;
     }
     
-    .info-label i {
+   .info-label i {
         color: #6a5acd;
         width: 20px;
     }
     
-    .info-value {
+   .info-value {
         color: #fff;
         flex: 1;
     }
     
-    .status-badge {
+   .status-badge {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         padding: 0.4rem 1rem;
@@ -190,7 +190,7 @@
         gap: 0.5rem;
     }
     
-    .late-badge {
+   .late-badge {
         background: linear-gradient(135deg, #ff4757, #ff6b81);
         border: none;
         padding: 0.4rem 1rem;
@@ -214,7 +214,7 @@
     }
     
     /* Решение студента */
-    .solution-text {
+   .solution-text {
         background: rgba(20, 20, 35, 0.6);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 15px;
@@ -224,7 +224,7 @@
         line-height: 1.8;
     }
     
-    .file-attachment {
+   .file-attachment {
         background: rgba(106, 90, 205, 0.15);
         border: 1px solid rgba(106, 90, 205, 0.4);
         border-radius: 12px;
@@ -245,17 +245,17 @@
         }
     }
     
-    .file-icon {
+   .file-icon {
         color: #6a5acd;
         font-size: 2rem;
     }
     
-    .file-info {
+   .file-info {
         flex: 1;
         color: #a8b8ff;
     }
     
-    .file-link {
+   .file-link {
         background: rgba(106, 90, 205, 0.2);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 8px;
@@ -268,7 +268,7 @@
         gap: 0.5rem;
     }
     
-    .file-link:hover {
+   .file-link:hover {
         background: rgba(106, 90, 205, 0.3);
         border-color: #6a5acd;
         transform: translateY(-2px);
@@ -276,19 +276,19 @@
     }
     
     /* Форма оценивания */
-    .grade-section {
+   .grade-section {
         margin-top: 1rem;
     }
     
-    .form-group {
+   .form-group {
         margin-bottom: 1.8rem;
         animation: fieldAppear 0.5s ease-out;
         animation-fill-mode: both;
     }
     
-    .form-group:nth-child(1) { animation-delay: 0.2s; }
-    .form-group:nth-child(2) { animation-delay: 0.3s; }
-    .form-group:nth-child(3) { animation-delay: 0.4s; }
+   .form-group:nth-child(1) { animation-delay: 0.2s; }
+   .form-group:nth-child(2) { animation-delay: 0.3s; }
+   .form-group:nth-child(3) { animation-delay: 0.4s; }
     
     @keyframes fieldAppear {
         0% {
@@ -301,7 +301,7 @@
         }
     }
     
-    .form-label {
+   .form-label {
         color: #a8b8ff;
         font-weight: 600;
         margin-bottom: 0.5rem;
@@ -310,16 +310,16 @@
         gap: 0.5rem;
     }
     
-    .form-label i {
+   .form-label i {
         color: #6a5acd;
     }
     
-    .form-label .required {
+   .form-label.required {
         color: #ff6b81;
         margin-left: 0.3rem;
     }
     
-    .custom-input {
+   .custom-input {
         background: rgba(20, 20, 35, 0.8);
         border: 2px solid rgba(106, 90, 205, 0.3);
         border-radius: 12px;
@@ -330,7 +330,7 @@
         width: 100%;
     }
     
-    .custom-input:focus {
+   .custom-input:focus {
         outline: none;
         border-color: #6a5acd;
         box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2), 0 0 20px rgba(106, 90, 205, 0.3);
@@ -338,7 +338,7 @@
         transform: translateY(-2px);
     }
     
-    .custom-input:hover {
+   .custom-input:hover {
         border-color: rgba(106, 90, 205, 0.6);
     }
     
@@ -347,7 +347,7 @@
         min-height: 120px;
     }
     
-    .custom-select {
+   .custom-select {
         background: rgba(20, 20, 35, 0.8);
         border: 2px solid rgba(106, 90, 205, 0.3);
         border-radius: 12px;
@@ -363,13 +363,13 @@
         background-position: right 1rem center;
     }
     
-    .custom-select:focus {
+   .custom-select:focus {
         outline: none;
         border-color: #6a5acd;
         box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2);
     }
     
-    .form-text {
+   .form-text {
         color: #8080b0;
         font-size: 0.9rem;
         margin-top: 0.3rem;
@@ -378,12 +378,12 @@
         gap: 0.3rem;
     }
     
-    .form-text i {
+   .form-text i {
         color: #6a5acd;
     }
     
     /* Шкала баллов */
-    .points-scale {
+   .points-scale {
         background: rgba(0, 0, 0, 0.2);
         border-radius: 10px;
         padding: 0.8rem;
@@ -393,7 +393,7 @@
         flex-wrap: wrap;
     }
     
-    .point-item {
+   .point-item {
         flex: 1;
         text-align: center;
         padding: 0.5rem;
@@ -401,19 +401,19 @@
         background: rgba(106, 90, 205, 0.1);
     }
     
-    .point-value {
+   .point-value {
         font-size: 1.2rem;
         font-weight: 700;
         color: #6a5acd;
     }
     
-    .point-label {
+   .point-label {
         font-size: 0.8rem;
         color: #a8b8ff;
     }
     
     /* Кнопки */
-    .button-group {
+   .button-group {
         display: flex;
         gap: 1rem;
         margin-top: 2rem;
@@ -431,7 +431,7 @@
         }
     }
     
-    .btn-save-grade {
+   .btn-save-grade {
         background: linear-gradient(135deg, #4caf50, #45a049);
         border: none;
         border-radius: 12px;
@@ -449,13 +449,13 @@
         gap: 0.5rem;
     }
     
-    .btn-save-grade:hover {
+   .btn-save-grade:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
         background: linear-gradient(135deg, #45a049, #4caf50);
     }
     
-    .btn-save-grade::after {
+   .btn-save-grade::after {
         content: '';
         position: absolute;
         top: 50%;
@@ -468,12 +468,12 @@
         transition: width 0.6s, height 0.6s;
     }
     
-    .btn-save-grade:hover::after {
+   .btn-save-grade:hover::after {
         width: 300px;
         height: 300px;
     }
     
-    .btn-cancel {
+   .btn-cancel {
         background: rgba(106, 90, 205, 0.2);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 12px;
@@ -489,7 +489,7 @@
         gap: 0.5rem;
     }
     
-    .btn-cancel:hover {
+   .btn-cancel:hover {
         background: rgba(106, 90, 205, 0.3);
         border-color: rgba(106, 90, 205, 0.8);
         color: #fff;
@@ -497,60 +497,60 @@
     }
     
     /* Адаптивность */
-    @media (max-width: 768px) {
-        .dark-theme-grade {
+    @media(max-width: 768px) {
+       .dark-theme-grade {
             padding: 1rem 0.5rem;
         }
         
-        .page-title {
+       .page-title {
             font-size: 1.6rem;
         }
         
-        .custom-breadcrumb {
+       .custom-breadcrumb {
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
         }
         
-        .info-row {
+       .info-row {
             flex-direction: column;
             gap: 0.3rem;
         }
         
-        .info-label {
+       .info-label {
             min-width: auto;
         }
         
-        .button-group {
+       .button-group {
             flex-direction: column;
         }
         
-        .btn-save-grade,
-        .btn-cancel {
+       .btn-save-grade,
+       .btn-cancel {
             width: 100%;
         }
         
-        .points-scale {
+       .points-scale {
             flex-direction: column;
             gap: 0.5rem;
         }
     }
     
-    @media (min-width: 769px) and (max-width: 992px) {
-        .page-title {
+    @media(min-width: 769px) and(max-width: 992px) {
+       .page-title {
             font-size: 1.8rem;
         }
     }
     
     /* Анимация для иконок */
-    .bi-check-circle, .bi-x-circle {
+   .bi-check-circle,.bi-x-circle {
         transition: all 0.3s ease;
     }
     
-    .btn-save-grade:hover .bi-check-circle {
+   .btn-save-grade:hover.bi-check-circle {
         transform: scale(1.2);
     }
     
-    .btn-cancel:hover .bi-x-circle {
+   .btn-cancel:hover.bi-x-circle {
         transform: rotate(90deg);
     }
 </style>
@@ -740,7 +740,7 @@
                                     Статус решения <span class="required">*</span>
                                 </label>
                                 <select name="status" id="id_status" class="custom-select" required>
-                                    <option value="submitted" {% if form.status.value == 'submitted' %}selected{% endif %}>📝 Отправлено (ожидает проверки)</option>
+                                    <option value="submitted" {% if form.status.value == 'submitted' %}selected{% endif %}>📝 Отправлено(ожидает проверки)</option>
                                     <option value="graded" {% if form.status.value == 'graded' %}selected{% endif %}>✅ Оценено</option>
                                     <option value="returned" {% if form.status.value == 'returned' %}selected{% endif %}>🔄 Возвращено на доработку</option>
                                 </select>
@@ -771,16 +771,16 @@
     document.addEventListener('DOMContentLoaded', function() {
         const scoreInput = document.getElementById('id_score');
         
-        if (scoreInput) {
+        if(scoreInput) {
             // Получаем значения из data-атрибутов
             const maxPoints = parseInt(scoreInput.getAttribute('data-max-points')) || 100;
             const passingScore = parseInt(scoreInput.getAttribute('data-passing-score')) || 50;
             
             scoreInput.addEventListener('input', function() {
                 let value = parseInt(this.value);
-                if (value > maxPoints) {
+                if(value > maxPoints) {
                     this.value = maxPoints;
-                } else if (value < 0 || isNaN(value)) {
+                } else if(value < 0 || isNaN(value)) {
                     this.value = 0;
                 }
             });
@@ -792,14 +792,14 @@
             
             scoreInput.addEventListener('blur', function() {
                 let value = parseInt(this.value);
-                if (isNaN(value)) {
+                if(isNaN(value)) {
                     this.style.borderColor = 'rgba(106, 90, 205, 0.3)';
                     return;
                 }
                 
-                if (value >= passingScore) {
+                if(value >= passingScore) {
                     this.style.borderColor = '#4caf50';
-                } else if (value > 0) {
+                } else if(value > 0) {
                     this.style.borderColor = '#ffa502';
                 } else {
                     this.style.borderColor = 'rgba(106, 90, 205, 0.3)';

@@ -4,7 +4,7 @@
 
 {% block courses_content %}
 <style>
-    .dark-theme-delete {
+   .dark-theme-delete {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
@@ -12,7 +12,7 @@
         align-items: center;
     }
     
-    .delete-card {
+   .delete-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 71, 87, 0.3);
@@ -24,7 +24,7 @@
         position: relative;
     }
     
-    .delete-card::before {
+   .delete-card::before {
         content: '';
         position: absolute;
         top: 0;
@@ -55,12 +55,12 @@
         }
     }
     
-    .delete-card:hover {
+   .delete-card:hover {
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 71, 87, 0.5);
         transform: translateY(-5px);
     }
     
-    .warning-icon {
+   .warning-icon {
         font-size: 4rem;
         background: linear-gradient(135deg, #ff4757, #ff6b81);
         background-clip: text;
@@ -82,7 +82,7 @@
         }
     }
     
-    .delete-title {
+   .delete-title {
         color: #fff;
         font-size: 2rem;
         font-weight: 700;
@@ -93,7 +93,7 @@
         -webkit-text-fill-color: transparent;
     }
     
-    .assignment-alert {
+   .assignment-alert {
         background: rgba(255, 71, 87, 0.1);
         border: 1px solid rgba(255, 71, 87, 0.4);
         border-radius: 15px;
@@ -114,7 +114,7 @@
         }
     }
     
-    .assignment-title {
+   .assignment-title {
         color: #fff;
         font-size: 1.4rem;
         font-weight: 600;
@@ -122,7 +122,7 @@
         word-break: break-word;
     }
     
-    .warning-details {
+   .warning-details {
         background: rgba(0, 0, 0, 0.2);
         border-radius: 12px;
         padding: 1.2rem;
@@ -130,7 +130,7 @@
         border: 1px solid rgba(255, 71, 87, 0.2);
     }
     
-    .warning-item {
+   .warning-item {
         display: flex;
         align-items: center;
         margin-bottom: 0.8rem;
@@ -139,13 +139,13 @@
         animation-fill-mode: both;
     }
     
-    .warning-item:last-child {
+   .warning-item:last-child {
         margin-bottom: 0;
     }
     
-    .warning-item:nth-child(1) { animation-delay: 0.2s; }
-    .warning-item:nth-child(2) { animation-delay: 0.3s; }
-    .warning-item:nth-child(3) { animation-delay: 0.4s; }
+   .warning-item:nth-child(1) { animation-delay: 0.2s; }
+   .warning-item:nth-child(2) { animation-delay: 0.3s; }
+   .warning-item:nth-child(3) { animation-delay: 0.4s; }
     
     @keyframes slideIn {
         0% {
@@ -158,13 +158,13 @@
         }
     }
     
-    .warning-item i {
+   .warning-item i {
         color: #ff4757;
         font-size: 1.2rem;
         margin-right: 0.8rem;
     }
     
-    .warning-text {
+   .warning-text {
         color: #b0b0ff !important;
         font-size: 1.1rem;
         margin: 1.5rem 0;
@@ -175,12 +175,12 @@
         border-left: 4px solid #ff4757;
     }
     
-    .warning-text i {
+   .warning-text i {
         color: #ff4757;
         margin-right: 0.5rem;
     }
     
-    .button-container {
+   .button-container {
         display: flex;
         gap: 1rem;
         justify-content: center;
@@ -200,7 +200,7 @@
         }
     }
     
-    .btn-delete {
+   .btn-delete {
         background: linear-gradient(135deg, #ff4757, #ff6b81);
         border: none;
         border-radius: 12px;
@@ -217,17 +217,17 @@
         justify-content: center;
     }
     
-    .btn-delete:hover {
+   .btn-delete:hover {
         transform: translateY(-3px);
         box-shadow: 0 8px 25px rgba(255, 71, 87, 0.6);
         background: linear-gradient(135deg, #ff6b81, #ff4757);
     }
     
-    .btn-delete:active {
+   .btn-delete:active {
         transform: translateY(-1px);
     }
     
-    .btn-delete::after {
+   .btn-delete::after {
         content: '';
         position: absolute;
         top: 50%;
@@ -240,12 +240,12 @@
         transition: width 0.6s, height 0.6s;
     }
     
-    .btn-delete:hover::after {
+   .btn-delete:hover::after {
         width: 300px;
         height: 300px;
     }
     
-    .btn-cancel {
+   .btn-cancel {
         background: rgba(106, 90, 205, 0.2);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 12px;
@@ -262,7 +262,7 @@
         justify-content: center;
     }
     
-    .btn-cancel:hover {
+   .btn-cancel:hover {
         background: rgba(106, 90, 205, 0.3);
         border-color: rgba(106, 90, 205, 0.8);
         color: #fff;
@@ -270,25 +270,25 @@
         box-shadow: 0 5px 20px rgba(106, 90, 205, 0.4);
     }
     
-    .btn-cancel:active {
+   .btn-cancel:active {
         transform: translateY(-1px);
     }
     
-    .btn-cancel i, .btn-delete i {
+   .btn-cancel i,.btn-delete i {
         margin-right: 0.5rem;
         transition: transform 0.3s ease;
     }
     
-    .btn-delete:hover i {
+   .btn-delete:hover i {
         transform: scale(1.2) rotate(10deg);
     }
     
-    .btn-cancel:hover i {
+   .btn-cancel:hover i {
         transform: scale(1.2);
     }
     
     /* Дополнительная информация */
-    .additional-info {
+   .additional-info {
         margin-top: 2rem;
         font-size: 0.9rem;
         color: #8080b0;
@@ -304,13 +304,13 @@
         }
     }
     
-    .additional-info i {
+   .additional-info i {
         color: #6a5acd;
         margin-right: 0.3rem;
     }
     
-    /* Модальное окно подтверждения (эффект) */
-    .confirm-shake {
+    /* Модальное окно подтверждения(эффект) */
+   .confirm-shake {
         animation: shake 0.5s ease-in-out;
     }
     
@@ -321,61 +321,61 @@
     }
     
     /* Адаптивность */
-    @media (max-width: 576px) {
-        .dark-theme-delete {
+    @media(max-width: 576px) {
+       .dark-theme-delete {
             padding: 1rem 0.5rem;
         }
         
-        .delete-card {
+       .delete-card {
             border-radius: 15px;
         }
         
-        .delete-title {
+       .delete-title {
             font-size: 1.6rem;
         }
         
-        .warning-icon {
+       .warning-icon {
             font-size: 3rem;
         }
         
-        .assignment-title {
+       .assignment-title {
             font-size: 1.2rem;
         }
         
-        .warning-text {
+       .warning-text {
             font-size: 1rem;
             padding: 0.8rem;
         }
         
-        .button-container {
+       .button-container {
             flex-direction: column;
             gap: 0.8rem;
         }
         
-        .btn-delete,
-        .btn-cancel {
+       .btn-delete,
+       .btn-cancel {
             width: 100%;
             min-width: auto;
             padding: 0.7rem 1.5rem;
         }
         
-        .warning-item {
+       .warning-item {
             font-size: 0.9rem;
         }
     }
     
-    @media (min-width: 577px) and (max-width: 768px) {
-        .delete-card {
+    @media(min-width: 577px) and(max-width: 768px) {
+       .delete-card {
             margin: 0 1rem;
         }
         
-        .delete-title {
+       .delete-title {
             font-size: 1.8rem;
         }
     }
     
     /* Декоративные элементы */
-    .delete-card .background-effects {
+   .delete-card.background-effects {
         position: absolute;
         top: 0;
         left: 0;
@@ -385,13 +385,13 @@
         z-index: 0;
     }
     
-    .delete-card .background-effects span {
+   .delete-card.background-effects span {
         position: absolute;
         background: radial-gradient(circle, rgba(255, 71, 87, 0.1) 0%, transparent 70%);
         border-radius: 50%;
     }
     
-    .delete-card .background-effects span:nth-child(1) {
+   .delete-card.background-effects span:nth-child(1) {
         width: 200px;
         height: 200px;
         top: -50px;
@@ -399,7 +399,7 @@
         animation: float 8s infinite;
     }
     
-    .delete-card .background-effects span:nth-child(2) {
+   .delete-card.background-effects span:nth-child(2) {
         width: 150px;
         height: 150px;
         bottom: -30px;
@@ -486,12 +486,12 @@
 <script>
     // Дополнительное подтверждение перед удалением
     function confirmDeletion(event) {
-        if (!confirm('Вы уверены, что хотите удалить это задание? Это действие нельзя отменить.')) {
+        if(!confirm('Вы уверены, что хотите удалить это задание? Это действие нельзя отменить.')) {
             event.preventDefault();
             return false;
         }
         
-        // Эффект тряски для карточки при попытке удаления (опционально)
+        // Эффект тряски для карточки при попытке удаления(опционально)
         const card = document.querySelector('.delete-card');
         card.classList.add('confirm-shake');
         setTimeout(() => {

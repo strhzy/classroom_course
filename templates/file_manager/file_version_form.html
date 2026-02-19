@@ -9,17 +9,17 @@
 
 {% block files_content %}
 <style>
-    .dark-theme-version {
+   .dark-theme-version {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
-    .version-title {
+   .version-title {
         margin-bottom: 2rem;
     }
     
-    .version-title h1 {
+   .version-title h1 {
         font-size: 2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
@@ -31,19 +31,19 @@
         gap: 0.8rem;
     }
     
-    .version-title h1 i {
+   .version-title h1 i {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         background-clip: text;
         -webkit-text-fill-color: transparent;
     }
     
-    .version-title p {
+   .version-title p {
         color: #a8b8ff;
         font-size: 1.1rem;
         margin-left: 3rem;
     }
     
-    .version-title strong {
+   .version-title strong {
         color: #6a5acd;
         background: rgba(106, 90, 205, 0.15);
         padding: 0.2rem 0.8rem;
@@ -52,7 +52,7 @@
     }
     
     /* Карточка формы */
-    .form-card {
+   .form-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -61,13 +61,13 @@
         overflow: hidden;
     }
     
-    .card-header-custom {
+   .card-header-custom {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
         border-bottom: 1px solid rgba(106, 90, 205, 0.3);
         padding: 1.2rem 1.5rem;
     }
     
-    .card-header-custom h5 {
+   .card-header-custom h5 {
         color: #fff;
         margin: 0;
         display: flex;
@@ -75,20 +75,20 @@
         gap: 0.8rem;
     }
     
-    .card-header-custom i {
+   .card-header-custom i {
         color: #6a5acd;
     }
     
-    .card-body-custom {
+   .card-body-custom {
         padding: 2rem;
     }
     
     /* Поля формы */
-    .form-group {
+   .form-group {
         margin-bottom: 1.8rem;
     }
     
-    .form-label {
+   .form-label {
         color: #a8b8ff;
         font-weight: 600;
         margin-bottom: 0.5rem;
@@ -97,16 +97,16 @@
         gap: 0.5rem;
     }
     
-    .form-label i {
+   .form-label i {
         color: #6a5acd;
     }
     
     /* File input */
-    .file-input-container {
+   .file-input-container {
         position: relative;
     }
     
-    .file-input {
+   .file-input {
         position: absolute;
         opacity: 0;
         width: 100%;
@@ -115,7 +115,7 @@
         z-index: 2;
     }
     
-    .file-label {
+   .file-label {
         background: rgba(20, 20, 35, 0.8);
         border: 2px dashed rgba(106, 90, 205, 0.4);
         border-radius: 10px;
@@ -132,24 +132,24 @@
         text-align: center;
     }
     
-    .file-label:hover {
+   .file-label:hover {
         border-color: #6a5acd;
         background: rgba(106, 90, 205, 0.1);
     }
     
-    .file-label i {
+   .file-label i {
         color: #6a5acd;
         font-size: 2rem;
     }
     
-    .file-name {
+   .file-name {
         color: #6a5acd;
         font-weight: 600;
         margin-top: 0.5rem;
     }
     
     /* Текстовое поле */
-    .custom-textarea {
+   .custom-textarea {
         background: rgba(20, 20, 35, 0.8);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 10px;
@@ -160,13 +160,13 @@
         transition: border-color 0.2s ease;
     }
     
-    .custom-textarea:focus {
+   .custom-textarea:focus {
         outline: none;
         border-color: #6a5acd;
     }
     
     /* Подсказки */
-    .form-text {
+   .form-text {
         color: #8080b0;
         font-size: 0.85rem;
         margin-top: 0.3rem;
@@ -175,12 +175,12 @@
         gap: 0.3rem;
     }
     
-    .form-text i {
+   .form-text i {
         color: #6a5acd;
     }
     
     /* Информационный блок */
-    .info-alert {
+   .info-alert {
         background: rgba(74, 144, 226, 0.15);
         border: 1px solid rgba(74, 144, 226, 0.3);
         border-radius: 12px;
@@ -188,31 +188,31 @@
         margin: 1.5rem 0;
     }
     
-    .info-alert strong {
+   .info-alert strong {
         color: #4a90e2;
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
     
-    .info-alert ul {
+   .info-alert ul {
         color: #b0b0ff;
         margin-top: 0.8rem;
         padding-left: 1.5rem;
     }
     
-    .info-alert li {
+   .info-alert li {
         margin-bottom: 0.3rem;
     }
     
     /* Кнопки */
-    .button-group {
+   .button-group {
         display: flex;
         gap: 1rem;
         margin-top: 2rem;
     }
     
-    .btn-create {
+   .btn-create {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 10px;
@@ -227,11 +227,11 @@
         gap: 0.5rem;
     }
     
-    .btn-create:hover {
+   .btn-create:hover {
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
     }
     
-    .btn-cancel {
+   .btn-cancel {
         background: rgba(106, 90, 205, 0.15);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 10px;
@@ -247,14 +247,14 @@
         gap: 0.5rem;
     }
     
-    .btn-cancel:hover {
+   .btn-cancel:hover {
         background: rgba(106, 90, 205, 0.25);
         border-color: #6a5acd;
         color: #fff;
     }
     
     /* Карточка с информацией о файле */
-    .file-info-card {
+   .file-info-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -263,7 +263,7 @@
         overflow: hidden;
     }
     
-    .file-info-header {
+   .file-info-header {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
         border-bottom: 1px solid rgba(106, 90, 205, 0.3);
         padding: 1rem 1.5rem;
@@ -273,22 +273,22 @@
         gap: 0.8rem;
     }
     
-    .file-info-header i {
+   .file-info-header i {
         color: #6a5acd;
     }
     
-    .file-info-body {
+   .file-info-body {
         padding: 1.5rem;
     }
     
-    .file-info-title {
+   .file-info-title {
         color: #fff;
         font-size: 1.2rem;
         font-weight: 600;
         margin-bottom: 0.5rem;
     }
     
-    .file-info-desc {
+   .file-info-desc {
         color: #a8b8ff;
         font-size: 0.9rem;
         margin-bottom: 1.2rem;
@@ -296,28 +296,28 @@
         border-bottom: 1px solid rgba(106, 90, 205, 0.2);
     }
     
-    .file-details-grid {
+   .file-details-grid {
         display: flex;
         flex-direction: column;
         gap: 0.8rem;
     }
     
-    .detail-row {
+   .detail-row {
         display: flex;
         justify-content: space-between;
         padding: 0.3rem 0;
     }
     
-    .detail-label {
+   .detail-label {
         color: #a8b8ff;
     }
     
-    .detail-value {
+   .detail-value {
         color: #fff;
         font-weight: 500;
     }
     
-    .btn-view {
+   .btn-view {
         background: rgba(106, 90, 205, 0.15);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 8px;
@@ -332,36 +332,36 @@
         transition: all 0.2s ease;
     }
     
-    .btn-view:hover {
+   .btn-view:hover {
         background: rgba(106, 90, 205, 0.25);
         border-color: #6a5acd;
         color: #fff;
     }
     
     /* Адаптивность */
-    @media (max-width: 768px) {
-        .dark-theme-version {
+    @media(max-width: 768px) {
+       .dark-theme-version {
             padding: 1rem 0.5rem;
         }
         
-        .version-title h1 {
+       .version-title h1 {
             font-size: 1.6rem;
         }
         
-        .version-title p {
+       .version-title p {
             margin-left: 0;
         }
         
-        .card-body-custom {
+       .card-body-custom {
             padding: 1.5rem;
         }
         
-        .button-group {
+       .button-group {
             flex-direction: column;
         }
         
-        .btn-create,
-        .btn-cancel {
+       .btn-create,
+       .btn-cancel {
             width: 100%;
         }
     }
@@ -525,7 +525,7 @@
         const fileNameDisplay = document.getElementById('file-name-display');
         const fileLabel = document.querySelector('.file-label');
         
-        if (input.files && input.files.length > 0) {
+        if(input.files && input.files.length > 0) {
             const file = input.files[0];
             fileNameDisplay.textContent = `📄 ${file.name}`;
             fileLabel.style.borderColor = '#4caf50';

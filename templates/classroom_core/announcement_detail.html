@@ -4,14 +4,14 @@
 
 {% block courses_content %}
 <style>
-    .dark-theme-announcement {
+   .dark-theme-announcement {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Хлебные крошки */
-    .custom-breadcrumb {
+   .custom-breadcrumb {
         background: rgba(106, 90, 205, 0.1);
         padding: 0.8rem 1.2rem;
         border-radius: 50px;
@@ -32,24 +32,24 @@
         }
     }
     
-    .custom-breadcrumb .breadcrumb {
+   .custom-breadcrumb.breadcrumb {
         margin: 0;
         background: transparent;
     }
     
-    .custom-breadcrumb .breadcrumb-item a {
+   .custom-breadcrumb.breadcrumb-item a {
         color: #a8b8ff;
         text-decoration: none;
         transition: all 0.3s ease;
         position: relative;
     }
     
-    .custom-breadcrumb .breadcrumb-item a:hover {
+   .custom-breadcrumb.breadcrumb-item a:hover {
         color: #6a5acd;
         text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
     }
     
-    .custom-breadcrumb .breadcrumb-item a::after {
+   .custom-breadcrumb.breadcrumb-item a::after {
         content: '';
         position: absolute;
         bottom: -2px;
@@ -60,16 +60,16 @@
         transition: width 0.3s ease;
     }
     
-    .custom-breadcrumb .breadcrumb-item a:hover::after {
+   .custom-breadcrumb.breadcrumb-item a:hover::after {
         width: 100%;
     }
     
-    .custom-breadcrumb .breadcrumb-item.active {
+   .custom-breadcrumb.breadcrumb-item.active {
         color: #fff;
         font-weight: 500;
     }
     
-    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
         color: #6a5acd;
         content: "›";
         font-size: 1.2rem;
@@ -77,7 +77,7 @@
     }
     
     /* Заголовок */
-    .announcement-header {
+   .announcement-header {
         animation: headerAppear 0.5s ease-out 0.2s both;
     }
     
@@ -92,7 +92,7 @@
         }
     }
     
-    .page-title {
+   .page-title {
         font-size: 2.2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
@@ -103,7 +103,7 @@
     }
     
     /* Кнопка редактирования */
-    .btn-edit {
+   .btn-edit {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 12px;
@@ -128,17 +128,17 @@
         }
     }
     
-    .btn-edit:hover {
+   .btn-edit:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
     }
     
-    .btn-edit:active {
+   .btn-edit:active {
         transform: translateY(0);
     }
     
-    .btn-edit::after {
+   .btn-edit::after {
         content: '';
         position: absolute;
         top: 50%;
@@ -151,13 +151,13 @@
         transition: width 0.6s, height 0.6s;
     }
     
-    .btn-edit:hover::after {
+   .btn-edit:hover::after {
         width: 300px;
         height: 300px;
     }
     
     /* Карточка объявления */
-    .announcement-card {
+   .announcement-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -179,18 +179,18 @@
         }
     }
     
-    .announcement-card:hover {
+   .announcement-card:hover {
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
         transform: translateY(-5px);
     }
     
-    .card-header-gradient {
+   .card-header-gradient {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
         border-bottom: 1px solid rgba(106, 90, 205, 0.3);
         padding: 1.2rem 1.5rem;
     }
     
-    .announcement-title {
+   .announcement-title {
         color: #fff;
         font-size: 1.8rem;
         font-weight: 600;
@@ -198,17 +198,17 @@
         word-break: break-word;
     }
     
-    .author-info {
+   .author-info {
         color: #b0b0ff;
         font-size: 0.95rem;
     }
     
-    .author-info i {
+   .author-info i {
         color: #6a5acd;
         margin-right: 0.3rem;
     }
     
-    .pinned-badge {
+   .pinned-badge {
         background: linear-gradient(135deg, #ff4757, #ff6b81);
         border: none;
         padding: 0.5rem 1.2rem;
@@ -228,18 +228,18 @@
         }
     }
     
-    .announcement-content {
+   .announcement-content {
         color: #e0e0ff;
         line-height: 1.8;
         font-size: 1.1rem;
         padding: 1.5rem;
     }
     
-    .announcement-content p {
+   .announcement-content p {
         margin-bottom: 1.2rem;
     }
     
-    .announcement-content img {
+   .announcement-content img {
         max-width: 100%;
         height: auto;
         border-radius: 10px;
@@ -247,18 +247,18 @@
         margin: 1rem 0;
     }
     
-    .announcement-content a {
+   .announcement-content a {
         color: #6a5acd;
         text-decoration: none;
         transition: all 0.3s ease;
     }
     
-    .announcement-content a:hover {
+   .announcement-content a:hover {
         color: #4a90e2;
         text-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
     }
     
-    .announcement-content blockquote {
+   .announcement-content blockquote {
         border-left: 4px solid #6a5acd;
         padding-left: 1.2rem;
         margin: 1.2rem 0;
@@ -266,7 +266,7 @@
         font-style: italic;
     }
     
-    .announcement-content code {
+   .announcement-content code {
         background: rgba(106, 90, 205, 0.2);
         color: #ff6b81;
         padding: 0.2rem 0.4rem;
@@ -274,7 +274,7 @@
         font-family: 'Courier New', monospace;
     }
     
-    .announcement-content pre {
+   .announcement-content pre {
         background: rgba(0, 0, 0, 0.3);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 10px;
@@ -282,38 +282,38 @@
         overflow-x: auto;
     }
     
-    .announcement-content pre code {
+   .announcement-content pre code {
         background: transparent;
         color: #a8b8ff;
     }
     
-    .announcement-content ul, 
-    .announcement-content ol {
+   .announcement-content ul, 
+   .announcement-content ol {
         padding-left: 1.5rem;
         margin-bottom: 1.2rem;
     }
     
-    .announcement-content li {
+   .announcement-content li {
         margin-bottom: 0.3rem;
     }
     
-    .announcement-content h1,
-    .announcement-content h2,
-    .announcement-content h3,
-    .announcement-content h4,
-    .announcement-content h5,
-    .announcement-content h6 {
+   .announcement-content h1,
+   .announcement-content h2,
+   .announcement-content h3,
+   .announcement-content h4,
+   .announcement-content h5,
+   .announcement-content h6 {
         color: #fff;
         margin-top: 1.5rem;
         margin-bottom: 1rem;
     }
     
     /* Декоративные элементы */
-    .content-decoration {
+   .content-decoration {
         position: relative;
     }
     
-    .content-decoration::before {
+   .content-decoration::before {
         content: '';
         position: absolute;
         top: -10px;
@@ -326,61 +326,61 @@
     }
     
     /* Адаптивность */
-    @media (max-width: 768px) {
-        .dark-theme-announcement {
+    @media(max-width: 768px) {
+       .dark-theme-announcement {
             padding: 1rem 0.5rem;
         }
         
-        .page-title {
+       .page-title {
             font-size: 1.6rem;
         }
         
-        .announcement-title {
+       .announcement-title {
             font-size: 1.4rem;
         }
         
-        .custom-breadcrumb {
+       .custom-breadcrumb {
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
         }
         
-        .btn-edit {
+       .btn-edit {
             padding: 0.5rem 1.2rem;
             font-size: 0.9rem;
         }
         
-        .announcement-content {
+       .announcement-content {
             font-size: 1rem;
             padding: 1rem;
         }
         
-        .d-flex.justify-content-between {
+       .d-flex.justify-content-between {
             flex-direction: column;
             align-items: flex-start !important;
             gap: 1rem;
         }
         
-        .d-flex.justify-content-between > div:last-child {
+       .d-flex.justify-content-between > div:last-child {
             width: 100%;
         }
         
-        .btn-edit {
+       .btn-edit {
             width: 100%;
         }
     }
     
-    @media (min-width: 769px) and (max-width: 992px) {
-        .page-title {
+    @media(min-width: 769px) and(max-width: 992px) {
+       .page-title {
             font-size: 1.8rem;
         }
         
-        .announcement-title {
+       .announcement-title {
             font-size: 1.6rem;
         }
     }
     
-    @media (min-width: 1600px) {
-        .container {
+    @media(min-width: 1600px) {
+       .container {
             max-width: 1400px;
         }
     }

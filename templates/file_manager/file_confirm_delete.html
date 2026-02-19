@@ -9,7 +9,7 @@
 
 {% block files_content %}
 <style>
-    .dark-theme-delete-file {
+   .dark-theme-delete-file {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
@@ -17,7 +17,7 @@
         align-items: center;
     }
     
-    .delete-card {
+   .delete-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 71, 87, 0.3);
@@ -28,7 +28,7 @@
         position: relative;
     }
     
-    .delete-card::before {
+   .delete-card::before {
         content: '';
         position: absolute;
         top: 0;
@@ -38,7 +38,7 @@
         background: linear-gradient(90deg, #ff4757, #ff6b81, #ff4757);
     }
     
-    .card-header-custom {
+   .card-header-custom {
         background: linear-gradient(135deg, rgba(255, 71, 87, 0.2), rgba(255, 107, 129, 0.2));
         border-bottom: 1px solid rgba(255, 71, 87, 0.3);
         padding: 1.2rem 1.5rem;
@@ -47,7 +47,7 @@
         gap: 0.8rem;
     }
     
-    .card-header-custom h5 {
+   .card-header-custom h5 {
         color: #fff;
         font-size: 1.2rem;
         margin: 0;
@@ -56,16 +56,16 @@
         gap: 0.8rem;
     }
     
-    .card-header-custom i {
+   .card-header-custom i {
         color: #ff4757;
         font-size: 1.3rem;
     }
     
-    .card-content {
+   .card-content {
         padding: 2rem;
     }
     
-    .warning-icon {
+   .warning-icon {
         font-size: 5rem;
         background: linear-gradient(135deg, #ff4757, #ff6b81);
         background-clip: text;
@@ -74,14 +74,14 @@
         margin-bottom: 1rem;
     }
     
-    .delete-title {
+   .delete-title {
         color: #fff;
         font-size: 1.8rem;
         font-weight: 700;
         margin-bottom: 1.5rem;
     }
     
-    .file-info {
+   .file-info {
         background: rgba(255, 71, 87, 0.1);
         border: 2px solid rgba(255, 71, 87, 0.3);
         border-radius: 15px;
@@ -89,7 +89,7 @@
         margin: 1.5rem 0;
     }
     
-    .file-title {
+   .file-title {
         color: #fff;
         font-size: 1.3rem;
         font-weight: 600;
@@ -97,7 +97,7 @@
         word-break: break-word;
     }
     
-    .file-description {
+   .file-description {
         color: #ffa0a8;
         font-size: 1rem;
         line-height: 1.5;
@@ -106,7 +106,7 @@
         border-top: 1px solid rgba(255, 71, 87, 0.2);
     }
     
-    .file-meta {
+   .file-meta {
         background: rgba(0, 0, 0, 0.2);
         border-radius: 12px;
         padding: 1rem;
@@ -117,30 +117,30 @@
         gap: 1rem;
     }
     
-    .meta-item {
+   .meta-item {
         text-align: center;
         flex: 1;
         min-width: 100px;
     }
     
-    .meta-icon {
+   .meta-icon {
         color: #6a5acd;
         font-size: 1.3rem;
         margin-bottom: 0.2rem;
     }
     
-    .meta-value {
+   .meta-value {
         color: #fff;
         font-weight: 600;
         font-size: 1.1rem;
     }
     
-    .meta-label {
+   .meta-label {
         color: #a8b8ff;
         font-size: 0.8rem;
     }
     
-    .warning-text {
+   .warning-text {
         color: #ffa0a8;
         font-size: 1.1rem;
         margin: 1.5rem 0;
@@ -153,12 +153,12 @@
         gap: 0.8rem;
     }
     
-    .warning-text i {
+   .warning-text i {
         color: #ff4757;
         font-size: 1.3rem;
     }
     
-    .button-container {
+   .button-container {
         display: flex;
         gap: 1rem;
         justify-content: center;
@@ -166,7 +166,7 @@
         flex-wrap: wrap;
     }
     
-    .btn-delete {
+   .btn-delete {
         background: linear-gradient(135deg, #ff4757, #ff6b81);
         border: none;
         border-radius: 12px;
@@ -181,11 +181,11 @@
         gap: 0.5rem;
     }
     
-    .btn-delete:hover {
+   .btn-delete:hover {
         background: linear-gradient(135deg, #ff6b81, #ff4757);
     }
     
-    .btn-cancel {
+   .btn-cancel {
         background: rgba(106, 90, 205, 0.2);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 12px;
@@ -201,68 +201,68 @@
         gap: 0.5rem;
     }
     
-    .btn-cancel:hover {
+   .btn-cancel:hover {
         background: rgba(106, 90, 205, 0.3);
         border-color: #6a5acd;
         color: #fff;
     }
     
-    .file-id {
+   .file-id {
         margin-top: 2rem;
         color: #8080b0;
         font-size: 0.85rem;
         text-align: center;
     }
     
-    .file-id i {
+   .file-id i {
         color: #6a5acd;
         margin-right: 0.3rem;
     }
     
     /* Адаптивность */
-    @media (max-width: 576px) {
-        .dark-theme-delete-file {
+    @media(max-width: 576px) {
+       .dark-theme-delete-file {
             padding: 1rem 0.5rem;
         }
         
-        .card-content {
+       .card-content {
             padding: 1.5rem;
         }
         
-        .delete-title {
+       .delete-title {
             font-size: 1.5rem;
         }
         
-        .warning-icon {
+       .warning-icon {
             font-size: 4rem;
         }
         
-        .file-title {
+       .file-title {
             font-size: 1.2rem;
         }
         
-        .button-container {
+       .button-container {
             flex-direction: column;
         }
         
-        .btn-delete,
-        .btn-cancel {
+       .btn-delete,
+       .btn-cancel {
             width: 100%;
         }
         
-        .file-meta {
+       .file-meta {
             flex-direction: column;
             gap: 0.5rem;
         }
         
-        .meta-item {
+       .meta-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
             text-align: left;
         }
         
-        .meta-icon {
+       .meta-icon {
             margin-bottom: 0;
             margin-right: 0.5rem;
         }
@@ -363,7 +363,7 @@
         const fileName = "{{ file.title|escapejs }}";
         const confirmMessage = `Вы уверены, что хотите удалить файл "${fileName}"?\n\nЭто действие нельзя отменить.`;
         
-        if (!confirm(confirmMessage)) {
+        if(!confirm(confirmMessage)) {
             event.preventDefault();
             return false;
         }

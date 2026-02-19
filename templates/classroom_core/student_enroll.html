@@ -4,14 +4,14 @@
 
 {% block content %}
 <style>
-    .dark-theme-enroll {
+   .dark-theme-enroll {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Хлебные крошки */
-    .custom-breadcrumb {
+   .custom-breadcrumb {
         background: rgba(106, 90, 205, 0.1);
         padding: 0.8rem 1.2rem;
         border-radius: 50px;
@@ -32,35 +32,35 @@
         }
     }
     
-    .custom-breadcrumb .breadcrumb {
+   .custom-breadcrumb.breadcrumb {
         margin: 0;
         background: transparent;
     }
     
-    .custom-breadcrumb .breadcrumb-item a {
+   .custom-breadcrumb.breadcrumb-item a {
         color: #a8b8ff;
         text-decoration: none;
         transition: all 0.3s ease;
     }
     
-    .custom-breadcrumb .breadcrumb-item a:hover {
+   .custom-breadcrumb.breadcrumb-item a:hover {
         color: #6a5acd;
         text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
     }
     
-    .custom-breadcrumb .breadcrumb-item.active {
+   .custom-breadcrumb.breadcrumb-item.active {
         color: #fff;
         font-weight: 500;
     }
     
-    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
         color: #6a5acd;
         content: "›";
         font-size: 1.2rem;
     }
     
     /* Заголовок */
-    .page-header {
+   .page-header {
         animation: headerFade 0.5s ease-out;
         margin-bottom: 2rem;
     }
@@ -76,7 +76,7 @@
         }
     }
     
-    .page-title {
+   .page-title {
         font-size: 2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
@@ -89,14 +89,14 @@
         gap: 0.8rem;
     }
     
-    .page-title i {
+   .page-title i {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         background-clip: text;
         -webkit-text-fill-color: transparent;
         font-size: 2.2rem;
     }
     
-    .course-name {
+   .course-name {
         color: #6a5acd;
         font-weight: 600;
         background: rgba(106, 90, 205, 0.15);
@@ -109,7 +109,7 @@
     }
     
     /* Карточка */
-    .enroll-card {
+   .enroll-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -131,17 +131,17 @@
         }
     }
     
-    .enroll-card:hover {
+   .enroll-card:hover {
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
     }
     
-    .card-header-gradient {
+   .card-header-gradient {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
         border-bottom: 1px solid rgba(106, 90, 205, 0.3);
         padding: 1.2rem 1.5rem;
     }
     
-    .card-header-gradient h5 {
+   .card-header-gradient h5 {
         color: #fff;
         font-size: 1.2rem;
         margin: 0;
@@ -150,17 +150,17 @@
         gap: 0.8rem;
     }
     
-    .card-header-gradient h5 i {
+   .card-header-gradient h5 i {
         color: #6a5acd;
         font-size: 1.4rem;
     }
     
-    .card-body-custom {
+   .card-body-custom {
         padding: 1.5rem;
     }
     
     /* Информация о курсе */
-    .course-info {
+   .course-info {
         background: rgba(106, 90, 205, 0.1);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 12px;
@@ -182,7 +182,7 @@
         }
     }
     
-    .course-info-icon {
+   .course-info-icon {
         width: 40px;
         height: 40px;
         background: rgba(106, 90, 205, 0.2);
@@ -194,18 +194,18 @@
         font-size: 1.2rem;
     }
     
-    .course-info-text {
+   .course-info-text {
         flex: 1;
         color: #a8b8ff;
     }
     
-    .course-info-text strong {
+   .course-info-text strong {
         color: #fff;
         font-size: 1.1rem;
     }
     
     /* Секции */
-    .section-title {
+   .section-title {
         color: #a8b8ff;
         font-weight: 600;
         margin-bottom: 1rem;
@@ -216,12 +216,12 @@
         border-bottom: 1px solid rgba(106, 90, 205, 0.3);
     }
     
-    .section-title i {
+   .section-title i {
         color: #6a5acd;
         font-size: 1.2rem;
     }
     
-    .section-title span {
+   .section-title span {
         background: rgba(106, 90, 205, 0.2);
         color: #fff;
         padding: 0.2rem 0.6rem;
@@ -231,7 +231,7 @@
     }
     
     /* Списки */
-    .items-list {
+   .items-list {
         background: rgba(20, 20, 35, 0.6);
         border: 1px solid rgba(106, 90, 205, 0.2);
         border-radius: 15px;
@@ -240,25 +240,25 @@
         margin-bottom: 1.5rem;
     }
     
-    .items-list::-webkit-scrollbar {
+   .items-list::-webkit-scrollbar {
         width: 8px;
     }
     
-    .items-list::-webkit-scrollbar-track {
+   .items-list::-webkit-scrollbar-track {
         background: rgba(106, 90, 205, 0.1);
         border-radius: 10px;
     }
     
-    .items-list::-webkit-scrollbar-thumb {
+   .items-list::-webkit-scrollbar-thumb {
         background: rgba(106, 90, 205, 0.3);
         border-radius: 10px;
     }
     
-    .items-list::-webkit-scrollbar-thumb:hover {
+   .items-list::-webkit-scrollbar-thumb:hover {
         background: rgba(106, 90, 205, 0.5);
     }
     
-    .item-row {
+   .item-row {
         display: flex;
         align-items: flex-start;
         padding: 0.8rem 1.2rem;
@@ -269,11 +269,11 @@
         animation-fill-mode: both;
     }
     
-    .item-row:last-child {
+   .item-row:last-child {
         border-bottom: none;
     }
     
-    .item-row:hover {
+   .item-row:hover {
         background: rgba(106, 90, 205, 0.15);
         transform: translateX(5px);
     }
@@ -289,12 +289,12 @@
         }
     }
     
-    .item-checkbox {
+   .item-checkbox {
         margin-right: 1rem;
         min-width: 1.2rem;
     }
     
-    .item-checkbox input[type="checkbox"] {
+   .item-checkbox input[type="checkbox"] {
         width: 1.2rem;
         height: 1.2rem;
         cursor: pointer;
@@ -302,11 +302,11 @@
         transition: all 0.2s ease;
     }
     
-    .item-checkbox input[type="checkbox"]:checked {
+   .item-checkbox input[type="checkbox"]:checked {
         transform: scale(1.1);
     }
     
-    .item-avatar {
+   .item-avatar {
         width: 40px;
         height: 40px;
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
@@ -321,7 +321,7 @@
         min-width: 40px;
     }
     
-    .item-group-icon {
+   .item-group-icon {
         width: 40px;
         height: 40px;
         background: rgba(106, 90, 205, 0.2);
@@ -335,17 +335,17 @@
         min-width: 40px;
     }
     
-    .item-info {
+   .item-info {
         flex: 1;
     }
     
-    .item-title {
+   .item-title {
         color: #fff;
         font-weight: 600;
         margin-bottom: 0.2rem;
     }
     
-    .item-details {
+   .item-details {
         color: #a8b8ff;
         font-size: 0.85rem;
         display: flex;
@@ -353,12 +353,12 @@
         gap: 0.5rem;
     }
     
-    .item-details i {
+   .item-details i {
         color: #6a5acd;
         margin-right: 0.2rem;
     }
     
-    .item-badge {
+   .item-badge {
         background: rgba(106, 90, 205, 0.15);
         color: #a8b8ff;
         padding: 0.1rem 0.5rem;
@@ -368,14 +368,14 @@
     }
     
     /* Инструменты выделения */
-    .selection-tools {
+   .selection-tools {
         display: flex;
         gap: 0.5rem;
         margin-bottom: 1rem;
         flex-wrap: wrap;
     }
     
-    .selection-btn {
+   .selection-btn {
         background: rgba(106, 90, 205, 0.15);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 8px;
@@ -389,18 +389,18 @@
         gap: 0.3rem;
     }
     
-    .selection-btn:hover {
+   .selection-btn:hover {
         background: rgba(106, 90, 205, 0.25);
         border-color: #6a5acd;
         color: #fff;
         transform: translateY(-2px);
     }
     
-    .selection-btn i {
+   .selection-btn i {
         color: #6a5acd;
     }
     
-    .selected-counter {
+   .selected-counter {
         background: rgba(106, 90, 205, 0.2);
         border-radius: 8px;
         padding: 0.4rem 1rem;
@@ -412,18 +412,18 @@
         margin-left: auto;
     }
     
-    .selected-counter i {
+   .selected-counter i {
         color: #6a5acd;
     }
     
-    .selected-counter span {
+   .selected-counter span {
         color: #6a5acd;
         font-weight: 600;
         margin-left: 0.2rem;
     }
     
     /* Кнопки */
-    .button-group {
+   .button-group {
         display: flex;
         gap: 1rem;
         margin-top: 2rem;
@@ -441,7 +441,7 @@
         }
     }
     
-    .btn-enroll {
+   .btn-enroll {
         background: linear-gradient(135deg, #4caf50, #45a049);
         border: none;
         border-radius: 12px;
@@ -460,14 +460,14 @@
         font-size: 1rem;
     }
     
-    .btn-enroll:hover {
+   .btn-enroll:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
         background: linear-gradient(135deg, #45a049, #4caf50);
         color: white;
     }
     
-    .btn-enroll::after {
+   .btn-enroll::after {
         content: '';
         position: absolute;
         top: 50%;
@@ -480,20 +480,20 @@
         transition: width 0.6s, height 0.6s;
     }
     
-    .btn-enroll:hover::after {
+   .btn-enroll:hover::after {
         width: 300px;
         height: 300px;
     }
     
-    .btn-enroll i {
+   .btn-enroll i {
         transition: transform 0.3s ease;
     }
     
-    .btn-enroll:hover i {
+   .btn-enroll:hover i {
         transform: scale(1.1) rotate(10deg);
     }
     
-    .btn-cancel {
+   .btn-cancel {
         background: rgba(106, 90, 205, 0.2);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 12px;
@@ -510,7 +510,7 @@
         font-size: 1rem;
     }
     
-    .btn-cancel:hover {
+   .btn-cancel:hover {
         background: rgba(106, 90, 205, 0.3);
         border-color: #6a5acd;
         color: #fff;
@@ -518,95 +518,95 @@
         box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
     }
     
-    .btn-cancel i {
+   .btn-cancel i {
         transition: all 0.3s ease;
     }
     
-    .btn-cancel:hover i {
+   .btn-cancel:hover i {
         transform: rotate(90deg);
     }
     
     /* Пустые состояния */
-    .empty-state {
+   .empty-state {
         text-align: center;
         padding: 2rem;
         color: #8080b0;
     }
     
-    .empty-state i {
+   .empty-state i {
         font-size: 2.5rem;
         color: #6a5acd;
         margin-bottom: 0.5rem;
         opacity: 0.5;
     }
     
-    .empty-state p {
+   .empty-state p {
         margin: 0;
         font-size: 0.95rem;
     }
     
     /* Адаптивность */
-    @media (max-width: 768px) {
-        .dark-theme-enroll {
+    @media(max-width: 768px) {
+       .dark-theme-enroll {
             padding: 1rem 0.5rem;
         }
         
-        .page-title {
+       .page-title {
             font-size: 1.6rem;
             flex-direction: column;
             align-items: flex-start;
             gap: 0.5rem;
         }
         
-        .course-name {
+       .course-name {
             font-size: 1rem;
             margin-left: 0;
         }
         
-        .custom-breadcrumb {
+       .custom-breadcrumb {
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
         }
         
-        .card-body-custom {
+       .card-body-custom {
             padding: 1rem;
         }
         
-        .item-row {
+       .item-row {
             flex-wrap: wrap;
         }
         
-        .item-details {
+       .item-details {
             flex-direction: column;
             gap: 0.2rem;
         }
         
-        .selection-tools {
+       .selection-tools {
             flex-direction: column;
         }
         
-        .selected-counter {
+       .selected-counter {
             margin-left: 0;
             width: 100%;
             justify-content: center;
         }
         
-        .button-group {
+       .button-group {
             flex-direction: column;
         }
         
-        .btn-enroll,
-        .btn-cancel {
+       .btn-enroll,
+       .btn-cancel {
             width: 100%;
         }
     }
     
-    @media (min-width: 769px) and (max-width: 992px) {
-        .page-title {
+    @media(min-width: 769px) and(max-width: 992px) {
+       .page-title {
             font-size: 1.8rem;
         }
         
-        .item-details {
+       .item-details {
             font-size: 0.8rem;
         }
     }
@@ -693,16 +693,16 @@
                                 <div class="section-title">
                                     <i class="bi bi-person"></i>
                                     Индивидуальные студенты
-                                    <span>{{ student_form.fields.students.queryset.count }}</span>
+                                    <span>{{ available_students.count }}</span>
                                 </div>
-                                
+
                                 <div class="items-list">
-                                    {% for student in student_form.fields.students.queryset %}
+                                    {% for student in available_students %}
                                     <label class="item-row" for="student_{{ student.id }}">
                                         <div class="item-checkbox">
-                                            <input type="checkbox" 
-                                                   name="students-students" 
-                                                   value="{{ student.id }}" 
+                                            <input type="checkbox"
+                                                   name="students"
+                                                   value="{{ student.id }}"
                                                    id="student_{{ student.id }}"
                                                    class="student-checkbox"
                                                    onchange="updateSelectedCounter()">
@@ -738,22 +738,22 @@
                                     {% endfor %}
                                 </div>
                             </div>
-                            
+
                             <!-- Группы студентов -->
                             <div class="mb-4">
                                 <div class="section-title">
                                     <i class="bi bi-people"></i>
                                     Группы студентов
-                                    <span>{{ group_form.fields.groups.queryset.count }}</span>
+                                    <span>{{ available_groups.count }}</span>
                                 </div>
-                                
+
                                 <div class="items-list">
-                                    {% for group in group_form.fields.groups.queryset %}
+                                    {% for group in available_groups %}
                                     <label class="item-row" for="group_{{ group.id }}">
                                         <div class="item-checkbox">
-                                            <input type="checkbox" 
-                                                   name="groups-groups" 
-                                                   value="{{ group.id }}" 
+                                            <input type="checkbox"
+                                                   name="groups"
+                                                   value="{{ group.id }}"
                                                    id="group_{{ group.id }}"
                                                    class="group-checkbox"
                                                    onchange="updateSelectedCounter()">
@@ -812,18 +812,18 @@
         let count = 0;
         
         studentCheckboxes.forEach(checkbox => {
-            if (checkbox.checked) count++;
+            if(checkbox.checked) count++;
         });
         
         groupCheckboxes.forEach(checkbox => {
-            if (checkbox.checked) count++;
+            if(checkbox.checked) count++;
         });
         
         selectedCount.textContent = count;
         
         // Подсветка счетчика
         const counter = document.getElementById('selectedCounter');
-        if (count > 0) {
+        if(count > 0) {
             counter.style.background = 'rgba(76, 175, 80, 0.2)';
             counter.style.borderColor = '#4caf50';
         } else {
@@ -855,7 +855,7 @@
         // Анимация для элементов списка
         const items = document.querySelectorAll('.item-row');
         items.forEach((item, index) => {
-            item.style.animationDelay = `${0.1 + (index * 0.03)}s`;
+            item.style.animationDelay = `${0.1 +(index * 0.03)}s`;
         });
         
         // Инициализация счетчика

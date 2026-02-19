@@ -4,14 +4,14 @@
 
 {% block content %}
 <style>
-    .dark-theme-add-students {
+   .dark-theme-add-students {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Хлебные крошки */
-    .custom-breadcrumb {
+   .custom-breadcrumb {
         background: rgba(106, 90, 205, 0.1);
         padding: 0.8rem 1.2rem;
         border-radius: 50px;
@@ -32,35 +32,35 @@
         }
     }
     
-    .custom-breadcrumb .breadcrumb {
+   .custom-breadcrumb.breadcrumb {
         margin: 0;
         background: transparent;
     }
     
-    .custom-breadcrumb .breadcrumb-item a {
+   .custom-breadcrumb.breadcrumb-item a {
         color: #a8b8ff;
         text-decoration: none;
         transition: all 0.3s ease;
     }
     
-    .custom-breadcrumb .breadcrumb-item a:hover {
+   .custom-breadcrumb.breadcrumb-item a:hover {
         color: #6a5acd;
         text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
     }
     
-    .custom-breadcrumb .breadcrumb-item.active {
+   .custom-breadcrumb.breadcrumb-item.active {
         color: #fff;
         font-weight: 500;
     }
     
-    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
         color: #6a5acd;
         content: "›";
         font-size: 1.2rem;
     }
     
     /* Заголовок */
-    .page-header {
+   .page-header {
         animation: headerFade 0.5s ease-out;
         margin-bottom: 2rem;
     }
@@ -76,7 +76,7 @@
         }
     }
     
-    .page-title {
+   .page-title {
         font-size: 2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
@@ -89,14 +89,14 @@
         gap: 0.8rem;
     }
     
-    .page-title i {
+   .page-title i {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         background-clip: text;
         -webkit-text-fill-color: transparent;
         font-size: 2.2rem;
     }
     
-    .group-name {
+   .group-name {
         color: #6a5acd;
         font-weight: 600;
         background: rgba(106, 90, 205, 0.15);
@@ -109,7 +109,7 @@
     }
     
     /* Карточка */
-    .form-card {
+   .form-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -131,17 +131,17 @@
         }
     }
     
-    .form-card:hover {
+   .form-card:hover {
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
     }
     
-    .card-header-gradient {
+   .card-header-gradient {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
         border-bottom: 1px solid rgba(106, 90, 205, 0.3);
         padding: 1.2rem 1.5rem;
     }
     
-    .card-header-gradient h5 {
+   .card-header-gradient h5 {
         color: #fff;
         font-size: 1.2rem;
         margin: 0;
@@ -150,17 +150,17 @@
         gap: 0.8rem;
     }
     
-    .card-header-gradient h5 i {
+   .card-header-gradient h5 i {
         color: #6a5acd;
         font-size: 1.4rem;
     }
     
-    .card-body-custom {
+   .card-body-custom {
         padding: 1.5rem;
     }
     
     /* Информация о группе */
-    .group-info {
+   .group-info {
         background: rgba(106, 90, 205, 0.1);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 12px;
@@ -182,7 +182,7 @@
         }
     }
     
-    .group-info-icon {
+   .group-info-icon {
         width: 40px;
         height: 40px;
         background: rgba(106, 90, 205, 0.2);
@@ -194,18 +194,18 @@
         font-size: 1.2rem;
     }
     
-    .group-info-text {
+   .group-info-text {
         flex: 1;
         color: #a8b8ff;
     }
     
-    .group-info-text strong {
+   .group-info-text strong {
         color: #fff;
         font-size: 1.1rem;
     }
     
     /* Список студентов */
-    .students-list {
+   .students-list {
         background: rgba(20, 20, 35, 0.6);
         border: 1px solid rgba(106, 90, 205, 0.2);
         border-radius: 15px;
@@ -214,25 +214,25 @@
         margin-bottom: 1.5rem;
     }
     
-    .students-list::-webkit-scrollbar {
+   .students-list::-webkit-scrollbar {
         width: 8px;
     }
     
-    .students-list::-webkit-scrollbar-track {
+   .students-list::-webkit-scrollbar-track {
         background: rgba(106, 90, 205, 0.1);
         border-radius: 10px;
     }
     
-    .students-list::-webkit-scrollbar-thumb {
+   .students-list::-webkit-scrollbar-thumb {
         background: rgba(106, 90, 205, 0.3);
         border-radius: 10px;
     }
     
-    .students-list::-webkit-scrollbar-thumb:hover {
+   .students-list::-webkit-scrollbar-thumb:hover {
         background: rgba(106, 90, 205, 0.5);
     }
     
-    .student-item {
+   .student-item {
         display: flex;
         align-items: center;
         padding: 0.8rem 1.2rem;
@@ -243,11 +243,11 @@
         animation-fill-mode: both;
     }
     
-    .student-item:last-child {
+   .student-item:last-child {
         border-bottom: none;
     }
     
-    .student-item:hover {
+   .student-item:hover {
         background: rgba(106, 90, 205, 0.15);
         transform: translateX(5px);
     }
@@ -263,11 +263,11 @@
         }
     }
     
-    .student-checkbox {
+   .student-checkbox {
         margin-right: 1rem;
     }
     
-    .student-checkbox input[type="checkbox"] {
+   .student-checkbox input[type="checkbox"] {
         width: 1.2rem;
         height: 1.2rem;
         cursor: pointer;
@@ -275,11 +275,11 @@
         transition: all 0.2s ease;
     }
     
-    .student-checkbox input[type="checkbox"]:checked {
+   .student-checkbox input[type="checkbox"]:checked {
         transform: scale(1.1);
     }
     
-    .student-avatar {
+   .student-avatar {
         width: 40px;
         height: 40px;
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
@@ -293,17 +293,17 @@
         font-size: 1rem;
     }
     
-    .student-info {
+   .student-info {
         flex: 1;
     }
     
-    .student-name {
+   .student-name {
         color: #fff;
         font-weight: 600;
         margin-bottom: 0.2rem;
     }
     
-    .student-details {
+   .student-details {
         color: #a8b8ff;
         font-size: 0.85rem;
         display: flex;
@@ -311,24 +311,24 @@
         gap: 0.5rem;
     }
     
-    .student-details i {
+   .student-details i {
         color: #6a5acd;
         margin-right: 0.2rem;
     }
     
-    .student-email {
+   .student-email {
         color: #b0b0ff;
     }
     
     /* Инструменты выделения */
-    .selection-tools {
+   .selection-tools {
         display: flex;
         gap: 0.5rem;
         margin-bottom: 1rem;
         flex-wrap: wrap;
     }
     
-    .selection-btn {
+   .selection-btn {
         background: rgba(106, 90, 205, 0.15);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 8px;
@@ -342,19 +342,19 @@
         gap: 0.3rem;
     }
     
-    .selection-btn:hover {
+   .selection-btn:hover {
         background: rgba(106, 90, 205, 0.25);
         border-color: #6a5acd;
         color: #fff;
         transform: translateY(-2px);
     }
     
-    .selection-btn i {
+   .selection-btn i {
         color: #6a5acd;
     }
     
     /* Счетчик выбранных */
-    .selected-counter {
+   .selected-counter {
         background: rgba(106, 90, 205, 0.2);
         border-radius: 8px;
         padding: 0.4rem 1rem;
@@ -365,18 +365,18 @@
         gap: 0.3rem;
     }
     
-    .selected-counter i {
+   .selected-counter i {
         color: #6a5acd;
     }
     
-    .selected-counter span {
+   .selected-counter span {
         color: #6a5acd;
         font-weight: 600;
         margin-left: 0.2rem;
     }
     
     /* Кнопки */
-    .button-group {
+   .button-group {
         display: flex;
         gap: 1rem;
         margin-top: 1.5rem;
@@ -394,7 +394,7 @@
         }
     }
     
-    .btn-add {
+   .btn-add {
         background: linear-gradient(135deg, #4caf50, #45a049);
         border: none;
         border-radius: 12px;
@@ -413,14 +413,14 @@
         font-size: 1rem;
     }
     
-    .btn-add:hover {
+   .btn-add:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
         background: linear-gradient(135deg, #45a049, #4caf50);
         color: white;
     }
     
-    .btn-add::after {
+   .btn-add::after {
         content: '';
         position: absolute;
         top: 50%;
@@ -433,12 +433,12 @@
         transition: width 0.6s, height 0.6s;
     }
     
-    .btn-add:hover::after {
+   .btn-add:hover::after {
         width: 300px;
         height: 300px;
     }
     
-    .btn-cancel {
+   .btn-cancel {
         background: rgba(106, 90, 205, 0.2);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 12px;
@@ -455,7 +455,7 @@
         font-size: 1rem;
     }
     
-    .btn-cancel:hover {
+   .btn-cancel:hover {
         background: rgba(106, 90, 205, 0.3);
         border-color: #6a5acd;
         color: #fff;
@@ -463,26 +463,26 @@
         box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
     }
     
-    .btn-add i, .btn-cancel i {
+   .btn-add i,.btn-cancel i {
         transition: all 0.3s ease;
     }
     
-    .btn-add:hover i {
+   .btn-add:hover i {
         transform: scale(1.1) rotate(10deg);
     }
     
-    .btn-cancel:hover i {
+   .btn-cancel:hover i {
         transform: rotate(90deg);
     }
     
     /* Пустое состояние */
-    .empty-state {
+   .empty-state {
         text-align: center;
         padding: 3rem 1rem;
         color: #8080b0;
     }
     
-    .empty-state i {
+   .empty-state i {
         font-size: 4rem;
         color: #6a5acd;
         margin-bottom: 1rem;
@@ -499,73 +499,73 @@
         }
     }
     
-    .empty-state p {
+   .empty-state p {
         font-size: 1.1rem;
         margin: 0;
     }
     
     /* Адаптивность */
-    @media (max-width: 768px) {
-        .dark-theme-add-students {
+    @media(max-width: 768px) {
+       .dark-theme-add-students {
             padding: 1rem 0.5rem;
         }
         
-        .page-title {
+       .page-title {
             font-size: 1.6rem;
             flex-direction: column;
             align-items: flex-start;
             gap: 0.5rem;
         }
         
-        .group-name {
+       .group-name {
             font-size: 1rem;
             margin-left: 0;
         }
         
-        .custom-breadcrumb {
+       .custom-breadcrumb {
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
         }
         
-        .card-body-custom {
+       .card-body-custom {
             padding: 1rem;
         }
         
-        .student-item {
+       .student-item {
             flex-wrap: wrap;
         }
         
-        .student-avatar {
+       .student-avatar {
             width: 35px;
             height: 35px;
             font-size: 0.9rem;
         }
         
-        .student-details {
+       .student-details {
             flex-direction: column;
             gap: 0.2rem;
         }
         
-        .button-group {
+       .button-group {
             flex-direction: column;
         }
         
-        .btn-add,
-        .btn-cancel {
+       .btn-add,
+       .btn-cancel {
             width: 100%;
         }
         
-        .selection-tools {
+       .selection-tools {
             justify-content: center;
         }
     }
     
-    @media (min-width: 769px) and (max-width: 992px) {
-        .page-title {
+    @media(min-width: 769px) and(max-width: 992px) {
+       .page-title {
             font-size: 1.8rem;
         }
         
-        .student-details {
+       .student-details {
             font-size: 0.8rem;
         }
     }
@@ -708,7 +708,7 @@
         let count = 0;
         
         checkboxes.forEach(checkbox => {
-            if (checkbox.checked) {
+            if(checkbox.checked) {
                 count++;
             }
         });
@@ -717,7 +717,7 @@
         
         // Подсветка счетчика
         const counter = document.getElementById('selectedCounter');
-        if (count > 0) {
+        if(count > 0) {
             counter.style.background = 'rgba(106, 90, 205, 0.3)';
         } else {
             counter.style.background = 'rgba(106, 90, 205, 0.2)';
@@ -747,7 +747,7 @@
         // Анимация для студентов
         const students = document.querySelectorAll('.student-item');
         students.forEach((student, index) => {
-            student.style.animationDelay = `${0.1 + (index * 0.05)}s`;
+            student.style.animationDelay = `${0.1 +(index * 0.05)}s`;
         });
         
         // Инициализация счетчика

@@ -4,14 +4,14 @@
 
 {% block files_content %}
 <style>
-    .dark-theme-file-detail {
+   .dark-theme-file-detail {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Хлебные крошки */
-    .custom-breadcrumb {
+   .custom-breadcrumb {
         background: rgba(106, 90, 205, 0.1);
         padding: 0.8rem 1.2rem;
         border-radius: 50px;
@@ -20,34 +20,34 @@
         display: inline-block;
     }
     
-    .custom-breadcrumb .breadcrumb {
+   .custom-breadcrumb.breadcrumb {
         margin: 0;
         background: transparent;
     }
     
-    .custom-breadcrumb .breadcrumb-item a {
+   .custom-breadcrumb.breadcrumb-item a {
         color: #a8b8ff;
         text-decoration: none;
         transition: color 0.2s ease;
     }
     
-    .custom-breadcrumb .breadcrumb-item a:hover {
+   .custom-breadcrumb.breadcrumb-item a:hover {
         color: #6a5acd;
     }
     
-    .custom-breadcrumb .breadcrumb-item.active {
+   .custom-breadcrumb.breadcrumb-item.active {
         color: #fff;
         font-weight: 500;
     }
     
-    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
         color: #6a5acd;
         content: "›";
         font-size: 1.2rem;
     }
     
     /* Заголовок */
-    .page-header {
+   .page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -56,7 +56,7 @@
         margin-bottom: 2rem;
     }
     
-    .page-title {
+   .page-title {
         font-size: 2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
@@ -66,7 +66,7 @@
     }
     
     /* Кнопки действий */
-    .action-btn {
+   .action-btn {
         border: none;
         border-radius: 10px;
         padding: 0.5rem 1.2rem;
@@ -79,38 +79,38 @@
         margin-left: 0.5rem;
     }
     
-    .btn-download {
+   .btn-download {
         background: linear-gradient(135deg, #4caf50, #45a049);
         color: white;
     }
     
-    .btn-download:hover {
+   .btn-download:hover {
         background: linear-gradient(135deg, #45a049, #4caf50);
         color: white;
     }
     
-    .btn-edit {
+   .btn-edit {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         color: white;
     }
     
-    .btn-edit:hover {
+   .btn-edit:hover {
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
         color: white;
     }
     
-    .btn-delete {
+   .btn-delete {
         background: linear-gradient(135deg, #ff4757, #ff6b81);
         color: white;
     }
     
-    .btn-delete:hover {
+   .btn-delete:hover {
         background: linear-gradient(135deg, #ff6b81, #ff4757);
         color: white;
     }
     
     /* Карточки */
-    .detail-card {
+   .detail-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -120,13 +120,13 @@
         overflow: hidden;
     }
     
-    .card-header-custom {
+   .card-header-custom {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
         border-bottom: 1px solid rgba(106, 90, 205, 0.3);
         padding: 1rem 1.5rem;
     }
     
-    .card-header-custom h6 {
+   .card-header-custom h6 {
         color: #fff;
         margin: 0;
         display: flex;
@@ -136,22 +136,22 @@
         font-weight: 600;
     }
     
-    .card-header-custom i {
+   .card-header-custom i {
         color: #6a5acd;
     }
     
-    .card-body-custom {
+   .card-body-custom {
         padding: 1.5rem;
     }
     
     /* Информация о файле */
-    .info-grid {
+   .info-grid {
         display: flex;
         flex-direction: column;
         gap: 0.8rem;
     }
     
-    .info-row {
+   .info-row {
         display: flex;
         padding: 0.5rem;
         border-bottom: 1px solid rgba(106, 90, 205, 0.1);
@@ -159,11 +159,11 @@
         border-radius: 8px;
     }
     
-    .info-row:hover {
+   .info-row:hover {
         background: rgba(106, 90, 205, 0.1);
     }
     
-    .info-label {
+   .info-label {
         min-width: 120px;
         color: #a8b8ff;
         font-weight: 600;
@@ -172,17 +172,17 @@
         gap: 0.5rem;
     }
     
-    .info-label i {
+   .info-label i {
         color: #6a5acd;
         width: 20px;
     }
     
-    .info-value {
+   .info-value {
         color: #fff;
         flex: 1;
     }
     
-    .badge-file {
+   .badge-file {
         background: rgba(106, 90, 205, 0.2);
         color: #a8b8ff;
         padding: 0.3rem 0.8rem;
@@ -195,12 +195,12 @@
         gap: 0.3rem;
     }
     
-    .badge-file i {
+   .badge-file i {
         color: #6a5acd;
     }
     
     /* Извлеченный текст */
-    .extracted-text {
+   .extracted-text {
         background: rgba(20, 20, 35, 0.8);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 12px;
@@ -215,22 +215,22 @@
         word-wrap: break-word;
     }
     
-    .extracted-text::-webkit-scrollbar {
+   .extracted-text::-webkit-scrollbar {
         width: 8px;
     }
     
-    .extracted-text::-webkit-scrollbar-track {
+   .extracted-text::-webkit-scrollbar-track {
         background: rgba(106, 90, 205, 0.1);
         border-radius: 10px;
     }
     
-    .extracted-text::-webkit-scrollbar-thumb {
+   .extracted-text::-webkit-scrollbar-thumb {
         background: rgba(106, 90, 205, 0.3);
         border-radius: 10px;
     }
     
     /* Комментарии */
-    .comment-card {
+   .comment-card {
         background: rgba(20, 20, 35, 0.8);
         border: 1px solid rgba(106, 90, 205, 0.2);
         border-radius: 15px;
@@ -238,12 +238,12 @@
         transition: all 0.2s ease;
     }
     
-    .comment-card:hover {
+   .comment-card:hover {
         background: rgba(30, 30, 50, 0.9);
         border-color: rgba(106, 90, 205, 0.4);
     }
     
-    .comment-header {
+   .comment-header {
         padding: 1rem;
         display: flex;
         justify-content: space-between;
@@ -251,32 +251,32 @@
         border-bottom: 1px solid rgba(106, 90, 205, 0.1);
     }
     
-    .comment-author {
+   .comment-author {
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
     
-    .comment-author i {
+   .comment-author i {
         color: #6a5acd;
         font-size: 1.2rem;
     }
     
-    .comment-author strong {
+   .comment-author strong {
         color: #fff;
     }
     
-    .comment-date {
+   .comment-date {
         color: #a8b8ff;
         font-size: 0.85rem;
     }
     
-    .comment-content {
+   .comment-content {
         padding: 1rem;
         color: #e0e0ff;
     }
     
-    .btn-delete-comment {
+   .btn-delete-comment {
         background: rgba(255, 71, 87, 0.15);
         border: 1px solid rgba(255, 71, 87, 0.3);
         border-radius: 6px;
@@ -286,14 +286,14 @@
         text-decoration: none;
     }
     
-    .btn-delete-comment:hover {
+   .btn-delete-comment:hover {
         background: rgba(255, 71, 87, 0.25);
         border-color: #ff4757;
         color: #fff;
     }
     
     /* Форма комментария */
-    .comment-form textarea {
+   .comment-form textarea {
         background: rgba(20, 20, 35, 0.8);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 12px;
@@ -303,12 +303,12 @@
         width: 100%;
     }
     
-    .comment-form textarea:focus {
+   .comment-form textarea:focus {
         outline: none;
         border-color: #6a5acd;
     }
     
-    .btn-submit {
+   .btn-submit {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 10px;
@@ -318,12 +318,12 @@
         transition: background-color 0.2s ease;
     }
     
-    .btn-submit:hover {
+   .btn-submit:hover {
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
     }
     
     /* Сайдбар */
-    .stats-card {
+   .stats-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -333,7 +333,7 @@
         text-align: center;
     }
     
-    .btn-favorite {
+   .btn-favorite {
         width: 100%;
         padding: 0.8rem;
         border-radius: 12px;
@@ -347,116 +347,116 @@
         transition: all 0.2s ease;
     }
     
-    .btn-favorite.active {
+   .btn-favorite.active {
         background: linear-gradient(135deg, #ff4757, #ff6b81);
         color: white;
     }
     
-    .btn-favorite.inactive {
+   .btn-favorite.inactive {
         background: rgba(255, 71, 87, 0.15);
         border: 1px solid rgba(255, 71, 87, 0.3);
         color: #ff6b81;
     }
     
-    .btn-favorite.inactive:hover {
+   .btn-favorite.inactive:hover {
         background: rgba(255, 71, 87, 0.25);
         border-color: #ff4757;
     }
     
-    .stats-grid {
+   .stats-grid {
         display: flex;
         justify-content: space-around;
     }
     
-    .stat-item {
+   .stat-item {
         text-align: center;
     }
     
-    .stat-value {
+   .stat-value {
         font-size: 1.5rem;
         font-weight: 700;
         color: #6a5acd;
     }
     
-    .stat-label {
+   .stat-label {
         color: #a8b8ff;
         font-size: 0.8rem;
     }
     
     /* Список пользователей */
-    .users-list {
+   .users-list {
         list-style: none;
         padding: 0;
         margin: 0;
     }
     
-    .user-item {
+   .user-item {
         display: flex;
         align-items: center;
         padding: 0.5rem 0;
         border-bottom: 1px solid rgba(106, 90, 205, 0.1);
     }
     
-    .user-item:last-child {
+   .user-item:last-child {
         border-bottom: none;
     }
     
-    .user-item i {
+   .user-item i {
         color: #6a5acd;
         margin-right: 0.5rem;
         font-size: 1rem;
     }
     
-    .user-name {
+   .user-name {
         color: #fff;
     }
     
     /* Пустое состояние */
-    .empty-text {
+   .empty-text {
         color: #8080b0;
         text-align: center;
         padding: 1.5rem;
     }
     
     /* Адаптивность */
-    @media (max-width: 768px) {
-        .dark-theme-file-detail {
+    @media(max-width: 768px) {
+       .dark-theme-file-detail {
             padding: 1rem 0.5rem;
         }
         
-        .page-title {
+       .page-title {
             font-size: 1.5rem;
         }
         
-        .custom-breadcrumb {
+       .custom-breadcrumb {
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
         }
         
-        .page-header {
+       .page-header {
             flex-direction: column;
             align-items: flex-start;
         }
         
-        .action-buttons {
+       .action-buttons {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
             width: 100%;
         }
         
-        .action-btn {
+       .action-btn {
             flex: 1;
             justify-content: center;
             margin-left: 0;
         }
         
-        .info-row {
+       .info-row {
             flex-direction: column;
             gap: 0.3rem;
         }
         
-        .info-label {
+       .info-label {
             min-width: auto;
         }
     }
@@ -617,7 +617,7 @@
                     <div class="card-header-custom">
                         <h6>
                             <i class="bi bi-chat"></i>
-                            Комментарии ({{ file.comments.count }})
+                            Комментарии({{ file.comments.count }})
                         </h6>
                     </div>
                     <div class="card-body-custom">

@@ -4,14 +4,14 @@
 
 {% block content %}
 <style>
-    .dark-theme-groups {
+   .dark-theme-groups {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Заголовок */
-    .page-header {
+   .page-header {
         animation: headerSlide 0.5s ease-out;
         margin-bottom: 2rem;
         display: flex;
@@ -32,7 +32,7 @@
         }
     }
     
-    .page-title {
+   .page-title {
         font-size: 2.2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
@@ -45,7 +45,7 @@
         gap: 0.8rem;
     }
     
-    .page-title i {
+   .page-title i {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -63,7 +63,7 @@
     }
     
     /* Кнопка создания */
-    .btn-create {
+   .btn-create {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 12px;
@@ -81,14 +81,14 @@
         font-size: 1rem;
     }
     
-    .btn-create:hover {
+   .btn-create:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
         color: white;
     }
     
-    .btn-create::after {
+   .btn-create::after {
         content: '';
         position: absolute;
         top: 50%;
@@ -101,21 +101,21 @@
         transition: width 0.6s, height 0.6s;
     }
     
-    .btn-create:hover::after {
+   .btn-create:hover::after {
         width: 300px;
         height: 300px;
     }
     
-    .btn-create i {
+   .btn-create i {
         transition: transform 0.3s ease;
     }
     
-    .btn-create:hover i {
+   .btn-create:hover i {
         transform: rotate(90deg);
     }
     
     /* Поиск */
-    .search-section {
+   .search-section {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -137,7 +137,7 @@
         }
     }
     
-    .search-label {
+   .search-label {
         color: #a8b8ff;
         font-weight: 600;
         margin-bottom: 0.8rem;
@@ -146,12 +146,12 @@
         gap: 0.5rem;
     }
     
-    .search-label i {
+   .search-label i {
         color: #6a5acd;
         font-size: 1.2rem;
     }
     
-    .search-input {
+   .search-input {
         background: rgba(20, 20, 35, 0.8);
         border: 2px solid rgba(106, 90, 205, 0.3);
         border-radius: 10px;
@@ -162,21 +162,21 @@
         width: 100%;
     }
     
-    .search-input:focus {
+   .search-input:focus {
         outline: none;
         border-color: #6a5acd;
         box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2);
     }
     
-    .search-input:hover {
+   .search-input:hover {
         border-color: rgba(106, 90, 205, 0.6);
     }
     
-    .search-input::placeholder {
+   .search-input::placeholder {
         color: #8080b0;
     }
     
-    .btn-search {
+   .btn-search {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 10px;
@@ -194,18 +194,18 @@
         gap: 0.5rem;
     }
     
-    .btn-search:hover {
+   .btn-search:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
     }
     
-    .btn-search:hover i {
+   .btn-search:hover i {
         transform: scale(1.1);
     }
     
     /* Карточки групп */
-    .group-card {
+   .group-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -218,7 +218,7 @@
         position: relative;
     }
     
-    .group-card::before {
+   .group-card::before {
         content: '';
         position: absolute;
         top: 0;
@@ -230,11 +230,11 @@
         transition: transform 0.6s ease;
     }
     
-    .group-card:hover::before {
+   .group-card:hover::before {
         transform: translateX(0);
     }
     
-    .group-card:hover {
+   .group-card:hover {
         transform: translateY(-8px);
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(106, 90, 205, 0.3);
         border-color: rgba(106, 90, 205, 0.6);
@@ -251,11 +251,11 @@
         }
     }
     
-    .card-body-custom {
+   .card-body-custom {
         padding: 1.5rem;
     }
     
-    .card-header-custom {
+   .card-header-custom {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
@@ -264,7 +264,7 @@
         gap: 0.5rem;
     }
     
-    .group-name {
+   .group-name {
         color: #fff;
         font-size: 1.2rem;
         font-weight: 600;
@@ -275,12 +275,12 @@
         gap: 0.5rem;
     }
     
-    .group-name i {
+   .group-name i {
         color: #6a5acd;
         font-size: 1.3rem;
     }
     
-    .student-badge {
+   .student-badge {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         padding: 0.3rem 0.8rem;
@@ -294,11 +294,11 @@
         white-space: nowrap;
     }
     
-    .student-badge i {
+   .student-badge i {
         font-size: 0.9rem;
     }
     
-    .group-description {
+   .group-description {
         color: #b0b0ff;
         font-size: 0.95rem;
         line-height: 1.5;
@@ -309,7 +309,7 @@
         overflow: hidden;
     }
     
-    .group-meta {
+   .group-meta {
         display: flex;
         align-items: center;
         gap: 1rem;
@@ -322,24 +322,24 @@
         flex-wrap: wrap;
     }
     
-    .group-meta i {
+   .group-meta i {
         color: #6a5acd;
         margin-right: 0.3rem;
     }
     
-    .creator-info {
+   .creator-info {
         display: flex;
         align-items: center;
         gap: 0.3rem;
     }
     
-    .button-group {
+   .button-group {
         display: flex;
         gap: 0.5rem;
         margin-top: 1rem;
     }
     
-    .btn-view {
+   .btn-view {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 10px;
@@ -355,14 +355,14 @@
         gap: 0.5rem;
     }
     
-    .btn-view:hover {
+   .btn-view:hover {
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
         color: white;
     }
     
-    .btn-edit {
+   .btn-edit {
         background: rgba(106, 90, 205, 0.15);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 10px;
@@ -378,7 +378,7 @@
         gap: 0.5rem;
     }
     
-    .btn-edit:hover {
+   .btn-edit:hover {
         background: rgba(106, 90, 205, 0.25);
         border-color: #6a5acd;
         color: #fff;
@@ -386,7 +386,7 @@
     }
     
     /* Пустое состояние */
-    .empty-state {
+   .empty-state {
         text-align: center;
         padding: 4rem 1rem;
         animation: emptyAppear 0.8s ease-out;
@@ -403,7 +403,7 @@
         }
     }
     
-    .empty-icon {
+   .empty-icon {
         font-size: 5rem;
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         background-clip: text;
@@ -412,21 +412,21 @@
         animation: floatIcon 3s infinite ease-in-out;
     }
     
-    .empty-title {
+   .empty-title {
         color: #fff;
         font-size: 1.8rem;
         font-weight: 600;
         margin-bottom: 1rem;
     }
     
-    .empty-text {
+   .empty-text {
         color: #b0b0ff;
         font-size: 1.1rem;
         margin-bottom: 2rem;
     }
     
     /* Пагинация */
-    .custom-pagination {
+   .custom-pagination {
         margin-top: 2rem;
         animation: paginationAppear 0.6s ease-out 0.5s both;
     }
@@ -442,7 +442,7 @@
         }
     }
     
-    .pagination .page-link {
+   .pagination.page-link {
         background: rgba(30, 30, 46, 0.95);
         border: 1px solid rgba(106, 90, 205, 0.3);
         color: #a8b8ff;
@@ -451,7 +451,7 @@
         transition: all 0.3s ease;
     }
     
-    .pagination .page-link:hover {
+   .pagination.page-link:hover {
         background: rgba(106, 90, 205, 0.3);
         border-color: #6a5acd;
         color: #fff;
@@ -459,7 +459,7 @@
         box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
     }
     
-    .pagination .page-item.active .page-link {
+   .pagination.page-item.active.page-link {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border-color: #6a5acd;
         color: white;
@@ -467,73 +467,73 @@
     }
     
     /* Адаптивность */
-    @media (max-width: 768px) {
-        .dark-theme-groups {
+    @media(max-width: 768px) {
+       .dark-theme-groups {
             padding: 1rem 0.5rem;
         }
         
-        .page-title {
+       .page-title {
             font-size: 1.8rem;
         }
         
-        .page-title i {
+       .page-title i {
             font-size: 2rem;
         }
         
-        .page-header {
+       .page-header {
             flex-direction: column;
             align-items: flex-start;
         }
         
-        .btn-create {
+       .btn-create {
             width: 100%;
             justify-content: center;
         }
         
-        .search-section .row {
+       .search-section.row {
             flex-direction: column;
         }
         
-        .search-section .col-md-8,
-        .search-section .col-md-4 {
+       .search-section.col-md-8,
+       .search-section.col-md-4 {
             margin-bottom: 0.5rem;
         }
         
-        .card-header-custom {
+       .card-header-custom {
             flex-direction: column;
             align-items: flex-start;
         }
         
-        .button-group {
+       .button-group {
             flex-direction: column;
         }
         
-        .btn-view,
-        .btn-edit {
+       .btn-view,
+       .btn-edit {
             width: 100%;
         }
         
-        .group-meta {
+       .group-meta {
             flex-direction: column;
             align-items: flex-start;
             gap: 0.3rem;
         }
         
-        .empty-title {
+       .empty-title {
             font-size: 1.4rem;
         }
         
-        .empty-text {
+       .empty-text {
             font-size: 1rem;
         }
     }
     
-    @media (min-width: 769px) and (max-width: 992px) {
-        .group-name {
+    @media(min-width: 769px) and(max-width: 992px) {
+       .group-name {
             font-size: 1.1rem;
         }
         
-        .student-badge {
+       .student-badge {
             font-size: 0.75rem;
         }
     }
@@ -687,12 +687,12 @@
     document.addEventListener('DOMContentLoaded', function() {
         const cards = document.querySelectorAll('.group-card');
         cards.forEach((card, index) => {
-            card.style.animationDelay = `${0.1 + (index * 0.1)}s`;
+            card.style.animationDelay = `${0.1 +(index * 0.1)}s`;
         });
         
         // Анимация для пустого состояния
         const emptyIcon = document.querySelector('.empty-icon');
-        if (emptyIcon) {
+        if(emptyIcon) {
             setInterval(() => {
                 emptyIcon.style.transform = 'scale(1.05)';
                 setTimeout(() => {

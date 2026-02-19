@@ -4,14 +4,14 @@
 
 {% block courses_content %}
 <style>
-    .dark-theme-course-detail {
+   .dark-theme-course-detail {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Хлебные крошки */
-    .custom-breadcrumb {
+   .custom-breadcrumb {
         background: rgba(106, 90, 205, 0.1);
         padding: 0.8rem 1.2rem;
         border-radius: 50px;
@@ -32,35 +32,35 @@
         }
     }
     
-    .custom-breadcrumb .breadcrumb {
+   .custom-breadcrumb.breadcrumb {
         margin: 0;
         background: transparent;
     }
     
-    .custom-breadcrumb .breadcrumb-item a {
+   .custom-breadcrumb.breadcrumb-item a {
         color: #a8b8ff;
         text-decoration: none;
         transition: all 0.3s ease;
     }
     
-    .custom-breadcrumb .breadcrumb-item a:hover {
+   .custom-breadcrumb.breadcrumb-item a:hover {
         color: #6a5acd;
         text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
     }
     
-    .custom-breadcrumb .breadcrumb-item.active {
+   .custom-breadcrumb.breadcrumb-item.active {
         color: #fff;
         font-weight: 500;
     }
     
-    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
         color: #6a5acd;
         content: "›";
         font-size: 1.2rem;
     }
     
     /* Заголовок */
-    .course-header {
+   .course-header {
         animation: headerFade 0.5s ease-out;
     }
     
@@ -75,7 +75,7 @@
         }
     }
     
-    .page-title {
+   .page-title {
         font-size: 2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
@@ -86,7 +86,7 @@
     }
     
     /* Кнопки */
-    .btn-edit {
+   .btn-edit {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 12px;
@@ -101,14 +101,14 @@
         text-decoration: none;
     }
     
-    .btn-edit:hover {
+   .btn-edit:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
         color: white;
     }
     
-    .btn-students {
+   .btn-students {
         background: rgba(106, 90, 205, 0.15);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 12px;
@@ -120,7 +120,7 @@
         display: inline-block;
     }
     
-    .btn-students:hover {
+   .btn-students:hover {
         background: rgba(106, 90, 205, 0.25);
         border-color: #6a5acd;
         color: #fff;
@@ -128,7 +128,7 @@
     }
     
     /* Карточки */
-    .section-card {
+   .section-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -140,7 +140,7 @@
         overflow: hidden;
     }
     
-    .section-card:hover {
+   .section-card:hover {
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
         transform: translateY(-2px);
     }
@@ -156,7 +156,7 @@
         }
     }
     
-    .card-header-custom {
+   .card-header-custom {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
         border-bottom: 1px solid rgba(106, 90, 205, 0.3);
         padding: 1rem 1.5rem;
@@ -167,7 +167,7 @@
         gap: 1rem;
     }
     
-    .card-header-custom h5 {
+   .card-header-custom h5 {
         color: #fff;
         margin: 0;
         display: flex;
@@ -175,12 +175,12 @@
         gap: 0.8rem;
     }
     
-    .card-header-custom h5 i {
+   .card-header-custom h5 i {
         color: #6a5acd;
         font-size: 1.3rem;
     }
     
-    .btn-add {
+   .btn-add {
         background: rgba(106, 90, 205, 0.2);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 8px;
@@ -194,7 +194,7 @@
         gap: 0.5rem;
     }
     
-    .btn-add:hover {
+   .btn-add:hover {
         background: rgba(106, 90, 205, 0.3);
         border-color: #6a5acd;
         color: #fff;
@@ -202,7 +202,7 @@
     }
     
     /* Элементы внутри карточек */
-    .item-card {
+   .item-card {
         background: rgba(20, 20, 35, 0.6);
         border: 1px solid rgba(106, 90, 205, 0.2);
         border-radius: 15px;
@@ -212,7 +212,7 @@
         animation-fill-mode: both;
     }
     
-    .item-card:hover {
+   .item-card:hover {
         background: rgba(30, 30, 50, 0.8);
         border-color: rgba(106, 90, 205, 0.5);
         transform: translateX(5px);
@@ -230,25 +230,25 @@
         }
     }
     
-    .item-content {
+   .item-content {
         padding: 1.2rem;
     }
     
-    .item-title {
+   .item-title {
         color: #fff;
         font-size: 1.1rem;
         font-weight: 600;
         margin-bottom: 0.5rem;
     }
     
-    .item-description {
+   .item-description {
         color: #b0b0ff;
         font-size: 0.95rem;
         line-height: 1.5;
         margin-bottom: 0.5rem;
     }
     
-    .item-meta {
+   .item-meta {
         color: #8080b0;
         font-size: 0.85rem;
         display: flex;
@@ -257,12 +257,12 @@
         flex-wrap: wrap;
     }
     
-    .item-meta i {
+   .item-meta i {
         color: #6a5acd;
         margin-right: 0.3rem;
     }
     
-    .badge-custom {
+   .badge-custom {
         background: rgba(106, 90, 205, 0.2);
         color: #a8b8ff;
         padding: 0.3rem 0.8rem;
@@ -275,19 +275,19 @@
         gap: 0.3rem;
     }
     
-    .badge-active {
+   .badge-active {
         background: rgba(76, 175, 80, 0.2);
         color: #4caf50;
         border: 1px solid #4caf50;
     }
     
-    .badge-inactive {
+   .badge-inactive {
         background: rgba(255, 165, 2, 0.2);
         color: #ffa502;
         border: 1px solid #ffa502;
     }
     
-    .overdue-badge {
+   .overdue-badge {
         background: rgba(255, 71, 87, 0.2);
         color: #ff6b81;
         padding: 0.2rem 0.8rem;
@@ -310,7 +310,7 @@
     }
     
     /* Сайдбар */
-    .info-card {
+   .info-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -331,7 +331,7 @@
         }
     }
     
-    .info-title {
+   .info-title {
         color: #a8b8ff;
         font-size: 1.1rem;
         font-weight: 600;
@@ -343,33 +343,33 @@
         padding-bottom: 0.8rem;
     }
     
-    .info-title i {
+   .info-title i {
         color: #6a5acd;
     }
     
-    .info-content {
+   .info-content {
         color: #e0e0ff;
     }
     
-    .info-label {
+   .info-label {
         color: #a8b8ff;
         font-weight: 600;
         margin-bottom: 0.3rem;
     }
     
-    .info-text {
+   .info-text {
         color: #fff;
         margin-bottom: 1rem;
         line-height: 1.6;
     }
     
-    .student-list {
+   .student-list {
         list-style: none;
         padding: 0;
         margin: 0;
     }
     
-    .student-item {
+   .student-item {
         display: flex;
         align-items: center;
         padding: 0.5rem 0;
@@ -377,12 +377,12 @@
         transition: all 0.3s ease;
     }
     
-    .student-item:hover {
+   .student-item:hover {
         background: rgba(106, 90, 205, 0.1);
         transform: translateX(5px);
     }
     
-    .student-avatar {
+   .student-avatar {
         width: 32px;
         height: 32px;
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
@@ -395,12 +395,12 @@
         margin-right: 0.8rem;
     }
     
-    .student-name {
+   .student-name {
         flex: 1;
         color: #fff;
     }
     
-    .student-badge {
+   .student-badge {
         background: rgba(106, 90, 205, 0.2);
         color: #a8b8ff;
         padding: 0.2rem 0.8rem;
@@ -409,13 +409,13 @@
     }
     
     /* Прогресс */
-    .progress-container {
+   .progress-container {
         background: rgba(20, 20, 35, 0.6);
         border-radius: 15px;
         padding: 1.2rem;
     }
     
-    .progress-bar-custom {
+   .progress-bar-custom {
         height: 10px;
         background: rgba(106, 90, 205, 0.2);
         border-radius: 10px;
@@ -423,7 +423,7 @@
         margin: 0.8rem 0;
     }
     
-    .progress-fill {
+   .progress-fill {
         height: 100%;
         background: linear-gradient(90deg, #6a5acd, #4a90e2);
         border-radius: 10px;
@@ -432,7 +432,7 @@
         overflow: hidden;
     }
     
-    .progress-fill::after {
+   .progress-fill::after {
         content: '';
         position: absolute;
         top: 0;
@@ -452,7 +452,7 @@
         }
     }
     
-    .progress-stats {
+   .progress-stats {
         display: flex;
         justify-content: space-between;
         color: #a8b8ff;
@@ -460,13 +460,13 @@
     }
     
     /* Пустые состояния */
-    .empty-state {
+   .empty-state {
         text-align: center;
         padding: 2rem;
         color: #8080b0;
     }
     
-    .empty-state i {
+   .empty-state i {
         font-size: 2.5rem;
         color: #6a5acd;
         margin-bottom: 1rem;
@@ -474,51 +474,51 @@
     }
     
     /* Адаптивность */
-    @media (max-width: 768px) {
-        .dark-theme-course-detail {
+    @media(max-width: 768px) {
+       .dark-theme-course-detail {
             padding: 1rem 0.5rem;
         }
         
-        .page-title {
+       .page-title {
             font-size: 1.6rem;
         }
         
-        .custom-breadcrumb {
+       .custom-breadcrumb {
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
         }
         
-        .d-flex.justify-content-between {
+       .d-flex.justify-content-between {
             flex-direction: column;
             align-items: flex-start !important;
             gap: 1rem;
         }
         
-        .btn-edit,
-        .btn-students {
+       .btn-edit,
+       .btn-students {
             width: 100%;
             text-align: center;
         }
         
-        .card-header-custom {
+       .card-header-custom {
             flex-direction: column;
             align-items: flex-start;
         }
         
-        .btn-add {
+       .btn-add {
             width: 100%;
             justify-content: center;
         }
         
-        .item-meta {
+       .item-meta {
             flex-direction: column;
             align-items: flex-start;
             gap: 0.3rem;
         }
     }
     
-    @media (min-width: 769px) and (max-width: 992px) {
-        .page-title {
+    @media(min-width: 769px) and(max-width: 992px) {
+       .page-title {
             font-size: 1.8rem;
         }
     }
@@ -549,9 +549,23 @@
             </div>
             
             <div>
-                {% if course.can_edit %}
+                {% if can_manage_course %}
                 <a href="{% url 'classroom_core:course_edit' course.id %}" class="btn-edit me-2">
                     <i class="bi bi-pencil me-2"></i>Редактировать
+                </a>
+                <a href="{% url 'classroom_core:student_enroll' course.id %}" class="btn-students me-2">
+                    <i class="bi bi-person-plus me-2"></i>Добавить студентов
+                </a>
+                <a href="{% url 'classroom_core:course_enrollment_request_list' course.id %}" class="btn-students me-2">
+                    <i class="bi bi-clipboard-data me-2"></i>Заявки
+                </a>
+                {% elif not is_student and user_has_enrollment_request %}
+                <a href="{% url 'classroom_core:course_enrollment_request_detail' user_enrollment_request_id %}" class="btn-students">
+                    <i class="bi bi-clock-history me-2"></i>Моя заявка
+                </a>
+                {% elif not is_student %}
+                <a href="{% url 'classroom_core:course_enrollment_request_create' course.id %}" class="btn-students">
+                    <i class="bi bi-pencil-square me-2"></i>Подать заявку
                 </a>
                 {% endif %}
                 <a href="{% url 'classroom_core:student_list' course.id %}" class="btn-students">
@@ -570,9 +584,11 @@
                             <i class="bi bi-megaphone-fill"></i>
                             Объявления
                         </h5>
+                        {% if can_manage_course %}
                         <a href="{% url 'classroom_core:announcement_create' course.id %}" class="btn-add">
                             <i class="bi bi-plus-lg"></i> Новое объявление
                         </a>
+                        {% endif %}
                     </div>
                     <div class="p-3">
                         {% for announcement in announcements %}
@@ -611,7 +627,7 @@
                             <i class="bi bi-folder-fill"></i>
                             Разделы курса
                         </h5>
-                        {% if course.can_edit %}
+                        {% if can_manage_course %}
                         <a href="{% url 'classroom_core:section_create' course.id %}" class="btn-add">
                             <i class="bi bi-plus-lg"></i> Новый раздел
                         </a>
@@ -630,8 +646,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                
-                                {% if course.can_edit %}
+
+                                {% if can_manage_course %}
                                 <div class="mt-2 d-flex gap-2">
                                     <a href="{% url 'classroom_core:material_create' section.id %}" class="btn-add" style="padding: 0.3rem 1rem;">
                                         <i class="bi bi-plus"></i> Материал
@@ -659,9 +675,11 @@
                             <i class="bi bi-journal-text"></i>
                             Задания
                         </h5>
+                        {% if can_manage_course %}
                         <a href="{% url 'classroom_core:assignment_create' course.id %}" class="btn-add">
                             <i class="bi bi-plus-lg"></i> Новое задание
                         </a>
+                        {% endif %}
                     </div>
                     <div class="p-3">
                         {% for assignment in assignments %}
@@ -684,6 +702,31 @@
                                         <i class="bi bi-trophy"></i> {{ assignment.max_points }} баллов
                                     </span>
                                 </div>
+                                
+                                {% if can_manage_course %}
+                                <div class="mt-2 d-flex gap-2">
+                                    <a href="{% url 'classroom_core:assignment_detail' assignment.id %}" class="btn-add" style="padding: 0.3rem 1rem;">
+                                        <i class="bi bi-eye"></i> Просмотр
+                                    </a>
+                                    <a href="{% url 'classroom_core:assignment_file_list' assignment.id %}" class="btn-add" style="padding: 0.3rem 1rem;">
+                                        <i class="bi bi-folder2-open"></i> Работы студентов
+                                    </a>
+                                    <a href="{% url 'classroom_core:assignment_edit' assignment.id %}" class="btn-add" style="padding: 0.3rem 1rem;">
+                                        <i class="bi bi-pencil"></i> Редактировать
+                                    </a>
+                                </div>
+                                {% elif is_student %}
+                                <div class="mt-2 d-flex gap-2">
+                                    <a href="{% url 'classroom_core:assignment_detail' assignment.id %}" class="btn-add" style="padding: 0.3rem 1rem;">
+                                        <i class="bi bi-eye"></i> Просмотр
+                                    </a>
+                                    {% if assignment.can_submit %}
+                                    <a href="{% url 'classroom_core:assignment_submit' assignment.id %}" class="btn-add" style="padding: 0.3rem 1rem;">
+                                        <i class="bi bi-send"></i> Отправить
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                         {% empty %}
@@ -694,6 +737,73 @@
                         {% endfor %}
                     </div>
                 </div>
+                
+                {% if can_manage_course %}
+                <!-- Сданные задания студентов -->
+                <div class="section-card">
+                    <div class="card-header-custom">
+                        <h5>
+                            <i class="bi bi-clipboard-check"></i>
+                            Сданные задания
+                        </h5>
+                    </div>
+                    <div class="p-3">
+                        {% if submissions_for_teacher %}
+                            {% for item in submissions_for_teacher %}
+                            <div class="item-card">
+                                <div class="item-content">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div style="flex: 1;">
+                                            <div class="item-title">{{ item.assignment.title }}</div>
+                                            <div class="item-meta">
+                                                <span><i class="bi bi-person"></i> {{ item.submission.student.get_full_name|default:item.submission.student.username }}</span>
+                                                <span class="ms-3">
+                                                    {% if item.submission.status == 'submitted' %}
+                                                        <span class="badge bg-primary">Отправлено</span>
+                                                    {% elif item.submission.status == 'graded' %}
+                                                        <span class="badge bg-success">Оценено</span>
+                                                    {% elif item.submission.status == 'returned' %}
+                                                        <span class="badge bg-warning">Возвращено</span>
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                            <div class="item-meta mt-2">
+                                                <span><i class="bi bi-calendar3"></i> Отправлено: {{ item.submission.submitted_at|date:"d.m.Y H:i" }}</span>
+                                                {% if item.submission.score %}
+                                                <span class="ms-3">
+                                                    <i class="bi bi-star-fill"></i> 
+                                                    <strong>{{ item.submission.score }}/{{ item.assignment.max_points }} баллов</strong>
+                                                </span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <a href="{% url 'classroom_core:assignment_detail' item.assignment.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            {% if item.submission.status != 'graded' %}
+                                            <a href="{% url 'classroom_core:assignment_grade' item.submission.id %}" class="btn btn-sm btn-outline-success">
+                                                <i class="bi bi-pencil"></i> Оценить
+                                            </a>
+                                            {% else %}
+                                            <a href="{% url 'classroom_core:assignment_grade' item.submission.id %}" class="btn btn-sm btn-outline-warning">
+                                                <i class="bi bi-arrow-return-left"></i> Вернуть
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                        <div class="empty-state">
+                            <i class="bi bi-clipboard-check"></i>
+                            <p>Нет сданных работ</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
             </div>
             
             <!-- Сайдбар -->
@@ -743,7 +853,7 @@
                 <div class="info-card">
                     <div class="info-title">
                         <i class="bi bi-people-fill"></i>
-                        Студенты ({{ students|length }})
+                        Студенты({{ students|length }})
                     </div>
                     <div class="info-content">
                         <ul class="student-list">
@@ -765,7 +875,7 @@
                         {% if students|length > 5 %}
                         <div class="text-center mt-2">
                             <a href="{% url 'classroom_core:student_list' course.id %}" class="btn-add" style="display: inline-block;">
-                                Показать всех ({{ students|length }})
+                                Показать всех({{ students|length }})
                             </a>
                         </div>
                         {% endif %}
@@ -783,7 +893,7 @@
                             <span style="color: #a8b8ff;">Выполнено</span>
                             <span style="color: #6a5acd; font-weight: 600;">{{ course.get_progress }}%</span>
                         </div>
-                       
+
                         <div class="progress-stats mt-2">
                             <span><i class="bi bi-check-circle"></i> {{ course.get_completed_items }} заданий</span>
                             <span><i class="bi bi-clock"></i> {{ course.get_remaining_days }} дней осталось</span>
@@ -791,7 +901,52 @@
                     </div>
                 </div>
                 
-                <!-- Действия (для преподавателя) -->
+                <!-- Мои задания(для студента) -->
+                {% if is_student %}
+                <div class="info-card">
+                    <div class="info-title">
+                        <i class="bi bi-journal-check"></i>
+                        Мои задания
+                    </div>
+                    <div class="info-content">
+                        {% if student_submissions %}
+                            <ul class="student-list">
+                                {% for submission in student_submissions %}
+                                <li class="student-item">
+                                    <div class="student-avatar" style="background: {% if submission.status == 'graded' %}linear-gradient(135deg, #4caf50, #45a049){% elif submission.status == 'returned' %}linear-gradient(135deg, #ffa502, #ffb822){% else %}linear-gradient(135deg, #6a5acd, #4a90e2){% endif %};">
+                                        {% if submission.status == 'graded' %}✓{% elif submission.status == 'returned' %}↩{% else %}📝{% endif %}
+                                    </div>
+                                    <span class="student-name">{{ submission.assignment.title|truncatechars:25 }}</span>
+                                    <span class="student-badge">
+                                        {% if submission.status == 'submitted' %}
+                                            <i class="bi bi-clock"></i> Отправлено
+                                        {% elif submission.status == 'graded' %}
+                                            <i class="bi bi-star"></i> {{ submission.score }}/{{ submission.assignment.max_points }}
+                                        {% elif submission.status == 'returned' %}
+                                            <i class="bi bi-arrow-return-left"></i> На доработке
+                                        {% endif %}
+                                    </span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% if student_submissions_count > 5 %}
+                            <div class="text-center mt-2">
+                                <a href="{% url 'classroom_core:assignment_list' %}?course_id={{ course.id }}" class="btn-add" style="display: inline-block;">
+                                    Показать все({{ student_submissions_count }})
+                                </a>
+                            </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="bi bi-journal-x"></i>
+                                <p>Нет сданных работ</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Действия(для преподавателя) -->
                 {% if course.can_edit %}
                 <div class="info-card">
                     <div class="info-title">
@@ -818,12 +973,12 @@
     document.addEventListener('DOMContentLoaded', function() {
         const items = document.querySelectorAll('.item-card');
         items.forEach((item, index) => {
-            item.style.animationDelay = `${0.1 + (index * 0.05)}s`;
+            item.style.animationDelay = `${0.1 +(index * 0.05)}s`;
         });
         
         // Анимация для прогресс-бара
         const progressBar = document.querySelector('.progress-fill');
-        if (progressBar) {
+        if(progressBar) {
             setTimeout(() => {
                 progressBar.style.width = progressBar.style.width;
             }, 500);

@@ -1,22 +1,24 @@
-from django import forms 
-from django .contrib .auth .models import User 
-from .models import *
+from django import forms
+from django.contrib.auth.models import User
+from django.db.models import Q
+from . models import *
+from file_manager.models import File
 
 
 
-class CourseSectionForm (forms .ModelForm ):
+class CourseSectionForm(forms.ModelForm ):
     """Форма для создания/редактирования раздела курса"""
     class Meta :
         model =CourseSection 
         fields =['title','description','order','is_visible']
         widgets ={
-        'title':forms .TextInput (attrs ={'class':'form-control'}),
-        'description':forms .Textarea (attrs ={'class':'form-control','rows':2 }),
-        'order':forms .NumberInput (attrs ={'class':'form-control'}),
-        'is_visible':forms .CheckboxInput (attrs ={'class':'form-check-input'}),
+        'title':forms.TextInput(attrs ={'class':'form-control'}),
+        'description':forms.Textarea(attrs ={'class':'form-control','rows':2 }),
+        'order':forms.NumberInput(attrs ={'class':'form-control'}),
+        'is_visible':forms.CheckboxInput(attrs ={'class':'form-check-input'}),
         }
 
-class CourseMaterialForm (forms .ModelForm ):
+class CourseMaterialForm(forms.ModelForm ):
     """Форма для создания/редактирования учебного материала"""
     class Meta :
         model =CourseMaterial 
@@ -25,18 +27,18 @@ class CourseMaterialForm (forms .ModelForm ):
         'file','url','content','order','is_visible','is_required'
         ]
         widgets ={
-        'title':forms .TextInput (attrs ={'class':'form-control'}),
-        'description':forms .Textarea (attrs ={'class':'form-control','rows':2 }),
-        'material_type':forms .Select (attrs ={'class':'form-select'}),
-        'file':forms .ClearableFileInput (attrs ={'class':'form-control'}),
-        'url':forms .URLInput (attrs ={'class':'form-control'}),
-        'content':forms .Textarea (attrs ={'class':'form-control','rows':4 }),
-        'order':forms .NumberInput (attrs ={'class':'form-control'}),
-        'is_visible':forms .CheckboxInput (attrs ={'class':'form-check-input'}),
-        'is_required':forms .CheckboxInput (attrs ={'class':'form-check-input'}),
+        'title':forms.TextInput(attrs ={'class':'form-control'}),
+        'description':forms.Textarea(attrs ={'class':'form-control','rows':2 }),
+        'material_type':forms.Select(attrs ={'class':'form-select'}),
+        'file':forms.ClearableFileInput(attrs ={'class':'form-control'}),
+        'url':forms.URLInput(attrs ={'class':'form-control'}),
+        'content':forms.Textarea(attrs ={'class':'form-control','rows':4 }),
+        'order':forms.NumberInput(attrs ={'class':'form-control'}),
+        'is_visible':forms.CheckboxInput(attrs ={'class':'form-check-input'}),
+        'is_required':forms.CheckboxInput(attrs ={'class':'form-check-input'}),
         }
 
-class AssignmentForm (forms .ModelForm ):
+class AssignmentForm(forms.ModelForm ):
     """Форма для создания/редактирования задания"""
     class Meta :
         model =Assignment 
@@ -53,49 +55,49 @@ class AssignmentForm (forms .ModelForm ):
         'status'
         ]
         widgets ={
-        'title':forms .TextInput (attrs ={'class':'form-control'}),
-        'description':forms .Textarea (attrs ={'class':'form-control','rows':4 }),
-        'due_date':forms .DateTimeInput (attrs ={'class':'form-control','type':'datetime-local'}),
-        'max_points':forms .NumberInput (attrs ={'class':'form-control'}),
-        'passing_score':forms .NumberInput (attrs ={'class':'form-control'}),
-        'group_size_min':forms .NumberInput (attrs ={'class':'form-control'}),
-        'group_size_max':forms .NumberInput (attrs ={'class':'form-control'}),
-        'attachment':forms .ClearableFileInput (attrs ={'class':'form-control'}),
-        'status':forms .Select (attrs ={'class':'form-select'}),
-        'is_group_assignment':forms .CheckboxInput (attrs ={'class':'form-check-input'}),
+        'title':forms.TextInput(attrs ={'class':'form-control'}),
+        'description':forms.Textarea(attrs ={'class':'form-control','rows':4 }),
+        'due_date':forms.DateTimeInput(attrs ={'class':'form-control','type':'datetime-local'}),
+        'max_points':forms.NumberInput(attrs ={'class':'form-control'}),
+        'passing_score':forms.NumberInput(attrs ={'class':'form-control'}),
+        'group_size_min':forms.NumberInput(attrs ={'class':'form-control'}),
+        'group_size_max':forms.NumberInput(attrs ={'class':'form-control'}),
+        'attachment':forms.ClearableFileInput(attrs ={'class':'form-control'}),
+        'status':forms.Select(attrs ={'class':'form-select'}),
+        'is_group_assignment':forms.CheckboxInput(attrs ={'class':'form-check-input'}),
         }
 
-class AssignmentSubmissionForm (forms .ModelForm ):
+class AssignmentSubmissionForm(forms.ModelForm ):
     """Форма для отправки решения задания"""
     class Meta :
         model =AssignmentSubmission 
         fields =['text_response','file_submission']
         widgets ={
-        'text_response':forms .Textarea (attrs ={'class':'form-control','rows':4 }),
-        'file_submission':forms .ClearableFileInput (attrs ={'class':'form-control'}),
+        'text_response':forms.Textarea(attrs ={'class':'form-control','rows':4 }),
+        'file_submission':forms.ClearableFileInput(attrs ={'class':'form-control'}),
         }
 
-class AssignmentGradeForm (forms .ModelForm ):
+class AssignmentGradeForm(forms.ModelForm ):
     """Форма для оценки задания"""
     class Meta :
         model =AssignmentSubmission 
         fields =['score','feedback','status']
         widgets ={
-        'score':forms .NumberInput (attrs ={'class':'form-control'}),
-        'feedback':forms .Textarea (attrs ={'class':'form-control','rows':4 }),
-        'status':forms .Select (attrs ={'class':'form-select'}),
+        'score':forms.NumberInput(attrs ={'class':'form-control'}),
+        'feedback':forms.Textarea(attrs ={'class':'form-control','rows':4 }),
+        'status':forms.Select(attrs ={'class':'form-select'}),
         }
 
-class AnnouncementForm (forms .ModelForm ):
+class AnnouncementForm(forms.ModelForm ):
     """Форма для создания объявления"""
     class Meta :
         model =Announcement 
         fields =['title','content','is_pinned','send_email_notification']
         widgets ={
-        'title':forms .TextInput (attrs ={'class':'form-control'}),
-        'content':forms .Textarea (attrs ={'class':'form-control','rows':6 }),
-        'is_pinned':forms .CheckboxInput (attrs ={'class':'form-check-input'}),
-        'send_email_notification':forms .CheckboxInput (attrs ={'class':'form-check-input'}),
+        'title':forms.TextInput(attrs ={'class':'form-control'}),
+        'content':forms.Textarea(attrs ={'class':'form-control','rows':6 }),
+        'is_pinned':forms.CheckboxInput(attrs ={'class':'form-check-input'}),
+        'send_email_notification':forms.CheckboxInput(attrs ={'class':'form-check-input'}),
         }
 
 class CourseForm(forms.ModelForm):
@@ -164,4 +166,57 @@ class UserProfileForm(forms.ModelForm):
             'student_group': forms.Select(attrs={'class': 'form-select'}),
             'phone': forms.TextInput(attrs={'class': 'form-control'}),
             'avatar': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
+
+class CourseEnrollmentRequestForm(forms.ModelForm):
+    """Форма для подачи заявки на запись на курс"""
+    class Meta:
+        model = CourseEnrollmentRequest
+        fields = ['motivation']
+        widgets = {
+            'motivation': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Расскажите, почему вы хотите записаться на этот курс...'}),
+        }
+
+class CourseEnrollmentReviewForm(forms.ModelForm):
+    """Форма для рассмотрения заявки на запись на курс"""
+    class Meta:
+        model = CourseEnrollmentRequest
+        fields = ['status', 'review_comment']
+        widgets = {
+            'status': forms.Select(attrs={'class': 'form-select'}),
+            'review_comment': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+class AssignmentFileForm(forms.ModelForm):
+    """Форма для прикрепления файла к заданию"""
+    file = forms.ModelChoiceField(
+        queryset=None,
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        label='Выберите файл'
+    )
+    
+    class Meta:
+        model = AssignmentFile
+        fields = ['file', 'description']
+        widgets = {
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Описание файла(опционально)'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['file'].queryset = File.objects.filter(
+                Q(uploaded_by=user) | Q(visibility='public') | Q(shared_with=user)
+            ).distinct()
+
+class AssignmentFileReviewForm(forms.ModelForm):
+    """Форма для проверки файла задания преподавателем"""
+    class Meta:
+        model = AssignmentFileReview
+        fields = ['status', 'feedback', 'points']
+        widgets = {
+            'status': forms.Select(attrs={'class': 'form-select'}),
+            'feedback': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'points': forms.NumberInput(attrs={'class': 'form-control'}),
         }

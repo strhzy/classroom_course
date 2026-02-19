@@ -4,14 +4,14 @@
 
 {% block content %}
 <style>
-    .dark-theme-group-detail {
+   .dark-theme-group-detail {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Хлебные крошки */
-    .custom-breadcrumb {
+   .custom-breadcrumb {
         background: rgba(106, 90, 205, 0.1);
         padding: 0.8rem 1.2rem;
         border-radius: 50px;
@@ -32,35 +32,35 @@
         }
     }
     
-    .custom-breadcrumb .breadcrumb {
+   .custom-breadcrumb.breadcrumb {
         margin: 0;
         background: transparent;
     }
     
-    .custom-breadcrumb .breadcrumb-item a {
+   .custom-breadcrumb.breadcrumb-item a {
         color: #a8b8ff;
         text-decoration: none;
         transition: all 0.3s ease;
     }
     
-    .custom-breadcrumb .breadcrumb-item a:hover {
+   .custom-breadcrumb.breadcrumb-item a:hover {
         color: #6a5acd;
         text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
     }
     
-    .custom-breadcrumb .breadcrumb-item.active {
+   .custom-breadcrumb.breadcrumb-item.active {
         color: #fff;
         font-weight: 500;
     }
     
-    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
         color: #6a5acd;
         content: "›";
         font-size: 1.2rem;
     }
     
     /* Заголовок */
-    .page-header {
+   .page-header {
         animation: headerFade 0.5s ease-out;
         display: flex;
         justify-content: space-between;
@@ -81,7 +81,7 @@
         }
     }
     
-    .page-title {
+   .page-title {
         font-size: 2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
@@ -92,7 +92,7 @@
     }
     
     /* Кнопки */
-    .btn-edit {
+   .btn-edit {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 12px;
@@ -109,14 +109,14 @@
         text-decoration: none;
     }
     
-    .btn-edit:hover {
+   .btn-edit:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
         color: white;
     }
     
-    .btn-edit::after {
+   .btn-edit::after {
         content: '';
         position: absolute;
         top: 50%;
@@ -129,12 +129,12 @@
         transition: width 0.6s, height 0.6s;
     }
     
-    .btn-edit:hover::after {
+   .btn-edit:hover::after {
         width: 300px;
         height: 300px;
     }
     
-    .btn-add-student {
+   .btn-add-student {
         background: linear-gradient(135deg, #4caf50, #45a049);
         border: none;
         border-radius: 12px;
@@ -150,7 +150,7 @@
         margin-left: 0.5rem;
     }
     
-    .btn-add-student:hover {
+   .btn-add-student:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
         background: linear-gradient(135deg, #45a049, #4caf50);
@@ -158,7 +158,7 @@
     }
     
     /* Карточки */
-    .info-card {
+   .info-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -181,18 +181,18 @@
         }
     }
     
-    .info-card:hover {
+   .info-card:hover {
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
         transform: translateY(-2px);
     }
     
-    .card-header-gradient {
+   .card-header-gradient {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
         border-bottom: 1px solid rgba(106, 90, 205, 0.3);
         padding: 1rem 1.5rem;
     }
     
-    .card-header-gradient h5 {
+   .card-header-gradient h5 {
         color: #fff;
         margin: 0;
         display: flex;
@@ -201,36 +201,36 @@
         font-size: 1.2rem;
     }
     
-    .card-header-gradient h5 i {
+   .card-header-gradient h5 i {
         color: #6a5acd;
         font-size: 1.3rem;
     }
     
-    .card-body-custom {
+   .card-body-custom {
         padding: 1.5rem;
     }
     
     /* Информация о группе */
-    .info-grid {
+   .info-grid {
         display: flex;
         flex-direction: column;
         gap: 1rem;
     }
     
-    .info-row {
+   .info-row {
         display: flex;
         padding: 0.5rem;
         border-bottom: 1px solid rgba(106, 90, 205, 0.1);
         transition: all 0.3s ease;
     }
     
-    .info-row:hover {
+   .info-row:hover {
         background: rgba(106, 90, 205, 0.1);
         border-radius: 10px;
         transform: translateX(5px);
     }
     
-    .info-label {
+   .info-label {
         min-width: 140px;
         color: #a8b8ff;
         font-weight: 600;
@@ -239,17 +239,17 @@
         gap: 0.5rem;
     }
     
-    .info-label i {
+   .info-label i {
         color: #6a5acd;
         width: 20px;
     }
     
-    .info-value {
+   .info-value {
         color: #fff;
         flex: 1;
     }
     
-    .student-count-badge {
+   .student-count-badge {
         background: rgba(106, 90, 205, 0.2);
         color: #6a5acd;
         padding: 0.2rem 0.8rem;
@@ -260,13 +260,13 @@
     }
     
     /* Таблица студентов */
-    .students-table {
+   .students-table {
         width: 100%;
         border-collapse: separate;
         border-spacing: 0;
     }
     
-    .students-table thead th {
+   .students-table thead th {
         background: rgba(106, 90, 205, 0.15);
         color: #a8b8ff;
         font-weight: 600;
@@ -278,7 +278,7 @@
         white-space: nowrap;
     }
     
-    .students-table tbody tr {
+   .students-table tbody tr {
         transition: all 0.3s ease;
         animation: rowAppear 0.5s ease-out;
         animation-fill-mode: both;
@@ -296,20 +296,20 @@
         }
     }
     
-    .students-table tbody tr:hover {
+   .students-table tbody tr:hover {
         background: rgba(106, 90, 205, 0.15);
         transform: scale(1.01);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
     
-    .students-table tbody td {
+   .students-table tbody td {
         padding: 1rem;
         color: #e0e0ff;
         border-bottom: 1px solid rgba(106, 90, 205, 0.2);
         vertical-align: middle;
     }
     
-    .student-avatar-small {
+   .student-avatar-small {
         width: 32px;
         height: 32px;
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
@@ -323,12 +323,12 @@
         margin-right: 0.5rem;
     }
     
-    .student-info-cell {
+   .student-info-cell {
         display: flex;
         align-items: center;
     }
     
-    .student-email {
+   .student-email {
         color: #b0b0ff;
         font-size: 0.9rem;
         display: flex;
@@ -336,12 +336,12 @@
         gap: 0.3rem;
     }
     
-    .student-email i {
+   .student-email i {
         color: #6a5acd;
         font-size: 0.8rem;
     }
     
-    .date-badge {
+   .date-badge {
         background: rgba(106, 90, 205, 0.15);
         color: #a8b8ff;
         padding: 0.2rem 0.8rem;
@@ -352,18 +352,18 @@
         gap: 0.3rem;
     }
     
-    .date-badge i {
+   .date-badge i {
         color: #6a5acd;
     }
     
     /* Пустое состояние */
-    .empty-state {
+   .empty-state {
         text-align: center;
         padding: 3rem;
         color: #8080b0;
     }
     
-    .empty-state i {
+   .empty-state i {
         font-size: 3.5rem;
         color: #6a5acd;
         margin-bottom: 1rem;
@@ -380,13 +380,13 @@
         }
     }
     
-    .empty-state p {
+   .empty-state p {
         font-size: 1.1rem;
         margin: 0;
     }
     
     /* Пагинация */
-    .custom-pagination {
+   .custom-pagination {
         margin-top: 2rem;
         animation: paginationAppear 0.6s ease-out 0.3s both;
     }
@@ -402,7 +402,7 @@
         }
     }
     
-    .pagination .page-link {
+   .pagination.page-link {
         background: rgba(30, 30, 46, 0.95);
         border: 1px solid rgba(106, 90, 205, 0.3);
         color: #a8b8ff;
@@ -411,7 +411,7 @@
         transition: all 0.3s ease;
     }
     
-    .pagination .page-link:hover {
+   .pagination.page-link:hover {
         background: rgba(106, 90, 205, 0.3);
         border-color: #6a5acd;
         color: #fff;
@@ -419,7 +419,7 @@
         box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
     }
     
-    .pagination .page-item.active .page-link {
+   .pagination.page-item.active.page-link {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border-color: #6a5acd;
         color: white;
@@ -427,52 +427,52 @@
     }
     
     /* Адаптивность */
-    @media (max-width: 768px) {
-        .dark-theme-group-detail {
+    @media(max-width: 768px) {
+       .dark-theme-group-detail {
             padding: 1rem 0.5rem;
         }
         
-        .page-title {
+       .page-title {
             font-size: 1.6rem;
         }
         
-        .page-header {
+       .page-header {
             flex-direction: column;
             align-items: flex-start;
         }
         
-        .header-buttons {
+       .header-buttons {
             width: 100%;
             display: flex;
             gap: 0.5rem;
         }
         
-        .btn-edit,
-        .btn-add-student {
+       .btn-edit,
+       .btn-add-student {
             flex: 1;
             justify-content: center;
             margin-left: 0;
         }
         
-        .custom-breadcrumb {
+       .custom-breadcrumb {
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
         }
         
-        .info-row {
+       .info-row {
             flex-direction: column;
             gap: 0.3rem;
         }
         
-        .info-label {
+       .info-label {
             min-width: auto;
         }
         
-        .students-table thead {
+       .students-table thead {
             display: none;
         }
         
-        .students-table tbody tr {
+       .students-table tbody tr {
             display: block;
             margin-bottom: 1rem;
             border: 1px solid rgba(106, 90, 205, 0.3);
@@ -480,7 +480,7 @@
             background: rgba(30, 30, 46, 0.8);
         }
         
-        .students-table tbody td {
+       .students-table tbody td {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -489,28 +489,28 @@
             border-bottom: 1px solid rgba(106, 90, 205, 0.1);
         }
         
-        .students-table tbody td:last-child {
+       .students-table tbody td:last-child {
             border-bottom: none;
         }
         
-        .students-table tbody td::before {
+       .students-table tbody td::before {
             content: attr(data-label);
             font-weight: 600;
             color: #a8b8ff;
             margin-right: 1rem;
         }
         
-        .student-info-cell {
+       .student-info-cell {
             width: 100%;
         }
     }
     
-    @media (min-width: 769px) and (max-width: 992px) {
-        .page-title {
+    @media(min-width: 769px) and(max-width: 992px) {
+       .page-title {
             font-size: 1.8rem;
         }
         
-        .info-label {
+       .info-label {
             min-width: 120px;
         }
     }
@@ -611,7 +611,7 @@
                     <div class="card-header-gradient">
                         <h5>
                             <i class="bi bi-person-rolodex"></i>
-                            Студенты группы ({{ page_obj.paginator.count }})
+                            Студенты группы({{ page_obj.paginator.count }})
                         </h5>
                     </div>
                     <div class="card-body-custom">
@@ -713,7 +713,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const rows = document.querySelectorAll('.students-table tbody tr');
         rows.forEach((row, index) => {
-            row.style.animationDelay = `${0.1 + (index * 0.05)}s`;
+            row.style.animationDelay = `${0.1 +(index * 0.05)}s`;
         });
     });
 </script>

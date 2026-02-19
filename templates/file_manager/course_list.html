@@ -4,14 +4,14 @@
 
 {% block files_content %}
 <style>
-    .dark-theme-courses {
+   .dark-theme-courses {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Заголовок */
-    .page-header {
+   .page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -20,7 +20,7 @@
         margin-bottom: 2rem;
     }
     
-    .page-title {
+   .page-title {
         font-size: 2.2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
@@ -32,7 +32,7 @@
         gap: 0.8rem;
     }
     
-    .page-title i {
+   .page-title i {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -40,7 +40,7 @@
     }
     
     /* Кнопка "Все файлы" */
-    .btn-all-files {
+   .btn-all-files {
         background: rgba(106, 90, 205, 0.15);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 12px;
@@ -54,18 +54,18 @@
         gap: 0.5rem;
     }
     
-    .btn-all-files:hover {
+   .btn-all-files:hover {
         background: rgba(106, 90, 205, 0.25);
         border-color: #6a5acd;
         color: #fff;
     }
     
-    .btn-all-files i {
+   .btn-all-files i {
         color: #6a5acd;
     }
     
     /* Карточки курсов */
-    .course-card {
+   .course-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -76,13 +76,13 @@
         position: relative;
     }
     
-    .course-card:hover {
+   .course-card:hover {
         transform: translateY(-4px);
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(106, 90, 205, 0.2);
         border-color: rgba(106, 90, 205, 0.6);
     }
     
-    .card-body-custom {
+   .card-body-custom {
         padding: 1.5rem;
         display: flex;
         flex-direction: column;
@@ -90,14 +90,14 @@
     }
     
     /* Заголовок карточки */
-    .course-header {
+   .course-header {
         display: flex;
         align-items: center;
         gap: 1rem;
         margin-bottom: 1rem;
     }
     
-    .course-icon {
+   .course-icon {
         width: 48px;
         height: 48px;
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
@@ -110,28 +110,28 @@
         flex-shrink: 0;
     }
     
-    .course-title {
+   .course-title {
         flex: 1;
     }
     
-    .course-title h5 {
+   .course-title h5 {
         margin: 0;
         font-size: 1.2rem;
         font-weight: 600;
         line-height: 1.3;
     }
     
-    .course-title h5 a {
+   .course-title h5 a {
         color: #fff;
         text-decoration: none;
         transition: color 0.2s ease;
     }
     
-    .course-title h5 a:hover {
+   .course-title h5 a:hover {
         color: #6a5acd;
     }
     
-    .instructor {
+   .instructor {
         color: #a8b8ff;
         font-size: 0.85rem;
         display: flex;
@@ -140,13 +140,13 @@
         margin-top: 0.2rem;
     }
     
-    .instructor i {
+   .instructor i {
         color: #6a5acd;
         font-size: 0.9rem;
     }
     
     /* Описание */
-    .course-description {
+   .course-description {
         color: #b0b0ff;
         font-size: 0.95rem;
         line-height: 1.6;
@@ -159,7 +159,7 @@
     }
     
     /* Футер карточки */
-    .course-footer {
+   .course-footer {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -168,7 +168,7 @@
         border-top: 1px solid rgba(106, 90, 205, 0.2);
     }
     
-    .files-count {
+   .files-count {
         color: #a8b8ff;
         font-size: 0.9rem;
         display: flex;
@@ -176,11 +176,11 @@
         gap: 0.3rem;
     }
     
-    .files-count i {
+   .files-count i {
         color: #6a5acd;
     }
     
-    .btn-open {
+   .btn-open {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 8px;
@@ -195,13 +195,13 @@
         font-size: 0.9rem;
     }
     
-    .btn-open:hover {
+   .btn-open:hover {
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
         color: white;
     }
     
     /* Пустое состояние */
-    .empty-state {
+   .empty-state {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -210,7 +210,7 @@
         padding: 4rem;
     }
     
-    .empty-state i {
+   .empty-state i {
         font-size: 4rem;
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         background-clip: text;
@@ -218,64 +218,64 @@
         margin-bottom: 1rem;
     }
     
-    .empty-state h4 {
+   .empty-state h4 {
         color: #fff;
         font-size: 1.5rem;
         font-weight: 600;
         margin-bottom: 0.5rem;
     }
     
-    .empty-state p {
+   .empty-state p {
         color: #b0b0ff;
         font-size: 1rem;
         margin-bottom: 0;
     }
     
     /* Адаптивность */
-    @media (max-width: 768px) {
-        .dark-theme-courses {
+    @media(max-width: 768px) {
+       .dark-theme-courses {
             padding: 1rem 0.5rem;
         }
         
-        .page-title {
+       .page-title {
             font-size: 1.8rem;
         }
         
-        .page-title i {
+       .page-title i {
             font-size: 2rem;
         }
         
-        .page-header {
+       .page-header {
             flex-direction: column;
             align-items: flex-start;
         }
         
-        .btn-all-files {
+       .btn-all-files {
             width: 100%;
             justify-content: center;
         }
         
-        .course-header {
+       .course-header {
             flex-wrap: wrap;
         }
         
-        .course-icon {
+       .course-icon {
             width: 40px;
             height: 40px;
             font-size: 1.2rem;
         }
         
-        .course-title h5 {
+       .course-title h5 {
             font-size: 1.1rem;
         }
     }
     
-    @media (min-width: 769px) and (max-width: 992px) {
-        .course-title h5 {
+    @media(min-width: 769px) and(max-width: 992px) {
+       .course-title h5 {
             font-size: 1.1rem;
         }
         
-        .course-description {
+       .course-description {
             font-size: 0.9rem;
         }
     }

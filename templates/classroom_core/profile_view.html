@@ -4,14 +4,14 @@
 
 {% block courses_content %}
 <style>
-    .dark-theme-profile {
+   .dark-theme-profile {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Заголовок */
-    .page-header {
+   .page-header {
         animation: headerSlide 0.5s ease-out;
         margin-bottom: 2rem;
         display: flex;
@@ -32,7 +32,7 @@
         }
     }
     
-    .page-title {
+   .page-title {
         font-size: 2.2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
@@ -45,7 +45,7 @@
         gap: 0.8rem;
     }
     
-    .page-title i {
+   .page-title i {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -63,7 +63,7 @@
     }
     
     /* Кнопка редактирования */
-    .btn-edit {
+   .btn-edit {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 12px;
@@ -81,14 +81,14 @@
         font-size: 1rem;
     }
     
-    .btn-edit:hover {
+   .btn-edit:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
         color: white;
     }
     
-    .btn-edit::after {
+   .btn-edit::after {
         content: '';
         position: absolute;
         top: 50%;
@@ -101,21 +101,21 @@
         transition: width 0.6s, height 0.6s;
     }
     
-    .btn-edit:hover::after {
+   .btn-edit:hover::after {
         width: 300px;
         height: 300px;
     }
     
-    .btn-edit i {
+   .btn-edit i {
         transition: transform 0.3s ease;
     }
     
-    .btn-edit:hover i {
+   .btn-edit:hover i {
         transform: scale(1.1);
     }
     
     /* Карточка профиля */
-    .profile-card {
+   .profile-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -137,18 +137,18 @@
         }
     }
     
-    .profile-card:hover {
+   .profile-card:hover {
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
         transform: translateY(-2px);
     }
     
-    .card-header-gradient {
+   .card-header-gradient {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
         border-bottom: 1px solid rgba(106, 90, 205, 0.3);
         padding: 1.2rem 2rem;
     }
     
-    .card-header-gradient h5 {
+   .card-header-gradient h5 {
         color: #fff;
         font-size: 1.2rem;
         margin: 0;
@@ -157,17 +157,17 @@
         gap: 0.8rem;
     }
     
-    .card-header-gradient h5 i {
+   .card-header-gradient h5 i {
         color: #6a5acd;
         font-size: 1.3rem;
     }
     
-    .card-body-custom {
+   .card-body-custom {
         padding: 2rem;
     }
     
     /* Аватар */
-    .avatar-section {
+   .avatar-section {
         display: flex;
         align-items: center;
         gap: 2rem;
@@ -191,11 +191,11 @@
         }
     }
     
-    .avatar-wrapper {
+   .avatar-wrapper {
         position: relative;
     }
     
-    .avatar-circle {
+   .avatar-circle {
         width: 100px;
         height: 100px;
         background: linear-gradient(135deg, #6a5acd, #4a90e2, #ff6b81);
@@ -221,18 +221,18 @@
         }
     }
     
-    .avatar-circle:hover {
+   .avatar-circle:hover {
         transform: scale(1.05) rotate(5deg);
     }
     
-    .user-info h4 {
+   .user-info h4 {
         color: #fff;
         font-size: 1.8rem;
         font-weight: 700;
         margin-bottom: 0.3rem;
     }
     
-    .user-info .full-name {
+   .user-info.full-name {
         color: #a8b8ff;
         font-size: 1.1rem;
         margin-bottom: 0.5rem;
@@ -241,11 +241,11 @@
         gap: 0.5rem;
     }
     
-    .user-info .full-name i {
+   .user-info.full-name i {
         color: #6a5acd;
     }
     
-    .role-badge {
+   .role-badge {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         padding: 0.4rem 1.2rem;
@@ -259,7 +259,7 @@
     }
     
     /* Информация о пользователе */
-    .info-grid {
+   .info-grid {
         display: flex;
         flex-direction: column;
         gap: 0.8rem;
@@ -277,7 +277,7 @@
         }
     }
     
-    .info-row {
+   .info-row {
         display: flex;
         padding: 0.8rem;
         border-bottom: 1px solid rgba(106, 90, 205, 0.2);
@@ -285,12 +285,12 @@
         border-radius: 10px;
     }
     
-    .info-row:hover {
+   .info-row:hover {
         background: rgba(106, 90, 205, 0.1);
         transform: translateX(5px);
     }
     
-    .info-label {
+   .info-label {
         min-width: 140px;
         color: #a8b8ff;
         font-weight: 600;
@@ -299,13 +299,13 @@
         gap: 0.5rem;
     }
     
-    .info-label i {
+   .info-label i {
         color: #6a5acd;
         width: 20px;
         font-size: 1.1rem;
     }
     
-    .info-value {
+   .info-value {
         color: #fff;
         flex: 1;
         display: flex;
@@ -313,7 +313,7 @@
         gap: 0.5rem;
     }
     
-    .info-badge {
+   .info-badge {
         background: rgba(106, 90, 205, 0.2);
         color: #a8b8ff;
         padding: 0.2rem 0.8rem;
@@ -323,7 +323,7 @@
     }
     
     /* Пустые значения */
-    .empty-value {
+   .empty-value {
         color: #8080b0;
         font-style: italic;
         display: flex;
@@ -331,13 +331,13 @@
         gap: 0.3rem;
     }
     
-    .empty-value i {
+   .empty-value i {
         color: #6a5acd;
         opacity: 0.5;
     }
     
-    /* Статистика (можно добавить, если есть) */
-    .stats-section {
+    /* Статистика(можно добавить, если есть) */
+   .stats-section {
         display: flex;
         gap: 1rem;
         margin-top: 2rem;
@@ -358,7 +358,7 @@
         }
     }
     
-    .stat-card {
+   .stat-card {
         flex: 1;
         min-width: 100px;
         background: rgba(106, 90, 205, 0.1);
@@ -369,82 +369,82 @@
         transition: all 0.3s ease;
     }
     
-    .stat-card:hover {
+   .stat-card:hover {
         background: rgba(106, 90, 205, 0.15);
         transform: translateY(-2px);
         border-color: rgba(106, 90, 205, 0.5);
     }
     
-    .stat-value {
+   .stat-value {
         font-size: 1.8rem;
         font-weight: 700;
         color: #6a5acd;
         line-height: 1.2;
     }
     
-    .stat-label {
+   .stat-label {
         color: #a8b8ff;
         font-size: 0.85rem;
     }
     
     /* Адаптивность */
-    @media (max-width: 768px) {
-        .dark-theme-profile {
+    @media(max-width: 768px) {
+       .dark-theme-profile {
             padding: 1rem 0.5rem;
         }
         
-        .page-title {
+       .page-title {
             font-size: 1.8rem;
         }
         
-        .page-title i {
+       .page-title i {
             font-size: 2rem;
         }
         
-        .page-header {
+       .page-header {
             flex-direction: column;
             align-items: flex-start;
         }
         
-        .btn-edit {
+       .btn-edit {
             width: 100%;
             justify-content: center;
         }
         
-        .avatar-section {
+       .avatar-section {
             flex-direction: column;
             text-align: center;
             gap: 1rem;
         }
         
-        .user-info {
+       .user-info {
             text-align: center;
         }
         
-        .info-row {
+       .info-row {
             flex-direction: column;
             gap: 0.3rem;
         }
         
-        .info-label {
+       .info-label {
             min-width: auto;
         }
         
-        .stats-section {
+       .stats-section {
             flex-direction: column;
         }
         
-        .stat-card {
+       .stat-card {
             width: 100%;
         }
     }
     
-    @media (min-width: 769px) and (max-width: 992px) {
-        .page-title {
+    @media(min-width: 769px) and(max-width: 992px) {
+       .page-title {
             font-size: 2rem;
         }
         
-        .info-label {
+       .info-label {
             min-width: 120px;
         }
     }
@@ -576,7 +576,7 @@
                             {% endif %}
                         </div>
                         
-                        <!-- Статистика (если есть данные для отображения) -->
+                        <!-- Статистика(если есть данные для отображения) -->
                         {% if profile_user.profile.role == 'student' %}
                         <div class="stats-section">
                             <div class="stat-card">

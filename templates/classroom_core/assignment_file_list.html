@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Файлы задания{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Файлы задания: {{ assignment.title }}</h2>
+                <a href="{% url 'classroom_core:assignment_detail' assignment.id %}" class="btn btn-secondary">
+                    Назад к заданию
+                </a>
+            </div>
+            
+            {% if is_teacher or is_admin %}
+            <div class="alert alert-info">
+                <strong>Курс:</strong> {{ course.title }}
+                <br>
+                <strong>Максимум баллов:</strong> {{ assignment.max_points }}
+            </div>
+            {% endif %}
+            
+            {% if files %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Файл</th>
+                                <th>Студент</th>
+                                <th>Дата загрузки</th>
+                                <th>Описание</th>
+                                <th>Проверок</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file in files %}
+                                <tr>
+                                    <td>
+                                        <span class="fs-4">{{ file.file.get_icon }}</span>
+                                        <strong>{{ file.file.title }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ file.file.get_file_size_display }}</small>
+                                    </td>
+                                    <td>
+                                        {{ file.student.get_full_name|default:file.student.username }}
+                                    </td>
+                                    <td>{{ file.uploaded_at|date:"d.m.Y H:i" }}</td>
+                                    <td>
+                                        {% if file.description %}
+                                            {{ file.description|truncatewords:10 }}
+                                        {% else %}
+                                            <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% with review_count=file.reviews.count %}
+                                            {% if review_count > 0 %}
+                                                <span class="badge bg-success">{{ review_count }}</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">0</span>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ file.file.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary" download>
+                                            <i class="bi bi-download"></i> Скачать
+                                        </a>
+                                        <a href="{% url 'classroom_core:assignment_file_review_create' file.id %}" class="btn btn-sm btn-outline-success">
+                                            Проверить
+                                        </a>
+                                    </td>
+                                </tr>
+                                
+                                {% if file.reviews.all %}
+                                    <tr class="table-light">
+                                        <td colspan="6">
+                                            <strong>Проверки:</strong>
+                                            <ul class="list-unstyled mb-0 mt-2">
+                                                {% for review in file.reviews.all %}
+                                                    <li class="mb-2">
+                                                        <span class="badge 
+                                                            {% if review.status == 'approved' %}bg-success
+                                                            {% elif review.status == 'rejected' %}bg-danger
+                                                            {% elif review.status == 'needs_revision' %}bg-info
+                                                            {% else %}bg-warning{% endif %}">
+                                                            {{ review.get_status_display }}
+                                                        </span>
+                                                        <strong>{{ review.reviewer.get_full_name|default:review.reviewer.username }}</strong>
+                                                        {% if review.points %}
+                                                            — <strong>Баллы: {{ review.points }}</strong>
+                                                        {% endif %}
+                                                        <br>
+                                                        {% if review.feedback %}
+                                                            <small class="text-muted">{{ review.feedback|truncatewords:15 }}</small>
+                                                        {% endif %}
+                                                        <a href="{% url 'classroom_core:assignment_file_review_edit' review.id %}" class="btn btn-sm btn-outline-secondary ms-2">
+                                                            Редактировать
+                                                        </a>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    Студенты еще не прикрепили файлы к этому заданию.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

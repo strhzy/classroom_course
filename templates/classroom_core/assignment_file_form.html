@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Прикрепить файл к заданию{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Прикрепить файл к заданию</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5>Задание:</h5>
+                        <p class="lead">{{ assignment.title }}</p>
+                        <p class="text-muted">{{ course.title }}</p>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="bi bi-info-circle"></i> Как прикрепить файл</h6>
+                        <ol class="mb-0">
+                            <li>Загрузите файл через <a href="{% url 'file_manager:file_upload' %}" target="_blank">Файловый менеджер</a></li>
+                            <li>Вернитесь на эту страницу и выберите файл из списка</li>
+                        </ol>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.file.id_for_label }}" class="form-label">
+                                Выберите файл <span class="text-danger">*</span>
+                            </label>
+                            {{ form.file }}
+                            <small class="form-text text-muted">
+                                Доступны только ваши файлы и файлы с общим доступом.
+                            </small>
+                            {% if form.file.errors %}
+                                <div class="text-danger">{{ form.file.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">
+                                Описание
+                            </label>
+                            {{ form.description }}
+                            <small class="form-text text-muted">
+                                Краткое описание того, что содержит этот файл.
+                            </small>
+                            {% if form.description.errors %}
+                                <div class="text-danger">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'classroom_core:assignment_detail' assignment.id %}" class="btn btn-secondary">
+                                Назад к заданию
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                Прикрепить файл
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

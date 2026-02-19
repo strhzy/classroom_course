@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Заявка на запись на курс{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Заявка на запись на курс</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Курс</h5>
+                            <p class="lead">{{ course.title }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Статус заявки</h5>
+                            {% if enrollment_request.status == 'pending' %}
+                                <span class="badge bg-warning fs-6">На рассмотрении</span>
+                            {% elif enrollment_request.status == 'approved' %}
+                                <span class="badge bg-success fs-6">Одобрена</span>
+                            {% elif enrollment_request.status == 'rejected' %}
+                                <span class="badge bg-danger fs-6">Отклонена</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Студент</h6>
+                            <p>
+                                <strong>{{ enrollment_request.student.get_full_name|default:enrollment_request.student.username }}</strong>
+                                <br>
+                                <small class="text-muted">{{ enrollment_request.student.email }}</small>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Дата подачи</h6>
+                            <p>{{ enrollment_request.created_at|date:"d.m.Y H:i" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h6>Мотивация студента</h6>
+                        <div class="p-3 bg-light rounded">
+                            {% if enrollment_request.motivation %}
+                                {{ enrollment_request.motivation|linebreaks }}
+                            {% else %}
+                                <span class="text-muted">Не указана</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if enrollment_request.reviewed_at %}
+                        <div class="mb-4">
+                            <h6>Результат рассмотрения</h6>
+                            <div class="p-3 bg-light rounded">
+                                <p>
+                                    <strong>Проверил:</strong> 
+                                    {{ enrollment_request.reviewed_by.get_full_name|default:enrollment_request.reviewed_by.username }}
+                                </p>
+                                <p>
+                                    <strong>Дата:</strong> {{ enrollment_request.reviewed_at|date:"d.m.Y H:i" }}
+                                </p>
+                                {% if enrollment_request.review_comment %}
+                                    <p><strong>Комментарий:</strong></p>
+                                    <p>{{ enrollment_request.review_comment|linebreaks }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'classroom_core:course_detail' course.id %}" class="btn btn-secondary">
+                            Назад к курсу
+                        </a>
+                        
+                        {% if enrollment_request.can_review %}
+                            {% if enrollment_request.status == 'pending' %}
+                                <a href="{% url 'classroom_core:course_enrollment_request_review' enrollment_request.id %}" class="btn btn-success">
+                                    Рассмотреть заявку
+                                </a>
+                            {% else %}
+                                <a href="{% url 'classroom_core:course_enrollment_request_review' enrollment_request.id %}" class="btn btn-primary">
+                                    Изменить решение
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

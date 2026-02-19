@@ -13,28 +13,28 @@
         }
         
         /* Темная тема для навбара */
-        .dark-navbar {
+       .dark-navbar {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             border-bottom: 1px solid rgba(106, 90, 205, 0.3);
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
             padding: 0.5rem 1rem;
         }
         
-        .dark-navbar .navbar-brand {
+       .dark-navbar.navbar-brand {
             color: #fff !important;
             font-weight: 600;
             transition: color 0.2s ease;
         }
         
-        .dark-navbar .navbar-brand i {
+       .dark-navbar.navbar-brand i {
             color: #6a5acd;
         }
         
-        .dark-navbar .navbar-brand:hover {
+       .dark-navbar.navbar-brand:hover {
             color: #a8b8ff !important;
         }
         
-        .dark-navbar .nav-link {
+       .dark-navbar.nav-link {
             color: #a8b8ff !important;
             font-weight: 500;
             padding: 0.6rem 1rem !important;
@@ -42,20 +42,20 @@
             transition: all 0.2s ease;
         }
         
-        .dark-navbar .nav-link:hover {
+       .dark-navbar.nav-link:hover {
             color: #fff !important;
             background: rgba(106, 90, 205, 0.15);
         }
         
-        .dark-navbar .nav-link i {
+       .dark-navbar.nav-link i {
             color: #6a5acd;
         }
         
-        .dark-navbar .nav-link:hover i {
+       .dark-navbar.nav-link:hover i {
             color: #fff;
         }
         
-        .dark-navbar .dropdown-menu {
+       .dark-navbar.dropdown-menu {
             background: rgba(30, 30, 46, 0.95);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(106, 90, 205, 0.3);
@@ -65,7 +65,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
         
-        .dark-navbar .dropdown-item {
+       .dark-navbar.dropdown-item {
             color: #a8b8ff;
             border-radius: 8px;
             padding: 0.6rem 1rem;
@@ -75,35 +75,35 @@
             gap: 0.5rem;
         }
         
-        .dark-navbar .dropdown-item:hover {
+       .dark-navbar.dropdown-item:hover {
             background: rgba(106, 90, 205, 0.15);
             color: #fff;
         }
         
-        .dark-navbar .dropdown-item i {
+       .dark-navbar.dropdown-item i {
             color: #6a5acd;
         }
         
-        .dark-navbar .dropdown-item:hover i {
+       .dark-navbar.dropdown-item:hover i {
             color: #fff;
         }
         
-        .dark-navbar .dropdown-divider {
+       .dark-navbar.dropdown-divider {
             border-top: 1px solid rgba(106, 90, 205, 0.3);
             margin: 0.5rem 0;
         }
         
-        .dark-navbar .navbar-toggler {
+       .dark-navbar.navbar-toggler {
             background: rgba(106, 90, 205, 0.2);
             border: 1px solid rgba(106, 90, 205, 0.3);
         }
         
-        .dark-navbar .navbar-toggler-icon {
+       .dark-navbar.navbar-toggler-icon {
             filter: invert(1);
         }
         
         /* Аватар пользователя */
-        .user-avatar {
+       .user-avatar {
             background: linear-gradient(135deg, #6a5acd, #4a90e2) !important;
             color: white !important;
             font-weight: 600;
@@ -111,29 +111,29 @@
             transition: all 0.2s ease;
         }
         
-        .user-avatar:hover {
+       .user-avatar:hover {
             transform: scale(1.05);
             border-color: #6a5acd;
         }
         
-        .username-text {
+       .username-text {
             color: #a8b8ff;
             font-weight: 500;
             transition: color 0.2s ease;
         }
         
-        .username-text:hover {
+       .username-text:hover {
             color: #fff;
         }
         
         /* Основной контент */
-        .main-content {
+       .main-content {
             background: transparent;
             padding: 2rem 1rem;
         }
         
         /* Сообщения */
-        .custom-alert {
+       .custom-alert {
             background: rgba(30, 30, 46, 0.95);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(106, 90, 205, 0.3);
@@ -146,12 +146,12 @@
             justify-content: space-between;
         }
         
-        .custom-alert i {
+       .custom-alert i {
             color: #6a5acd;
             margin-right: 0.5rem;
         }
         
-        .btn-close-custom {
+       .btn-close-custom {
             background: none;
             border: none;
             color: #8080b0;
@@ -161,30 +161,30 @@
             transition: color 0.2s ease;
         }
         
-        .btn-close-custom:hover {
+       .btn-close-custom:hover {
             color: #fff;
         }
         
         /* Адаптивность */
-        @media (max-width: 768px) {
-            .dark-navbar .navbar-collapse {
+        @media(max-width: 768px) {
+           .dark-navbar.navbar-collapse {
                 background: rgba(30, 30, 46, 0.95);
                 border-radius: 12px;
                 padding: 1rem;
                 margin-top: 1rem;
             }
             
-            .dark-navbar .nav-link {
+           .dark-navbar.nav-link {
                 padding: 0.6rem !important;
             }
             
-            .dark-navbar .dropdown-menu {
+           .dark-navbar.dropdown-menu {
                 background: transparent;
                 border: none;
                 padding-left: 1rem;
             }
             
-            .main-content {
+           .main-content {
                 padding: 1rem 0.5rem;
             }
         }
@@ -234,7 +234,7 @@
                         </ul>
                     </li>
                     
-                    <!-- Admin Section (only for staff/superuser) -->
+                    <!-- Admin Section(only for staff/superuser) -->
                     {% if user.is_authenticated and user.is_staff or user.is_superuser %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">

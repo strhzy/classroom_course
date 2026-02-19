@@ -4,14 +4,14 @@
 
 {% block courses_content %}
 <style>
-    .dark-theme-course-form {
+   .dark-theme-course-form {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Хлебные крошки */
-    .custom-breadcrumb {
+   .custom-breadcrumb {
         background: rgba(106, 90, 205, 0.1);
         padding: 0.8rem 1.2rem;
         border-radius: 50px;
@@ -32,35 +32,35 @@
         }
     }
     
-    .custom-breadcrumb .breadcrumb {
+   .custom-breadcrumb.breadcrumb {
         margin: 0;
         background: transparent;
     }
     
-    .custom-breadcrumb .breadcrumb-item a {
+   .custom-breadcrumb.breadcrumb-item a {
         color: #a8b8ff;
         text-decoration: none;
         transition: all 0.3s ease;
     }
     
-    .custom-breadcrumb .breadcrumb-item a:hover {
+   .custom-breadcrumb.breadcrumb-item a:hover {
         color: #6a5acd;
         text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
     }
     
-    .custom-breadcrumb .breadcrumb-item.active {
+   .custom-breadcrumb.breadcrumb-item.active {
         color: #fff;
         font-weight: 500;
     }
     
-    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
         color: #6a5acd;
         content: "›";
         font-size: 1.2rem;
     }
     
     /* Заголовок */
-    .page-header {
+   .page-header {
         animation: headerFade 0.5s ease-out;
     }
     
@@ -75,7 +75,7 @@
         }
     }
     
-    .page-title {
+   .page-title {
         font-size: 2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
@@ -86,7 +86,7 @@
     }
     
     /* Карточка формы */
-    .form-card {
+   .form-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -108,17 +108,17 @@
         }
     }
     
-    .form-card:hover {
+   .form-card:hover {
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
     }
     
-    .card-header-gradient {
+   .card-header-gradient {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
         border-bottom: 1px solid rgba(106, 90, 205, 0.3);
         padding: 1.2rem 1.5rem;
     }
     
-    .card-header-gradient h5 {
+   .card-header-gradient h5 {
         color: #fff;
         font-size: 1.3rem;
         margin: 0;
@@ -127,31 +127,31 @@
         gap: 0.8rem;
     }
     
-    .card-header-gradient h5 i {
+   .card-header-gradient h5 i {
         color: #6a5acd;
         font-size: 1.5rem;
     }
     
-    .card-body-custom {
+   .card-body-custom {
         padding: 2rem;
     }
     
     /* Поля формы */
-    .form-group {
+   .form-group {
         margin-bottom: 1.8rem;
         animation: fieldAppear 0.5s ease-out;
         animation-fill-mode: both;
     }
     
-    .form-group:nth-child(1) { animation-delay: 0.2s; }
-    .form-group:nth-child(2) { animation-delay: 0.25s; }
-    .form-group:nth-child(3) { animation-delay: 0.3s; }
-    .form-group:nth-child(4) { animation-delay: 0.35s; }
-    .form-group:nth-child(5) { animation-delay: 0.4s; }
-    .form-group:nth-child(6) { animation-delay: 0.45s; }
-    .form-group:nth-child(7) { animation-delay: 0.5s; }
-    .form-group:nth-child(8) { animation-delay: 0.55s; }
-    .form-group:nth-child(9) { animation-delay: 0.6s; }
+   .form-group:nth-child(1) { animation-delay: 0.2s; }
+   .form-group:nth-child(2) { animation-delay: 0.25s; }
+   .form-group:nth-child(3) { animation-delay: 0.3s; }
+   .form-group:nth-child(4) { animation-delay: 0.35s; }
+   .form-group:nth-child(5) { animation-delay: 0.4s; }
+   .form-group:nth-child(6) { animation-delay: 0.45s; }
+   .form-group:nth-child(7) { animation-delay: 0.5s; }
+   .form-group:nth-child(8) { animation-delay: 0.55s; }
+   .form-group:nth-child(9) { animation-delay: 0.6s; }
     
     @keyframes fieldAppear {
         0% {
@@ -164,7 +164,7 @@
         }
     }
     
-    .form-label {
+   .form-label {
         color: #a8b8ff;
         font-weight: 600;
         margin-bottom: 0.5rem;
@@ -174,19 +174,19 @@
         font-size: 1rem;
     }
     
-    .form-label i {
+   .form-label i {
         color: #6a5acd;
         font-size: 1.1rem;
     }
     
-    .form-label .required {
+   .form-label.required {
         color: #ff6b81;
         margin-left: 0.3rem;
         font-size: 1.2rem;
     }
     
     /* Стили для полей ввода */
-    .custom-input {
+   .custom-input {
         background: rgba(20, 20, 35, 0.8);
         border: 2px solid rgba(106, 90, 205, 0.3);
         border-radius: 12px;
@@ -197,7 +197,7 @@
         width: 100%;
     }
     
-    .custom-input:focus {
+   .custom-input:focus {
         outline: none;
         border-color: #6a5acd;
         box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2), 0 0 20px rgba(106, 90, 205, 0.3);
@@ -205,7 +205,7 @@
         transform: translateY(-2px);
     }
     
-    .custom-input:hover {
+   .custom-input:hover {
         border-color: rgba(106, 90, 205, 0.6);
     }
     
@@ -216,7 +216,7 @@
     }
     
     /* Чекбоксы */
-    .checkbox-group {
+   .checkbox-group {
         background: rgba(106, 90, 205, 0.1);
         border-radius: 15px;
         padding: 1.2rem;
@@ -236,13 +236,13 @@
         }
     }
     
-    .checkbox-group:hover {
+   .checkbox-group:hover {
         background: rgba(106, 90, 205, 0.15);
         border-color: rgba(106, 90, 205, 0.4);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
     
-    .custom-checkbox {
+   .custom-checkbox {
         display: flex;
         align-items: flex-start;
         padding: 0.5rem;
@@ -251,12 +251,12 @@
         cursor: pointer;
     }
     
-    .custom-checkbox:hover {
+   .custom-checkbox:hover {
         background: rgba(106, 90, 205, 0.1);
         transform: translateX(5px);
     }
     
-    .custom-checkbox input[type="checkbox"] {
+   .custom-checkbox input[type="checkbox"] {
         width: 1.3rem;
         height: 1.3rem;
         margin-right: 0.8rem;
@@ -266,11 +266,11 @@
         transition: all 0.2s ease;
     }
     
-    .custom-checkbox input[type="checkbox"]:checked {
+   .custom-checkbox input[type="checkbox"]:checked {
         transform: scale(1.1);
     }
     
-    .custom-checkbox label {
+   .custom-checkbox label {
         color: #e0e0ff;
         font-size: 1rem;
         cursor: pointer;
@@ -278,7 +278,7 @@
         font-weight: 500;
     }
     
-    .checkbox-description {
+   .checkbox-description {
         color: #b0b0ff;
         font-size: 0.9rem;
         margin-left: 2.1rem;
@@ -287,11 +287,11 @@
     }
     
     /* File input */
-    .file-input-container {
+   .file-input-container {
         position: relative;
     }
     
-    .file-input {
+   .file-input {
         position: absolute;
         opacity: 0;
         width: 100%;
@@ -300,7 +300,7 @@
         z-index: 2;
     }
     
-    .file-label {
+   .file-label {
         background: rgba(20, 20, 35, 0.8);
         border: 2px dashed rgba(106, 90, 205, 0.4);
         border-radius: 12px;
@@ -318,29 +318,29 @@
         text-align: center;
     }
     
-    .file-label:hover {
+   .file-label:hover {
         border-color: #6a5acd;
         background: rgba(106, 90, 205, 0.1);
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
     
-    .file-label i {
+   .file-label i {
         color: #6a5acd;
         font-size: 2.5rem;
         transition: transform 0.3s ease;
     }
     
-    .file-label:hover i {
+   .file-label:hover i {
         transform: scale(1.1) rotate(5deg);
     }
     
-    .file-hint {
+   .file-hint {
         color: #8080b0;
         font-size: 0.9rem;
     }
     
-    .file-name {
+   .file-name {
         color: #6a5acd;
         font-weight: 600;
         margin-top: 0.5rem;
@@ -351,7 +351,7 @@
     }
     
     /* Подсказки */
-    .form-text {
+   .form-text {
         color: #8080b0;
         font-size: 0.85rem;
         margin-top: 0.3rem;
@@ -360,13 +360,13 @@
         gap: 0.3rem;
     }
     
-    .form-text i {
+   .form-text i {
         color: #6a5acd;
         font-size: 0.9rem;
     }
     
     /* Кнопки */
-    .button-group {
+   .button-group {
         display: flex;
         gap: 1rem;
         margin-top: 2rem;
@@ -384,7 +384,7 @@
         }
     }
     
-    .btn-save {
+   .btn-save {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 12px;
@@ -404,18 +404,18 @@
         text-decoration: none;
     }
     
-    .btn-save:hover {
+   .btn-save:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
         color: white;
     }
     
-    .btn-save:active {
+   .btn-save:active {
         transform: translateY(0);
     }
     
-    .btn-save::after {
+   .btn-save::after {
         content: '';
         position: absolute;
         top: 50%;
@@ -428,12 +428,12 @@
         transition: width 0.6s, height 0.6s;
     }
     
-    .btn-save:hover::after {
+   .btn-save:hover::after {
         width: 300px;
         height: 300px;
     }
     
-    .btn-cancel {
+   .btn-cancel {
         background: rgba(106, 90, 205, 0.2);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 12px;
@@ -450,7 +450,7 @@
         font-size: 1rem;
     }
     
-    .btn-cancel:hover {
+   .btn-cancel:hover {
         background: rgba(106, 90, 205, 0.3);
         border-color: #6a5acd;
         color: #fff;
@@ -458,78 +458,78 @@
         box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
     }
     
-    .btn-cancel:active {
+   .btn-cancel:active {
         transform: translateY(0);
     }
     
-    .btn-save i, .btn-cancel i {
+   .btn-save i,.btn-cancel i {
         transition: all 0.3s ease;
     }
     
-    .btn-save:hover i {
+   .btn-save:hover i {
         transform: scale(1.1);
     }
     
-    .btn-cancel:hover i {
+   .btn-cancel:hover i {
         transform: rotate(90deg);
     }
     
     /* Индикатор обязательных полей */
-    .required-note {
+   .required-note {
         color: #b0b0ff;
         font-size: 0.9rem;
         margin-top: 0.5rem;
         text-align: right;
     }
     
-    .required-note i {
+   .required-note i {
         color: #ff6b81;
         margin-right: 0.2rem;
     }
     
     /* Адаптивность */
-    @media (max-width: 768px) {
-        .dark-theme-course-form {
+    @media(max-width: 768px) {
+       .dark-theme-course-form {
             padding: 1rem 0.5rem;
         }
         
-        .page-title {
+       .page-title {
             font-size: 1.6rem;
         }
         
-        .custom-breadcrumb {
+       .custom-breadcrumb {
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
         }
         
-        .card-body-custom {
+       .card-body-custom {
             padding: 1.5rem;
         }
         
-        .button-group {
+       .button-group {
             flex-direction: column;
         }
         
-        .btn-save,
-        .btn-cancel {
+       .btn-save,
+       .btn-cancel {
             width: 100%;
         }
         
-        .checkbox-group {
+       .checkbox-group {
             padding: 1rem;
         }
         
-        .custom-checkbox {
+       .custom-checkbox {
             padding: 0.3rem;
         }
     }
     
-    @media (min-width: 769px) and (max-width: 992px) {
-        .page-title {
+    @media(min-width: 769px) and(max-width: 992px) {
+       .page-title {
             font-size: 1.8rem;
         }
         
-        .card-body-custom {
+       .card-body-custom {
             padding: 1.8rem;
         }
     }
@@ -760,7 +760,7 @@
         const fileNameDisplay = document.getElementById('file-name-display');
         const fileLabel = document.querySelector('.file-label');
         
-        if (input.files && input.files.length > 0) {
+        if(input.files && input.files.length > 0) {
             const file = input.files[0];
             fileNameDisplay.textContent = `🖼️ ${file.name}`;
             fileNameDisplay.style.display = 'inline-block';
@@ -781,7 +781,7 @@
         const fileInput = document.getElementById('id_cover_image');
         const fileLabel = document.querySelector('.file-label');
         
-        if (fileInput && fileLabel) {
+        if(fileInput && fileLabel) {
             // Предотвращаем стандартное поведение
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 fileLabel.addEventListener(eventName, preventDefaults, false);
@@ -827,7 +827,7 @@
         // Анимация для полей формы
         const formGroups = document.querySelectorAll('.form-group');
         formGroups.forEach((group, index) => {
-            group.style.animationDelay = `${0.1 + (index * 0.05)}s`;
+            group.style.animationDelay = `${0.1 +(index * 0.05)}s`;
         });
     });
 </script>

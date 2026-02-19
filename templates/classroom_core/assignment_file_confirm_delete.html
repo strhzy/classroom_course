@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Удаление файла{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">Удаление файла</h4>
+                </div>
+                <div class="card-body">
+                    <p class="lead">Вы уверены, что хотите удалить этот файл?</p>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Файл:</strong> {{ file.file.title }}
+                        <br>
+                        <strong>Задание:</strong> {{ assignment.title }}
+                        <br>
+                        <strong>Дата загрузки:</strong> {{ file.uploaded_at|date:"d.m.Y H:i" }}
+                    </div>
+                    
+                    <p class="text-danger">
+                        <strong>Внимание:</strong> Это действие нельзя отменить. Файл будет удален из задания.
+                    </p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'classroom_core:assignment_detail' assignment.id %}" class="btn btn-secondary">
+                                Отмена
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                Удалить
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

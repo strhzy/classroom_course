@@ -4,14 +4,14 @@
 
 {% block files_content %}
 <style>
-    .dark-theme-file-form {
+   .dark-theme-file-form {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Хлебные крошки */
-    .custom-breadcrumb {
+   .custom-breadcrumb {
         background: rgba(106, 90, 205, 0.1);
         padding: 0.8rem 1.2rem;
         border-radius: 50px;
@@ -20,34 +20,34 @@
         display: inline-block;
     }
     
-    .custom-breadcrumb .breadcrumb {
+   .custom-breadcrumb.breadcrumb {
         margin: 0;
         background: transparent;
     }
     
-    .custom-breadcrumb .breadcrumb-item a {
+   .custom-breadcrumb.breadcrumb-item a {
         color: #a8b8ff;
         text-decoration: none;
         transition: color 0.2s ease;
     }
     
-    .custom-breadcrumb .breadcrumb-item a:hover {
+   .custom-breadcrumb.breadcrumb-item a:hover {
         color: #6a5acd;
     }
     
-    .custom-breadcrumb .breadcrumb-item.active {
+   .custom-breadcrumb.breadcrumb-item.active {
         color: #fff;
         font-weight: 500;
     }
     
-    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
         color: #6a5acd;
         content: "›";
         font-size: 1.2rem;
     }
     
     /* Заголовок */
-    .page-header {
+   .page-header {
         animation: headerFade 0.5s ease-out;
         margin-bottom: 2rem;
     }
@@ -63,7 +63,7 @@
         }
     }
     
-    .page-title {
+   .page-title {
         font-size: 2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
@@ -73,7 +73,7 @@
     }
     
     /* Карточка формы */
-    .form-card {
+   .form-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -82,13 +82,13 @@
         overflow: hidden;
     }
     
-    .card-header-custom {
+   .card-header-custom {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
         border-bottom: 1px solid rgba(106, 90, 205, 0.3);
         padding: 1.2rem 1.5rem;
     }
     
-    .card-header-custom h5 {
+   .card-header-custom h5 {
         color: #fff;
         font-size: 1.2rem;
         margin: 0;
@@ -97,21 +97,21 @@
         gap: 0.8rem;
     }
     
-    .card-header-custom i {
+   .card-header-custom i {
         color: #6a5acd;
         font-size: 1.3rem;
     }
     
-    .card-body-custom {
+   .card-body-custom {
         padding: 2rem;
     }
     
     /* Поля формы */
-    .form-group {
+   .form-group {
         margin-bottom: 1.8rem;
     }
     
-    .form-label {
+   .form-label {
         color: #a8b8ff;
         font-weight: 600;
         margin-bottom: 0.5rem;
@@ -120,18 +120,18 @@
         gap: 0.5rem;
     }
     
-    .form-label i {
+   .form-label i {
         color: #6a5acd;
         font-size: 1.1rem;
     }
     
-    .form-label .required {
+   .form-label.required {
         color: #ff6b81;
         margin-left: 0.3rem;
     }
     
     /* Стили для полей ввода */
-    .custom-input {
+   .custom-input {
         background: rgba(20, 20, 35, 0.8);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 10px;
@@ -142,12 +142,12 @@
         width: 100%;
     }
     
-    .custom-input:focus {
+   .custom-input:focus {
         outline: none;
         border-color: #6a5acd;
     }
     
-    .custom-input:hover {
+   .custom-input:hover {
         border-color: rgba(106, 90, 205, 0.6);
     }
     
@@ -156,7 +156,7 @@
         min-height: 100px;
     }
     
-    .custom-select {
+   .custom-select {
         background: rgba(20, 20, 35, 0.8);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 10px;
@@ -172,22 +172,22 @@
         background-position: right 1rem center;
     }
     
-    .custom-select:focus {
+   .custom-select:focus {
         outline: none;
         border-color: #6a5acd;
     }
     
-    .custom-select option {
+   .custom-select option {
         background: #1a1a2e;
         color: #fff;
     }
     
     /* File input */
-    .file-input-container {
+   .file-input-container {
         position: relative;
     }
     
-    .file-input {
+   .file-input {
         position: absolute;
         opacity: 0;
         width: 100%;
@@ -196,7 +196,7 @@
         z-index: 2;
     }
     
-    .file-label {
+   .file-label {
         background: rgba(20, 20, 35, 0.8);
         border: 2px dashed rgba(106, 90, 205, 0.4);
         border-radius: 10px;
@@ -212,17 +212,17 @@
         z-index: 1;
     }
     
-    .file-label:hover {
+   .file-label:hover {
         border-color: #6a5acd;
         background: rgba(106, 90, 205, 0.1);
     }
     
-    .file-label i {
+   .file-label i {
         color: #6a5acd;
         font-size: 1.5rem;
     }
     
-    .file-name {
+   .file-name {
         color: #6a5acd;
         font-weight: 600;
         margin-left: 0.5rem;
@@ -234,7 +234,7 @@
     }
     
     /* Подсказки */
-    .form-text {
+   .form-text {
         color: #8080b0;
         font-size: 0.85rem;
         margin-top: 0.3rem;
@@ -243,12 +243,12 @@
         gap: 0.3rem;
     }
     
-    .form-text i {
+   .form-text i {
         color: #6a5acd;
     }
     
     /* Индикатор обязательных полей */
-    .required-note {
+   .required-note {
         color: #b0b0ff;
         font-size: 0.9rem;
         margin-top: 0.5rem;
@@ -259,18 +259,18 @@
         gap: 0.3rem;
     }
     
-    .required-note i {
+   .required-note i {
         color: #ff6b81;
     }
     
     /* Кнопки */
-    .button-group {
+   .button-group {
         display: flex;
         gap: 1rem;
         margin-top: 2rem;
     }
     
-    .btn-save {
+   .btn-save {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 10px;
@@ -286,11 +286,11 @@
         text-decoration: none;
     }
     
-    .btn-save:hover {
+   .btn-save:hover {
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
     }
     
-    .btn-cancel {
+   .btn-cancel {
         background: rgba(106, 90, 205, 0.15);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 10px;
@@ -306,41 +306,41 @@
         gap: 0.5rem;
     }
     
-    .btn-cancel:hover {
+   .btn-cancel:hover {
         background: rgba(106, 90, 205, 0.25);
         border-color: #6a5acd;
         color: #fff;
     }
     
     /* Адаптивность */
-    @media (max-width: 768px) {
-        .dark-theme-file-form {
+    @media(max-width: 768px) {
+       .dark-theme-file-form {
             padding: 1rem 0.5rem;
         }
         
-        .page-title {
+       .page-title {
             font-size: 1.6rem;
         }
         
-        .custom-breadcrumb {
+       .custom-breadcrumb {
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
         }
         
-        .card-body-custom {
+       .card-body-custom {
             padding: 1.5rem;
         }
         
-        .button-group {
+       .button-group {
             flex-direction: column;
         }
         
-        .btn-save,
-        .btn-cancel {
+       .btn-save,
+       .btn-cancel {
             width: 100%;
         }
         
-        .file-label {
+       .file-label {
             flex-direction: column;
             text-align: center;
         }
@@ -485,11 +485,11 @@
                                 </select>
                                 <div class="form-text">
                                     <i class="bi bi-info-circle"></i>
-                                    Выберите пользователей для общего доступа (можно выбрать несколько)
+                                    Выберите пользователей для общего доступа(можно выбрать несколько)
                                 </div>
                             </div>
                             
-                            <!-- Папка (если есть) -->
+                            <!-- Папка(если есть) -->
                             {% if form.folder %}
                             <div class="form-group">
                                 <label for="id_folder" class="form-label">
@@ -497,7 +497,7 @@
                                     Папка
                                 </label>
                                 <select name="folder" id="id_folder" class="custom-select">
-                                    <option value="">📁 Нет (корневая папка)</option>
+                                    <option value="">📁 Нет(корневая папка)</option>
                                     {% for folder in form.fields.folder.queryset %}
                                     <option value="{{ folder.id }}" {% if form.folder.value|add:"0" == folder.id %}selected{% endif %}>
                                         {{ folder.title }}
@@ -537,7 +537,7 @@
         const fileNameDisplay = document.getElementById('file-name-display');
         const fileLabel = document.querySelector('.file-label');
         
-        if (input.files && input.files.length > 0) {
+        if(input.files && input.files.length > 0) {
             const file = input.files[0];
             fileNameDisplay.textContent = `📄 ${file.name}`;
             fileNameDisplay.style.display = 'inline';

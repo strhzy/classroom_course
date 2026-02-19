@@ -4,14 +4,14 @@
 
 {% block courses_content %}
 <style>
-    .dark-theme-assignment {
+   .dark-theme-assignment {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Хлебные крошки */
-    .custom-breadcrumb {
+   .custom-breadcrumb {
         background: rgba(106, 90, 205, 0.1);
         padding: 0.8rem 1.2rem;
         border-radius: 50px;
@@ -32,35 +32,35 @@
         }
     }
     
-    .custom-breadcrumb .breadcrumb {
+   .custom-breadcrumb.breadcrumb {
         margin: 0;
         background: transparent;
     }
     
-    .custom-breadcrumb .breadcrumb-item a {
+   .custom-breadcrumb.breadcrumb-item a {
         color: #a8b8ff;
         text-decoration: none;
         transition: all 0.3s ease;
     }
     
-    .custom-breadcrumb .breadcrumb-item a:hover {
+   .custom-breadcrumb.breadcrumb-item a:hover {
         color: #6a5acd;
         text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
     }
     
-    .custom-breadcrumb .breadcrumb-item.active {
+   .custom-breadcrumb.breadcrumb-item.active {
         color: #fff;
         font-weight: 500;
     }
     
-    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
         color: #6a5acd;
         content: "›";
         font-size: 1.2rem;
     }
     
     /* Заголовок */
-    .assignment-header {
+   .assignment-header {
         animation: headerFade 0.5s ease-out;
     }
     
@@ -75,7 +75,7 @@
         }
     }
     
-    .page-title {
+   .page-title {
         font-size: 2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
@@ -86,7 +86,7 @@
     }
     
     /* Кнопка редактирования */
-    .btn-edit {
+   .btn-edit {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 12px;
@@ -99,13 +99,13 @@
         overflow: hidden;
     }
     
-    .btn-edit:hover {
+   .btn-edit:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
     }
     
-    .btn-edit::after {
+   .btn-edit::after {
         content: '';
         position: absolute;
         top: 50%;
@@ -118,13 +118,13 @@
         transition: width 0.6s, height 0.6s;
     }
     
-    .btn-edit:hover::after {
+   .btn-edit:hover::after {
         width: 300px;
         height: 300px;
     }
     
     /* Карточки */
-    .custom-card {
+   .custom-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -136,7 +136,7 @@
         margin-bottom: 1.5rem;
     }
     
-    .custom-card:hover {
+   .custom-card:hover {
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
         transform: translateY(-2px);
     }
@@ -152,57 +152,57 @@
         }
     }
     
-    .card-header-gradient {
+   .card-header-gradient {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
         border-bottom: 1px solid rgba(106, 90, 205, 0.3);
         padding: 1.2rem 1.5rem;
     }
     
-    .card-header-gradient h5, 
-    .card-header-gradient h6 {
+   .card-header-gradient h5, 
+   .card-header-gradient h6 {
         color: #fff;
         margin: 0;
         display: flex;
         align-items: center;
     }
     
-    .card-header-gradient i {
+   .card-header-gradient i {
         color: #6a5acd;
         margin-right: 0.8rem;
         font-size: 1.3rem;
     }
     
-    .card-body-custom {
+   .card-body-custom {
         padding: 1.5rem;
         color: #e0e0ff;
     }
     
     /* Описание задания */
-    .assignment-description {
+   .assignment-description {
         color: #e0e0ff;
         line-height: 1.8;
         font-size: 1.1rem;
     }
     
-    .assignment-description p {
+   .assignment-description p {
         margin-bottom: 1.2rem;
     }
     
-    .assignment-description img {
+   .assignment-description img {
         max-width: 100%;
         border-radius: 10px;
         border: 2px solid rgba(106, 90, 205, 0.3);
         margin: 1rem 0;
     }
     
-    .assignment-description code {
+   .assignment-description code {
         background: rgba(106, 90, 205, 0.2);
         color: #ff6b81;
         padding: 0.2rem 0.4rem;
         border-radius: 6px;
     }
     
-    .assignment-description pre {
+   .assignment-description pre {
         background: rgba(0, 0, 0, 0.3);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 10px;
@@ -211,7 +211,7 @@
     }
     
     /* Файл вложения */
-    .attachment-alert {
+   .attachment-alert {
         background: rgba(106, 90, 205, 0.15);
         border: 1px solid rgba(106, 90, 205, 0.4);
         border-radius: 12px;
@@ -223,21 +223,21 @@
         gap: 1rem;
     }
     
-    .attachment-icon {
+   .attachment-icon {
         color: #6a5acd;
         font-size: 1.5rem;
     }
     
-    .attachment-info {
+   .attachment-info {
         flex: 1;
         color: #a8b8ff;
     }
     
-    .attachment-info strong {
+   .attachment-info strong {
         color: #fff;
     }
     
-    .attachment-link {
+   .attachment-link {
         background: rgba(106, 90, 205, 0.2);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 8px;
@@ -250,7 +250,7 @@
         gap: 0.5rem;
     }
     
-    .attachment-link:hover {
+   .attachment-link:hover {
         background: rgba(106, 90, 205, 0.3);
         border-color: #6a5acd;
         color: #fff;
@@ -258,7 +258,7 @@
     }
     
     /* Срок выполнения */
-    .due-date-container {
+   .due-date-container {
         background: rgba(0, 0, 0, 0.2);
         border-radius: 10px;
         padding: 1rem;
@@ -266,17 +266,17 @@
         border-left: 4px solid #6a5acd;
     }
     
-    .due-date {
+   .due-date {
         color: #a8b8ff;
         font-size: 1.1rem;
     }
     
-    .due-date i {
+   .due-date i {
         color: #6a5acd;
         margin-right: 0.5rem;
     }
     
-    .overdue-badge {
+   .overdue-badge {
         background: linear-gradient(135deg, #ff4757, #ff6b81);
         border: none;
         padding: 0.4rem 1rem;
@@ -288,13 +288,13 @@
     }
     
     /* Кнопка отправки */
-    .submit-section {
+   .submit-section {
         margin-top: 2rem;
         padding-top: 1.5rem;
         border-top: 1px solid rgba(106, 90, 205, 0.3);
     }
     
-    .btn-submit {
+   .btn-submit {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 12px;
@@ -308,29 +308,29 @@
         gap: 0.8rem;
     }
     
-    .btn-submit:hover {
+   .btn-submit:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
     }
     
-    .btn-submit i {
+   .btn-submit i {
         transition: transform 0.3s ease;
     }
     
-    .btn-submit:hover i {
+   .btn-submit:hover i {
         transform: translateX(5px) rotate(10deg);
     }
     
     /* Решение студента */
-    .submission-card {
+   .submission-card {
         background: rgba(0, 0, 0, 0.2);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 15px;
         overflow: hidden;
     }
     
-    .submission-header {
+   .submission-header {
         background: rgba(106, 90, 205, 0.15);
         padding: 1rem;
         display: flex;
@@ -340,7 +340,7 @@
         gap: 0.5rem;
     }
     
-    .status-badge {
+   .status-badge {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         padding: 0.4rem 1rem;
@@ -349,11 +349,11 @@
         color: white;
     }
     
-    .status-badge.returned {
+   .status-badge.returned {
         background: linear-gradient(135deg, #ffa502, #ffb822);
     }
     
-    .late-badge {
+   .late-badge {
         background: linear-gradient(135deg, #ff4757, #ff6b81);
         color: white;
         padding: 0.2rem 0.8rem;
@@ -362,11 +362,11 @@
         font-weight: 600;
     }
     
-    .submission-body {
+   .submission-body {
         padding: 1rem;
     }
     
-    .submission-text {
+   .submission-text {
         color: #e0e0ff;
         background: rgba(106, 90, 205, 0.1);
         padding: 1rem;
@@ -374,7 +374,7 @@
         border-left: 3px solid #6a5acd;
     }
     
-    .feedback-section {
+   .feedback-section {
         background: rgba(74, 144, 226, 0.1);
         border-radius: 10px;
         padding: 1rem;
@@ -382,13 +382,13 @@
         border-left: 3px solid #4a90e2;
     }
     
-    .feedback-section strong {
+   .feedback-section strong {
         color: #4a90e2;
         display: block;
         margin-bottom: 0.5rem;
     }
     
-    .score-badge {
+   .score-badge {
         background: linear-gradient(135deg, #ffd700, #ffa502);
         color: #1a1a2e;
         padding: 0.3rem 1rem;
@@ -397,22 +397,22 @@
     }
     
     /* Информация в сайдбаре */
-    .info-list {
+   .info-list {
         margin: 0;
     }
     
-    .info-list dt {
+   .info-list dt {
         color: #a8b8ff;
         font-weight: 600;
         margin-bottom: 0.5rem;
     }
     
-    .info-list dd {
+   .info-list dd {
         color: #fff;
         margin-bottom: 1rem;
     }
     
-    .info-badge {
+   .info-badge {
         background: rgba(106, 90, 205, 0.2);
         border: 1px solid rgba(106, 90, 205, 0.4);
         color: #a8b8ff;
@@ -422,7 +422,7 @@
         display: inline-block;
     }
     
-    .status-badge-small {
+   .status-badge-small {
         display: inline-block;
         padding: 0.3rem 0.8rem;
         border-radius: 50px;
@@ -430,42 +430,42 @@
         font-weight: 600;
     }
     
-    .status-draft {
+   .status-draft {
         background: rgba(255, 165, 2, 0.2);
         color: #ffa502;
         border: 1px solid #ffa502;
     }
     
-    .status-published {
+   .status-published {
         background: rgba(76, 175, 80, 0.2);
         color: #4caf50;
         border: 1px solid #4caf50;
     }
     
-    .status-closed {
+   .status-closed {
         background: rgba(108, 117, 125, 0.2);
         color: #6c757d;
         border: 1px solid #6c757d;
     }
     
-    .badge-group {
+   .badge-group {
         background: rgba(74, 144, 226, 0.2);
         color: #4a90e2;
         border: 1px solid #4a90e2;
     }
     
     /* Подсказка */
-    .hint-card {
+   .hint-card {
         background: rgba(106, 90, 205, 0.1);
         border-left: 4px solid #6a5acd;
     }
     
-    .hint-text {
+   .hint-text {
         color: #b0b0ff;
         line-height: 1.6;
     }
     
-    .hint-text i {
+   .hint-text i {
         color: #6a5acd;
         margin-right: 0.5rem;
     }
@@ -482,48 +482,48 @@
     }
     
     /* Адаптивность */
-    @media (max-width: 768px) {
-        .dark-theme-assignment {
+    @media(max-width: 768px) {
+       .dark-theme-assignment {
             padding: 1rem 0.5rem;
         }
         
-        .page-title {
+       .page-title {
             font-size: 1.6rem;
         }
         
-        .custom-breadcrumb {
+       .custom-breadcrumb {
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
         }
         
-        .btn-edit {
+       .btn-edit {
             padding: 0.5rem 1.2rem;
             font-size: 0.9rem;
         }
         
-        .d-flex.justify-content-between {
+       .d-flex.justify-content-between {
             flex-direction: column;
             align-items: flex-start !important;
             gap: 1rem;
         }
         
-        .btn-edit {
+       .btn-edit {
             width: 100%;
         }
         
-        .attachment-alert {
+       .attachment-alert {
             flex-direction: column;
             align-items: flex-start;
         }
         
-        .submission-header {
+       .submission-header {
             flex-direction: column;
             align-items: flex-start;
         }
     }
     
-    @media (min-width: 769px) and (max-width: 992px) {
-        .page-title {
+    @media(min-width: 769px) and(max-width: 992px) {
+       .page-title {
             font-size: 1.8rem;
         }
     }
@@ -550,9 +550,12 @@
             </div>
             
             <div>
-                {% if assignment.course.can_edit %}
-                <a href="{% url 'classroom_core:assignment_edit' assignment.id %}" class="btn-edit">
+                {% if can_manage_course %}
+                <a href="{% url 'classroom_core:assignment_edit' assignment.id %}" class="btn-edit me-2">
                     <i class="bi bi-pencil me-2"></i>Редактировать
+                </a>
+                <a href="{% url 'classroom_core:assignment_file_list' assignment.id %}" class="btn-edit" style="background: linear-gradient(135deg, #4a90e2, #6a5acd);">
+                    <i class="bi bi-folder2-open me-2"></i>Файлы
                 </a>
                 {% endif %}
             </div>
@@ -618,15 +621,20 @@
                                 {% endif %}
                             </div>
                             {% endif %}
-                            <a href="{% url 'classroom_core:assignment_submit' assignment.id %}" class="btn-submit">
-                                <i class="bi bi-send"></i> Отправить решение
-                            </a>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'classroom_core:assignment_submit' assignment.id %}" class="btn-submit">
+                                    <i class="bi bi-send"></i> Отправить решение
+                                </a>
+                                <a href="{% url 'classroom_core:assignment_file_create' assignment.id %}" class="btn-submit" style="background: linear-gradient(135deg, #4a90e2, #6a5acd);">
+                                    <i class="bi bi-paperclip"></i> Прикрепить файл
+                                </a>
+                            </div>
                         </div>
                         {% endif %}
                     </div>
                 </div>
                 
-                <!-- Решение студента (если есть) -->
+                <!-- Решение студента(если есть) -->
                 {% if submission %}
                 <div class="custom-card">
                     <div class="card-header-gradient">
@@ -660,14 +668,22 @@
                                 <div class="submission-text">
                                     {{ submission.text_response|linebreaks }}
                                 </div>
-                                
+
+                                {% if submission.file_submission %}
+                                <div class="mt-3">
+                                    <a href="{{ submission.file_submission.url }}" class="attachment-link" target="_blank">
+                                        <i class="bi bi-file-earmark"></i> Файл решения: {{ submission.file_submission.name|truncatechars:30 }}
+                                    </a>
+                                </div>
+                                {% endif %}
+
                                 <div class="d-flex justify-content-between mt-3">
                                     <small style="color: #8080b0;">
                                         <i class="bi bi-clock"></i>
                                         Отправлено: {{ submission.submitted_at|date:"d.m.Y H:i" }}
                                     </small>
                                 </div>
-                                
+
                                 {% if submission.feedback %}
                                 <div class="feedback-section">
                                     <strong>
@@ -681,8 +697,122 @@
                     </div>
                 </div>
                 {% endif %}
+                
+                {% if can_manage_course %}
+                <!-- Все сданные работы(для преподавателя) -->
+                <div class="custom-card">
+                    <div class="card-header-gradient">
+                        <h5>
+                            <i class="bi bi-people-fill"></i>
+                            Работы студентов
+                        </h5>
+                    </div>
+                    <div class="card-body-custom">
+                        <!-- Статистика -->
+                        {% if submissions_stats %}
+                        <div class="row mb-4">
+                            <div class="col-md-3 col-6 mb-2">
+                                <div class="p-3" style="background: rgba(106, 90, 205, 0.15); border-radius: 10px; text-align: center;">
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: #fff;">{{ submissions_stats.total }}</div>
+                                    <div style="color: #a8b8ff; font-size: 0.85rem;">Всего работ</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-2">
+                                <div class="p-3" style="background: rgba(76, 175, 80, 0.15); border-radius: 10px; text-align: center;">
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: #4caf50;">{{ submissions_stats.graded }}</div>
+                                    <div style="color: #a8b8ff; font-size: 0.85rem;">Оценено</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-2">
+                                <div class="p-3" style="background: rgba(255, 165, 2, 0.15); border-radius: 10px; text-align: center;">
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: #ffa502;">{{ submissions_stats.submitted }}</div>
+                                    <div style="color: #a8b8ff; font-size: 0.85rem;">Ожидают</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-2">
+                                <div class="p-3" style="background: rgba(255, 71, 87, 0.15); border-radius: 10px; text-align: center;">
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: #ff4757;">{{ submissions_stats.late }}</div>
+                                    <div style="color: #a8b8ff; font-size: 0.85rem;">С опозданием</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Список работ -->
+                        {% if all_submissions %}
+                            <div class="table-responsive">
+                                <table class="table" style="color: #e0e0ff; --bs-table-bg: transparent;">
+                                    <thead>
+                                        <tr style="border-bottom: 2px solid rgba(106, 90, 205, 0.5);">
+                                            <th style="color: #a8b8ff; padding: 0.8rem; font-weight: 600;">Студент</th>
+                                            <th style="color: #a8b8ff; padding: 0.8rem; font-weight: 600;">Статус</th>
+                                            <th style="color: #a8b8ff; padding: 0.8rem; font-weight: 600;">Баллы</th>
+                                            <th style="color: #a8b8ff; padding: 0.8rem; font-weight: 600;">Дата</th>
+                                            <th style="color: #a8b8ff; padding: 0.8rem; font-weight: 600;">Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for sub in all_submissions %}
+                                        <tr style="border-bottom: 1px solid rgba(106, 90, 205, 0.2); transition: all 0.3s ease;">
+                                            <td style="padding: 1rem;">
+                                                <strong style="color: #fff;">{{ sub.student.get_full_name|default:sub.student.username }}</strong>
+                                                <br>
+                                                <small style="color: #8080b0;">{{ sub.student.email }}</small>
+                                            </td>
+                                            <td style="padding: 1rem;">
+                                                {% if sub.status == 'submitted' %}
+                                                    <span class="badge" style="background: rgba(13, 110, 253, 0.2); color: #0d6efd; border: 1px solid #0d6efd; padding: 0.4rem 0.8rem; border-radius: 50px;">Отправлено</span>
+                                                {% elif sub.status == 'graded' %}
+                                                    <span class="badge" style="background: rgba(25, 135, 84, 0.2); color: #198754; border: 1px solid #198754; padding: 0.4rem 0.8rem; border-radius: 50px;">Оценено</span>
+                                                {% elif sub.status == 'returned' %}
+                                                    <span class="badge" style="background: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid #ffc107; padding: 0.4rem 0.8rem; border-radius: 50px;">Возвращено</span>
+                                                {% endif %}
+                                                {% if sub.is_late %}
+                                                    <br>
+                                                    <small style="font-size: 0.7rem; color: #ff4757;">
+                                                        <i class="bi bi-exclamation-triangle"></i> С опозданием
+                                                    </small>
+                                                {% endif %}
+                                            </td>
+                                            <td style="padding: 1rem;">
+                                                {% if sub.score is not None %}
+                                                    <span class="score-badge" style="background: linear-gradient(135deg, #ffd700, #ffa502); color: #1a1a2e; padding: 0.3rem 0.8rem; border-radius: 50px; font-weight: 700; display: inline-block;">{{ sub.score }}/{{ assignment.max_points }}</span>
+                                                {% else %}
+                                                    <span style="color: #8080b0;">—</span>
+                                                {% endif %}
+                                            </td>
+                                            <td style="padding: 1rem; color: #b0b0ff;">
+                                                <small>{{ sub.submitted_at|date:"d.m.Y H:i" }}</small>
+                                            </td>
+                                            <td style="padding: 1rem;">
+                                                <div class="d-flex gap-2">
+                                                    {% if sub.status != 'graded' %}
+                                                    <a href="{% url 'classroom_core:assignment_grade' sub.id %}" class="btn btn-sm" style="background: rgba(25, 135, 84, 0.2); border: 1px solid rgba(25, 135, 84, 0.4); color: #198754;" title="Оценить">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    {% else %}
+                                                    <a href="{% url 'classroom_core:assignment_grade' sub.id %}" class="btn btn-sm" style="background: rgba(255, 193, 7, 0.2); border: 1px solid rgba(255, 193, 7, 0.4); color: #ffc107;" title="Вернуть">
+                                                        <i class="bi bi-arrow-return-left"></i>
+                                                    </a>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="empty-state" style="padding: 3rem; text-align: center;">
+                                <i class="bi bi-inbox" style="font-size: 3rem; color: #6a5acd; opacity: 0.5;"></i>
+                                <p style="color: #8080b0; margin-top: 1rem;">Студенты еще не сдали работы</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
             </div>
-            
+
             <!-- Сайдбар с информацией -->
             <div class="col-lg-4">
                 <!-- Информация о задании -->
