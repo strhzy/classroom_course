@@ -135,29 +135,31 @@ def course_detail(request ,course_id ):
 
     return render(request ,'classroom_core/course_detail.html',context )
 
-@login_required 
-def course_create(request ):
+@login_required
+def course_create(request):
     """Создание нового курса"""
-    user_profile =request.user.profile 
-
-
-    if not(user_profile.is_teacher()or user_profile.is_staff()or request.user.is_superuser ):
-        raise PermissionDenied 
-
-    if request.method =='POST':
-        form =CourseForm(request.POST ,request.FILES )
+    user_profile = request.user.profile
+    
+    # Только преподаватели и сотрудники могут создавать курсы
+    if not (user_profile.is_teacher() or user_profile.is_staff() or request.user.is_superuser):
+        raise PermissionDenied
+    
+    if request.method == 'POST':
+        form = CourseForm(request.POST, request.FILES)
         if form.is_valid():
-            course =form.save(commit =False )
-            course.instructor =request.user 
+            course = form.save(commit=False)
+            course.instructor = request.user
             course.save()
-            messages.success(request ,'Курс успешно создан')
-            return redirect('classroom_core:course_detail',course_id =course.id )
-    else :
-        form =CourseForm()
-
-    return render(request ,'classroom_core/course_form.html',{
-    'form':form ,
-    'title':'Создать курс'
+            form.save_m2m()
+            
+            messages.success(request, 'Курс успешно создан. Чат курса автоматически создан для всех участников.')
+            return redirect('classroom_core:course_detail', course_id=course.id)
+    else:
+        form = CourseForm()
+    
+    return render(request, 'classroom_core/course_form.html', {
+        'form': form,
+        'title': 'Создать курс'
     })
 
 @login_required 

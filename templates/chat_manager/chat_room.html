@@ -21,7 +21,7 @@
     <div class="row">
         <div class="col-lg-8">
             <!-- Chat messages -->
-            <div class="card mb-4" style="height: 500px;">
+            <div class="card mb-4" style="height: 80%;">
                 <div class="card-header">
                     <i class="bi bi-chat-dots me-2"></i>Сообщения
                 </div>
@@ -106,21 +106,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const sendButton = document.getElementById('send-button');
     const chatMessages = document.getElementById('chat-messages');
     
-    // Подключение к WebSocket
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = wsProtocol + '//' + window.location.host + '/ws/chat/' + room_id + '/';
     const socket = new WebSocket(wsUrl);
-    
-    // Обработка подключения
+
     socket.onopen = function(e) {
         console.log('✅ WebSocket connected');
     };
-    
-    // Обработка входящих сообщений
+
     socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
 
-        // 👇 теперь обрабатываем только чат
         if (data.type !== 'chat_message') return;
 
         const messageDiv = document.createElement('div');
@@ -147,8 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     };
-    
-    // Отправка сообщения через WebSocket
+
     function sendMessage() {
         const message = messageInput.value.trim();
         if (message && message.length <= 1000) {
@@ -159,18 +154,15 @@ document.addEventListener('DOMContentLoaded', function() {
             messageInput.focus();
         }
     }
-    
-    // Обработка нажатия кнопки
+
     sendButton.addEventListener('click', sendMessage);
-    
-    // Обработка нажатия Enter
+
     messageInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             sendMessage();
         }
     });
-    
-    // Автопрокрутка
+
     chatMessages.scrollTop = chatMessages.scrollHeight;
 });
 </script>

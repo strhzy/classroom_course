@@ -1,7 +1,7 @@
 from django.db import models 
 from django.contrib.auth.models import User ,AbstractUser 
 from django.utils import timezone 
-from django.core.validators import FileExtensionValidator 
+from django.core.validators import FileExtensionValidator
 
 class StudentGroup(models.Model):
     """Модель группы студентов"""
@@ -113,7 +113,7 @@ class Course(models.Model):
         choices=STATUS_CHOICES, 
         default='draft'
     )
-    
+
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -192,6 +192,13 @@ class Course(models.Model):
             return False, "Пользователь уже записан на курс"
         
         self.students.add(user)
+        
+        # Автоматически добавляем студента в чат курса
+        from chat.models import ChatRoom
+        chat_room = ChatRoom.objects.filter(course=self, room_type='course').first()
+        if chat_room:
+            chat_room.participants.add(user)
+        
         return True, "Студент успешно добавлен"
     
     def remove_student(self, user):

@@ -927,7 +927,13 @@
                     <div class="info-content">
                         <div class="info-label">Описание:</div>
                         <div class="info-text">{{ course.description }}</div>
-                        
+                        {% with chat_room=course.chat_rooms.first %}
+                        {% if chat_room %}
+                            <a href="{% url 'chat:chat_room' chat_room.id %}" class="btn btn-outline-info">
+                            <i class="bi bi-chat-dots"></i> Чат курса
+                            </a>
+                        {% endif %}
+                        {% endwith %}
                         <div class="info-label">Статус:</div>
                         <div class="info-text">
                             {% if course.status == 'active' %}
