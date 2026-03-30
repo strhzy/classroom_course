@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}💬 Чаты{% endblock %}
+{% block content %}
+<div class="container-fluid bg-light py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Мои чаты</h1>
+        <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#createChatModal">
+            <i class="bi bi-plus-circle"></i> Новый чат
+        </button>
+    </div>
+
+    {% if rooms %}
+    <div class="row">
+        {% for room in rooms %}
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="card-title mb-1">{{ room.name }}</h5>
+                            <small class="text-muted">
+                                {{ room.participants.count }} участников
+                            </small>
+                        </div>
+                        {% if room.last_message %}
+                        <small class="text-muted">{{ room.last_message.timestamp|date:"H:i" }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    {% if room.last_message %}
+                    <p class="card-text text-muted mt-2 mb-0">
+                        <strong>{{ room.last_message.user.username }}:</strong> 
+                        {{ room.last_message.content|truncatechars:50 }}
+                    </p>
+                    {% endif %}
+                    
+                    <a href="{% url 'chat:chat_room' room.id %}" class="btn btn-primary btn-sm mt-2">
+                        Открыть чат
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-chat-dots" style="font-size: 4rem; color: #6c757d;"></i>
+        <h4 class="mt-3">Нет активных чатов</h4>
+        <p class="text-muted">Начните общение, создав новый чат</p>
+        <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#createChatModal">
+            <i class="bi bi-plus-circle"></i> Создать чат
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal для создания чата -->
+<div class="modal fade" id="createChatModal" tabindex="-1" aria-labelledby="createChatModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createChatModalLabel">Создать новый чат</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-tabs" id="chatTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="private-tab" data-bs-toggle="tab" data-bs-target="#private" type="button" role="tab">Личный чат</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">Выбрать пользователя</button>
+                    </li>
+                </ul>
+                <div class="tab-content mt-3" id="chatTabContent">
+                    <div class="tab-pane fade show active" id="private" role="tabpanel">
+                        <h6>Быстрый чат с пользователем</h6>
+                        <form method="post" action="{% url 'chat:create_private_chat' 0 %}" id="quickChatForm">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="userId" class="form-label">Выберите пользователя</label>
+                                <select class="form-select" id="userId" name="user_id" required>
+                                    <option value="">Выберите пользователя...</option>
+                                    {% for user in other_users %}
+                                    <option value="{{ user.id }}">{{ user.username }} ({{ user.first_name }} {{ user.last_name|default:"" }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Создать чат</button>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="users" role="tabpanel">
+                        <h6>Поиск пользователя</h6>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="userSearch" placeholder="Введите имя, фамилию или username...">
+                            <div id="searchResults" class="mt-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Обработка формы быстрого чата
+    const quickChatForm = document.getElementById('quickChatForm');
+    if (quickChatForm) {
+        quickChatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userId = document.getElementById('userId').value;
+            if (userId) {
+                window.location.href = `/chat/private/${userId}/create/`;
+            }
+        });
+    }
+    
+    // Поиск пользователей
+    const userSearch = document.getElementById('userSearch');
+    const searchResults = document.getElementById('searchResults');
+    
+    if (userSearch) {
+        let searchTimeout;
+        userSearch.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            
+            if (query.length === 0) {
+                searchResults.innerHTML = '';
+                return;
+            }
+            
+            if (query.length < 2) {
+                return;
+            }
+            
+            searchTimeout = setTimeout(function() {
+                fetch(`/chat/search/?q=${encodeURIComponent(query)}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        searchResults.innerHTML = html;
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                    });
+            }, 300);
+        });
+    }
+});
+</script>
+{% endblock %}

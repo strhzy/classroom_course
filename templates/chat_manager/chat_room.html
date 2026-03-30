@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}💬 {{ room.name }}{% endblock %}
+{% block content %}
+<div class="container-fluid bg-light py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3">{{ room.name }}</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'chat:chat_list' %}">Чаты</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ room.name }}</li>
+                </ol>
+            </nav>
+        </div>
+        <div>
+            <span class="badge bg-secondary">{{ room.participants.count }} участников</span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Chat messages -->
+            <div class="card mb-4" style="height: 500px;">
+                <div class="card-header">
+                    <i class="bi bi-chat-dots me-2"></i>Сообщения
+                </div>
+                <div class="card-body" id="chat-messages" style="overflow-y: auto; height: calc(100% - 56px);">
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="mb-3">
+                        <div class="d-flex">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                 style="width: 32px; height: 32px; font-size: 0.875rem; margin-right: 10px;">
+                                {{ message.user.username|slice:":1"|upper }}
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <strong>{{ message.user.username }}</strong>
+                                    <small class="text-muted ms-2">{{ message.timestamp|date:"d.m.Y H:i" }}</small>
+                                </div>
+                                <div class="bg-light p-2 rounded" style="max-width: 80%;">
+                                    {{ message.content|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="text-center py-5">
+                        <p class="text-muted">Нет сообщений в этом чате</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Message input -->
+            <div class="input-group">
+                <input type="text" id="message-input" class="form-control" placeholder="Введите сообщение..." maxlength="1000">
+                <button class="btn btn-primary" type="button" id="send-button">
+                    <i class="bi bi-send"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-people me-2"></i>Участники ({{ room.participants.count }})
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for participant in room.participants.all %}
+                        <li class="list-group-item d-flex align-items-center">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                 style="width: 24px; height: 24px; font-size: 0.75rem; margin-right: 8px;">
+                                {{ participant.username|slice:":1"|upper }}
+                            </div>
+                            {{ participant.username }}
+                            {% if participant == room.created_by %}
+                            <span class="badge bg-info ms-2">Создатель</span>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            
+            {% if room.room_type == 'private' and room.participants.count == 2 %}
+            <div class="card mt-3">
+                <div class="card-body text-center">
+                    <h6 class="card-title">Личный чат</h6>
+                    <p class="text-muted small">Этот чат видят только вы и {{ other_user.username }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div id="chat-data" data-room-id="{{ room.id }}"></div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatData = document.getElementById('chat-data');
+    const room_id = chatData ? parseInt(chatData.dataset.roomId) : 0;
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    const chatMessages = document.getElementById('chat-messages');
+    
+    // Подключение к WebSocket
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = wsProtocol + '//' + window.location.host + '/ws/chat/' + room_id + '/';
+    const socket = new WebSocket(wsUrl);
+    
+    // Обработка подключения
+    socket.onopen = function(e) {
+        console.log('✅ WebSocket connected');
+    };
+    
+    // Обработка входящих сообщений
+    socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+
+        // 👇 теперь обрабатываем только чат
+        if (data.type !== 'chat_message') return;
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'mb-3';
+
+        messageDiv.innerHTML = `
+            <div class="d-flex">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                    style="width: 32px; height: 32px; font-size: 0.875rem; margin-right: 10px;">
+                    ${data.username.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                    <div class="d-flex align-items-center mb-1">
+                        <strong>${data.username}</strong>
+                        <small class="text-muted ms-2">${new Date(data.timestamp).toLocaleString('ru-RU')}</small>
+                    </div>
+                    <div class="bg-light p-2 rounded" style="max-width: 80%;">
+                        ${data.message.replace(/\n/g, '<br>')}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    };
+    
+    // Отправка сообщения через WebSocket
+    function sendMessage() {
+        const message = messageInput.value.trim();
+        if (message && message.length <= 1000) {
+            socket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInput.value = '';
+            messageInput.focus();
+        }
+    }
+    
+    // Обработка нажатия кнопки
+    sendButton.addEventListener('click', sendMessage);
+    
+    // Обработка нажатия Enter
+    messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+    
+    // Автопрокрутка
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+</script>
+{% endblock %}

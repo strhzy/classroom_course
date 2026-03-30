@@ -10,14 +10,14 @@
         padding: 0.8rem 1rem;
     }
     
-   .file-nav.navbar-nav {
+   .file-nav .navbar-nav {
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
         align-items: center;
     }
     
-   .file-nav.nav-link {
+   .file-nav .nav-link {
         color: #a8b8ff !important;
         padding: 0.6rem 1.2rem !important;
         border-radius: 12px;
@@ -28,23 +28,23 @@
         gap: 0.5rem;
     }
     
-   .file-nav.nav-link:hover {
+   .file-nav .nav-link:hover {
         color: #fff !important;
         background: rgba(106, 90, 205, 0.15);
     }
     
-   .file-nav.nav-link.active {
+   .file-nav .nav-link.active {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.25), rgba(74, 144, 226, 0.25));
         color: #fff !important;
         border: 1px solid rgba(106, 90, 205, 0.5);
     }
     
-   .file-nav.nav-link i {
+   .file-nav .nav-link i {
         color: #6a5acd;
         font-size: 1.2rem;
     }
     
-   .file-nav.nav-link.active i {
+   .file-nav .nav-link.active i {
         color: #fff;
     }
     
@@ -145,13 +145,13 @@
     
     /* Адаптивность */
     @media(max-width: 768px) {
-       .file-nav.navbar-nav {
+       .file-nav .navbar-nav {
             flex-direction: column;
             width: 100%;
             gap: 0.3rem;
         }
         
-       .file-nav.nav-link {
+       .file-nav .nav-link {
             width: 100%;
             justify-content: center;
         }
@@ -176,12 +176,12 @@
     }
     
     @media(min-width: 769px) and(max-width: 992px) {
-       .file-nav.nav-link {
+       .file-nav .nav-link {
             padding: 0.5rem 1rem !important;
             font-size: 0.9rem;
         }
         
-       .file-nav.nav-link i {
+       .file-nav .nav-link i {
             font-size: 1rem;
         }
         
@@ -381,7 +381,7 @@
     document.addEventListener('click', function(e) {
         if(window.innerWidth <= 768) {
             const navbarCollapse = document.getElementById('fileNavbar');
-            const toggler = document.querySelector('.navbar-toggler');
+            const toggler = document.querySelector(' .navbar-toggler');
             
             if(navbarCollapse && toggler) {
                 if(!navbarCollapse.contains(e.target) && !toggler.contains(e.target)) {

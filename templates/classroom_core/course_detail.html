@@ -4,14 +4,13 @@
 
 {% block courses_content %}
 <style>
-   .dark-theme-course-detail {
+    .dark-theme-course-detail {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
-    /* Хлебные крошки */
-   .custom-breadcrumb {
+    .custom-breadcrumb {
         background: rgba(106, 90, 205, 0.1);
         padding: 0.8rem 1.2rem;
         border-radius: 50px;
@@ -32,35 +31,34 @@
         }
     }
     
-   .custom-breadcrumb.breadcrumb {
+    .custom-breadcrumb .breadcrumb {
         margin: 0;
         background: transparent;
     }
     
-   .custom-breadcrumb.breadcrumb-item a {
+    .custom-breadcrumb .breadcrumb-item a {
         color: #a8b8ff;
         text-decoration: none;
         transition: all 0.3s ease;
     }
     
-   .custom-breadcrumb.breadcrumb-item a:hover {
+    .custom-breadcrumb .breadcrumb-item a:hover {
         color: #6a5acd;
         text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
     }
     
-   .custom-breadcrumb.breadcrumb-item.active {
+    .custom-breadcrumb .breadcrumb-item.active {
         color: #fff;
         font-weight: 500;
     }
     
-   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
+    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
         color: #6a5acd;
         content: "›";
         font-size: 1.2rem;
     }
     
-    /* Заголовок */
-   .course-header {
+    .course-header {
         animation: headerFade 0.5s ease-out;
     }
     
@@ -75,18 +73,18 @@
         }
     }
     
-   .page-title {
+    .page-title {
         font-size: 2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #fff, #a8b8ff);
+        -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0.5rem;
         text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
     }
     
-    /* Кнопки */
-   .btn-edit {
+    .btn-edit {
         background: linear-gradient(135deg, #6a5acd, #4a90e2);
         border: none;
         border-radius: 12px;
@@ -101,14 +99,14 @@
         text-decoration: none;
     }
     
-   .btn-edit:hover {
+    .btn-edit:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
         color: white;
     }
     
-   .btn-students {
+    .btn-students {
         background: rgba(106, 90, 205, 0.15);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 12px;
@@ -120,28 +118,70 @@
         display: inline-block;
     }
     
-   .btn-students:hover {
+    .btn-students:hover {
         background: rgba(106, 90, 205, 0.25);
         border-color: #6a5acd;
         color: #fff;
         transform: translateY(-2px);
     }
     
-    /* Карточки */
-   .section-card {
+    .btn-add {
+        background: rgba(106, 90, 205, 0.2);
+        border: 1px solid rgba(106, 90, 205, 0.5);
+        border-radius: 8px;
+        padding: 0.4rem 1rem;
+        color: #a8b8ff;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-add:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: #6a5acd;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+    
+    /* Основные карточки с разными цветовыми акцентами */
+    .section-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         transition: all 0.3s ease;
         animation: cardAppear 0.5s ease-out;
         margin-bottom: 1.5rem;
         overflow: hidden;
     }
     
-   .section-card:hover {
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
+    /* Цветовые акценты для разных типов контента */
+    .section-card.announcements {
+        border-left: 4px solid #ffa502;
+        box-shadow: 0 10px 30px rgba(255, 165, 2, 0.1);
+    }
+    
+    .section-card.sections {
+        border-left: 4px solid #4a90e2;
+        box-shadow: 0 10px 30px rgba(74, 144, 226, 0.1);
+    }
+    
+    .section-card.assignments {
+        border-left: 4px solid #6a5acd;
+        box-shadow: 0 10px 30px rgba(106, 90, 205, 0.1);
+    }
+    
+    .section-card.submissions {
+        border-left: 4px solid #4caf50;
+        box-shadow: 0 10px 30px rgba(76, 175, 80, 0.1);
+    }
+    
+    .section-card:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
         transform: translateY(-2px);
     }
     
@@ -156,7 +196,8 @@
         }
     }
     
-   .card-header-custom {
+    /* Цветные заголовки карточек */
+    .card-header-custom {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
         border-bottom: 1px solid rgba(106, 90, 205, 0.3);
         padding: 1rem 1.5rem;
@@ -167,7 +208,27 @@
         gap: 1rem;
     }
     
-   .card-header-custom h5 {
+    .announcements .card-header-custom {
+        background: linear-gradient(135deg, rgba(255, 165, 2, 0.15), rgba(255, 165, 2, 0.05));
+        border-bottom-color: rgba(255, 165, 2, 0.3);
+    }
+    
+    .sections .card-header-custom {
+        background: linear-gradient(135deg, rgba(74, 144, 226, 0.15), rgba(74, 144, 226, 0.05));
+        border-bottom-color: rgba(74, 144, 226, 0.3);
+    }
+    
+    .assignments .card-header-custom {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.15), rgba(106, 90, 205, 0.05));
+        border-bottom-color: rgba(106, 90, 205, 0.3);
+    }
+    
+    .submissions .card-header-custom {
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.05));
+        border-bottom-color: rgba(76, 175, 80, 0.3);
+    }
+    
+    .card-header-custom h5 {
         color: #fff;
         margin: 0;
         display: flex;
@@ -175,34 +236,242 @@
         gap: 0.8rem;
     }
     
-   .card-header-custom h5 i {
-        color: #6a5acd;
+    .card-header-custom h5 i {
         font-size: 1.3rem;
     }
     
-   .btn-add {
-        background: rgba(106, 90, 205, 0.2);
-        border: 1px solid rgba(106, 90, 205, 0.5);
-        border-radius: 8px;
-        padding: 0.4rem 1rem;
+    .announcements .card-header-custom h5 i {
+        color: #ffa502;
+    }
+    
+    .sections .card-header-custom h5 i {
+        color: #4a90e2;
+    }
+    
+    .assignments .card-header-custom h5 i {
+        color: #6a5acd;
+    }
+    
+    .submissions .card-header-custom h5 i {
+        color: #4caf50;
+    }
+    
+    /* Информационные карточки в правой колонке */
+    .info-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        animation: sidebarAppear 0.6s ease-out 0.2s both;
+    }
+    
+    /* Цветные рамки для информационных карточек */
+    .info-card.course-info {
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-top: 3px solid #6a5acd;
+    }
+    
+    .info-card.students-info {
+        border: 1px solid rgba(74, 144, 226, 0.3);
+        border-top: 3px solid #4a90e2;
+    }
+    
+    .info-card.progress-info {
+        border: 1px solid rgba(76, 175, 80, 0.3);
+        border-top: 3px solid #4caf50;
+    }
+    
+    .info-card.my-assignments {
+        border: 1px solid rgba(255, 165, 2, 0.3);
+        border-top: 3px solid #ffa502;
+    }
+    
+    .info-card.management {
+        border: 1px solid rgba(255, 71, 87, 0.3);
+        border-top: 3px solid #ff4757;
+    }
+    
+    @keyframes sidebarAppear {
+        0% {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .info-title {
         color: #a8b8ff;
-        font-size: 0.9rem;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        display: inline-flex;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1.2rem;
+        display: flex;
         align-items: center;
         gap: 0.5rem;
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding-bottom: 0.8rem;
     }
     
-   .btn-add:hover {
-        background: rgba(106, 90, 205, 0.3);
-        border-color: #6a5acd;
+    .course-info .info-title {
+        color: #6a5acd;
+    }
+    
+    .students-info .info-title {
+        color: #4a90e2;
+    }
+    
+    .progress-info .info-title {
+        color: #4caf50;
+    }
+    
+    .my-assignments .info-title {
+        color: #ffa502;
+    }
+    
+    .management .info-title {
+        color: #ff4757;
+    }
+    
+    .info-title i {
+        color: inherit;
+    }
+    
+    .info-content {
+        color: #e0e0ff;
+    }
+    
+    .info-label {
+        color: #a8b8ff;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+    }
+    
+    .info-text {
         color: #fff;
-        transform: translateY(-2px);
+        margin-bottom: 1rem;
+        line-height: 1.6;
     }
     
-    /* Элементы внутри карточек */
-   .item-card {
+    .student-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .student-item {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(106, 90, 205, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .student-item:hover {
+        background: rgba(106, 90, 205, 0.1);
+        transform: translateX(5px);
+    }
+    
+    .student-avatar {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        margin-right: 0.8rem;
+    }
+    
+    .student-name {
+        flex: 1;
+        color: #fff;
+    }
+    
+    .student-badge {
+        background: rgba(106, 90, 205, 0.2);
+        color: #a8b8ff;
+        padding: 0.2rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+    }
+    
+    .progress-container {
+        background: rgba(20, 20, 35, 0.6);
+        border-radius: 15px;
+        padding: 1.2rem;
+    }
+    
+    .progress-bar-custom {
+        height: 10px;
+        background: rgba(106, 90, 205, 0.2);
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 0.8rem 0;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #6a5acd, #4a90e2);
+        border-radius: 10px;
+        transition: width 1s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .progress-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% {
+            transform: translateX(-100%);
+        }
+        100% {
+            transform: translateX(100%);
+        }
+    }
+    
+    .progress-stats {
+        display: flex;
+        justify-content: space-between;
+        color: #a8b8ff;
+        font-size: 0.9rem;
+    }
+    
+    /* Разделитель */
+    .separator {
+        color: #6a5acd;
+        font-weight: 300;
+        margin: 0 0.5rem;
+        opacity: 0.5;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: #8080b0;
+    }
+    
+    .empty-state i {
+        font-size: 2.5rem;
+        color: #6a5acd;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .item-card {
         background: rgba(20, 20, 35, 0.6);
         border: 1px solid rgba(106, 90, 205, 0.2);
         border-radius: 15px;
@@ -212,7 +481,7 @@
         animation-fill-mode: both;
     }
     
-   .item-card:hover {
+    .item-card:hover {
         background: rgba(30, 30, 50, 0.8);
         border-color: rgba(106, 90, 205, 0.5);
         transform: translateX(5px);
@@ -230,25 +499,25 @@
         }
     }
     
-   .item-content {
+    .item-content {
         padding: 1.2rem;
     }
     
-   .item-title {
+    .item-title {
         color: #fff;
         font-size: 1.1rem;
         font-weight: 600;
         margin-bottom: 0.5rem;
     }
     
-   .item-description {
+    .item-description {
         color: #b0b0ff;
         font-size: 0.95rem;
         line-height: 1.5;
         margin-bottom: 0.5rem;
     }
     
-   .item-meta {
+    .item-meta {
         color: #8080b0;
         font-size: 0.85rem;
         display: flex;
@@ -257,12 +526,12 @@
         flex-wrap: wrap;
     }
     
-   .item-meta i {
+    .item-meta i {
         color: #6a5acd;
         margin-right: 0.3rem;
     }
     
-   .badge-custom {
+    .badge-custom {
         background: rgba(106, 90, 205, 0.2);
         color: #a8b8ff;
         padding: 0.3rem 0.8rem;
@@ -275,19 +544,19 @@
         gap: 0.3rem;
     }
     
-   .badge-active {
+    .badge-active {
         background: rgba(76, 175, 80, 0.2);
         color: #4caf50;
         border: 1px solid #4caf50;
     }
     
-   .badge-inactive {
+    .badge-inactive {
         background: rgba(255, 165, 2, 0.2);
         color: #ffa502;
         border: 1px solid #ffa502;
     }
     
-   .overdue-badge {
+    .overdue-badge {
         background: rgba(255, 71, 87, 0.2);
         color: #ff6b81;
         padding: 0.2rem 0.8rem;
@@ -309,225 +578,68 @@
         }
     }
     
-    /* Сайдбар */
-   .info-card {
-        background: rgba(30, 30, 46, 0.95);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
-        border-radius: 20px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        animation: sidebarAppear 0.6s ease-out 0.2s both;
-    }
-    
-    @keyframes sidebarAppear {
-        0% {
-            opacity: 0;
-            transform: translateX(20px);
-        }
-        100% {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-    
-   .info-title {
-        color: #a8b8ff;
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin-bottom: 1.2rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
-        padding-bottom: 0.8rem;
-    }
-    
-   .info-title i {
-        color: #6a5acd;
-    }
-    
-   .info-content {
-        color: #e0e0ff;
-    }
-    
-   .info-label {
-        color: #a8b8ff;
-        font-weight: 600;
-        margin-bottom: 0.3rem;
-    }
-    
-   .info-text {
-        color: #fff;
-        margin-bottom: 1rem;
-        line-height: 1.6;
-    }
-    
-   .student-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    
-   .student-item {
-        display: flex;
-        align-items: center;
-        padding: 0.5rem 0;
-        border-bottom: 1px solid rgba(106, 90, 205, 0.2);
-        transition: all 0.3s ease;
-    }
-    
-   .student-item:hover {
-        background: rgba(106, 90, 205, 0.1);
-        transform: translateX(5px);
-    }
-    
-   .student-avatar {
-        width: 32px;
-        height: 32px;
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 600;
-        margin-right: 0.8rem;
-    }
-    
-   .student-name {
-        flex: 1;
-        color: #fff;
-    }
-    
-   .student-badge {
-        background: rgba(106, 90, 205, 0.2);
-        color: #a8b8ff;
-        padding: 0.2rem 0.8rem;
-        border-radius: 50px;
-        font-size: 0.8rem;
-    }
-    
-    /* Прогресс */
-   .progress-container {
-        background: rgba(20, 20, 35, 0.6);
-        border-radius: 15px;
-        padding: 1.2rem;
-    }
-    
-   .progress-bar-custom {
-        height: 10px;
-        background: rgba(106, 90, 205, 0.2);
-        border-radius: 10px;
-        overflow: hidden;
-        margin: 0.8rem 0;
-    }
-    
-   .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #6a5acd, #4a90e2);
-        border-radius: 10px;
-        transition: width 1s ease;
-        position: relative;
-        overflow: hidden;
-    }
-    
-   .progress-fill::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-        animation: shimmer 2s infinite;
-    }
-    
-    @keyframes shimmer {
-        0% {
-            transform: translateX(-100%);
-        }
-        100% {
-            transform: translateX(100%);
-        }
-    }
-    
-   .progress-stats {
-        display: flex;
-        justify-content: space-between;
-        color: #a8b8ff;
-        font-size: 0.9rem;
-    }
-    
-    /* Пустые состояния */
-   .empty-state {
-        text-align: center;
-        padding: 2rem;
-        color: #8080b0;
-    }
-    
-   .empty-state i {
-        font-size: 2.5rem;
-        color: #6a5acd;
-        margin-bottom: 1rem;
-        opacity: 0.5;
-    }
-    
-    /* Адаптивность */
-    @media(max-width: 768px) {
-       .dark-theme-course-detail {
+    @media (max-width: 768px) {
+        .dark-theme-course-detail {
             padding: 1rem 0.5rem;
         }
         
-       .page-title {
+        .page-title {
             font-size: 1.6rem;
         }
         
-       .custom-breadcrumb {
+        .custom-breadcrumb {
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
         }
         
-       .d-flex.justify-content-between {
+        .d-flex.justify-content-between {
             flex-direction: column;
             align-items: flex-start !important;
             gap: 1rem;
         }
         
-       .btn-edit,
-       .btn-students {
+        .btn-edit,
+        .btn-students {
             width: 100%;
             text-align: center;
         }
         
-       .card-header-custom {
+        .card-header-custom {
             flex-direction: column;
             align-items: flex-start;
         }
         
-       .btn-add {
+        .btn-add {
             width: 100%;
             justify-content: center;
         }
         
-       .item-meta {
+        .item-meta {
             flex-direction: column;
             align-items: flex-start;
             gap: 0.3rem;
         }
+        
+        .progress-stats {
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .separator {
+            display: none;
+        }
     }
     
-    @media(min-width: 769px) and(max-width: 992px) {
-       .page-title {
+    @media (min-width: 769px) and (max-width: 992px) {
+        .page-title {
             font-size: 1.8rem;
         }
     }
 </style>
 
-<!-- ОСНОВНОЙ HTML КОНТЕНТ -->
 <div class="dark-theme-course-detail">
     <div class="container">
-        <!-- Заголовок и хлебные крошки -->
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
             <div class="course-header">
                 <h1 class="page-title">
@@ -575,10 +687,9 @@
         </div>
 
         <div class="row">
-            <!-- Основной контент -->
             <div class="col-lg-8">
-                <!-- Объявления -->
-                <div class="section-card">
+                <!-- Объявления - оранжевый акцент -->
+                <div class="section-card announcements">
                     <div class="card-header-custom">
                         <h5>
                             <i class="bi bi-megaphone-fill"></i>
@@ -620,8 +731,8 @@
                     </div>
                 </div>
                 
-                <!-- Разделы курса -->
-                <div class="section-card">
+                <!-- Разделы курса - синий акцент -->
+                <div class="section-card sections">
                     <div class="card-header-custom">
                         <h5>
                             <i class="bi bi-folder-fill"></i>
@@ -668,8 +779,8 @@
                     </div>
                 </div>
                 
-                <!-- Задания -->
-                <div class="section-card">
+                <!-- Задания - фиолетовый акцент -->
+                <div class="section-card assignments">
                     <div class="card-header-custom">
                         <h5>
                             <i class="bi bi-journal-text"></i>
@@ -738,9 +849,9 @@
                     </div>
                 </div>
                 
+                <!-- Сданные задания (для преподавателя) - зеленый акцент -->
                 {% if can_manage_course %}
-                <!-- Сданные задания студентов -->
-                <div class="section-card">
+                <div class="section-card submissions">
                     <div class="card-header-custom">
                         <h5>
                             <i class="bi bi-clipboard-check"></i>
@@ -771,7 +882,7 @@
                                                 <span><i class="bi bi-calendar3"></i> Отправлено: {{ item.submission.submitted_at|date:"d.m.Y H:i" }}</span>
                                                 {% if item.submission.score %}
                                                 <span class="ms-3">
-                                                    <i class="bi bi-star-fill"></i> 
+                                                    <i class="bi bi-star-fill"></i>
                                                     <strong>{{ item.submission.score }}/{{ item.assignment.max_points }} баллов</strong>
                                                 </span>
                                                 {% endif %}
@@ -806,10 +917,9 @@
                 {% endif %}
             </div>
             
-            <!-- Сайдбар -->
             <div class="col-lg-4">
-                <!-- Информация о курсе -->
-                <div class="info-card">
+                <!-- Информация о курсе - фиолетовый акцент -->
+                <div class="info-card course-info">
                     <div class="info-title">
                         <i class="bi bi-info-circle"></i>
                         Информация о курсе
@@ -849,11 +959,11 @@
                     </div>
                 </div>
                 
-                <!-- Студенты -->
-                <div class="info-card">
+                <!-- Студенты - синий акцент -->
+                <div class="info-card students-info">
                     <div class="info-title">
                         <i class="bi bi-people-fill"></i>
-                        Студенты({{ students|length }})
+                        Студенты ({{ students|length }})
                     </div>
                     <div class="info-content">
                         <ul class="student-list">
@@ -875,15 +985,15 @@
                         {% if students|length > 5 %}
                         <div class="text-center mt-2">
                             <a href="{% url 'classroom_core:student_list' course.id %}" class="btn-add" style="display: inline-block;">
-                                Показать всех({{ students|length }})
+                                Показать всех ({{ students|length }})
                             </a>
                         </div>
                         {% endif %}
                     </div>
                 </div>
                 
-                <!-- Прогресс курса -->
-                <div class="info-card">
+                <!-- Прогресс курса - зеленый акцент с разделителем -->
+                <div class="info-card progress-info">
                     <div class="info-title">
                         <i class="bi bi-graph-up"></i>
                         Прогресс курса
@@ -893,17 +1003,20 @@
                             <span style="color: #a8b8ff;">Выполнено</span>
                             <span style="color: #6a5acd; font-weight: 600;">{{ course.get_progress }}%</span>
                         </div>
-
+                        <div class="progress-bar-custom">
+                            <div class="progress-fill"></div>
+                        </div>
                         <div class="progress-stats mt-2">
                             <span><i class="bi bi-check-circle"></i> {{ course.get_completed_items }} заданий</span>
+                            <span class="separator">|</span>
                             <span><i class="bi bi-clock"></i> {{ course.get_remaining_days }} дней осталось</span>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Мои задания(для студента) -->
+                <!-- Мои задания (для студента) - оранжевый акцент -->
                 {% if is_student %}
-                <div class="info-card">
+                <div class="info-card my-assignments">
                     <div class="info-title">
                         <i class="bi bi-journal-check"></i>
                         Мои задания
@@ -913,8 +1026,8 @@
                             <ul class="student-list">
                                 {% for submission in student_submissions %}
                                 <li class="student-item">
-                                    <div class="student-avatar" style="background: {% if submission.status == 'graded' %}linear-gradient(135deg, #4caf50, #45a049){% elif submission.status == 'returned' %}linear-gradient(135deg, #ffa502, #ffb822){% else %}linear-gradient(135deg, #6a5acd, #4a90e2){% endif %};">
-                                        {% if submission.status == 'graded' %}✓{% elif submission.status == 'returned' %}↩{% else %}📝{% endif %}
+                                    <div class="student-avatar">
+                                        {% if submission.status == 'graded' %}✓{% elif submission.status == 'returned' %}↩️{% else %}📝{% endif %}
                                     </div>
                                     <span class="student-name">{{ submission.assignment.title|truncatechars:25 }}</span>
                                     <span class="student-badge">
@@ -932,7 +1045,7 @@
                             {% if student_submissions_count > 5 %}
                             <div class="text-center mt-2">
                                 <a href="{% url 'classroom_core:assignment_list' %}?course_id={{ course.id }}" class="btn-add" style="display: inline-block;">
-                                    Показать все({{ student_submissions_count }})
+                                    Показать все ({{ student_submissions_count }})
                                 </a>
                             </div>
                             {% endif %}
@@ -946,9 +1059,9 @@
                 </div>
                 {% endif %}
                 
-                <!-- Действия(для преподавателя) -->
-                {% if course.can_edit %}
-                <div class="info-card">
+                <!-- Управление (для преподавателя) - красный акцент -->
+                {% if can_manage_course %}
+                <div class="info-card management">
                     <div class="info-title">
                         <i class="bi bi-tools"></i>
                         Управление
@@ -969,14 +1082,12 @@
 </div>
 
 <script>
-    // Анимация для элементов списка
     document.addEventListener('DOMContentLoaded', function() {
         const items = document.querySelectorAll('.item-card');
         items.forEach((item, index) => {
-            item.style.animationDelay = `${0.1 +(index * 0.05)}s`;
+            item.style.animationDelay = `${0.1 + (index * 0.05)}s`;
         });
         
-        // Анимация для прогресс-бара
         const progressBar = document.querySelector('.progress-fill');
         if(progressBar) {
             setTimeout(() => {

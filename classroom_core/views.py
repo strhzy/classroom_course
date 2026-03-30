@@ -1199,7 +1199,6 @@ def course_enrollment_request_list(request, course_id):
 
     return render(request, 'classroom_core/course_enrollment_request_list.html', context)
 
-
 @login_required
 def course_enrollment_request_detail(request, request_id):
     """Детали заявки на запись на курс"""

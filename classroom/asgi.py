@@ -1,16 +1,18 @@
-"""
-ASGI config for classroom project.
+import os
+from channels.routing import ProtocolTypeRouter, URLRouter
+from django.core.asgi import get_asgi_application
+from django.urls import path
+from channels.auth import AuthMiddlewareStack
 
-It exposes the ASGI callable as a module-level variable named ``application``.
+import chat_manager.routing
 
-For more information on this file, see
-https://docs.djangoproject.com/en/6.0/howto/deployment/asgi/
-"""
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'classroom.settings')
 
-import os 
-
-from django.core.asgi import get_asgi_application 
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE','classroom.settings')
-
-application =get_asgi_application()
+application = ProtocolTypeRouter({
+    "http": get_asgi_application(),
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            chat_manager.routing.websocket_urlpatterns
+        )
+    ),
+})
