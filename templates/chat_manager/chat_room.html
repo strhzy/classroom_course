@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}💬 {{ room.name }}{% endblock %}
 {% block content %}
 
@@ -14,8 +15,8 @@ html, body{
     height:calc(100vh - 70px);
     padding:20px 0;
     background:
-        radial-gradient(circle at 10% 10%, rgba(106,90,205,.18), transparent 40%),
-        radial-gradient(circle at 90% 90%, rgba(74,144,226,.12), transparent 40%),
+        radial-gradient(circle at 20% 20%, rgba(106,90,205,.15), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(74,144,226,.12), transparent 40%),
         #0f1123;
 }
 
@@ -42,10 +43,7 @@ html, body{
     display:flex;
     flex-direction:column;
     gap:12px;
-    background:
-        radial-gradient(circle at 20% 20%, rgba(106,90,205,.15), transparent 40%),
-        radial-gradient(circle at 80% 80%, rgba(74,144,226,.12), transparent 40%),
-        #0f1123;
+    background: url('{% static "images/chat-bg.png" %}') center/cover no-repeat;
 }
 
 .chat-messages::-webkit-scrollbar{
@@ -278,7 +276,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const input = document.getElementById('message-input')
     const btn = document.getElementById('send-button')
     const box = document.getElementById('chat-messages')
-    const username = "{{ request.user.username }}"
+    const username = "{{ request.user.username|escapejs }}"
 
     const socket = new WebSocket((location.protocol==="https:"?"wss://":"ws://")+location.host+"/ws/chat/"+room_id+"/")
 
@@ -323,6 +321,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     btn.onclick = send
     input.addEventListener("keypress", e => { if(e.key==="Enter") send() })
+    
+    // 🔌 Обработка ошибок WebSocket
+    socket.onerror = (err) => console.warn("⚠️ WebSocket error:", err)
+    socket.onclose = () => console.log("🔌 WebSocket disconnected")
 })
 </script>
 

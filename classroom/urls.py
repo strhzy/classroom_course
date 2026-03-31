@@ -8,4 +8,4 @@ urlpatterns =[
     path('',include('classroom_core.urls',namespace ='classroom_core')),
     path('files/',include('file_manager.urls',namespace ='file_manager')),
     path('chat/', include('chat_manager.urls', namespace='chat_manager')),
-]+static(settings.MEDIA_URL ,document_root =settings.MEDIA_ROOT )
+] + static(settings.MEDIA_URL ,document_root =settings.MEDIA_ROOT ) + static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)
