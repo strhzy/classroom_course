@@ -1,103 +1,457 @@
 {% extends "base.html" %}
 
 {% block title %}💬 {{ room.name }}{% endblock %}
+
 {% block content %}
-<div class="container-fluid bg-light py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3">{{ room.name }}</h1>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'chat:chat_list' %}">Чаты</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">{{ room.name }}</li>
-                </ol>
-            </nav>
-        </div>
-        <div>
-            <span class="badge bg-secondary">{{ room.participants.count }} участников</span>
+<style>
+    .chat-container {
+        background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+        min-height: calc(100vh - 56px);
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    .chat-container::before {
+        content: '';
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(106, 90, 205, 0.15) 0%, rgba(106, 90, 205, 0) 70%);
+        border-radius: 50%;
+        top: -150px;
+        right: -150px;
+        pointer-events: none;
+    }
+
+    .chat-container::after {
+        content: '';
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(74, 144, 226, 0.1) 0%, rgba(74, 144, 226, 0) 70%);
+        border-radius: 50%;
+        bottom: -200px;
+        left: -200px;
+        pointer-events: none;
+    }
+
+    .chat-header {
+        background: rgba(26, 26, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .messages-area {
+        background: rgba(22, 33, 62, 0.6);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+    }
+
+    .chat-messages {
+        height: calc(100vh - 250px);
+        overflow-y: auto;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .message {
+        display: flex;
+        animation: messageAppear 0.3s ease-out;
+        max-width: 85%;
+    }
+
+    @keyframes messageAppear {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .message-own {
+        align-self: flex-end;
+    }
+
+    .message-other {
+        align-self: flex-start;
+    }
+
+    .message-bubble {
+        max-width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 20px;
+        position: relative;
+        word-wrap: break-word;
+    }
+
+    .message-own .message-bubble {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        color: white;
+        border-bottom-right-radius: 5px;
+        box-shadow: 0 2px 5px rgba(106, 90, 205, 0.3);
+    }
+
+    .message-other .message-bubble {
+        background: rgba(30, 30, 46, 0.95);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        color: #e0e0ff;
+        border-bottom-left-radius: 5px;
+    }
+
+    .message-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+        font-size: 0.75rem;
+    }
+
+    .message-other .message-info {
+        justify-content: flex-start;
+    }
+
+    .message-own .message-info {
+        justify-content: flex-end;
+    }
+
+    .message-username {
+        font-weight: 600;
+        color: #a8b8ff;
+    }
+
+    .message-time {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.7rem;
+    }
+
+    .message-content {
+        line-height: 1.4;
+        font-size: 0.95rem;
+    }
+
+    .message-avatar {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .message-other {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+
+    .message-own {
+        display: flex;
+        gap: 0.75rem;
+        flex-direction: row-reverse;
+    }
+
+    .input-area {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1rem;
+        border-radius: 0 0 20px 20px;
+    }
+
+    .message-input-group {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .message-input-group input {
+        background: rgba(20, 20, 35, 0.8);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 25px;
+        padding: 0.75rem 1.25rem;
+        color: white;
+        flex: 1;
+        transition: all 0.3s ease;
+    }
+
+    .message-input-group input:focus {
+        outline: none;
+        border-color: #6a5acd;
+        box-shadow: 0 0 10px rgba(106, 90, 205, 0.3);
+        background: rgba(20, 20, 35, 0.95);
+    }
+
+    .message-input-group input::placeholder {
+        color: rgba(168, 184, 255, 0.5);
+    }
+
+    .send-btn {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .send-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+    }
+
+    .info-sidebar {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        overflow: hidden;
+    }
+
+    .sidebar-header {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        padding: 1rem;
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+    }
+
+    .participant-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+    }
+
+    .participant-item:hover {
+        background: rgba(106, 90, 205, 0.1);
+        transform: translateX(5px);
+    }
+
+    .participant-avatar {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    @media (max-width: 768px) {
+        .chat-messages {
+            height: calc(100vh - 200px);
+            padding: 1rem;
+        }
+
+        .message {
+            max-width: 90%;
+        }
+
+        .message-bubble {
+            padding: 0.5rem 0.75rem;
+        }
+
+        .message-avatar {
+            width: 28px;
+            height: 28px;
+            font-size: 0.75rem;
+        }
+
+        .message-other {
+            gap: 0.5rem;
+        }
+
+        .message-own {
+            gap: 0.5rem;
+        }
+
+        .info-sidebar {
+            margin-top: 1rem;
+        }
+    }
+
+    .chat-messages::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .chat-messages::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+        background: rgba(106, 90, 205, 0.5);
+        border-radius: 10px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb:hover {
+        background: rgba(106, 90, 205, 0.8);
+    }
+
+    .breadcrumb-custom {
+        background: rgba(106, 90, 205, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        display: inline-block;
+    }
+
+    .breadcrumb-custom a {
+        color: #a8b8ff;
+        text-decoration: none;
+    }
+
+    .breadcrumb-custom a:hover {
+        color: #6a5acd;
+    }
+</style>
+
+<div class="chat-container">
+    <div class="chat-header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h1 class="h4 mb-1" style="color: white;">
+                        <i class="bi bi-chat-dots-fill me-2" style="color: #6a5acd;"></i>
+                        {{ room.name }}
+                    </h1>
+                    <div class="breadcrumb-custom mt-1">
+                        <a href="{% url 'chat:chat_list' %}">
+                            <i class="bi bi-arrow-left me-1"></i>К чатам
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <span class="badge" style="background: rgba(106, 90, 205, 0.2); color: #a8b8ff; padding: 0.5rem 1rem;">
+                        <i class="bi bi-people me-1"></i>{{ room.participants.count }} участников
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-lg-8">
-            <!-- Chat messages -->
-            <div class="card mb-4" style="height: 80%;">
-                <div class="card-header">
-                    <i class="bi bi-chat-dots me-2"></i>Сообщения
-                </div>
-                <div class="card-body" id="chat-messages" style="overflow-y: auto; height: calc(100% - 56px);">
-                    {% if messages %}
-                    {% for message in messages %}
-                    <div class="mb-3">
-                        <div class="d-flex">
-                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
-                                 style="width: 32px; height: 32px; font-size: 0.875rem; margin-right: 10px;">
-                                {{ message.user.username|slice:":1"|upper }}
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="messages-area">
+                    <div class="chat-messages" id="chat-messages">
+                        {% if messages %}
+                            {% for message in messages %}
+                                {% if message.user == request.user %}
+                                    <div class="message message-own" data-message-id="{{ message.id }}">
+                                        <div class="message-bubble">
+                                            <div class="message-info">
+                                                <span class="message-time">{{ message.timestamp|date:"H:i" }}</span>
+                                            </div>
+                                            <div class="message-content">
+                                                {{ message.content|linebreaks }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="message message-other" data-message-id="{{ message.id }}">
+                                        <div class="message-avatar">
+                                            {{ message.user.username|first|upper }}
+                                        </div>
+                                        <div class="message-bubble">
+                                            <div class="message-info">
+                                                <span class="message-username">{{ message.user.username }}</span>
+                                                <span class="message-time">{{ message.timestamp|date:"H:i" }}</span>
+                                            </div>
+                                            <div class="message-content">
+                                                {{ message.content|linebreaks }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="bi bi-chat" style="font-size: 3rem; color: rgba(168, 184, 255, 0.3);"></i>
+                                <p class="mt-3" style="color: rgba(168, 184, 255, 0.5);">Нет сообщений в этом чате</p>
+                                <p style="color: rgba(168, 184, 255, 0.4); font-size: 0.875rem;">Напишите первое сообщение</p>
                             </div>
-                            <div>
-                                <div class="d-flex align-items-center mb-1">
-                                    <strong>{{ message.user.username }}</strong>
-                                    <small class="text-muted ms-2">{{ message.timestamp|date:"d.m.Y H:i" }}</small>
-                                </div>
-                                <div class="bg-light p-2 rounded" style="max-width: 80%;">
-                                    {{ message.content|linebreaks }}
-                                </div>
-                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="input-area">
+                        <div class="message-input-group">
+                            <input type="text" id="message-input" class="form-control" placeholder="Введите сообщение..." maxlength="1000">
+                            <button class="send-btn" type="button" id="send-button">
+                                <i class="bi bi-send-fill"></i>
+                            </button>
                         </div>
                     </div>
-                    {% endfor %}
-                    {% else %}
-                    <div class="text-center py-5">
-                        <p class="text-muted">Нет сообщений в этом чате</p>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="info-sidebar">
+                    <div class="sidebar-header">
+                        <h6 class="mb-0" style="color: #a8b8ff;">
+                            <i class="bi bi-people-fill me-2"></i>Участники
+                        </h6>
                     </div>
-                    {% endif %}
-                </div>
-            </div>
-            
-            <!-- Message input -->
-            <div class="input-group">
-                <input type="text" id="message-input" class="form-control" placeholder="Введите сообщение..." maxlength="1000">
-                <button class="btn btn-primary" type="button" id="send-button">
-                    <i class="bi bi-send"></i>
-                </button>
-            </div>
-        </div>
-        
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-header">
-                    <i class="bi bi-people me-2"></i>Участники ({{ room.participants.count }})
-                </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
+                    <div class="participants-list">
                         {% for participant in room.participants.all %}
-                        <li class="list-group-item d-flex align-items-center">
-                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
-                                 style="width: 24px; height: 24px; font-size: 0.75rem; margin-right: 8px;">
-                                {{ participant.username|slice:":1"|upper }}
+                        <div class="participant-item">
+                            <div class="participant-avatar">
+                                {{ participant.username|first|upper }}
                             </div>
-                            {{ participant.username }}
-                            {% if participant == room.created_by %}
-                            <span class="badge bg-info ms-2">Создатель</span>
-                            {% endif %}
-                        </li>
+                            <div style="flex: 1;">
+                                <span style="color: white;">{{ participant.username }}</span>
+                                {% if participant == room.created_by %}
+                                <span class="badge ms-2" style="background: rgba(106, 90, 205, 0.3); color: #a8b8ff;">Создатель</span>
+                                {% endif %}
+                            </div>
+                        </div>
                         {% endfor %}
-                    </ul>
+                    </div>
                 </div>
-            </div>
-            
-            {% if room.room_type == 'private' and room.participants.count == 2 %}
-            <div class="card mt-3">
-                <div class="card-body text-center">
-                    <h6 class="card-title">Личный чат</h6>
-                    <p class="text-muted small">Этот чат видят только вы и {{ other_user.username }}</p>
+
+                {% if room.room_type == 'private' and room.participants.count == 2 %}
+                <div class="info-sidebar mt-3">
+                    <div class="sidebar-header">
+                        <h6 class="mb-0" style="color: #ffa502;">
+                            <i class="bi bi-lock-fill me-2"></i>Личный чат
+                        </h6>
+                    </div>
+                    <div class="p-3 text-center">
+                        <p style="color: rgba(168, 184, 255, 0.7); font-size: 0.875rem; margin: 0;">
+                            Этот чат видят только вы и {{ other_user.username }}
+                        </p>
+                    </div>
                 </div>
+                {% endif %}
             </div>
-            {% endif %}
         </div>
     </div>
 </div>
+
 <div id="chat-data" data-room-id="{{ room.id }}"></div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const chatData = document.getElementById('chat-data');
@@ -105,41 +459,53 @@ document.addEventListener('DOMContentLoaded', function() {
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
     const chatMessages = document.getElementById('chat-messages');
+    const currentUsername = "{{ request.user.username }}";
     
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = wsProtocol + '//' + window.location.host + '/ws/chat/' + room_id + '/';
     const socket = new WebSocket(wsUrl);
 
     socket.onopen = function(e) {
-        console.log('✅ WebSocket connected');
+        console.log('WebSocket connected');
     };
 
     socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-
         if (data.type !== 'chat_message') return;
-
+        
+        const isOwnMessage = (data.username === currentUsername);
+        
         const messageDiv = document.createElement('div');
-        messageDiv.className = 'mb-3';
-
-        messageDiv.innerHTML = `
-            <div class="d-flex">
-                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
-                    style="width: 32px; height: 32px; font-size: 0.875rem; margin-right: 10px;">
-                    ${data.username.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                    <div class="d-flex align-items-center mb-1">
-                        <strong>${data.username}</strong>
-                        <small class="text-muted ms-2">${new Date(data.timestamp).toLocaleString('ru-RU')}</small>
+        messageDiv.className = isOwnMessage ? 'message message-own' : 'message message-other';
+        
+        if (isOwnMessage) {
+            messageDiv.innerHTML = `
+                <div class="message-bubble">
+                    <div class="message-info">
+                        <span class="message-time">${new Date(data.timestamp).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}</span>
                     </div>
-                    <div class="bg-light p-2 rounded" style="max-width: 80%;">
+                    <div class="message-content">
                         ${data.message.replace(/\n/g, '<br>')}
                     </div>
                 </div>
-            </div>
-        `;
-
+            `;
+        } else {
+            messageDiv.innerHTML = `
+                <div class="message-avatar">
+                    ${data.username.charAt(0).toUpperCase()}
+                </div>
+                <div class="message-bubble">
+                    <div class="message-info">
+                        <span class="message-username">${data.username}</span>
+                        <span class="message-time">${new Date(data.timestamp).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>
+                    <div class="message-content">
+                        ${data.message.replace(/\n/g, '<br>')}
+                    </div>
+                </div>
+            `;
+        }
+        
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     };
@@ -156,7 +522,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     sendButton.addEventListener('click', sendMessage);
-
     messageInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             sendMessage();

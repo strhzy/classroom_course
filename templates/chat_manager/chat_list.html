@@ -1,96 +1,517 @@
 {% extends "base.html" %}
 
 {% block title %}💬 Чаты{% endblock %}
-{% block content %}
-<div class="container-fluid bg-light py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3">Мои чаты</h1>
-        <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#createChatModal">
-            <i class="bi bi-plus-circle"></i> Новый чат
-        </button>
-    </div>
 
-    {% if rooms %}
-    <div class="row">
-        {% for room in rooms %}
-        <div class="col-md-6 mb-3">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h5 class="card-title mb-1">{{ room.name }}</h5>
-                            <small class="text-muted">
-                                {{ room.participants.count }} участников
-                            </small>
-                        </div>
-                        {% if room.last_message %}
-                        <small class="text-muted">{{ room.last_message.timestamp|date:"H:i" }}</small>
-                        {% endif %}
-                    </div>
-                    
-                    {% if room.last_message %}
-                    <p class="card-text text-muted mt-2 mb-0">
-                        <strong>{{ room.last_message.user.username }}:</strong> 
-                        {{ room.last_message.content|truncatechars:50 }}
-                    </p>
+{% block content %}
+<style>
+    .chats-page {
+        background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+        min-height: calc(100vh - 56px);
+        position: relative;
+    }
+
+    .chats-page::before {
+        content: '';
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(106, 90, 205, 0.1) 0%, rgba(106, 90, 205, 0) 70%);
+        border-radius: 50%;
+        top: -250px;
+        right: -250px;
+        pointer-events: none;
+    }
+
+    .chats-header {
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .create-chat-btn {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 12px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: white;
+    }
+
+    .create-chat-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+        color: white;
+    }
+
+    .chat-card {
+        background: linear-gradient(135deg, #2d2d44 0%, #25253a 100%);
+        border: none;
+        border-radius: 24px;
+        transition: all 0.3s ease;
+        animation: cardAppear 0.5s ease-out;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .chat-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 5px;
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .chat-card:hover::after {
+        opacity: 1;
+    }
+
+    @keyframes cardAppear {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .chat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(106, 90, 205, 0.25);
+        background: linear-gradient(135deg, #353550 0%, #2d2d44 100%);
+    }
+
+    .chat-card-body {
+        padding: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .chat-avatar {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: white;
+        flex-shrink: 0;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .chat-avatar::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border-radius: 50%;
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .chat-card:hover .chat-avatar {
+        transform: scale(1.08);
+    }
+
+    .chat-card:hover .chat-avatar::before {
+        opacity: 0.5;
+    }
+
+    .chat-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .chat-name {
+        color: #ffffff;
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        font-size: 1.15rem;
+        letter-spacing: -0.3px;
+    }
+
+    .chat-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 0.5rem;
+    }
+
+    .last-message {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.85rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .last-message strong {
+        color: #a8b8ff;
+        font-weight: 600;
+    }
+
+    .chat-time {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.4);
+        flex-shrink: 0;
+        font-weight: 500;
+    }
+
+    .participant-count {
+        background: rgba(106, 90, 205, 0.3);
+        padding: 0.2rem 0.7rem;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        color: #c4b5fd;
+        font-weight: 500;
+    }
+
+    .unread-badge {
+        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        color: white;
+        border-radius: 50px;
+        padding: 0.2rem 0.7rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        margin-left: 0.5rem;
+        animation: pulse 2s infinite;
+        box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.85;
+            transform: scale(1.02);
+        }
+    }
+
+    .chat-type-badge {
+        background: rgba(255, 165, 2, 0.15);
+        border: 1px solid rgba(255, 165, 2, 0.3);
+        padding: 0.2rem 0.7rem;
+        border-radius: 50px;
+        font-size: 0.65rem;
+        color: #ffa502;
+        font-weight: 500;
+    }
+
+    .chat-type-badge.group {
+        background: rgba(76, 175, 80, 0.15);
+        border-color: rgba(76, 175, 80, 0.3);
+        color: #4caf50;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 32px;
+        backdrop-filter: blur(10px);
+        margin-top: 2rem;
+    }
+
+    .empty-state i {
+        font-size: 5rem;
+        color: rgba(106, 90, 205, 0.4);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h4 {
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .custom-modal .modal-content {
+        background: linear-gradient(135deg, #1e1e2e 0%, #1a1a2e 100%);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 24px;
+        color: white;
+    }
+
+    .custom-modal .modal-header {
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1.25rem;
+    }
+
+    .custom-modal .modal-body {
+        padding: 1.25rem;
+    }
+
+    .custom-modal .nav-tabs {
+        border-bottom-color: rgba(106, 90, 205, 0.3);
+    }
+
+    .custom-modal .nav-link {
+        color: rgba(255, 255, 255, 0.7);
+        background: transparent;
+        border: none;
+        padding: 0.6rem 1rem;
+        font-weight: 500;
+    }
+
+    .custom-modal .nav-link.active {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        color: white;
+        border: none;
+        border-radius: 12px;
+    }
+
+    .custom-modal .nav-link:hover:not(.active) {
+        color: white;
+        background: rgba(106, 90, 205, 0.2);
+        border-radius: 12px;
+    }
+
+    .custom-modal .form-control, 
+    .custom-modal .form-select {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        color: white;
+        border-radius: 12px;
+        padding: 0.7rem 1rem;
+    }
+
+    .custom-modal .form-control:focus,
+    .custom-modal .form-select:focus {
+        background: rgba(0, 0, 0, 0.6);
+        border-color: #6a5acd;
+        box-shadow: 0 0 10px rgba(106, 90, 205, 0.3);
+        color: white;
+    }
+
+    .custom-modal .form-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .custom-modal .btn-close-white {
+        filter: brightness(0) invert(1);
+    }
+
+    .search-result-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        background: rgba(0, 0, 0, 0.2);
+        margin-bottom: 0.5rem;
+    }
+
+    .search-result-item:hover {
+        background: rgba(106, 90, 205, 0.2);
+        transform: translateX(5px);
+    }
+
+    @media (max-width: 768px) {
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            font-size: 1.3rem;
+        }
+
+        .chat-name {
+            font-size: 1rem;
+        }
+
+        .last-message {
+            font-size: 0.75rem;
+        }
+
+        .chat-card-body {
+            padding: 1rem;
+            gap: 0.8rem;
+        }
+
+        .participant-count,
+        .unread-badge,
+        .chat-type-badge {
+            font-size: 0.6rem;
+            padding: 0.15rem 0.5rem;
+        }
+    }
+</style>
+
+<div class="chats-page">
+    <div class="chats-header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <h1 class="h3 mb-0" style="color: white; font-weight: 700;">
+                    <i class="bi bi-chat-dots-fill me-2" style="color: #6a5acd;"></i>
+                    Мои чаты
+                    {% if rooms %}
+                    <span style="font-size: 0.85rem; background: linear-gradient(135deg, #6a5acd, #4a90e2); padding: 0.2rem 0.7rem; border-radius: 50px; margin-left: 0.6rem; vertical-align: middle;">
+                        {{ rooms|length }}
+                    </span>
                     {% endif %}
-                    
-                    <a href="{% url 'chat:chat_room' room.id %}" class="btn btn-primary btn-sm mt-2">
-                        Открыть чат
-                    </a>
-                </div>
+                </h1>
+                <button class="btn create-chat-btn" type="button" data-bs-toggle="modal" data-bs-target="#createChatModal">
+                    <i class="bi bi-plus-lg me-2"></i>Новый чат
+                </button>
             </div>
         </div>
-        {% endfor %}
     </div>
-    {% else %}
-    <div class="text-center py-5">
-        <i class="bi bi-chat-dots" style="font-size: 4rem; color: #6c757d;"></i>
-        <h4 class="mt-3">Нет активных чатов</h4>
-        <p class="text-muted">Начните общение, создав новый чат</p>
-        <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#createChatModal">
-            <i class="bi bi-plus-circle"></i> Создать чат
-        </button>
+
+    <div class="container py-4">
+        {% if rooms %}
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    {% for room in rooms %}
+                    <a href="{% url 'chat:chat_room' room.id %}" class="chat-card" style="text-decoration: none;">
+                        <div class="chat-card-body">
+                            <div class="chat-avatar">
+                                {{ room.name|first|upper }}
+                            </div>
+                            <div class="chat-info">
+                                <div class="chat-name">
+                                    {{ room.name }}
+                                    <span class="participant-count">
+                                        <i class="bi bi-people me-1"></i>{{ room.participants.count }}
+                                    </span>
+                                    {% if room.room_type == 'private' %}
+                                    <span class="chat-type-badge">
+                                        <i class="bi bi-lock me-1"></i>Личный
+                                    </span>
+                                    {% else %}
+                                    <span class="chat-type-badge group">
+                                        <i class="bi bi-people me-1"></i>Группа
+                                    </span>
+                                    {% endif %}
+                                    {% if room.unread_count > 0 %}
+                                    <span class="unread-badge">
+                                        +{{ room.unread_count }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <div class="chat-meta">
+                                    {% if room.last_message %}
+                                    <span>
+                                        <i class="bi bi-calendar3"></i> {{ room.last_message.timestamp|date:"d.m.Y" }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <div class="last-message">
+                                    {% if room.last_message %}
+                                        {% if room.last_message.user == request.user %}
+                                        <strong>Вы:</strong>
+                                        {% else %}
+                                        <strong>{{ room.last_message.user.username }}:</strong>
+                                        {% endif %}
+                                        {{ room.last_message.content|truncatechars:60 }}
+                                    {% else %}
+                                        <span style="color: rgba(255, 255, 255, 0.3);">
+                                            <i class="bi bi-chat"></i> Нет сообщений
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if room.last_message %}
+                            <div class="chat-time">
+                                {{ room.last_message.timestamp|date:"H:i" }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="bi bi-chat-dots"></i>
+                <h4>Нет активных чатов</h4>
+                <p>Начните общение, создав новый чат</p>
+                <button class="btn create-chat-btn mt-2" type="button" data-bs-toggle="modal" data-bs-target="#createChatModal">
+                    <i class="bi bi-plus-lg me-2"></i>Создать чат
+                </button>
+            </div>
+        {% endif %}
     </div>
-    {% endif %}
 </div>
 
-<!-- Modal для создания чата -->
-<div class="modal fade" id="createChatModal" tabindex="-1" aria-labelledby="createChatModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade custom-modal" id="createChatModal" tabindex="-1" aria-labelledby="createChatModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="createChatModalLabel">Создать новый чат</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="createChatModalLabel" style="font-weight: 600;">
+                    <i class="bi bi-plus-circle me-2" style="color: #6a5acd;"></i>Создать новый чат
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <ul class="nav nav-tabs" id="chatTab" role="tablist">
+                <ul class="nav nav-tabs mb-3" id="chatTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="private-tab" data-bs-toggle="tab" data-bs-target="#private" type="button" role="tab">Личный чат</button>
+                        <button class="nav-link active" id="private-tab" data-bs-toggle="tab" data-bs-target="#private" type="button" role="tab">
+                            <i class="bi bi-person me-1"></i>Личный чат
+                        </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">Выбрать пользователя</button>
+                        <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">
+                            <i class="bi bi-search me-1"></i>Поиск
+                        </button>
                     </li>
                 </ul>
-                <div class="tab-content mt-3" id="chatTabContent">
+                <div class="tab-content mt-2" id="chatTabContent">
                     <div class="tab-pane fade show active" id="private" role="tabpanel">
-                        <h6>Быстрый чат с пользователем</h6>
                         <form method="post" action="{% url 'chat:create_private_chat' 0 %}" id="quickChatForm">
                             {% csrf_token %}
                             <div class="mb-3">
-                                <label for="userId" class="form-label">Выберите пользователя</label>
+                                <label class="form-label">Выберите пользователя</label>
                                 <select class="form-select" id="userId" name="user_id" required>
                                     <option value="">Выберите пользователя...</option>
                                     {% for user in other_users %}
-                                    <option value="{{ user.id }}">{{ user.username }} ({{ user.first_name }} {{ user.last_name|default:"" }})</option>
+                                    <option value="{{ user.id }}">{{ user.get_full_name|default:user.username }} (@{{ user.username }})</option>
                                     {% endfor %}
                                 </select>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">Создать чат</button>
+                            <button type="submit" class="btn create-chat-btn w-100">
+                                <i class="bi bi-chat me-2"></i>Начать диалог
+                            </button>
                         </form>
                     </div>
                     <div class="tab-pane fade" id="users" role="tabpanel">
-                        <h6>Поиск пользователя</h6>
                         <div class="mb-3">
                             <input type="text" class="form-control" id="userSearch" placeholder="Введите имя, фамилию или username...">
                             <div id="searchResults" class="mt-2"></div>
@@ -104,7 +525,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Обработка формы быстрого чата
     const quickChatForm = document.getElementById('quickChatForm');
     if (quickChatForm) {
         quickChatForm.addEventListener('submit', function(e) {
@@ -116,7 +536,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Поиск пользователей
     const userSearch = document.getElementById('userSearch');
     const searchResults = document.getElementById('searchResults');
     
@@ -131,9 +550,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            if (query.length < 2) {
-                return;
-            }
+            if (query.length < 2) return;
             
             searchTimeout = setTimeout(function() {
                 fetch(`/chat/search/?q=${encodeURIComponent(query)}`)
