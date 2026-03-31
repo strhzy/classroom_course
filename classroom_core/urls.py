@@ -39,6 +39,8 @@ urlpatterns = [
     path('<int:course_id>/students/', views.student_list, name='student_list'),
     path('<int:course_id>/students/enroll/', views.student_enroll, name='student_enroll'),
     path('<int:course_id>/students/<int:student_id>/remove/', views.student_remove, name='student_remove'),
+    path('<int:course_id>/gradebook/', views.course_gradebook, name='course_gradebook'),
+    path('<int:course_id>/gradebook/update/', views.course_gradebook_update, name='course_gradebook_update'),
     
     path('groups/', views.group_list, name='group_list'),
     path('groups/create/', views.group_create, name='group_create'),

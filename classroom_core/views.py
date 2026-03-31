@@ -5,6 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Q 
 from django.core.paginator import Paginator 
 from django.contrib.auth.models import User 
+from django.http import JsonResponse
 from . models import *
 from . forms import *
 from django.utils import timezone 
@@ -473,22 +474,27 @@ def assignment_detail(request ,assignment_id ):
 @login_required 
 def assignment_create(request ,course_id ):
     """Создание задания"""
-    course =get_object_or_404(Course ,id =course_id )
+    course = get_object_or_404(Course, id=course_id )
 
 
     if not course.can_edit(request.user ):
         raise PermissionDenied 
 
     if request.method =='POST':
-        form =AssignmentForm(request.POST ,request.FILES )
+        form = AssignmentForm(request.POST, request.FILES )
+        print(form.errors)
+        print(course.id)
+        print(course_id)
         if form.is_valid():
-            assignment =form.save(commit =False )
-            assignment.course =course 
+            assignment = form.save(commit = True)
+            assignment.course = course
             assignment.save()
             messages.success(request ,'Задание успешно создано')
-            return redirect('classroom_core:course_detail',course_id =course.id )
-    else :
-        form =AssignmentForm()
+            return redirect('classroom_core:course_detail',course_id=course.id)
+        else:
+            print("Ты проебался")
+    else:
+        form = AssignmentForm()
 
     return render(request ,'classroom_core/assignment_form.html',{
     'form':form ,
@@ -1479,3 +1485,123 @@ def assignment_file_review_detail(request, review_id):
     }
 
     return render(request, 'classroom_core/assignment_file_review_detail.html', context)
+
+
+@login_required
+def course_gradebook(request, course_id):
+    """Страница с таблицей оценок студентов по практическим работам курса"""
+    course = get_object_or_404(Course, id=course_id)
+
+    # Проверка прав на доступ к курсу
+    if not course.can_access(request.user):
+        raise PermissionDenied
+
+    # Проверка прав на управление оценками (преподаватель, ассистент, админ)
+    can_grade = course.can_edit(request.user)
+    if not can_grade:
+        raise PermissionDenied
+
+    # Получаем всех студентов курса
+    students = course.get_all_enrolled_students() #.order_by('first_name', 'last_name', 'username')
+
+    # Получаем все задания (практические работы) по курсу
+    assignments = course.assignments.filter(status='published').order_by('created_at')
+
+    # Получаем все сданные работы по этому курсу
+    submissions = AssignmentSubmission.objects.filter(
+        assignment__in=assignments
+    ).select_related('student', 'assignment')
+
+    # Создаем словарь работ по (student_id, assignment_id) для быстрого доступа
+    submissions_dict = {}
+    for sub in submissions:
+        key = (sub.student.id, sub.assignment.id)
+        submissions_dict[key] = sub
+
+    # Формируем матрицу оценок
+    grade_matrix = []
+    for student in students:
+        student_row = {
+            'student': student,
+            'grades': [],
+            'total_score': 0,
+            'max_score': 0,
+            'graded_count': 0,
+        }
+        for assignment in assignments:
+            key = (student.id, assignment.id)
+            submission = submissions_dict.get(key)
+            grade_entry = {
+                'assignment': assignment,
+                'submission': submission,
+                'score': submission.score if submission and submission.score is not None else None,
+                'max_points': assignment.max_points,
+                'status': submission.status if submission else None,
+            }
+            student_row['grades'].append(grade_entry)
+            if submission and submission.score is not None:
+                student_row['total_score'] += submission.score
+                student_row['graded_count'] += 1
+            student_row['max_score'] += assignment.max_points
+
+        grade_matrix.append(student_row)
+
+    context = {
+        'course': course,
+        'students': students,
+        'assignments': assignments,
+        'grade_matrix': grade_matrix,
+        'can_grade': can_grade,
+    }
+
+    return render(request, 'classroom_core/course_gradebook.html', context)
+
+
+@login_required
+def course_gradebook_update(request, course_id):
+    """Обновление оценок в таблице оценок (AJAX POST)"""
+    course = get_object_or_404(Course, id=course_id)
+
+    # Проверка прав
+    if not course.can_edit(request.user):
+        raise PermissionDenied
+
+    if request.method == 'POST':
+        student_id = request.POST.get('student_id')
+        assignment_id = request.POST.get('assignment_id')
+        score = request.POST.get('score')
+        feedback = request.POST.get('feedback', '')
+        status = request.POST.get('status')
+
+        student = get_object_or_404(User, id=student_id)
+        assignment = get_object_or_404(Assignment, id=assignment_id)
+
+        # Проверка, что задание принадлежит курсу
+        if assignment.course != course:
+            return JsonResponse({'success': False, 'error': 'Задание не принадлежит этому курсу'}, status=400)
+
+        # Получаем или создаем работу
+        submission, created = AssignmentSubmission.objects.get_or_create(
+            assignment=assignment,
+            student=student
+        )
+
+        # Обновляем данные
+        if score is not None and score != '':
+            submission.score = int(score)
+        submission.feedback = feedback
+        if status:
+            submission.status = status
+            if status == 'graded':
+                submission.graded_by = request.user
+                from django.utils import timezone
+                submission.graded_at = timezone.now()
+
+        submission.save()
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Оценка успешно обновлена'
+        })
+
+    return JsonResponse({'success': False, 'error': 'Метод не разрешен'}, status=405)

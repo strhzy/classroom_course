@@ -1076,6 +1076,9 @@
                         <a href="{% url 'classroom_core:course_edit' course.id %}" class="btn-add w-100 justify-content-center">
                             <i class="bi bi-pencil"></i> Редактировать курс
                         </a>
+                        <a href="{% url 'classroom_core:course_gradebook' course.id %}" class="btn-add w-100 justify-content-center" style="border-color: #4caf50; color: #81c784;">
+                            <i class="bi bi-table"></i> Таблица оценок
+                        </a>
                         <a href="{% url 'classroom_core:course_delete' course.id %}" class="btn-add w-100 justify-content-center" style="border-color: #ff4757; color: #ff6b81;">
                             <i class="bi bi-trash"></i> Удалить курс
                         </a>

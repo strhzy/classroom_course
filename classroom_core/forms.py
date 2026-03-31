@@ -49,8 +49,6 @@ class AssignmentForm(forms.ModelForm ):
         'max_points',
         'passing_score',
         'is_group_assignment',
-        'group_size_min',
-        'group_size_max',
         'attachment',
         'status'
         ]
@@ -60,8 +58,6 @@ class AssignmentForm(forms.ModelForm ):
         'due_date':forms.DateTimeInput(attrs ={'class':'form-control','type':'datetime-local'}),
         'max_points':forms.NumberInput(attrs ={'class':'form-control'}),
         'passing_score':forms.NumberInput(attrs ={'class':'form-control'}),
-        'group_size_min':forms.NumberInput(attrs ={'class':'form-control'}),
-        'group_size_max':forms.NumberInput(attrs ={'class':'form-control'}),
         'attachment':forms.ClearableFileInput(attrs ={'class':'form-control'}),
         'status':forms.Select(attrs ={'class':'form-select'}),
         'is_group_assignment':forms.CheckboxInput(attrs ={'class':'form-check-input'}),
@@ -220,3 +216,30 @@ class AssignmentFileReviewForm(forms.ModelForm):
             'feedback': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
             'points': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
+
+class AssignmentGradeManageForm(forms.Form):
+    """Форма для управления оценками студентов по заданию"""
+    student_id = forms.IntegerField(widget=forms.HiddenInput())
+    student_name = forms.CharField(widget=forms.HiddenInput(), required=False)
+    score = forms.IntegerField(
+        min_value=0,
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control form-control-sm',
+            'style': 'width: 80px;'
+        })
+    )
+    feedback = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control form-control-sm',
+            'rows': 2,
+            'placeholder': 'Комментарий...'
+        })
+    )
+    status = forms.ChoiceField(
+        choices=AssignmentSubmission.STATUS_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )

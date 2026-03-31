@@ -193,11 +193,11 @@ class Course(models.Model):
         
         self.students.add(user)
         
-        # Автоматически добавляем студента в чат курса
-        from chat.models import ChatRoom
-        chat_room = ChatRoom.objects.filter(course=self, room_type='course').first()
-        if chat_room:
-            chat_room.participants.add(user)
+        # # Автоматически добавляем студента в чат курса
+        # from chat_manager.models import ChatRoom
+        # chat_room = ChatRoom.objects.filter(course=self, room_type='course').first()
+        # if chat_room:
+        #     chat_room.participants.add(user)
         
         return True, "Студент успешно добавлен"
     
@@ -325,15 +325,16 @@ class Assignment(models.Model ):
     ]
 
     course =models.ForeignKey(
-    Course ,
+    Course,
     on_delete =models.CASCADE ,
-    related_name ='assignments'
+    related_name ='assignments',
+    null = True,
     )
     section =models.ForeignKey(
     CourseSection ,
     on_delete =models.SET_NULL ,
-    null =True ,
-    blank =True ,
+    null =True,
+    blank =True,
     related_name ='assignments'
     )
 
@@ -353,8 +354,8 @@ class Assignment(models.Model ):
     passing_score =models.IntegerField(default =50 )
 
     is_group_assignment =models.BooleanField(default =False )
-    group_size_min =models.IntegerField(default =1 )
-    group_size_max =models.IntegerField(default =1 )
+    group_size_min=models.IntegerField(default=1)
+    group_size_max=models.IntegerField(default=1)
 
     attachment =models.FileField(
     upload_to ='assignment_attachments/',
