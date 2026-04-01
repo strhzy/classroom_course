@@ -50,7 +50,8 @@ urlpatterns = [
     path('groups/<int:group_id>/add-students/', views.group_add_students, name='group_add_students'),
 
     # Заявки на запись на курс
-    path('<int:course_id>/enrollment-request/', views.course_enrollment_request_create, name='course_enrollment_request_create'),
+    path('courses-for-enrollment/', views.for_enrollment_course_list, name='for_enrollment_course_list'),
+    path('enrollment-request/<int:course_id>/', views.course_enrollment_request_create, name='course_enrollment_request_create'),
     path('<int:course_id>/enrollment-requests/', views.course_enrollment_request_list, name='course_enrollment_request_list'),
     path('enrollment-requests/<int:request_id>/', views.course_enrollment_request_detail, name='course_enrollment_request_detail'),
     path('enrollment-requests/<int:request_id>/review/', views.course_enrollment_request_review, name='course_enrollment_request_review'),

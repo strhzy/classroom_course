@@ -108,6 +108,12 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <div class="navbar-nav">
+                <a class="nav-link {% if request.resolver_match.url_name == 'for_enrollment_course_list' %}active{% endif %}" 
+                   href="{% url 'classroom_core:for_enrollment_course_list' %}">
+                    <i class="bi bi-journal-bookmark-fill"></i>
+                    <span>Доступные курсы</span>
+                </a>
+
                 <a class="nav-link {% if request.resolver_match.url_name == 'course_list' %}active{% endif %}" 
                    href="{% url 'classroom_core:course_list' %}">
                     <i class="bi bi-journal-bookmark-fill"></i>

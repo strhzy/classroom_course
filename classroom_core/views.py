@@ -491,8 +491,6 @@ def assignment_create(request ,course_id ):
             assignment.save()
             messages.success(request ,'Задание успешно создано')
             return redirect('classroom_core:course_detail',course_id=course.id)
-        else:
-            print("Ты проебался")
     else:
         form = AssignmentForm()
 
@@ -1170,6 +1168,57 @@ def course_enrollment_request_create(request, course_id):
         'course': course,
     })
 
+@login_required
+def for_enrollment_course_list(request):
+    """Список всех курсов с возможностью записи для студента"""
+    courses = Course.objects.filter(status='active')
+    print(courses)
+    user_requests = CourseEnrollmentRequest.objects.filter(
+        student=request.user
+    ).select_related('course')
+
+    requests_dict = {}
+    for req in user_requests:
+        requests_dict[req.course_id] = req
+
+    courses_with_status = []
+    for course in courses:
+        if course.students.filter(id=request.user.id).exists():
+            continue
+        
+        enrollment_request = requests_dict.get(course.id)
+
+        if enrollment_request is None:
+            enrollment_status = 'not_enrolled'
+            enrollment_request_id = None
+        elif enrollment_request.status == 'pending':
+            enrollment_status = 'pending'
+            enrollment_request_id = enrollment_request.id
+        elif enrollment_request.status == 'approved':
+            enrollment_status = 'approved'
+            enrollment_request_id = enrollment_request.id
+        elif enrollment_request.status == 'rejected':
+            enrollment_status = 'rejected'
+            enrollment_request_id = enrollment_request.id
+        else:
+            enrollment_status = 'not_enrolled'
+            enrollment_request_id = None
+        
+        courses_with_status.append({
+            'course': course,
+            'enrollment_status': enrollment_status,
+            'enrollment_request_id': enrollment_request_id,
+        })
+    
+    paginator = Paginator(courses_with_status, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'page_obj': page_obj,
+    }
+    
+    return render(request, 'classroom_core/for_enrollment_course_list.html', context)
 
 @login_required
 def course_enrollment_request_list(request, course_id):

@@ -76,8 +76,8 @@
                     {% endif %}
                     
                     <div class="d-flex justify-content-between">
-                        <a href="{% url 'classroom_core:course_detail' course.id %}" class="btn btn-secondary">
-                            Назад к курсу
+                        <a href="{% url 'classroom_core:course_list' %}" class="btn btn-secondary">
+                            Назад к курсам
                         </a>
                         
                         {% if enrollment_request.can_review %}
