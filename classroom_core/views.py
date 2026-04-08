@@ -1541,33 +1541,26 @@ def course_gradebook(request, course_id):
     """Страница с таблицей оценок студентов по практическим работам курса"""
     course = get_object_or_404(Course, id=course_id)
 
-    # Проверка прав на доступ к курсу
     if not course.can_access(request.user):
         raise PermissionDenied
 
-    # Проверка прав на управление оценками (преподаватель, ассистент, админ)
     can_grade = course.can_edit(request.user)
     if not can_grade:
         raise PermissionDenied
 
-    # Получаем всех студентов курса
     students = course.get_all_enrolled_students() #.order_by('first_name', 'last_name', 'username')
 
-    # Получаем все задания (практические работы) по курсу
     assignments = course.assignments.filter(status='published').order_by('created_at')
 
-    # Получаем все сданные работы по этому курсу
     submissions = AssignmentSubmission.objects.filter(
         assignment__in=assignments
     ).select_related('student', 'assignment')
 
-    # Создаем словарь работ по (student_id, assignment_id) для быстрого доступа
     submissions_dict = {}
     for sub in submissions:
         key = (sub.student.id, sub.assignment.id)
         submissions_dict[key] = sub
 
-    # Формируем матрицу оценок
     grade_matrix = []
     for student in students:
         student_row = {
@@ -1611,33 +1604,46 @@ def course_gradebook_update(request, course_id):
     """Обновление оценок в таблице оценок (AJAX POST)"""
     course = get_object_or_404(Course, id=course_id)
 
-    # Проверка прав
     if not course.can_edit(request.user):
-        raise PermissionDenied
+        return JsonResponse({'success': False, 'error': 'Нет прав для редактирования'}, status=403)
 
     if request.method == 'POST':
         student_id = request.POST.get('student_id')
         assignment_id = request.POST.get('assignment_id')
+        
+        if not student_id or not assignment_id or student_id == 'undefined' or assignment_id == 'undefined':
+            return JsonResponse({'success': False, 'error': 'Неверные ID студента или задания'}, status=400)
+        
+        try:
+            student_id = int(student_id)
+            assignment_id = int(assignment_id)
+        except (ValueError, TypeError):
+            return JsonResponse({'success': False, 'error': 'ID должны быть числами'}, status=400)
+
         score = request.POST.get('score')
         feedback = request.POST.get('feedback', '')
         status = request.POST.get('status')
 
-        student = get_object_or_404(User, id=student_id)
-        assignment = get_object_or_404(Assignment, id=assignment_id)
+        try:
+            student = User.objects.get(id=student_id)
+            assignment = Assignment.objects.get(id=assignment_id)
+        except (User.DoesNotExist, Assignment.DoesNotExist):
+            return JsonResponse({'success': False, 'error': 'Студент или задание не найдены'}, status=404)
 
-        # Проверка, что задание принадлежит курсу
         if assignment.course != course:
             return JsonResponse({'success': False, 'error': 'Задание не принадлежит этому курсу'}, status=400)
 
-        # Получаем или создаем работу
         submission, created = AssignmentSubmission.objects.get_or_create(
             assignment=assignment,
             student=student
         )
 
-        # Обновляем данные
         if score is not None and score != '':
-            submission.score = int(score)
+            try:
+                submission.score = int(score)
+            except ValueError:
+                return JsonResponse({'success': False, 'error': 'Оценка должна быть числом'}, status=400)
+                
         submission.feedback = feedback
         if status:
             submission.status = status
