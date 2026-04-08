@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -194,8 +196,10 @@
     <nav class="navbar navbar-expand-lg dark-navbar">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" href="{% url 'classroom_core:course_list' %}">
-                <i class="bi bi-mortarboard-fill me-2"></i>
-                Classroom
+                <img src="{% static 'images/logo.png' %}" 
+                    alt="MeowCourse" 
+                    class="me-2"
+                    style="width: 120px; height: auto; max-height: 64px; object-fit: contain;">
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

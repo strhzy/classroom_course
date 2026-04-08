@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -71,15 +73,6 @@
             -webkit-text-fill-color: transparent;
             animation: logoFloat 3s infinite ease-in-out;
             display: inline-block;
-        }
-        
-        @keyframes logoFloat {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
         }
         
        .title {
@@ -397,11 +390,13 @@
                         <div class="text-center">
                             <!-- Логотип -->
                             <div class="logo">
-                                <i class="bi bi-mortarboard-fill"></i>
+                                <img src="{% static 'images/logo.png' %}" 
+                                    alt="MeowCourse" 
+                                    class="me-2"
+                                    style="width: 240px; height: auto; object-fit: contain;">
                             </div>
-                            
-                            <!-- Заголовок -->
-                            <h1 class="title">Classroom</h1>
+
+                            <!-- <h1 class="title">Classroom</h1> -->
                             <p class="subtitle">Войдите в свою учетную запись</p>
                         </div>
                         
@@ -469,7 +464,7 @@
                         <div class="footer">
                             <small>
                                 <i class="bi bi-heart-fill"></i>
-                                © {{ request.current_year|default:"2026" }} Classroom
+                                © {{ request.current_year|default:"2026" }} MeowCourse. Все права защищены.
                             </small>
                         </div>
                     </div>
@@ -480,9 +475,8 @@
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Дополнительные анимации
-        document.addEventListener('DOMContentLoaded', function() {
-            // Фокус на поле username при загрузке
+            document.addEventListener('DOMContentLoaded', function() {
+
             const usernameField = document.getElementById('{{ form.username.id_for_label }}');
             if(usernameField) {
                 usernameField.focus();
