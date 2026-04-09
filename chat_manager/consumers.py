@@ -31,7 +31,12 @@ class ChatConsumer(WebsocketConsumer):
 
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        message = text_data_json['message']
+        message = text_data_json.get('message', '')
+        file_url = text_data_json.get('file_url', None)
+        file_name = text_data_json.get('file_name', None)
+        is_image = text_data_json.get('is_image', False)
+        file_size = text_data_json.get('file_size', '')
+        file_extension = text_data_json.get('file_extension', '')
 
         from .models import ChatRoom, Message
         from django.contrib.auth.models import User
@@ -39,23 +44,42 @@ class ChatConsumer(WebsocketConsumer):
         user = User.objects.get(id=self.scope['user'].id)
         room = ChatRoom.objects.get(id=self.room_id)
 
-        msg = Message.objects.create(
-            room=room,
-            user=user,
-            content=message
-        )
+        # Если есть файл, создаем сообщение с файлом
+        if file_url and file_name:
+            # Файл уже загружен через view, просто отправляем уведомление
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'file_message',
+                    'message': message,
+                    'user_id': user.id,
+                    'username': user.username,
+                    'file_url': file_url,
+                    'file_name': file_name,
+                    'is_image': is_image,
+                    'file_size': file_size,
+                    'file_extension': file_extension,
+                    'timestamp': ''
+                }
+            )
+        else:
+            # Обычное текстовое сообщение
+            msg = Message.objects.create(
+                room=room,
+                user=user,
+                content=message
+            )
 
-        # 🔥 ВАЖНО: async_to_sync
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                'message': message,
-                'user_id': user.id,
-                'username': user.username,
-                'timestamp': msg.timestamp.isoformat()
-            }
-        )
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'message': message,
+                    'user_id': user.id,
+                    'username': user.username,
+                    'timestamp': msg.timestamp.isoformat()
+                }
+            )
 
     def chat_message(self, event):
         self.send(text_data=json.dumps({
@@ -63,5 +87,19 @@ class ChatConsumer(WebsocketConsumer):
             'message': event['message'],
             'user_id': event['user_id'],
             'username': event['username'],
+            'timestamp': event['timestamp']
+        }))
+    
+    def file_message(self, event):
+        self.send(text_data=json.dumps({
+            'type': 'file_message',
+            'message': event['message'],
+            'user_id': event['user_id'],
+            'username': event['username'],
+            'file_url': event['file_url'],
+            'file_name': event['file_name'],
+            'is_image': event['is_image'],
+            'file_size': event['file_size'],
+            'file_extension': event['file_extension'],
             'timestamp': event['timestamp']
         }))

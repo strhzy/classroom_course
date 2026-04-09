@@ -3,9 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 from .models import ChatRoom, Message
+from .forms import ChatFileUploadForm
 from classroom_core.models import Course
 from django.contrib.auth.models import User
+import json
 
 @login_required
 def chat_list(request):
@@ -125,3 +128,73 @@ def search_users(request):
         'users': users,
         'query': query
     })
+
+@login_required
+@require_http_methods(["POST"])
+def upload_file_to_chat(request, room_id):
+    """Загрузка файла в чат"""
+    room = get_object_or_404(ChatRoom, id=room_id, is_active=True)
+    
+    # Проверяем, есть ли пользователь в комнате
+    if not room.participants.filter(id=request.user.id).exists():
+        return JsonResponse({'error': 'У вас нет доступа к этой комнате чата'}, status=403)
+    
+    form = ChatFileUploadForm(request.POST, request.FILES)
+    
+    if form.is_valid():
+        content = form.cleaned_data.get('content', '')
+        file_attachment = form.cleaned_data['file_attachment']
+        
+        # Создаем сообщение с файлом
+        message = Message.objects.create(
+            room=room,
+            user=request.user,
+            content=content,
+            file_attachment=file_attachment
+        )
+        
+        # Возвращаем данные для WebSocket
+        response_data = {
+            'id': message.id,
+            'user_id': request.user.id,
+            'username': request.user.username,
+            'timestamp': message.timestamp.isoformat(),
+            'content': content,
+            'has_file': True,
+            'is_image': message.is_image(),
+            'file_url': message.file_attachment.url if message.file_attachment else None,
+            'file_name': message.file_attachment.name.split('/')[-1] if message.file_attachment else None,
+            'file_size': message.get_file_size_display(),
+            'file_extension': message.get_file_extension(),
+        }
+        
+        return JsonResponse(response_data)
+    else:
+        return JsonResponse({'error': form.errors}, status=400)
+
+@login_required
+def download_message_file(request, message_id):
+    """Скачивание файла из сообщения"""
+    from django.http import HttpResponse
+    from django.shortcuts import get_object_or_404
+    import os
+    
+    message = get_object_or_404(Message, id=message_id)
+    
+    # Проверяем доступ к комнате чата
+    if not message.room.participants.filter(id=request.user.id).exists():
+        return HttpResponse('У вас нет доступа к этому файлу', status=403)
+    
+    if not message.file_attachment:
+        return HttpResponse('Файл не найден', status=404)
+    
+    file_path = message.file_attachment.path
+    
+    if not os.path.exists(file_path):
+        return HttpResponse('Файл не найден на сервере', status=404)
+    
+    # Открываем и возвращаем файл
+    with open(file_path, 'rb') as fh:
+        response = HttpResponse(fh.read(), content_type="application/octet-stream")
+        response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
+        return response

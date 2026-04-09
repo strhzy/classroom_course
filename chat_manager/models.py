@@ -1,6 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
 from classroom_core.models import Course
+import os
+
+def message_file_upload_path(instance, filename):
+    """Путь для загрузки файлов в сообщениях чата"""
+    from django.utils import timezone
+    ext = filename.split('.')[-1].lower()
+    timestamp = timezone.now().strftime('%Y%m%d_%H%M%S')
+    new_filename = f"chat{instance.room.id}_msg{timestamp}.{ext}"
+    return os.path.join('chat_files', str(instance.room.id), new_filename)
 
 class ChatRoom(models.Model):
     """Модель комнаты чата"""
@@ -63,7 +72,13 @@ class Message(models.Model):
     """Модель сообщения"""
     room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='messages')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='messages')
-    content = models.TextField()
+    content = models.TextField(blank=True)
+    file_attachment = models.FileField(
+        upload_to=message_file_upload_path,
+        null=True,
+        blank=True,
+        verbose_name='Файл'
+    )
     timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
     
@@ -77,9 +92,39 @@ class Message(models.Model):
         ]
     
     def __str__(self):
+        if self.file_attachment:
+            return f"{self.user.username}: 📎 {self.file_attachment.name.split('/')[-1]}"
         return f"{self.user.username}: {self.content[:50]}"
     
     def mark_as_read(self):
         """Отметить сообщение как прочитанное"""
         self.is_read = True
         self.save(update_fields=['is_read'])
+    
+    def is_image(self):
+        """Проверить, является ли файл изображением"""
+        if not self.file_attachment:
+            return False
+        image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp']
+        ext = self.file_attachment.name.split('.')[-1].lower()
+        return ext in image_extensions
+    
+    def get_file_extension(self):
+        """Получить расширение файла"""
+        if not self.file_attachment:
+            return ''
+        return self.file_attachment.name.split('.')[-1].upper()
+    
+    def get_file_size_display(self):
+        """Отображение размера файла"""
+        if not self.file_attachment:
+            return ''
+        try:
+            size = self.file_attachment.size
+            for unit in ['B', 'KB', 'MB', 'GB']:
+                if size < 1024.0:
+                    return f"{size:.1f} {unit}"
+                size /= 1024.0
+            return f"{size:.1f} TB"
+        except:
+            return ''
