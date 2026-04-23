@@ -4,19 +4,19 @@
 
 {% block courses_content %}
 <style>
-   .dark-theme-assignment {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+   .theme-assignment {
+        background: var(--bg-page-gradient);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Хлебные крошки */
    .custom-breadcrumb {
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
         padding: 0.8rem 1.2rem;
         border-radius: 50px;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         display: inline-block;
         animation: breadcrumbSlide 0.5s ease-out;
     }
@@ -38,7 +38,7 @@
     }
     
    .custom-breadcrumb.breadcrumb-item a {
-        color: #a8b8ff;
+        color: var(--text-muted);
         text-decoration: none;
         transition: all 0.3s ease;
     }
@@ -49,7 +49,7 @@
     }
     
    .custom-breadcrumb.breadcrumb-item.active {
-        color: #fff;
+        color: var(--text-white);
         font-weight: 500;
     }
     
@@ -78,11 +78,11 @@
    .page-title {
         font-size: 2rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0.5rem;
-        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+        text-shadow: 0 0 20px var(--bg-overlay-30);
     }
     
     /* Кнопка редактирования */
@@ -94,7 +94,7 @@
         font-weight: 600;
         color: white;
         transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        box-shadow: 0 5px 15px var(--bg-overlay-30);
         position: relative;
         overflow: hidden;
     }
@@ -125,11 +125,11 @@
     
     /* Карточки */
    .custom-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--bg-overlay-20);
         transition: all 0.3s ease;
         animation: cardAppear 0.5s ease-out;
         overflow: hidden;
@@ -154,13 +154,13 @@
     
    .card-header-gradient {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
-        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 1.5rem;
     }
     
    .card-header-gradient h5, 
    .card-header-gradient h6 {
-        color: #fff;
+        color: var(--text-white);
         margin: 0;
         display: flex;
         align-items: center;
@@ -174,12 +174,12 @@
     
    .card-body-custom {
         padding: 1.5rem;
-        color: #e0e0ff;
+        color: var(--text-main);;
     }
     
     /* Описание задания */
    .assignment-description {
-        color: #e0e0ff;
+        color: var(--text-main);;
         line-height: 1.8;
         font-size: 1.1rem;
     }
@@ -191,12 +191,12 @@
    .assignment-description img {
         max-width: 100%;
         border-radius: 10px;
-        border: 2px solid rgba(106, 90, 205, 0.3);
+        border: 2px solid var(--bg-overlay-30);
         margin: 1rem 0;
     }
     
    .assignment-description code {
-        background: rgba(106, 90, 205, 0.2);
+        background: var(--bg-overlay-20);
         color: #ff6b81;
         padding: 0.2rem 0.4rem;
         border-radius: 6px;
@@ -204,7 +204,7 @@
     
    .assignment-description pre {
         background: rgba(0, 0, 0, 0.3);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 10px;
         padding: 1rem;
         overflow-x: auto;
@@ -212,7 +212,7 @@
     
     /* Файл вложения */
    .attachment-alert {
-        background: rgba(106, 90, 205, 0.15);
+        background: var(--bg-overlay-15);
         border: 1px solid rgba(106, 90, 205, 0.4);
         border-radius: 12px;
         padding: 1rem 1.5rem;
@@ -230,19 +230,19 @@
     
    .attachment-info {
         flex: 1;
-        color: #a8b8ff;
+        color: var(--text-muted);
     }
     
    .attachment-info strong {
-        color: #fff;
+        color: var(--text-white);
     }
     
    .attachment-link {
-        background: rgba(106, 90, 205, 0.2);
+        background: var(--bg-overlay-20);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 8px;
         padding: 0.5rem 1.2rem;
-        color: #a8b8ff;
+        color: var(--text-muted);
         text-decoration: none;
         transition: all 0.3s ease;
         display: inline-flex;
@@ -251,9 +251,9 @@
     }
     
    .attachment-link:hover {
-        background: rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-30);
         border-color: #6a5acd;
-        color: #fff;
+        color: var(--text-white);
         transform: translateY(-2px);
     }
     
@@ -267,7 +267,7 @@
     }
     
    .due-date {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-size: 1.1rem;
     }
     
@@ -291,7 +291,7 @@
    .submit-section {
         margin-top: 2rem;
         padding-top: 1.5rem;
-        border-top: 1px solid rgba(106, 90, 205, 0.3);
+        border-top: 1px solid var(--bg-overlay-30);
     }
     
    .btn-submit {
@@ -302,7 +302,7 @@
         font-weight: 600;
         color: white;
         transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        box-shadow: 0 5px 15px var(--bg-overlay-30);
         display: inline-flex;
         align-items: center;
         gap: 0.8rem;
@@ -325,13 +325,13 @@
     /* Решение студента */
    .submission-card {
         background: rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 15px;
         overflow: hidden;
     }
     
    .submission-header {
-        background: rgba(106, 90, 205, 0.15);
+        background: var(--bg-overlay-15);
         padding: 1rem;
         display: flex;
         justify-content: space-between;
@@ -367,8 +367,8 @@
     }
     
    .submission-text {
-        color: #e0e0ff;
-        background: rgba(106, 90, 205, 0.1);
+        color: var(--text-main);;
+        background: var(--bg-overlay-10);
         padding: 1rem;
         border-radius: 10px;
         border-left: 3px solid #6a5acd;
@@ -390,7 +390,7 @@
     
    .score-badge {
         background: linear-gradient(135deg, #ffd700, #ffa502);
-        color: #1a1a2e;
+        color: var(--bg-page-start);
         padding: 0.3rem 1rem;
         border-radius: 50px;
         font-weight: 700;
@@ -402,20 +402,20 @@
     }
     
    .info-list dt {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-weight: 600;
         margin-bottom: 0.5rem;
     }
     
    .info-list dd {
-        color: #fff;
+        color: var(--text-white);
         margin-bottom: 1rem;
     }
     
    .info-badge {
-        background: rgba(106, 90, 205, 0.2);
+        background: var(--bg-overlay-20);
         border: 1px solid rgba(106, 90, 205, 0.4);
-        color: #a8b8ff;
+        color: var(--text-muted);
         padding: 0.3rem 0.8rem;
         border-radius: 50px;
         font-size: 0.9rem;
@@ -456,12 +456,12 @@
     
     /* Подсказка */
    .hint-card {
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
         border-left: 4px solid #6a5acd;
     }
     
    .hint-text {
-        color: #b0b0ff;
+        color: var(--text-secondary);;
         line-height: 1.6;
     }
     
@@ -483,7 +483,7 @@
     
     /* Адаптивность */
     @media(max-width: 768px) {
-       .dark-theme-assignment {
+       .theme-assignment {
             padding: 1rem 0.5rem;
         }
         
@@ -529,7 +529,7 @@
     }
 </style>
 
-<div class="dark-theme-assignment">
+<div class="theme-assignment">
     <div class="container">
         <!-- Заголовок и хлебные крошки -->
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
@@ -591,7 +591,7 @@
                         {% endif %}
                         
                         <div class="due-date-container">
-                            <h6 class="mb-3" style="color: #a8b8ff;">
+                            <h6 class="mb-3" style="color: var(--text-muted);">
                                 <i class="bi bi-hourglass-split"></i>
                                 Срок выполнения
                             </h6>
@@ -608,12 +608,12 @@
                         
                         {% if is_student and assignment.can_submit %}
                         <div class="submit-section">
-                            <h6 class="mb-3" style="color: #a8b8ff;">
+                            <h6 class="mb-3" style="color: var(--text-muted);">
                                 <i class="bi bi-cloud-upload"></i>
                                 Отправить решение
                             </h6>
                             {% if submission %}
-                            <div class="alert" style="background: rgba(106, 90, 205, 0.15); border: 1px solid rgba(106, 90, 205, 0.3); color: #a8b8ff; border-radius: 10px;">
+                            <div class="alert" style="background: var(--bg-overlay-15); border: 1px solid var(--bg-overlay-30); color: var(--text-muted); border-radius: 10px;">
                                 <i class="bi bi-info-circle me-2"></i>
                                 <strong>Вы уже отправили решение.</strong>
                                 {% if submission.status == 'returned' %}
@@ -686,7 +686,7 @@
                                     <strong>
                                         <i class="bi bi-chat-text me-1"></i>Обратная связь:
                                     </strong>
-                                    <p class="mb-0" style="color: #b0b0ff;">{{ submission.feedback }}</p>
+                                    <p class="mb-0" style="color: var(--text-secondary);;">{{ submission.feedback }}</p>
                                 </div>
                                 {% endif %}
                             </div>
@@ -709,27 +709,27 @@
                         {% if submissions_stats %}
                         <div class="row mb-4">
                             <div class="col-md-3 col-6 mb-2">
-                                <div class="p-3" style="background: rgba(106, 90, 205, 0.15); border-radius: 10px; text-align: center;">
-                                    <div style="font-size: 1.5rem; font-weight: 700; color: #fff;">{{ submissions_stats.total }}</div>
-                                    <div style="color: #a8b8ff; font-size: 0.85rem;">Всего работ</div>
+                                <div class="p-3" style="background: var(--bg-overlay-15); border-radius: 10px; text-align: center;">
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-white);">{{ submissions_stats.total }}</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Всего работ</div>
                                 </div>
                             </div>
                             <div class="col-md-3 col-6 mb-2">
                                 <div class="p-3" style="background: rgba(76, 175, 80, 0.15); border-radius: 10px; text-align: center;">
                                     <div style="font-size: 1.5rem; font-weight: 700; color: #4caf50;">{{ submissions_stats.graded }}</div>
-                                    <div style="color: #a8b8ff; font-size: 0.85rem;">Оценено</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Оценено</div>
                                 </div>
                             </div>
                             <div class="col-md-3 col-6 mb-2">
                                 <div class="p-3" style="background: rgba(255, 165, 2, 0.15); border-radius: 10px; text-align: center;">
                                     <div style="font-size: 1.5rem; font-weight: 700; color: #ffa502;">{{ submissions_stats.submitted }}</div>
-                                    <div style="color: #a8b8ff; font-size: 0.85rem;">Ожидают</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Ожидают</div>
                                 </div>
                             </div>
                             <div class="col-md-3 col-6 mb-2">
                                 <div class="p-3" style="background: rgba(255, 71, 87, 0.15); border-radius: 10px; text-align: center;">
                                     <div style="font-size: 1.5rem; font-weight: 700; color: #ff4757;">{{ submissions_stats.late }}</div>
-                                    <div style="color: #a8b8ff; font-size: 0.85rem;">С опозданием</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">С опозданием</div>
                                 </div>
                             </div>
                         </div>
@@ -738,21 +738,21 @@
                         <!-- Список работ -->
                         {% if all_submissions %}
                             <div class="table-responsive">
-                                <table class="table" style="color: #e0e0ff; --bs-table-bg: transparent;">
+                                <table class="table" style="color: var(--text-main);; --bs-table-bg: transparent;">
                                     <thead>
                                         <tr style="border-bottom: 2px solid rgba(106, 90, 205, 0.5);">
-                                            <th style="color: #a8b8ff; padding: 0.8rem; font-weight: 600;">Студент</th>
-                                            <th style="color: #a8b8ff; padding: 0.8rem; font-weight: 600;">Статус</th>
-                                            <th style="color: #a8b8ff; padding: 0.8rem; font-weight: 600;">Баллы</th>
-                                            <th style="color: #a8b8ff; padding: 0.8rem; font-weight: 600;">Дата</th>
-                                            <th style="color: #a8b8ff; padding: 0.8rem; font-weight: 600;">Действия</th>
+                                            <th style="color: var(--text-muted); padding: 0.8rem; font-weight: 600;">Студент</th>
+                                            <th style="color: var(--text-muted); padding: 0.8rem; font-weight: 600;">Статус</th>
+                                            <th style="color: var(--text-muted); padding: 0.8rem; font-weight: 600;">Баллы</th>
+                                            <th style="color: var(--text-muted); padding: 0.8rem; font-weight: 600;">Дата</th>
+                                            <th style="color: var(--text-muted); padding: 0.8rem; font-weight: 600;">Действия</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for sub in all_submissions %}
-                                        <tr style="border-bottom: 1px solid rgba(106, 90, 205, 0.2); transition: all 0.3s ease;">
+                                        <tr style="border-bottom: 1px solid var(--bg-overlay-20); transition: all 0.3s ease;">
                                             <td style="padding: 1rem;">
-                                                <strong style="color: #fff;">{{ sub.student.get_full_name|default:sub.student.username }}</strong>
+                                                <strong style="color: var(--text-white);">{{ sub.student.get_full_name|default:sub.student.username }}</strong>
                                                 <br>
                                                 <small style="color: #8080b0;">{{ sub.student.email }}</small>
                                             </td>
@@ -773,12 +773,12 @@
                                             </td>
                                             <td style="padding: 1rem;">
                                                 {% if sub.score is not None %}
-                                                    <span class="score-badge" style="background: linear-gradient(135deg, #ffd700, #ffa502); color: #1a1a2e; padding: 0.3rem 0.8rem; border-radius: 50px; font-weight: 700; display: inline-block;">{{ sub.score }}/{{ assignment.max_points }}</span>
+                                                    <span class="score-badge" style="background: linear-gradient(135deg, #ffd700, #ffa502); color: var(--bg-page-start); padding: 0.3rem 0.8rem; border-radius: 50px; font-weight: 700; display: inline-block;">{{ sub.score }}/{{ assignment.max_points }}</span>
                                                 {% else %}
                                                     <span style="color: #8080b0;">—</span>
                                                 {% endif %}
                                             </td>
-                                            <td style="padding: 1rem; color: #b0b0ff;">
+                                            <td style="padding: 1rem; color: var(--text-secondary);;">
                                                 <small>{{ sub.submitted_at|date:"d.m.Y H:i" }}</small>
                                             </td>
                                             <td style="padding: 1rem;">

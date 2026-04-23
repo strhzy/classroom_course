@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
         body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+            background: var(--bg-page-gradient);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -21,11 +21,11 @@
         }
         
        .login-card {
-            background: rgba(30, 30, 46, 0.95);
+            background: var(--bg-card);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(106, 90, 205, 0.3);
+            border: 1px solid var(--bg-overlay-30);
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(106, 90, 205, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px var(--bg-overlay-30);
             animation: cardAppear 0.8s ease-out;
             overflow: hidden;
             position: relative;
@@ -78,15 +78,15 @@
        .title {
             font-size: 2.2rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #fff, #a8b8ff);
+            background: linear-gradient(135deg, var(--text-white), var(--text-muted));
             background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 0.5rem;
-            text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+            text-shadow: 0 0 20px var(--bg-overlay-30);
         }
         
        .subtitle {
-            color: #a8b8ff;
+            color: var(--text-muted);
             font-size: 1rem;
             margin-bottom: 2rem;
         }
@@ -113,7 +113,7 @@
         }
         
        .form-label {
-            color: #a8b8ff;
+            color: var(--text-muted);
             font-weight: 600;
             margin-bottom: 0.5rem;
             display: flex;
@@ -128,10 +128,10 @@
         
        .form-control {
             background: rgba(20, 20, 35, 0.8);
-            border: 2px solid rgba(106, 90, 205, 0.3);
+            border: 2px solid var(--bg-overlay-30);
             border-radius: 12px;
             padding: 0.8rem 1.2rem;
-            color: #fff;
+            color: var(--text-white);
             font-size: 1rem;
             transition: all 0.3s ease;
             width: 100%;
@@ -140,7 +140,7 @@
        .form-control:focus {
             outline: none;
             border-color: #6a5acd;
-            box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2), 0 0 20px rgba(106, 90, 205, 0.3);
+            box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2), 0 0 20px var(--bg-overlay-30);
             background: rgba(30, 30, 50, 0.9);
             transform: translateY(-2px);
         }
@@ -202,7 +202,7 @@
             margin-left: auto;
             background: none;
             border: none;
-            color: #a8b8ff;
+            color: var(--text-muted);
             font-size: 1.2rem;
             cursor: pointer;
             padding: 0 0.5rem;
@@ -210,7 +210,7 @@
         }
         
        .alert-close:hover {
-            color: #fff;
+            color: var(--text-white);
             transform: scale(1.2);
         }
         
@@ -223,7 +223,7 @@
             font-weight: 600;
             color: white;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+            box-shadow: 0 5px 15px var(--bg-overlay-30);
             position: relative;
             overflow: hidden;
             width: 100%;

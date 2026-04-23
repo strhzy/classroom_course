@@ -4,19 +4,19 @@
 
 {% block content %}
 <style>
-   .dark-theme-add-students {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+   .theme-add-students {
+        background: var(--bg-page-gradient);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Хлебные крошки */
    .custom-breadcrumb {
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
         padding: 0.8rem 1.2rem;
         border-radius: 50px;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         display: inline-block;
         animation: breadcrumbSlide 0.5s ease-out;
     }
@@ -38,7 +38,7 @@
     }
     
    .custom-breadcrumb.breadcrumb-item a {
-        color: #a8b8ff;
+        color: var(--text-muted);
         text-decoration: none;
         transition: all 0.3s ease;
     }
@@ -49,7 +49,7 @@
     }
     
    .custom-breadcrumb.breadcrumb-item.active {
-        color: #fff;
+        color: var(--text-white);
         font-weight: 500;
     }
     
@@ -79,11 +79,11 @@
    .page-title {
         font-size: 2rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0.5rem;
-        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+        text-shadow: 0 0 20px var(--bg-overlay-30);
         display: flex;
         align-items: center;
         gap: 0.8rem;
@@ -99,22 +99,22 @@
    .group-name {
         color: #6a5acd;
         font-weight: 600;
-        background: rgba(106, 90, 205, 0.15);
+        background: var(--bg-overlay-15);
         padding: 0.3rem 1rem;
         border-radius: 50px;
         font-size: 1.2rem;
         display: inline-block;
         margin-left: 0.5rem;
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
     }
     
     /* Карточка */
    .form-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--bg-overlay-20);
         transition: all 0.3s ease;
         animation: cardAppear 0.6s ease-out 0.2s both;
         overflow: hidden;
@@ -137,12 +137,12 @@
     
    .card-header-gradient {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
-        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 1.5rem;
     }
     
    .card-header-gradient h5 {
-        color: #fff;
+        color: var(--text-white);
         font-size: 1.2rem;
         margin: 0;
         display: flex;
@@ -161,8 +161,8 @@
     
     /* Информация о группе */
    .group-info {
-        background: rgba(106, 90, 205, 0.1);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-10);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 12px;
         padding: 1rem 1.5rem;
         margin-bottom: 1.5rem;
@@ -175,7 +175,7 @@
     
     @keyframes infoPulse {
         0%, 100% {
-            border-color: rgba(106, 90, 205, 0.3);
+            border-color: var(--bg-overlay-30);
         }
         50% {
             border-color: rgba(106, 90, 205, 0.6);
@@ -185,7 +185,7 @@
    .group-info-icon {
         width: 40px;
         height: 40px;
-        background: rgba(106, 90, 205, 0.2);
+        background: var(--bg-overlay-20);
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -196,18 +196,18 @@
     
    .group-info-text {
         flex: 1;
-        color: #a8b8ff;
+        color: var(--text-muted);
     }
     
    .group-info-text strong {
-        color: #fff;
+        color: var(--text-white);
         font-size: 1.1rem;
     }
     
     /* Список студентов */
    .students-list {
-        background: rgba(20, 20, 35, 0.6);
-        border: 1px solid rgba(106, 90, 205, 0.2);
+        background: var(--bg-item);
+        border: 1px solid var(--bg-overlay-20);
         border-radius: 15px;
         max-height: 400px;
         overflow-y: auto;
@@ -219,12 +219,12 @@
     }
     
    .students-list::-webkit-scrollbar-track {
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
         border-radius: 10px;
     }
     
    .students-list::-webkit-scrollbar-thumb {
-        background: rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-30);
         border-radius: 10px;
     }
     
@@ -236,7 +236,7 @@
         display: flex;
         align-items: center;
         padding: 0.8rem 1.2rem;
-        border-bottom: 1px solid rgba(106, 90, 205, 0.2);
+        border-bottom: 1px solid var(--bg-overlay-20);
         transition: all 0.3s ease;
         cursor: pointer;
         animation: studentAppear 0.5s ease-out;
@@ -248,7 +248,7 @@
     }
     
    .student-item:hover {
-        background: rgba(106, 90, 205, 0.15);
+        background: var(--bg-overlay-15);
         transform: translateX(5px);
     }
     
@@ -298,13 +298,13 @@
     }
     
    .student-name {
-        color: #fff;
+        color: var(--text-white);
         font-weight: 600;
         margin-bottom: 0.2rem;
     }
     
    .student-details {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-size: 0.85rem;
         display: flex;
         flex-wrap: wrap;
@@ -317,7 +317,7 @@
     }
     
    .student-email {
-        color: #b0b0ff;
+        color: var(--text-secondary);;
     }
     
     /* Инструменты выделения */
@@ -329,11 +329,11 @@
     }
     
    .selection-btn {
-        background: rgba(106, 90, 205, 0.15);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-15);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 8px;
         padding: 0.4rem 1rem;
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-size: 0.9rem;
         transition: all 0.3s ease;
         cursor: pointer;
@@ -343,9 +343,9 @@
     }
     
    .selection-btn:hover {
-        background: rgba(106, 90, 205, 0.25);
+        background: var(--bg-overlay-25);
         border-color: #6a5acd;
-        color: #fff;
+        color: var(--text-white);
         transform: translateY(-2px);
     }
     
@@ -355,10 +355,10 @@
     
     /* Счетчик выбранных */
    .selected-counter {
-        background: rgba(106, 90, 205, 0.2);
+        background: var(--bg-overlay-20);
         border-radius: 8px;
         padding: 0.4rem 1rem;
-        color: #fff;
+        color: var(--text-white);
         font-size: 0.9rem;
         display: inline-flex;
         align-items: center;
@@ -439,12 +439,12 @@
     }
     
    .btn-cancel {
-        background: rgba(106, 90, 205, 0.2);
+        background: var(--bg-overlay-20);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 12px;
         padding: 0.8rem 2rem;
         font-weight: 600;
-        color: #a8b8ff;
+        color: var(--text-muted);
         transition: all 0.3s ease;
         text-decoration: none;
         flex: 1;
@@ -456,9 +456,9 @@
     }
     
    .btn-cancel:hover {
-        background: rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-30);
         border-color: #6a5acd;
-        color: #fff;
+        color: var(--text-white);
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
     }
@@ -506,7 +506,7 @@
     
     /* Адаптивность */
     @media(max-width: 768px) {
-       .dark-theme-add-students {
+       .theme-add-students {
             padding: 1rem 0.5rem;
         }
         
@@ -571,7 +571,7 @@
     }
 </style>
 
-<div class="dark-theme-add-students">
+<div class="theme-add-students">
     <div class="container">
         <!-- Заголовок и хлебные крошки -->
         <div class="page-header">

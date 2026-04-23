@@ -4,8 +4,8 @@
 
 {% block courses_content %}
 <style>
-   .dark-theme-delete {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+   .theme-delete {
+        background: var(--bg-page-gradient);
         min-height: 100vh;
         padding: 2rem 1rem;
         display: flex;
@@ -13,7 +13,7 @@
     }
     
    .delete-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 71, 87, 0.3);
         border-radius: 20px;
@@ -83,7 +83,7 @@
     }
     
    .delete-title {
-        color: #fff;
+        color: var(--text-white);
         font-size: 2rem;
         font-weight: 700;
         margin-bottom: 1.5rem;
@@ -115,7 +115,7 @@
     }
     
    .assignment-title {
-        color: #fff;
+        color: var(--text-white);
         font-size: 1.4rem;
         font-weight: 600;
         margin: 0;
@@ -165,7 +165,7 @@
     }
     
    .warning-text {
-        color: #b0b0ff !important;
+        color: var(--text-secondary); !important;
         font-size: 1.1rem;
         margin: 1.5rem 0;
         line-height: 1.6;
@@ -246,12 +246,12 @@
     }
     
    .btn-cancel {
-        background: rgba(106, 90, 205, 0.2);
+        background: var(--bg-overlay-20);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 12px;
         padding: 0.8rem 2rem;
         font-weight: 600;
-        color: #a8b8ff;
+        color: var(--text-muted);
         transition: all 0.3s ease;
         text-decoration: none;
         position: relative;
@@ -263,9 +263,9 @@
     }
     
    .btn-cancel:hover {
-        background: rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-30);
         border-color: rgba(106, 90, 205, 0.8);
-        color: #fff;
+        color: var(--text-white);
         transform: translateY(-3px);
         box-shadow: 0 5px 20px rgba(106, 90, 205, 0.4);
     }
@@ -322,7 +322,7 @@
     
     /* Адаптивность */
     @media(max-width: 576px) {
-       .dark-theme-delete {
+       .theme-delete {
             padding: 1rem 0.5rem;
         }
         
@@ -418,7 +418,7 @@
     }
 </style>
 
-<div class="dark-theme-delete">
+<div class="theme-delete">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-6 col-md-8 col-sm-10">

@@ -2,22 +2,22 @@
 
 {% block content %}
 <style>
-   .dark-nav {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+   .nav {
+        background: linear-gradient(135deg, var(--bg-page-start) 0%, var(--bg-page-end) 100%);
+        border-bottom: 1px solid var(--bg-overlay-30);
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
         padding: 0.8rem 1rem;
     }
     
-   .dark-nav  .navbar-nav {
+   .nav  .navbar-nav {
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
         align-items: center;
     }
     
-   .dark-nav .nav-link {
-        color: #a8b8ff !important;
+   .nav .nav-link {
+        color: var(--text-muted) !important;
         padding: 0.6rem 1.2rem !important;
         border-radius: 12px;
         transition: background-color 0.2s ease, color 0.2s ease;
@@ -27,39 +27,39 @@
         gap: 0.5rem;
     }
     
-   .dark-nav .nav-link:hover {
-        color: #fff !important;
-        background: rgba(106, 90, 205, 0.15);
+   .nav .nav-link:hover {
+        color: var(--text-white) !important;
+        background: var(--bg-overlay-15);
     }
     
-   .dark-nav .nav-link.active {
+   .nav .nav-link.active {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.25), rgba(74, 144, 226, 0.25));
-        color: #fff !important;
+        color: var(--text-white) !important;
         border: 1px solid rgba(106, 90, 205, 0.5);
     }
     
     /* Иконки в навигации */
-   .dark-nav .nav-link i {
+   .nav .nav-link i {
         color: #6a5acd;
         font-size: 1.2rem;
     }
     
-   .dark-nav .nav-link.active i {
-        color: #fff;
+   .nav .nav-link.active i {
+        color: var(--text-white);
     }
     
     /* Основной контент */
-   .dark-main-content {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+   .main-content {
+        background: var(--bg-page-gradient);
         min-height: calc(100vh - 70px);
         padding: 2rem 1rem;
     }
     
     /* Контейнер для контента */
-   .dark-content-container {
+   .content-container {
         background: rgba(30, 30, 46, 0.3);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.2);
+        border: 1px solid var(--bg-overlay-20);
         border-radius: 20px;
         padding: 1.5rem;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -67,43 +67,43 @@
     
     /* Адаптивность */
     @media(max-width: 768px) {
-       .dark-nav .navbar-nav {
+       .nav .navbar-nav {
             flex-direction: column;
             width: 100%;
             gap: 0.3rem;
         }
         
-       .dark-nav .nav-link {
+       .nav .nav-link {
             width: 100%;
             justify-content: center;
         }
         
-       .dark-main-content {
+       .main-content {
             padding: 1rem 0.5rem;
         }
         
-       .dark-content-container {
+       .content-container {
             padding: 1rem;
         }
     }
     
     @media(min-width: 769px) and(max-width: 992px) {
-       .dark-nav .nav-link {
+       .nav .nav-link {
             padding: 0.5rem 1rem !important;
             font-size: 0.9rem;
         }
         
-       .dark-nav .nav-link i {
+       .nav .nav-link i {
             font-size: 1rem;
         }
     }
 </style>
 
 <!-- Навигация -->
-<nav class="navbar navbar-expand-lg dark-nav">
+<nav class="navbar navbar-expand-lg nav">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                style="background: rgba(106, 90, 205, 0.3); border: 1px solid rgba(106, 90, 205, 0.5);">
+                style="background: var(--bg-overlay-30); border: 1px solid rgba(106, 90, 205, 0.5);">
             <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -159,11 +159,11 @@
 </nav>
 
 <!-- Основной контент -->
-<div class="dark-main-content">
+<div class="main-content">
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="dark-content-container">
+                <div class="content-container">
                     {% block courses_content %}{% endblock %}
                 </div>
             </div>

@@ -4,19 +4,19 @@
 
 {% block courses_content %}
 <style>
-   .dark-theme-announcement {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+   .theme-announcement {
+        background: var(--bg-page-gradient);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Хлебные крошки */
    .custom-breadcrumb {
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
         padding: 0.8rem 1.2rem;
         border-radius: 50px;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         display: inline-block;
         animation: breadcrumbAppear 0.5s ease-out;
     }
@@ -38,7 +38,7 @@
     }
     
    .custom-breadcrumb.breadcrumb-item a {
-        color: #a8b8ff;
+        color: var(--text-muted);
         text-decoration: none;
         transition: all 0.3s ease;
         position: relative;
@@ -65,7 +65,7 @@
     }
     
    .custom-breadcrumb.breadcrumb-item.active {
-        color: #fff;
+        color: var(--text-white);
         font-weight: 500;
     }
     
@@ -95,11 +95,11 @@
    .page-title {
         font-size: 2.2rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0.5rem;
-        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+        text-shadow: 0 0 20px var(--bg-overlay-30);
     }
     
     /* Кнопка редактирования */
@@ -111,7 +111,7 @@
         font-weight: 600;
         color: white;
         transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        box-shadow: 0 5px 15px var(--bg-overlay-30);
         position: relative;
         overflow: hidden;
         animation: buttonAppear 0.5s ease-out 0.3s both;
@@ -158,11 +158,11 @@
     
     /* Карточка объявления */
    .announcement-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--bg-overlay-20);
         transition: all 0.3s ease;
         animation: cardAppear 0.6s ease-out 0.4s both;
         overflow: hidden;
@@ -186,12 +186,12 @@
     
    .card-header-gradient {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
-        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 1.5rem;
     }
     
    .announcement-title {
-        color: #fff;
+        color: var(--text-white);
         font-size: 1.8rem;
         font-weight: 600;
         margin: 0;
@@ -199,7 +199,7 @@
     }
     
    .author-info {
-        color: #b0b0ff;
+        color: var(--text-secondary);;
         font-size: 0.95rem;
     }
     
@@ -229,7 +229,7 @@
     }
     
    .announcement-content {
-        color: #e0e0ff;
+        color: var(--text-main);;
         line-height: 1.8;
         font-size: 1.1rem;
         padding: 1.5rem;
@@ -243,7 +243,7 @@
         max-width: 100%;
         height: auto;
         border-radius: 10px;
-        border: 2px solid rgba(106, 90, 205, 0.3);
+        border: 2px solid var(--bg-overlay-30);
         margin: 1rem 0;
     }
     
@@ -262,12 +262,12 @@
         border-left: 4px solid #6a5acd;
         padding-left: 1.2rem;
         margin: 1.2rem 0;
-        color: #b0b0ff;
+        color: var(--text-secondary);;
         font-style: italic;
     }
     
    .announcement-content code {
-        background: rgba(106, 90, 205, 0.2);
+        background: var(--bg-overlay-20);
         color: #ff6b81;
         padding: 0.2rem 0.4rem;
         border-radius: 6px;
@@ -276,7 +276,7 @@
     
    .announcement-content pre {
         background: rgba(0, 0, 0, 0.3);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 10px;
         padding: 1rem;
         overflow-x: auto;
@@ -284,7 +284,7 @@
     
    .announcement-content pre code {
         background: transparent;
-        color: #a8b8ff;
+        color: var(--text-muted);
     }
     
    .announcement-content ul, 
@@ -303,7 +303,7 @@
    .announcement-content h4,
    .announcement-content h5,
    .announcement-content h6 {
-        color: #fff;
+        color: var(--text-white);
         margin-top: 1.5rem;
         margin-bottom: 1rem;
     }
@@ -327,7 +327,7 @@
     
     /* Адаптивность */
     @media(max-width: 768px) {
-       .dark-theme-announcement {
+       .theme-announcement {
             padding: 1rem 0.5rem;
         }
         
@@ -386,7 +386,7 @@
     }
 </style>
 
-<div class="dark-theme-announcement">
+<div class="theme-announcement">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
             <div class="announcement-header">

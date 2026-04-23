@@ -4,8 +4,8 @@
 
 {% block courses_content %}
 <style>
-   .dark-theme-profile {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+   .theme-profile {
+        background: var(--bg-page-gradient);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
@@ -35,11 +35,11 @@
    .page-title {
         font-size: 2.2rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0;
-        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+        text-shadow: 0 0 20px var(--bg-overlay-30);
         display: flex;
         align-items: center;
         gap: 0.8rem;
@@ -71,7 +71,7 @@
         font-weight: 600;
         color: white;
         transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        box-shadow: 0 5px 15px var(--bg-overlay-30);
         position: relative;
         overflow: hidden;
         text-decoration: none;
@@ -116,11 +116,11 @@
     
     /* Карточка профиля */
    .profile-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 30px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--bg-overlay-20);
         transition: all 0.3s ease;
         animation: cardAppear 0.6s ease-out 0.2s both;
         overflow: hidden;
@@ -144,12 +144,12 @@
     
    .card-header-gradient {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
-        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 2rem;
     }
     
    .card-header-gradient h5 {
-        color: #fff;
+        color: var(--text-white);
         font-size: 1.2rem;
         margin: 0;
         display: flex;
@@ -173,9 +173,9 @@
         gap: 2rem;
         margin-bottom: 2.5rem;
         padding: 1rem;
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
         border-radius: 20px;
-        border: 1px solid rgba(106, 90, 205, 0.2);
+        border: 1px solid var(--bg-overlay-20);
         flex-wrap: wrap;
         animation: avatarAppear 0.5s ease-out 0.3s both;
     }
@@ -226,14 +226,14 @@
     }
     
    .user-info h4 {
-        color: #fff;
+        color: var(--text-white);
         font-size: 1.8rem;
         font-weight: 700;
         margin-bottom: 0.3rem;
     }
     
    .user-info.full-name {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-size: 1.1rem;
         margin-bottom: 0.5rem;
         display: flex;
@@ -280,19 +280,19 @@
    .info-row {
         display: flex;
         padding: 0.8rem;
-        border-bottom: 1px solid rgba(106, 90, 205, 0.2);
+        border-bottom: 1px solid var(--bg-overlay-20);
         transition: all 0.3s ease;
         border-radius: 10px;
     }
     
    .info-row:hover {
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
         transform: translateX(5px);
     }
     
    .info-label {
         min-width: 140px;
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-weight: 600;
         display: flex;
         align-items: center;
@@ -306,7 +306,7 @@
     }
     
    .info-value {
-        color: #fff;
+        color: var(--text-white);
         flex: 1;
         display: flex;
         align-items: center;
@@ -314,12 +314,12 @@
     }
     
    .info-badge {
-        background: rgba(106, 90, 205, 0.2);
-        color: #a8b8ff;
+        background: var(--bg-overlay-20);
+        color: var(--text-muted);
         padding: 0.2rem 0.8rem;
         border-radius: 50px;
         font-size: 0.9rem;
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
     }
     
     /* Пустые значения */
@@ -342,7 +342,7 @@
         gap: 1rem;
         margin-top: 2rem;
         padding-top: 1rem;
-        border-top: 1px solid rgba(106, 90, 205, 0.3);
+        border-top: 1px solid var(--bg-overlay-30);
         flex-wrap: wrap;
         animation: statsAppear 0.5s ease-out 0.5s both;
     }
@@ -361,16 +361,16 @@
    .stat-card {
         flex: 1;
         min-width: 100px;
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
         border-radius: 15px;
         padding: 1rem;
         text-align: center;
-        border: 1px solid rgba(106, 90, 205, 0.2);
+        border: 1px solid var(--bg-overlay-20);
         transition: all 0.3s ease;
     }
     
    .stat-card:hover {
-        background: rgba(106, 90, 205, 0.15);
+        background: var(--bg-overlay-15);
         transform: translateY(-2px);
         border-color: rgba(106, 90, 205, 0.5);
     }
@@ -383,13 +383,13 @@
     }
     
    .stat-label {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-size: 0.85rem;
     }
     
     /* Адаптивность */
     @media(max-width: 768px) {
-       .dark-theme-profile {
+       .theme-profile {
             padding: 1rem 0.5rem;
         }
         
@@ -450,7 +450,7 @@
     }
 </style>
 
-<div class="dark-theme-profile">
+<div class="theme-profile">
     <div class="container">
         <!-- Заголовок и кнопка редактирования -->
         <div class="page-header">

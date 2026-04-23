@@ -4,8 +4,8 @@
 
 {% block courses_content %}
 <style>
-    .dark-theme-gradebook {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+    .theme-gradebook {
+        background: var(--bg-page-gradient);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
@@ -17,7 +17,7 @@
         border-radius: 20px;
         padding: 2rem;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
 
@@ -33,13 +33,13 @@
     .gradebook-table td {
         padding: 0.75rem;
         text-align: center;
-        border: 1px solid rgba(106, 90, 205, 0.2);
+        border: 1px solid var(--bg-overlay-20);
         vertical-align: top;
     }
 
     .gradebook-table th {
         background: linear-gradient(135deg, #6a5acd 0%, #483d8b 100%);
-        color: #fff;
+        color: var(--text-white);
         font-weight: 600;
         text-transform: uppercase;
         font-size: 0.8rem;
@@ -72,7 +72,7 @@
     }
 
     .gradebook-table tr:hover {
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
     }
 
     .gradebook-table td:first-child {
@@ -97,7 +97,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #fff;
+        color: var(--text-white);
         font-weight: 600;
         font-size: 0.85rem;
         flex-shrink: 0;
@@ -106,10 +106,10 @@
     .grade-input {
         width: 100%;
         padding: 0.4rem;
-        border: 2px solid rgba(106, 90, 205, 0.3);
+        border: 2px solid var(--bg-overlay-30);
         border-radius: 6px;
         background: rgba(255, 255, 255, 0.1);
-        color: #fff;
+        color: var(--text-white);
         text-align: center;
         font-size: 0.9rem;
         transition: all 0.3s ease;
@@ -119,8 +119,8 @@
     .grade-input:focus {
         outline: none;
         border-color: #6a5acd;
-        background: rgba(106, 90, 205, 0.2);
-        box-shadow: 0 0 8px rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-20);
+        box-shadow: 0 0 8px var(--bg-overlay-30);
     }
 
     .grade-input.has-grade {
@@ -133,10 +133,10 @@
     .status-select {
         width: 100%;
         padding: 0.3rem;
-        border: 2px solid rgba(106, 90, 205, 0.3);
+        border: 2px solid var(--bg-overlay-30);
         border-radius: 6px;
         background: rgba(255, 255, 255, 0.1);
-        color: #fff;
+        color: var(--text-white);
         font-size: 0.75rem;
         cursor: pointer;
         transition: all 0.3s ease;
@@ -148,8 +148,8 @@
     }
 
     .status-select option {
-        background: #1a1a2e;
-        color: #fff;
+        background: var(--bg-page-start);
+        color: var(--text-white);
     }
 
     .total-score {
@@ -174,7 +174,7 @@
     }
 
     .gradebook-title {
-        color: #fff;
+        color: var(--text-white);
         font-size: 1.8rem;
         font-weight: 700;
         display: flex;
@@ -184,7 +184,7 @@
 
     .btn-save-grades {
         background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
-        color: #fff;
+        color: var(--text-white);
         border: none;
         padding: 0.75rem 1.5rem;
         border-radius: 10px;
@@ -202,8 +202,8 @@
     }
 
     .btn-back {
-        background: rgba(106, 90, 205, 0.3);
-        color: #fff;
+        background: var(--bg-overlay-30);
+        color: var(--text-white);
         border: none;
         padding: 0.75rem 1.5rem;
         border-radius: 10px;
@@ -218,7 +218,7 @@
 
     .btn-back:hover {
         background: rgba(106, 90, 205, 0.5);
-        color: #fff;
+        color: var(--text-white);
     }
 
     .assignment-max-points {
@@ -270,7 +270,7 @@
     }
 </style>
 
-<div class="dark-theme-gradebook">
+<div class="theme-gradebook">
     <div class="gradebook-container">
         <div class="gradebook-header">
             <div>
@@ -302,7 +302,7 @@
                     {% for assignment in assignments %}
                     <th class="assignment-column">
                         <a href="{% url 'classroom_core:assignment_detail' assignment.id %}" 
-                        style="color: #fff; text-decoration: none; display: block; margin-bottom: 0.2rem;">
+                        style="color: var(--text-white); text-decoration: none; display: block; margin-bottom: 0.2rem;">
                             {{ assignment.title }}
                         </a>
                         <span class="assignment-max-points">макс. {{ assignment.max_points }}</span>

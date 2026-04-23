@@ -4,8 +4,8 @@
 
 {% block courses_content %}
 <style>
-   .dark-theme-courses {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+   .theme-courses {
+        background: var(--bg-page-gradient);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
@@ -35,11 +35,11 @@
    .page-title {
         font-size: 2.2rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0;
-        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+        text-shadow: 0 0 20px var(--bg-overlay-30);
         display: flex;
         align-items: center;
     }
@@ -61,7 +61,7 @@
         font-weight: 600;
         color: white;
         transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        box-shadow: 0 5px 15px var(--bg-overlay-30);
         position: relative;
         overflow: hidden;
         text-decoration: none;
@@ -105,9 +105,9 @@
     
     /* Фильтры */
    .filters-section {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 15px;
         padding: 1.5rem;
         margin-bottom: 2rem;
@@ -127,7 +127,7 @@
     }
     
    .filter-label {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-weight: 600;
         margin-bottom: 0.8rem;
         display: flex;
@@ -142,10 +142,10 @@
     
    .custom-input {
         background: rgba(20, 20, 35, 0.8);
-        border: 2px solid rgba(106, 90, 205, 0.3);
+        border: 2px solid var(--bg-overlay-30);
         border-radius: 10px;
         padding: 0.7rem 1rem;
-        color: #fff;
+        color: var(--text-white);
         font-size: 0.95rem;
         transition: all 0.3s ease;
         width: 100%;
@@ -154,7 +154,7 @@
    .custom-input:focus {
         outline: none;
         border-color: #6a5acd;
-        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2);
+        box-shadow: 0 0 0 4px var(--bg-overlay-20);
     }
     
    .custom-input:hover {
@@ -167,10 +167,10 @@
     
    .custom-select {
         background: rgba(20, 20, 35, 0.8);
-        border: 2px solid rgba(106, 90, 205, 0.3);
+        border: 2px solid var(--bg-overlay-30);
         border-radius: 10px;
         padding: 0.7rem 1rem;
-        color: #fff;
+        color: var(--text-white);
         font-size: 0.95rem;
         transition: all 0.3s ease;
         width: 100%;
@@ -184,7 +184,7 @@
    .custom-select:focus {
         outline: none;
         border-color: #6a5acd;
-        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2);
+        box-shadow: 0 0 0 4px var(--bg-overlay-20);
     }
     
    .custom-select:hover {
@@ -192,8 +192,8 @@
     }
     
    .custom-select option {
-        background: #1a1a2e;
-        color: #fff;
+        background: var(--bg-page-start);
+        color: var(--text-white);
     }
     
    .btn-filter {
@@ -204,7 +204,7 @@
         font-weight: 600;
         color: white;
         transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        box-shadow: 0 5px 15px var(--bg-overlay-30);
         width: 100%;
         position: relative;
         overflow: hidden;
@@ -226,9 +226,9 @@
     
     /* Карточки курсов */
    .course-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
         transition: all 0.3s ease;
         animation: cardAppear 0.5s ease-out;
@@ -256,7 +256,7 @@
     
    .course-card:hover {
         transform: translateY(-8px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(106, 90, 205, 0.3);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px var(--bg-overlay-30);
         border-color: rgba(106, 90, 205, 0.6);
     }
     
@@ -294,14 +294,14 @@
     }
     
    .course-title {
-        color: #fff;
+        color: var(--text-white);
         font-size: 1.2rem;
         font-weight: 600;
         margin-bottom: 0.3rem;
     }
     
    .instructor-info {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-size: 0.85rem;
         display: flex;
         align-items: center;
@@ -313,7 +313,7 @@
     }
     
    .course-description {
-        color: #b0b0ff;
+        color: var(--text-secondary);;
         font-size: 0.95rem;
         line-height: 1.5;
         margin: 1rem 0;
@@ -328,8 +328,8 @@
         justify-content: space-between;
         align-items: center;
         padding: 0.8rem 0;
-        border-top: 1px solid rgba(106, 90, 205, 0.2);
-        border-bottom: 1px solid rgba(106, 90, 205, 0.2);
+        border-top: 1px solid var(--bg-overlay-20);
+        border-bottom: 1px solid var(--bg-overlay-20);
         margin: 0.8rem 0;
     }
     
@@ -337,7 +337,7 @@
         display: flex;
         align-items: center;
         gap: 0.3rem;
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-size: 0.9rem;
     }
     
@@ -346,7 +346,7 @@
     }
     
    .stat strong {
-        color: #fff;
+        color: var(--text-white);
         margin-left: 0.2rem;
     }
     
@@ -374,7 +374,7 @@
     
    .badge-archived {
         background: rgba(108, 117, 125, 0.15);
-        color: #a8b8ff;
+        color: var(--text-muted);
         border: 1px solid #6c757d;
     }
     
@@ -408,12 +408,12 @@
     }
     
    .btn-outline-course {
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 10px;
         padding: 0.6rem;
         font-weight: 600;
-        color: #a8b8ff;
+        color: var(--text-muted);
         transition: all 0.3s ease;
         text-decoration: none;
         display: inline-flex;
@@ -424,9 +424,9 @@
     }
     
    .btn-outline-course:hover {
-        background: rgba(106, 90, 205, 0.2);
+        background: var(--bg-overlay-20);
         border-color: #6a5acd;
-        color: #fff;
+        color: var(--text-white);
         transform: translateY(-2px);
     }
     
@@ -473,14 +473,14 @@
     }
     
    .empty-title {
-        color: #fff;
+        color: var(--text-white);
         font-size: 1.8rem;
         font-weight: 600;
         margin-bottom: 1rem;
     }
     
    .empty-text {
-        color: #b0b0ff;
+        color: var(--text-secondary);;
         font-size: 1.1rem;
         margin-bottom: 2rem;
     }
@@ -503,20 +503,20 @@
     }
     
    .pagination.page-link {
-        background: rgba(30, 30, 46, 0.95);
-        border: 1px solid rgba(106, 90, 205, 0.3);
-        color: #a8b8ff;
+        background: var(--bg-card);
+        border: 1px solid var(--bg-overlay-30);
+        color: var(--text-muted);
         margin: 0 0.2rem;
         border-radius: 8px;
         transition: all 0.3s ease;
     }
     
    .pagination.page-link:hover {
-        background: rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-30);
         border-color: #6a5acd;
-        color: #fff;
+        color: var(--text-white);
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        box-shadow: 0 5px 15px var(--bg-overlay-30);
     }
     
    .pagination.page-item.active.page-link {
@@ -528,13 +528,13 @@
     
    .pagination.page-item.disabled.page-link {
         background: rgba(30, 30, 46, 0.5);
-        border-color: rgba(106, 90, 205, 0.1);
+        border-color: var(--bg-overlay-10);
         color: #8080b0;
     }
     
     /* Адаптивность */
     @media(max-width: 768px) {
-       .dark-theme-courses {
+       .theme-courses {
             padding: 1rem 0.5rem;
         }
         
@@ -584,7 +584,7 @@
     }
 </style>
 
-<div class="dark-theme-courses">
+<div class="theme-courses">
     <div class="container">
         <!-- Заголовок и кнопка создания -->
         <div class="page-header">

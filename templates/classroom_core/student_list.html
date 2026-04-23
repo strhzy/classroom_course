@@ -4,19 +4,19 @@
 
 {% block courses_content %}
 <style>
-   .dark-theme-students {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+   .theme-students {
+        background: var(--bg-page-gradient);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Хлебные крошки */
    .custom-breadcrumb {
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
         padding: 0.8rem 1.2rem;
         border-radius: 50px;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         display: inline-block;
     }
     
@@ -26,7 +26,7 @@
     }
     
    .custom-breadcrumb.breadcrumb-item a {
-        color: #a8b8ff;
+        color: var(--text-muted);
         text-decoration: none;
         transition: color 0.2s ease;
     }
@@ -36,7 +36,7 @@
     }
     
    .custom-breadcrumb.breadcrumb-item.active {
-        color: #fff;
+        color: var(--text-white);
         font-weight: 500;
     }
     
@@ -59,7 +59,7 @@
    .page-title {
         font-size: 2rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0.5rem;
@@ -94,9 +94,9 @@
     
     /* Поиск */
    .search-section {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 15px;
         padding: 1.5rem;
         margin-bottom: 2rem;
@@ -105,10 +105,10 @@
     
    .search-input {
         background: rgba(20, 20, 35, 0.8);
-        border: 2px solid rgba(106, 90, 205, 0.3);
+        border: 2px solid var(--bg-overlay-30);
         border-radius: 10px;
         padding: 0.7rem 1rem;
-        color: #fff;
+        color: var(--text-white);
         font-size: 0.95rem;
         transition: border-color 0.2s ease;
         width: 100%;
@@ -144,9 +144,9 @@
     
     /* Карточка с таблицей */
    .table-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         overflow: hidden;
@@ -154,12 +154,12 @@
     
    .card-header-custom {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
-        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 1.5rem;
     }
     
    .card-header-custom h5 {
-        color: #fff;
+        color: var(--text-white);
         margin: 0;
         display: flex;
         align-items: center;
@@ -178,30 +178,30 @@
     }
     
    .students-table thead th {
-        background: rgba(106, 90, 205, 0.15);
-        color: #a8b8ff;
+        background: var(--bg-overlay-15);
+        color: var(--text-muted);
         font-weight: 600;
         font-size: 0.9rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         padding: 1rem;
-        border-bottom: 2px solid rgba(106, 90, 205, 0.3);
+        border-bottom: 2px solid var(--bg-overlay-30);
         white-space: nowrap;
         text-align: left;
     }
     
    .students-table tbody tr {
         transition: background-color 0.2s ease;
-        border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+        border-bottom: 1px solid var(--bg-overlay-10);
     }
     
    .students-table tbody tr:hover {
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
     }
     
    .students-table tbody td {
         padding: 1rem;
-        color: #e0e0ff;
+        color: var(--text-main);;
         vertical-align: middle;
     }
     
@@ -225,20 +225,20 @@
     }
     
    .student-username {
-        color: #fff;
+        color: var(--text-white);
         font-weight: 600;
     }
     
    .group-badge {
-        background: rgba(106, 90, 205, 0.2);
-        color: #a8b8ff;
+        background: var(--bg-overlay-20);
+        color: var(--text-muted);
         padding: 0.2rem 0.8rem;
         border-radius: 50px;
         font-size: 0.85rem;
         display: inline-flex;
         align-items: center;
         gap: 0.3rem;
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
     }
     
    .group-badge i {
@@ -247,11 +247,11 @@
     }
     
    .btn-action {
-        background: rgba(106, 90, 205, 0.15);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-15);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 8px;
         padding: 0.4rem 0.8rem;
-        color: #a8b8ff;
+        color: var(--text-muted);
         transition: all 0.2s ease;
         text-decoration: none;
         display: inline-flex;
@@ -261,9 +261,9 @@
     }
     
    .btn-action:hover {
-        background: rgba(106, 90, 205, 0.25);
+        background: var(--bg-overlay-25);
         border-color: #6a5acd;
-        color: #fff;
+        color: var(--text-white);
     }
     
    .btn-action.danger:hover {
@@ -297,18 +297,18 @@
     }
     
    .pagination.page-link {
-        background: rgba(30, 30, 46, 0.95);
-        border: 1px solid rgba(106, 90, 205, 0.3);
-        color: #a8b8ff;
+        background: var(--bg-card);
+        border: 1px solid var(--bg-overlay-30);
+        color: var(--text-muted);
         margin: 0 0.2rem;
         border-radius: 8px;
         transition: all 0.2s ease;
     }
     
    .pagination.page-link:hover {
-        background: rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-30);
         border-color: #6a5acd;
-        color: #fff;
+        color: var(--text-white);
     }
     
    .pagination.page-item.active.page-link {
@@ -319,7 +319,7 @@
     
     /* Адаптивность */
     @media(max-width: 768px) {
-       .dark-theme-students {
+       .theme-students {
             padding: 1rem 0.5rem;
         }
         
@@ -357,7 +357,7 @@
        .students-table tbody tr {
             display: block;
             margin-bottom: 1rem;
-            border: 1px solid rgba(106, 90, 205, 0.3);
+            border: 1px solid var(--bg-overlay-30);
             border-radius: 10px;
             background: rgba(30, 30, 46, 0.8);
             padding: 1rem;
@@ -369,7 +369,7 @@
             align-items: center;
             padding: 0.5rem 0;
             border: none;
-            border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+            border-bottom: 1px solid var(--bg-overlay-10);
         }
         
        .students-table tbody td:last-child {
@@ -379,7 +379,7 @@
        .students-table tbody td::before {
             content: attr(data-label);
             font-weight: 600;
-            color: #a8b8ff;
+            color: var(--text-muted);
             margin-right: 1rem;
         }
         
@@ -393,7 +393,7 @@
     }
 </style>
 
-<div class="dark-theme-students">
+<div class="theme-students">
     <div class="container">
         <!-- Заголовок и хлебные крошки -->
         <div class="page-header">

@@ -4,8 +4,8 @@
 
 {% block files_content %}
 <style>
-   .dark-theme-log {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+   .theme-log {
+        background: var(--bg-page-gradient);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
@@ -18,7 +18,7 @@
    .page-title {
         font-size: 2.2rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0;
@@ -36,9 +36,9 @@
     
     /* Карточка фильтров */
    .filters-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         margin-bottom: 2rem;
@@ -47,12 +47,12 @@
     
    .card-header-custom {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
-        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 1.5rem;
     }
     
    .card-header-custom h5 {
-        color: #fff;
+        color: var(--text-white);
         margin: 0;
         display: flex;
         align-items: center;
@@ -70,7 +70,7 @@
     
     /* Форма фильтров */
    .filter-label {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-weight: 600;
         margin-bottom: 0.5rem;
         display: flex;
@@ -84,10 +84,10 @@
     
    .custom-select {
         background: rgba(20, 20, 35, 0.8);
-        border: 2px solid rgba(106, 90, 205, 0.3);
+        border: 2px solid var(--bg-overlay-30);
         border-radius: 10px;
         padding: 0.7rem 1rem;
-        color: #fff;
+        color: var(--text-white);
         font-size: 0.95rem;
         transition: border-color 0.2s ease;
         width: 100%;
@@ -108,8 +108,8 @@
     }
     
    .custom-select option {
-        background: #1a1a2e;
-        color: #fff;
+        background: var(--bg-page-start);
+        color: var(--text-white);
     }
     
    .btn-apply {
@@ -133,9 +133,9 @@
     
     /* Карточка с логом */
    .log-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         overflow: hidden;
@@ -148,30 +148,30 @@
     }
     
    .log-table thead th {
-        background: rgba(106, 90, 205, 0.15);
-        color: #a8b8ff;
+        background: var(--bg-overlay-15);
+        color: var(--text-muted);
         font-weight: 600;
         font-size: 0.9rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         padding: 1rem;
-        border-bottom: 2px solid rgba(106, 90, 205, 0.3);
+        border-bottom: 2px solid var(--bg-overlay-30);
         white-space: nowrap;
         text-align: left;
     }
     
    .log-table tbody tr {
         transition: background-color 0.2s ease;
-        border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+        border-bottom: 1px solid var(--bg-overlay-10);
     }
     
    .log-table tbody tr:hover {
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
     }
     
    .log-table tbody td {
         padding: 1rem;
-        color: #e0e0ff;
+        color: var(--text-main);;
         vertical-align: middle;
     }
     
@@ -212,8 +212,8 @@
     }
     
    .badge-view {
-        background: rgba(106, 90, 205, 0.15);
-        color: #a8b8ff;
+        background: var(--bg-overlay-15);
+        color: var(--text-muted);
         border: 1px solid #6a5acd;
     }
     
@@ -225,7 +225,7 @@
     
     /* Ссылки на файлы */
    .file-link {
-        color: #a8b8ff;
+        color: var(--text-muted);
         text-decoration: none;
         transition: color 0.2s ease;
         display: flex;
@@ -257,8 +257,8 @@
     /* IP адрес */
    .ip-address {
         font-family: 'Courier New', monospace;
-        color: #b0b0ff;
-        background: rgba(106, 90, 205, 0.1);
+        color: var(--text-secondary);;
+        background: var(--bg-overlay-10);
         padding: 0.2rem 0.5rem;
         border-radius: 4px;
         font-size: 0.9rem;
@@ -289,18 +289,18 @@
     }
     
    .pagination.page-link {
-        background: rgba(30, 30, 46, 0.95);
-        border: 1px solid rgba(106, 90, 205, 0.3);
-        color: #a8b8ff;
+        background: var(--bg-card);
+        border: 1px solid var(--bg-overlay-30);
+        color: var(--text-muted);
         margin: 0 0.2rem;
         border-radius: 8px;
         transition: all 0.2s ease;
     }
     
    .pagination.page-link:hover {
-        background: rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-30);
         border-color: #6a5acd;
-        color: #fff;
+        color: var(--text-white);
     }
     
    .pagination.page-item.active.page-link {
@@ -311,7 +311,7 @@
     
     /* Адаптивность */
     @media(max-width: 768px) {
-       .dark-theme-log {
+       .theme-log {
             padding: 1rem 0.5rem;
         }
         
@@ -330,7 +330,7 @@
        .log-table tbody tr {
             display: block;
             margin-bottom: 1rem;
-            border: 1px solid rgba(106, 90, 205, 0.3);
+            border: 1px solid var(--bg-overlay-30);
             border-radius: 10px;
             background: rgba(30, 30, 46, 0.8);
             padding: 1rem;
@@ -342,7 +342,7 @@
             align-items: center;
             padding: 0.5rem 0;
             border: none;
-            border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+            border-bottom: 1px solid var(--bg-overlay-10);
         }
         
        .log-table tbody td:last-child {
@@ -352,7 +352,7 @@
        .log-table tbody td::before {
             content: attr(data-label);
             font-weight: 600;
-            color: #a8b8ff;
+            color: var(--text-muted);
             margin-right: 1rem;
         }
         
@@ -362,7 +362,7 @@
     }
 </style>
 
-<div class="dark-theme-log">
+<div class="theme-log">
     <div class="container">
         <!-- Заголовок -->
         <div class="page-header">

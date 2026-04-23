@@ -8,67 +8,67 @@
     <title>{% block title %}Classroom{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{% static 'css/themes/light.css' %}">
     <style>
         body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+            background: var(--bg-page-gradient);;
             min-height: 100vh;
         }
-        
-        /* Темная тема для навбара */
-       .dark-navbar {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+
+       .navbar {
+            background: linear-gradient(135deg, var(--bg-page-start) 0%, var(--bg-page-end) 100%);
+            border-bottom: 1px solid var(--bg-overlay-30);
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
             padding: 0.5rem 1rem;
         }
         
-       .dark-navbar .navbar-brand {
-            color: #fff !important;
+       .navbar .navbar-brand {
+            color: var(--text-white) !important;
             font-weight: 600;
             transition: color 0.2s ease;
         }
         
-       .dark-navbar .navbar-brand i {
+       .navbar .navbar-brand i {
             color: #6a5acd;
         }
         
-       .dark-navbar .navbar-brand:hover {
-            color: #a8b8ff !important;
+       .navbar .navbar-brand:hover {
+            color: var(--text-muted) !important;
         }
         
-       .dark-navbar .nav-link {
-            color: #a8b8ff !important;
+       .navbar .nav-link {
+            color: var(--text-muted) !important;
             font-weight: 500;
             padding: 0.6rem 1rem !important;
             border-radius: 8px;
             transition: all 0.2s ease;
         }
         
-       .dark-navbar .nav-link:hover {
-            color: #fff !important;
-            background: rgba(106, 90, 205, 0.15);
+       .navbar .nav-link:hover {
+            color: var(--text-white) !important;
+            background: var(--bg-overlay-15);
         }
         
-       .dark-navbar .nav-link i {
+       .navbar .nav-link i {
             color: #6a5acd;
         }
         
-       .dark-navbar .nav-link:hover i {
-            color: #fff;
+       .navbar .nav-link:hover i {
+            color: var(--text-white);
         }
         
-       .dark-navbar .dropdown-menu {
-            background: rgba(30, 30, 46, 0.95);
+       .navbar .dropdown-menu {
+            background: var(--bg-card);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(106, 90, 205, 0.3);
+            border: 1px solid var(--bg-overlay-30);
             border-radius: 12px;
             padding: 0.5rem;
             margin-top: 0.5rem;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
         
-       .dark-navbar .dropdown-item {
-            color: #a8b8ff;
+       .navbar .dropdown-item {
+            color: var(--text-muted);
             border-radius: 8px;
             padding: 0.6rem 1rem;
             transition: all 0.2s ease;
@@ -77,30 +77,30 @@
             gap: 0.5rem;
         }
         
-       .dark-navbar .dropdown-item:hover {
-            background: rgba(106, 90, 205, 0.15);
-            color: #fff;
+       .navbar .dropdown-item:hover {
+            background: var(--bg-overlay-15);
+            color: var(--text-white);
         }
         
-       .dark-navbar .dropdown-item i {
+       .navbar .dropdown-item i {
             color: #6a5acd;
         }
         
-       .dark-navbar .dropdown-item:hover i {
-            color: #fff;
+       .navbar .dropdown-item:hover i {
+            color: var(--text-white);
         }
         
-       .dark-navbar .dropdown-divider {
-            border-top: 1px solid rgba(106, 90, 205, 0.3);
+       .navbar .dropdown-divider {
+            border-top: 1px solid var(--bg-overlay-30);
             margin: 0.5rem 0;
         }
         
-       .dark-navbar .navbar-toggler {
-            background: rgba(106, 90, 205, 0.2);
-            border: 1px solid rgba(106, 90, 205, 0.3);
+       .navbar .navbar-toggler {
+            background: var(--bg-overlay-20);
+            border: 1px solid var(--bg-overlay-30);
         }
         
-       .dark-navbar .navbar-toggler-icon {
+       .navbar .navbar-toggler-icon {
             filter: invert(1);
         }
         
@@ -119,13 +119,13 @@
         }
         
        .username-text {
-            color: #a8b8ff;
+            color: var(--text-muted);
             font-weight: 500;
             transition: color 0.2s ease;
         }
         
        .username-text:hover {
-            color: #fff;
+            color: var(--text-white);
         }
         
         /* Основной контент */
@@ -136,11 +136,11 @@
         
         /* Сообщения */
        .custom-alert {
-            background: rgba(30, 30, 46, 0.95);
+            background: var(--bg-card);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(106, 90, 205, 0.3);
+            border: 1px solid var(--bg-overlay-30);
             border-radius: 12px;
-            color: #a8b8ff;
+            color: var(--text-muted);
             padding: 1rem 1.5rem;
             margin-bottom: 1rem;
             display: flex;
@@ -164,23 +164,23 @@
         }
         
        .btn-close-custom:hover {
-            color: #fff;
+            color: var(--text-white);
         }
         
         /* Адаптивность */
         @media(max-width: 768px) {
-           .dark-navbar .navbar-collapse {
-                background: rgba(30, 30, 46, 0.95);
+           .navbar .navbar-collapse {
+                background: var(--bg-card);
                 border-radius: 12px;
                 padding: 1rem;
                 margin-top: 1rem;
             }
             
-           .dark-navbar .nav-link {
+           .navbar .nav-link {
                 padding: 0.6rem !important;
             }
             
-           .dark-navbar .dropdown-menu {
+           .navbar .dropdown-menu {
                 background: transparent;
                 border: none;
                 padding-left: 1rem;
@@ -193,7 +193,7 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg dark-navbar">
+    <nav class="navbar navbar-expand-lg navbar">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" href="{% url 'classroom_core:course_list' %}">
                 <img src="{% static 'images/logo.png' %}" 

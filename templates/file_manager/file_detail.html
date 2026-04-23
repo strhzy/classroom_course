@@ -4,19 +4,19 @@
 
 {% block files_content %}
 <style>
-   .dark-theme-file-detail {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+   .theme-file-detail {
+        background: var(--bg-page-gradient);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     /* Хлебные крошки */
    .custom-breadcrumb {
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
         padding: 0.8rem 1.2rem;
         border-radius: 50px;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         display: inline-block;
     }
     
@@ -26,7 +26,7 @@
     }
     
    .custom-breadcrumb.breadcrumb-item a {
-        color: #a8b8ff;
+        color: var(--text-muted);
         text-decoration: none;
         transition: color 0.2s ease;
     }
@@ -36,7 +36,7 @@
     }
     
    .custom-breadcrumb.breadcrumb-item.active {
-        color: #fff;
+        color: var(--text-white);
         font-weight: 500;
     }
     
@@ -59,7 +59,7 @@
    .page-title {
         font-size: 2rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0.5rem;
@@ -111,9 +111,9 @@
     
     /* Карточки */
    .detail-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         margin-bottom: 1.5rem;
@@ -122,12 +122,12 @@
     
    .card-header-custom {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
-        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1rem 1.5rem;
     }
     
    .card-header-custom h6 {
-        color: #fff;
+        color: var(--text-white);
         margin: 0;
         display: flex;
         align-items: center;
@@ -154,18 +154,18 @@
    .info-row {
         display: flex;
         padding: 0.5rem;
-        border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+        border-bottom: 1px solid var(--bg-overlay-10);
         transition: background-color 0.2s ease;
         border-radius: 8px;
     }
     
    .info-row:hover {
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
     }
     
    .info-label {
         min-width: 120px;
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-weight: 600;
         display: flex;
         align-items: center;
@@ -178,17 +178,17 @@
     }
     
    .info-value {
-        color: #fff;
+        color: var(--text-white);
         flex: 1;
     }
     
    .badge-file {
-        background: rgba(106, 90, 205, 0.2);
-        color: #a8b8ff;
+        background: var(--bg-overlay-20);
+        color: var(--text-muted);
         padding: 0.3rem 0.8rem;
         border-radius: 50px;
         font-size: 0.85rem;
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         margin-right: 0.3rem;
         display: inline-flex;
         align-items: center;
@@ -202,10 +202,10 @@
     /* Извлеченный текст */
    .extracted-text {
         background: rgba(20, 20, 35, 0.8);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 12px;
         padding: 1rem;
-        color: #b0b0ff;
+        color: var(--text-secondary);;
         font-family: 'Courier New', monospace;
         font-size: 0.9rem;
         line-height: 1.6;
@@ -220,19 +220,19 @@
     }
     
    .extracted-text::-webkit-scrollbar-track {
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
         border-radius: 10px;
     }
     
    .extracted-text::-webkit-scrollbar-thumb {
-        background: rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-30);
         border-radius: 10px;
     }
     
     /* Комментарии */
    .comment-card {
         background: rgba(20, 20, 35, 0.8);
-        border: 1px solid rgba(106, 90, 205, 0.2);
+        border: 1px solid var(--bg-overlay-20);
         border-radius: 15px;
         margin-bottom: 1rem;
         transition: all 0.2s ease;
@@ -248,7 +248,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+        border-bottom: 1px solid var(--bg-overlay-10);
     }
     
    .comment-author {
@@ -263,17 +263,17 @@
     }
     
    .comment-author strong {
-        color: #fff;
+        color: var(--text-white);
     }
     
    .comment-date {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-size: 0.85rem;
     }
     
    .comment-content {
         padding: 1rem;
-        color: #e0e0ff;
+        color: var(--text-main);;
     }
     
    .btn-delete-comment {
@@ -289,16 +289,16 @@
    .btn-delete-comment:hover {
         background: rgba(255, 71, 87, 0.25);
         border-color: #ff4757;
-        color: #fff;
+        color: var(--text-white);
     }
     
     /* Форма комментария */
    .comment-form textarea {
         background: rgba(20, 20, 35, 0.8);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 12px;
         padding: 0.8rem 1rem;
-        color: #fff;
+        color: var(--text-white);
         transition: border-color 0.2s ease;
         width: 100%;
     }
@@ -324,9 +324,9 @@
     
     /* Сайдбар */
    .stats-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
@@ -379,7 +379,7 @@
     }
     
    .stat-label {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-size: 0.8rem;
     }
     
@@ -394,7 +394,7 @@
         display: flex;
         align-items: center;
         padding: 0.5rem 0;
-        border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+        border-bottom: 1px solid var(--bg-overlay-10);
     }
     
    .user-item:last-child {
@@ -408,7 +408,7 @@
     }
     
    .user-name {
-        color: #fff;
+        color: var(--text-white);
     }
     
     /* Пустое состояние */
@@ -420,7 +420,7 @@
     
     /* Адаптивность */
     @media(max-width: 768px) {
-       .dark-theme-file-detail {
+       .theme-file-detail {
             padding: 1rem 0.5rem;
         }
         
@@ -462,7 +462,7 @@
     }
 </style>
 
-<div class="dark-theme-file-detail">
+<div class="theme-file-detail">
     <div class="container">
         <!-- Заголовок и хлебные крошки -->
         <div class="page-header">
@@ -579,7 +579,7 @@
                                 </span>
                                 <span class="info-value">
                                     {% if file.course %}
-                                    <a href="{% url 'file_manager:course_files' file.course.id %}" style="color: #a8b8ff; text-decoration: none;">
+                                    <a href="{% url 'file_manager:course_files' file.course.id %}" style="color: var(--text-muted); text-decoration: none;">
                                         <i class="bi bi-book-fill"></i>
                                         {{ file.course.title }}
                                     </a>
@@ -650,9 +650,9 @@
                         </div>
                         {% endif %}
                         
-                        <hr style="border-color: rgba(106, 90, 205, 0.3);">
+                        <hr style="border-color: var(--bg-overlay-30);">
                         
-                        <h6 class="mb-3" style="color: #a8b8ff;">Добавить комментарий</h6>
+                        <h6 class="mb-3" style="color: var(--text-muted);">Добавить комментарий</h6>
                         <form method="post" action="{% url 'file_manager:file_comment_create' file.id %}" class="comment-form">
                             {% csrf_token %}
                             <div class="mb-3">

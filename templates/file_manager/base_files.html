@@ -4,8 +4,8 @@
 <style>
     /* Темная тема для навигации файлового менеджера */
    .file-nav {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        background: linear-gradient(135deg, var(--bg-page-start) 0%, var(--bg-page-end) 100%);
+        border-bottom: 1px solid var(--bg-overlay-30);
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
         padding: 0.8rem 1rem;
     }
@@ -18,7 +18,7 @@
     }
     
    .file-nav .nav-link {
-        color: #a8b8ff !important;
+        color: var(--text-muted) !important;
         padding: 0.6rem 1.2rem !important;
         border-radius: 12px;
         transition: background-color 0.2s ease, color 0.2s ease;
@@ -29,13 +29,13 @@
     }
     
    .file-nav .nav-link:hover {
-        color: #fff !important;
-        background: rgba(106, 90, 205, 0.15);
+        color: var(--text-white) !important;
+        background: var(--bg-overlay-15);
     }
     
    .file-nav .nav-link.active {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.25), rgba(74, 144, 226, 0.25));
-        color: #fff !important;
+        color: var(--text-white) !important;
         border: 1px solid rgba(106, 90, 205, 0.5);
     }
     
@@ -45,16 +45,16 @@
     }
     
    .file-nav .nav-link.active i {
-        color: #fff;
+        color: var(--text-white);
     }
     
     /* Индикатор хранилища */
    .storage-alert {
-        background: rgba(30, 30, 46, 0.95) !important;
+        background: var(--bg-card) !important;
         backdrop-filter: blur(10px);
         border: 1px solid rgba(106, 90, 205, 0.3) !important;
         border-radius: 15px !important;
-        color: #fff !important;
+        color: var(--text-white) !important;
         margin: 1rem 1.5rem !important;
         padding: 1rem 1.5rem !important;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -73,7 +73,7 @@
     }
     
    .storage-label {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-weight: 600;
         display: flex;
         align-items: center;
@@ -86,9 +86,9 @@
     }
     
    .storage-value {
-        color: #fff;
+        color: var(--text-white);
         font-weight: 500;
-        background: rgba(106, 90, 205, 0.15);
+        background: var(--bg-overlay-15);
         padding: 0.3rem 1rem;
         border-radius: 50px;
         margin-left: 0.5rem;
@@ -99,7 +99,7 @@
         height: 30px;
         background: rgba(20, 20, 35, 0.8) !important;
         border-radius: 15px !important;
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         overflow: hidden;
     }
     
@@ -120,7 +120,7 @@
     
    .storage-progress-bar.bg-warning {
         background: linear-gradient(90deg, #ffa502, #ffb822) !important;
-        color: #1a1a2e;
+        color: var(--bg-page-start);
     }
     
    .storage-progress-bar.bg-danger {
@@ -129,7 +129,7 @@
     
     /* Основной контент */
    .file-main-content {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        background: var(--bg-page-gradient);
         min-height: calc(100vh - 70px);
         padding: 2rem 1rem;
     }
@@ -137,7 +137,7 @@
    .file-content-container {
         background: rgba(30, 30, 46, 0.3);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.2);
+        border: 1px solid var(--bg-overlay-20);
         border-radius: 20px;
         padding: 1.5rem;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -195,7 +195,7 @@
 <nav class="navbar navbar-expand-lg file-nav">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fileNavbar" 
-                style="background: rgba(106, 90, 205, 0.3); border: 1px solid rgba(106, 90, 205, 0.5);">
+                style="background: var(--bg-overlay-30); border: 1px solid rgba(106, 90, 205, 0.5);">
             <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
         </button>
         <div class="collapse navbar-collapse" id="fileNavbar">

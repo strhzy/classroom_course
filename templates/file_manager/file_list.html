@@ -4,8 +4,8 @@
 
 {% block files_content %}
 <style>
-   .dark-theme-files {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+   .theme-files {
+        background: var(--bg-page-gradient);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
@@ -23,7 +23,7 @@
    .page-title {
         font-size: 2.2rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0;
@@ -65,12 +65,12 @@
     }
     
    .btn-folder {
-        background: rgba(106, 90, 205, 0.15);
+        background: var(--bg-overlay-15);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 10px;
         padding: 0.6rem 1.2rem;
         font-weight: 500;
-        color: #a8b8ff;
+        color: var(--text-muted);
         transition: all 0.2s ease;
         text-decoration: none;
         display: inline-flex;
@@ -79,23 +79,23 @@
     }
     
    .btn-folder:hover {
-        background: rgba(106, 90, 205, 0.25);
+        background: var(--bg-overlay-25);
         border-color: #6a5acd;
-        color: #fff;
+        color: var(--text-white);
     }
     
     /* Фильтры */
    .filters-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 15px;
         padding: 1.2rem;
         margin-bottom: 1.5rem;
     }
     
    .filters-title {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-weight: 600;
         margin-bottom: 1rem;
         display: flex;
@@ -109,10 +109,10 @@
     
    .filter-input {
         background: rgba(20, 20, 35, 0.8);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 8px;
         padding: 0.6rem 1rem;
-        color: #fff;
+        color: var(--text-white);
         width: 100%;
         transition: border-color 0.2s ease;
     }
@@ -124,10 +124,10 @@
     
    .filter-select {
         background: rgba(20, 20, 35, 0.8);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 8px;
         padding: 0.6rem 1rem;
-        color: #fff;
+        color: var(--text-white);
         width: 100%;
         cursor: pointer;
         appearance: none;
@@ -137,15 +137,15 @@
     }
     
    .filter-select option {
-        background: #1a1a2e;
-        color: #fff;
+        background: var(--bg-page-start);
+        color: var(--text-white);
     }
     
    .filter-checkbox {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        color: #a8b8ff;
+        color: var(--text-muted);
         cursor: pointer;
     }
     
@@ -171,11 +171,11 @@
     }
     
    .btn-reset {
-        background: rgba(106, 90, 205, 0.15);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-15);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 8px;
         padding: 0.6rem;
-        color: #a8b8ff;
+        color: var(--text-muted);
         text-decoration: none;
         display: block;
         text-align: center;
@@ -183,9 +183,9 @@
     }
     
    .btn-reset:hover {
-        background: rgba(106, 90, 205, 0.25);
+        background: var(--bg-overlay-25);
         border-color: #6a5acd;
-        color: #fff;
+        color: var(--text-white);
     }
     
     /* Папки */
@@ -194,7 +194,7 @@
     }
     
    .section-title {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-weight: 600;
         margin-bottom: 1rem;
         display: flex;
@@ -208,7 +208,7 @@
     
    .folder-card {
         background: rgba(30, 30, 46, 0.9);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 12px;
         padding: 1rem;
         transition: all 0.2s ease;
@@ -218,7 +218,7 @@
    .folder-card:hover {
         transform: translateY(-2px);
         border-color: #6a5acd;
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.2);
+        box-shadow: 0 5px 15px var(--bg-overlay-20);
     }
     
    .folder-icon {
@@ -235,13 +235,13 @@
     }
     
    .folder-title {
-        color: #fff;
+        color: var(--text-white);
         font-weight: 600;
         margin-bottom: 0.2rem;
     }
     
    .folder-stats {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-size: 0.85rem;
     }
     
@@ -252,27 +252,27 @@
     }
     
    .files-table thead th {
-        background: rgba(106, 90, 205, 0.15);
-        color: #a8b8ff;
+        background: var(--bg-overlay-15);
+        color: var(--text-muted);
         font-weight: 600;
         font-size: 0.9rem;
         padding: 1rem;
-        border-bottom: 2px solid rgba(106, 90, 205, 0.3);
+        border-bottom: 2px solid var(--bg-overlay-30);
         text-align: left;
     }
     
    .files-table tbody tr {
         transition: background-color 0.2s ease;
-        border-bottom: 1px solid rgba(106, 90, 205, 0.1);
+        border-bottom: 1px solid var(--bg-overlay-10);
     }
     
    .files-table tbody tr:hover {
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
     }
     
    .files-table tbody td {
         padding: 1rem;
-        color: #e0e0ff;
+        color: var(--text-main);;
         vertical-align: middle;
     }
     
@@ -299,40 +299,40 @@
     }
     
    .file-name {
-        color: #fff;
+        color: var(--text-white);
         font-weight: 600;
         margin-bottom: 0.2rem;
     }
     
    .file-desc {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-size: 0.85rem;
     }
     
    .type-badge {
-        background: rgba(106, 90, 205, 0.15);
-        border: 1px solid rgba(106, 90, 205, 0.3);
-        color: #a8b8ff;
+        background: var(--bg-overlay-15);
+        border: 1px solid var(--bg-overlay-30);
+        color: var(--text-muted);
         padding: 0.3rem 0.8rem;
         border-radius: 50px;
         font-size: 0.85rem;
     }
     
    .btn-table-action {
-        background: rgba(106, 90, 205, 0.15);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-15);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 6px;
         padding: 0.3rem 0.6rem;
-        color: #a8b8ff;
+        color: var(--text-muted);
         transition: all 0.2s ease;
         text-decoration: none;
         margin: 0 2px;
     }
     
    .btn-table-action:hover {
-        background: rgba(106, 90, 205, 0.25);
+        background: var(--bg-overlay-25);
         border-color: #6a5acd;
-        color: #fff;
+        color: var(--text-white);
     }
     
     /* Пустое состояние */
@@ -359,18 +359,18 @@
     }
     
    .pagination.page-link {
-        background: rgba(30, 30, 46, 0.95);
-        border: 1px solid rgba(106, 90, 205, 0.3);
-        color: #a8b8ff;
+        background: var(--bg-card);
+        border: 1px solid var(--bg-overlay-30);
+        color: var(--text-muted);
         margin: 0 0.2rem;
         border-radius: 8px;
         transition: all 0.2s ease;
     }
     
    .pagination.page-link:hover {
-        background: rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-30);
         border-color: #6a5acd;
-        color: #fff;
+        color: var(--text-white);
     }
     
    .pagination.page-item.active.page-link {
@@ -381,7 +381,7 @@
     
     /* Адаптивность */
     @media(max-width: 768px) {
-       .dark-theme-files {
+       .theme-files {
             padding: 1rem 0.5rem;
         }
         
@@ -411,7 +411,7 @@
        .files-table tbody tr {
             display: block;
             margin-bottom: 1rem;
-            border: 1px solid rgba(106, 90, 205, 0.3);
+            border: 1px solid var(--bg-overlay-30);
             border-radius: 10px;
             padding: 1rem;
         }
@@ -427,7 +427,7 @@
        .files-table tbody td::before {
             content: attr(data-label);
             font-weight: 600;
-            color: #a8b8ff;
+            color: var(--text-muted);
             margin-right: 1rem;
         }
         
@@ -437,7 +437,7 @@
     }
 </style>
 
-<div class="dark-theme-files">
+<div class="theme-files">
     <div class="container-fluid">
         <!-- Заголовок -->
         <div class="page-header">

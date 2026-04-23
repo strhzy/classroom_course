@@ -9,8 +9,8 @@
 
 {% block files_content %}
 <style>
-   .dark-theme-version {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+   .theme-version {
+        background: var(--bg-page-gradient);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
@@ -22,7 +22,7 @@
    .version-title h1 {
         font-size: 2rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0.5rem;
@@ -38,24 +38,24 @@
     }
     
    .version-title p {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-size: 1.1rem;
         margin-left: 3rem;
     }
     
    .version-title strong {
         color: #6a5acd;
-        background: rgba(106, 90, 205, 0.15);
+        background: var(--bg-overlay-15);
         padding: 0.2rem 0.8rem;
         border-radius: 50px;
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
     }
     
     /* Карточка формы */
    .form-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         overflow: hidden;
@@ -63,12 +63,12 @@
     
    .card-header-custom {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
-        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 1.5rem;
     }
     
    .card-header-custom h5 {
-        color: #fff;
+        color: var(--text-white);
         margin: 0;
         display: flex;
         align-items: center;
@@ -89,7 +89,7 @@
     }
     
    .form-label {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-weight: 600;
         margin-bottom: 0.5rem;
         display: flex;
@@ -124,7 +124,7 @@
         flex-direction: column;
         align-items: center;
         gap: 0.5rem;
-        color: #a8b8ff;
+        color: var(--text-muted);
         transition: all 0.2s ease;
         cursor: pointer;
         position: relative;
@@ -134,7 +134,7 @@
     
    .file-label:hover {
         border-color: #6a5acd;
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
     }
     
    .file-label i {
@@ -151,10 +151,10 @@
     /* Текстовое поле */
    .custom-textarea {
         background: rgba(20, 20, 35, 0.8);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 10px;
         padding: 0.8rem 1rem;
-        color: #fff;
+        color: var(--text-white);
         width: 100%;
         min-height: 120px;
         transition: border-color 0.2s ease;
@@ -196,7 +196,7 @@
     }
     
    .info-alert ul {
-        color: #b0b0ff;
+        color: var(--text-secondary);;
         margin-top: 0.8rem;
         padding-left: 1.5rem;
     }
@@ -232,12 +232,12 @@
     }
     
    .btn-cancel {
-        background: rgba(106, 90, 205, 0.15);
+        background: var(--bg-overlay-15);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 10px;
         padding: 0.8rem 2rem;
         font-weight: 600;
-        color: #a8b8ff;
+        color: var(--text-muted);
         transition: all 0.2s ease;
         text-decoration: none;
         flex: 1;
@@ -248,16 +248,16 @@
     }
     
    .btn-cancel:hover {
-        background: rgba(106, 90, 205, 0.25);
+        background: var(--bg-overlay-25);
         border-color: #6a5acd;
-        color: #fff;
+        color: var(--text-white);
     }
     
     /* Карточка с информацией о файле */
    .file-info-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         overflow: hidden;
@@ -265,9 +265,9 @@
     
    .file-info-header {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
-        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1rem 1.5rem;
-        color: #fff;
+        color: var(--text-white);
         display: flex;
         align-items: center;
         gap: 0.8rem;
@@ -282,18 +282,18 @@
     }
     
    .file-info-title {
-        color: #fff;
+        color: var(--text-white);
         font-size: 1.2rem;
         font-weight: 600;
         margin-bottom: 0.5rem;
     }
     
    .file-info-desc {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-size: 0.9rem;
         margin-bottom: 1.2rem;
         padding-bottom: 1rem;
-        border-bottom: 1px solid rgba(106, 90, 205, 0.2);
+        border-bottom: 1px solid var(--bg-overlay-20);
     }
     
    .file-details-grid {
@@ -309,20 +309,20 @@
     }
     
    .detail-label {
-        color: #a8b8ff;
+        color: var(--text-muted);
     }
     
    .detail-value {
-        color: #fff;
+        color: var(--text-white);
         font-weight: 500;
     }
     
    .btn-view {
-        background: rgba(106, 90, 205, 0.15);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-15);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 8px;
         padding: 0.6rem;
-        color: #a8b8ff;
+        color: var(--text-muted);
         text-decoration: none;
         display: flex;
         align-items: center;
@@ -333,14 +333,14 @@
     }
     
    .btn-view:hover {
-        background: rgba(106, 90, 205, 0.25);
+        background: var(--bg-overlay-25);
         border-color: #6a5acd;
-        color: #fff;
+        color: var(--text-white);
     }
     
     /* Адаптивность */
     @media(max-width: 768px) {
-       .dark-theme-version {
+       .theme-version {
             padding: 1rem 0.5rem;
         }
         
@@ -367,7 +367,7 @@
     }
 </style>
 
-<div class="dark-theme-version">
+<div class="theme-version">
     <div class="container">
         <!-- Заголовок -->
         <div class="version-title">

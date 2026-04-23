@@ -4,18 +4,18 @@
 
 {% block courses_content %}
 <style>
-    .dark-theme-course-detail {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+    .theme-course-detail {
+        background: var(--bg-page-gradient);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
     .custom-breadcrumb {
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
         padding: 0.8rem 1.2rem;
         border-radius: 50px;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         display: inline-block;
         animation: breadcrumbSlide 0.5s ease-out;
     }
@@ -37,7 +37,7 @@
     }
     
     .custom-breadcrumb .breadcrumb-item a {
-        color: #a8b8ff;
+        color: var(--text-muted);
         text-decoration: none;
         transition: all 0.3s ease;
     }
@@ -48,7 +48,7 @@
     }
     
     .custom-breadcrumb .breadcrumb-item.active {
-        color: #fff;
+        color: var(--text-white);
         font-weight: 500;
     }
     
@@ -76,12 +76,12 @@
     .page-title {
         font-size: 2rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0.5rem;
-        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+        text-shadow: 0 0 20px var(--bg-overlay-30);
     }
     
     .btn-edit {
@@ -92,7 +92,7 @@
         font-weight: 600;
         color: white;
         transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        box-shadow: 0 5px 15px var(--bg-overlay-30);
         position: relative;
         overflow: hidden;
         display: inline-block;
@@ -107,30 +107,30 @@
     }
     
     .btn-students {
-        background: rgba(106, 90, 205, 0.15);
+        background: var(--bg-overlay-15);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 12px;
         padding: 0.6rem 1.5rem;
         font-weight: 600;
-        color: #a8b8ff;
+        color: var(--text-muted);
         transition: all 0.3s ease;
         text-decoration: none;
         display: inline-block;
     }
     
     .btn-students:hover {
-        background: rgba(106, 90, 205, 0.25);
+        background: var(--bg-overlay-25);
         border-color: #6a5acd;
-        color: #fff;
+        color: var(--text-white);
         transform: translateY(-2px);
     }
     
     .btn-add {
-        background: rgba(106, 90, 205, 0.2);
+        background: var(--bg-overlay-20);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 8px;
         padding: 0.4rem 1rem;
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-size: 0.9rem;
         text-decoration: none;
         transition: all 0.3s ease;
@@ -140,17 +140,17 @@
     }
     
     .btn-add:hover {
-        background: rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-30);
         border-color: #6a5acd;
-        color: #fff;
+        color: var(--text-white);
         transform: translateY(-2px);
     }
     
     /* Основные карточки с разными цветовыми акцентами */
     .section-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         transition: all 0.3s ease;
@@ -172,7 +172,7 @@
     
     .section-card.assignments {
         border-left: 4px solid #6a5acd;
-        box-shadow: 0 10px 30px rgba(106, 90, 205, 0.1);
+        box-shadow: 0 10px 30px var(--bg-overlay-10);
     }
     
     .section-card.submissions {
@@ -199,7 +199,7 @@
     /* Цветные заголовки карточек */
     .card-header-custom {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
-        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1rem 1.5rem;
         display: flex;
         justify-content: space-between;
@@ -220,7 +220,7 @@
     
     .assignments .card-header-custom {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.15), rgba(106, 90, 205, 0.05));
-        border-bottom-color: rgba(106, 90, 205, 0.3);
+        border-bottom-color: var(--bg-overlay-30);
     }
     
     .submissions .card-header-custom {
@@ -229,7 +229,7 @@
     }
     
     .card-header-custom h5 {
-        color: #fff;
+        color: var(--text-white);
         margin: 0;
         display: flex;
         align-items: center;
@@ -258,7 +258,7 @@
     
     /* Информационные карточки в правой колонке */
     .info-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
         border-radius: 20px;
         padding: 1.5rem;
@@ -268,7 +268,7 @@
     
     /* Цветные рамки для информационных карточек */
     .info-card.course-info {
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-top: 3px solid #6a5acd;
     }
     
@@ -304,14 +304,14 @@
     }
     
     .info-title {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-size: 1.1rem;
         font-weight: 600;
         margin-bottom: 1.2rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        border-bottom: 1px solid var(--bg-overlay-30);
         padding-bottom: 0.8rem;
     }
     
@@ -340,17 +340,17 @@
     }
     
     .info-content {
-        color: #e0e0ff;
+        color: var(--text-main);;
     }
     
     .info-label {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-weight: 600;
         margin-bottom: 0.3rem;
     }
     
     .info-text {
-        color: #fff;
+        color: var(--text-white);
         margin-bottom: 1rem;
         line-height: 1.6;
     }
@@ -365,12 +365,12 @@
         display: flex;
         align-items: center;
         padding: 0.5rem 0;
-        border-bottom: 1px solid rgba(106, 90, 205, 0.2);
+        border-bottom: 1px solid var(--bg-overlay-20);
         transition: all 0.3s ease;
     }
     
     .student-item:hover {
-        background: rgba(106, 90, 205, 0.1);
+        background: var(--bg-overlay-10);
         transform: translateX(5px);
     }
     
@@ -389,26 +389,26 @@
     
     .student-name {
         flex: 1;
-        color: #fff;
+        color: var(--text-white);
     }
     
     .student-badge {
-        background: rgba(106, 90, 205, 0.2);
-        color: #a8b8ff;
+        background: var(--bg-overlay-20);
+        color: var(--text-muted);
         padding: 0.2rem 0.8rem;
         border-radius: 50px;
         font-size: 0.8rem;
     }
     
     .progress-container {
-        background: rgba(20, 20, 35, 0.6);
+        background: var(--bg-item);
         border-radius: 15px;
         padding: 1.2rem;
     }
     
     .progress-bar-custom {
         height: 10px;
-        background: rgba(106, 90, 205, 0.2);
+        background: var(--bg-overlay-20);
         border-radius: 10px;
         overflow: hidden;
         margin: 0.8rem 0;
@@ -446,7 +446,7 @@
     .progress-stats {
         display: flex;
         justify-content: space-between;
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-size: 0.9rem;
     }
     
@@ -472,8 +472,8 @@
     }
     
     .item-card {
-        background: rgba(20, 20, 35, 0.6);
-        border: 1px solid rgba(106, 90, 205, 0.2);
+        background: var(--bg-item);
+        border: 1px solid var(--bg-overlay-20);
         border-radius: 15px;
         margin-bottom: 1rem;
         transition: all 0.3s ease;
@@ -482,7 +482,7 @@
     }
     
     .item-card:hover {
-        background: rgba(30, 30, 50, 0.8);
+        background: var(--bg-card-hover);
         border-color: rgba(106, 90, 205, 0.5);
         transform: translateX(5px);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -504,14 +504,14 @@
     }
     
     .item-title {
-        color: #fff;
+        color: var(--text-white);
         font-size: 1.1rem;
         font-weight: 600;
         margin-bottom: 0.5rem;
     }
     
     .item-description {
-        color: #b0b0ff;
+        color: var(--text-secondary);;
         font-size: 0.95rem;
         line-height: 1.5;
         margin-bottom: 0.5rem;
@@ -532,13 +532,13 @@
     }
     
     .badge-custom {
-        background: rgba(106, 90, 205, 0.2);
-        color: #a8b8ff;
+        background: var(--bg-overlay-20);
+        color: var(--text-muted);
         padding: 0.3rem 0.8rem;
         border-radius: 50px;
         font-size: 0.8rem;
         font-weight: 500;
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         display: inline-flex;
         align-items: center;
         gap: 0.3rem;
@@ -579,7 +579,7 @@
     }
     
     @media (max-width: 768px) {
-        .dark-theme-course-detail {
+        .theme-course-detail {
             padding: 1rem 0.5rem;
         }
         
@@ -638,7 +638,7 @@
     }
 </style>
 
-<div class="dark-theme-course-detail">
+<div class="theme-course-detail">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
             <div class="course-header">
@@ -1003,7 +1003,7 @@
                     </div>
                     <div class="progress-container">
                         <div class="d-flex justify-content-between mb-2">
-                            <span style="color: #a8b8ff;">Выполнено</span>
+                            <span style="color: var(--text-muted);">Выполнено</span>
                             <span style="color: #6a5acd; font-weight: 600;">{{ course.get_progress }}%</span>
                         </div>
                         <div class="progress-bar-custom">

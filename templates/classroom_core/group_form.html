@@ -4,8 +4,8 @@
 
 {% block content %}
 <style>
-   .dark-theme-group-form {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+   .theme-group-form {
+        background: var(--bg-page-gradient);
         min-height: 100vh;
         padding: 2rem 1rem;
         display: flex;
@@ -32,11 +32,11 @@
    .page-title {
         font-size: 2rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0;
-        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+        text-shadow: 0 0 20px var(--bg-overlay-30);
         display: flex;
         align-items: center;
         gap: 0.8rem;
@@ -51,11 +51,11 @@
     
     /* Карточка формы */
    .form-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--bg-overlay-20);
         transition: all 0.3s ease;
         animation: cardAppear 0.6s ease-out 0.2s both;
         overflow: hidden;
@@ -78,12 +78,12 @@
     
    .card-header-gradient {
         background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
-        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 1.5rem;
     }
     
    .card-header-gradient h5 {
-        color: #fff;
+        color: var(--text-white);
         font-size: 1.2rem;
         margin: 0;
         display: flex;
@@ -122,7 +122,7 @@
     }
     
    .form-label {
-        color: #a8b8ff;
+        color: var(--text-muted);
         font-weight: 600;
         margin-bottom: 0.5rem;
         display: flex;
@@ -145,10 +145,10 @@
     /* Стили для полей ввода */
    .custom-input {
         background: rgba(20, 20, 35, 0.8);
-        border: 2px solid rgba(106, 90, 205, 0.3);
+        border: 2px solid var(--bg-overlay-30);
         border-radius: 12px;
         padding: 0.8rem 1.2rem;
-        color: #fff;
+        color: var(--text-white);
         font-size: 1rem;
         transition: all 0.3s ease;
         width: 100%;
@@ -157,7 +157,7 @@
    .custom-input:focus {
         outline: none;
         border-color: #6a5acd;
-        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2), 0 0 20px rgba(106, 90, 205, 0.3);
+        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2), 0 0 20px var(--bg-overlay-30);
         background: rgba(30, 30, 50, 0.9);
         transform: translateY(-2px);
     }
@@ -189,7 +189,7 @@
     
     /* Индикатор обязательных полей */
    .required-note {
-        color: #b0b0ff;
+        color: var(--text-secondary);;
         font-size: 0.9rem;
         margin-top: 0.5rem;
         text-align: right;
@@ -230,7 +230,7 @@
         font-weight: 600;
         color: white;
         transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        box-shadow: 0 5px 15px var(--bg-overlay-30);
         position: relative;
         overflow: hidden;
         flex: 1;
@@ -276,12 +276,12 @@
     }
     
    .btn-cancel {
-        background: rgba(106, 90, 205, 0.2);
+        background: var(--bg-overlay-20);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 12px;
         padding: 0.8rem 2rem;
         font-weight: 600;
-        color: #a8b8ff;
+        color: var(--text-muted);
         transition: all 0.3s ease;
         text-decoration: none;
         flex: 1;
@@ -293,9 +293,9 @@
     }
     
    .btn-cancel:hover {
-        background: rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-30);
         border-color: #6a5acd;
-        color: #fff;
+        color: var(--text-white);
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
     }
@@ -327,7 +327,7 @@
     
     /* Адаптивность */
     @media(max-width: 768px) {
-       .dark-theme-group-form {
+       .theme-group-form {
             padding: 1rem 0.5rem;
         }
         
@@ -382,7 +382,7 @@
     }
 </style>
 
-<div class="dark-theme-group-form">
+<div class="theme-group-form">
     <div class="container">
         <!-- Заголовок -->
         <div class="page-header">

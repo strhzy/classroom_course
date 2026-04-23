@@ -4,18 +4,18 @@
 
 {% block courses_content %}
 <style>
-   .dark-theme {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+   .theme {
+        background: var(--bg-page-gradient);
         min-height: 100vh;
         padding: 2rem 1rem;
     }
     
    .delete-card {
-        background: rgba(30, 30, 46, 0.95);
+        background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
+        border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.3);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--bg-overlay-30);
         transition: all 0.3s ease;
         animation: cardAppear 0.5s ease-out;
     }
@@ -58,18 +58,18 @@
     }
     
    .delete-title {
-        color: #fff;
+        color: var(--text-white);
         font-size: 2rem;
         font-weight: 600;
         text-shadow: 0 0 10px rgba(106, 90, 205, 0.5);
         margin-bottom: 1.5rem;
-        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
         background-clip: text;
         -webkit-text-fill-color: transparent;
     }
     
    .announcement-alert {
-        background: rgba(106, 90, 205, 0.15);
+        background: var(--bg-overlay-15);
         border: 1px solid rgba(106, 90, 205, 0.4);
         border-radius: 12px;
         padding: 1.2rem;
@@ -81,7 +81,7 @@
     @keyframes glowPulse {
         0%, 100% {
             border-color: rgba(106, 90, 205, 0.4);
-            box-shadow: 0 0 10px rgba(106, 90, 205, 0.2);
+            box-shadow: 0 0 10px var(--bg-overlay-20);
         }
         50% {
             border-color: rgba(106, 90, 205, 0.8);
@@ -90,7 +90,7 @@
     }
     
    .announcement-title {
-        color: #fff;
+        color: var(--text-white);
         font-size: 1.3rem;
         font-weight: 500;
         margin: 0;
@@ -98,7 +98,7 @@
     }
     
    .warning-text {
-        color: #b0b0ff !important;
+        color: var(--text-secondary); !important;
         font-size: 1.1rem;
         margin: 1.5rem 0;
         line-height: 1.6;
@@ -146,12 +146,12 @@
     }
     
    .btn-cancel {
-        background: rgba(106, 90, 205, 0.2);
+        background: var(--bg-overlay-20);
         border: 1px solid rgba(106, 90, 205, 0.5);
         border-radius: 12px;
         padding: 0.8rem 2rem;
         font-weight: 600;
-        color: #a8b8ff;
+        color: var(--text-muted);
         transition: all 0.3s ease;
         text-decoration: none;
         position: relative;
@@ -159,9 +159,9 @@
     }
     
    .btn-cancel:hover {
-        background: rgba(106, 90, 205, 0.3);
+        background: var(--bg-overlay-30);
         border-color: rgba(106, 90, 205, 0.8);
-        color: #fff;
+        color: var(--text-white);
         transform: translateY(-2px);
         box-shadow: 0 5px 20px rgba(106, 90, 205, 0.4);
     }
@@ -186,7 +186,7 @@
     
     /* Мобильная адаптация */
     @media(max-width: 576px) {
-       .dark-theme {
+       .theme {
             padding: 1rem 0.5rem;
         }
         
@@ -246,7 +246,7 @@
     }
 </style>
 
-<div class="dark-theme">
+<div class="theme">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10 col-sm-12">
             <div class="delete-card">
