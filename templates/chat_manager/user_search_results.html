@@ -1,0 +1,25 @@
+{% if users %}
+<div class="list-group">
+    {% for user in users %}
+    <a href="{% url 'chat:create_private_chat' user.id %}" class="list-group-item list-group-item-action">
+        <div class="d-flex align-items-center">
+            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                 style="width: 32px; height: 32px; font-size: 0.875rem; margin-right: 10px;">
+                {{ user.username|slice:":1"|upper }}
+            </div>
+            <div>
+                <strong>{{ user.username }}</strong>
+                <br>
+                <small class="text-muted">
+                    {{ user.first_name }} {{ user.last_name|default:"" }}
+                </small>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% elif query %}
+<div class="text-muted text-center py-2">
+    Пользователи не найдены
+</div>
+{% endif %}

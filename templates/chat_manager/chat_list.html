@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}💬 Чаты{% endblock %}
+{% block content %}
+<style>
+.chatlist-page{
+    min-height:100vh;
+    background:
+        radial-gradient(circle at 10% 10%, rgba(106,90,205,.18), transparent 40%),
+        #0f1123;
+    padding:25px 0;
+}
+
+.chat-list{
+    max-width:800px;
+    margin:auto;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+/* Чат */
+.chat-item{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:16px;
+    border-radius:18px;
+    background:rgba(20,23,51,.85);
+    border:1px solid rgba(106,90,205,.25);
+    text-decoration:none;
+    transition:.25s;
+    position:relative;
+    overflow:hidden;
+}
+
+/* Glow эффект */
+.chat-item::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(120deg,transparent,rgba(106,90,205,.25),transparent);
+    opacity:0;
+    transition:.4s;
+}
+
+.chat-item:hover::before{
+    opacity:1;
+}
+
+.chat-item:hover{
+    transform:translateY(-4px) scale(1.01);
+    box-shadow:0 0 20px rgba(106,90,205,.25);
+}
+
+/* Аватар */
+.avatar{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#6a5acd,#4a90e2);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-weight:700;
+    font-size:18px;
+}
+
+/* Инфа */
+.chat-info{
+    flex:1;
+    min-width:0;
+}
+
+.chat-name{
+    color:#fff;
+    font-weight:600;
+    font-size:16px;
+}
+
+.chat-last{
+    color:#9aa0ff;
+    font-size:13px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.chat-time{
+    color:#6c72ff;
+    font-size:12px;
+}
+</style>
+
+<div class="chatlist-page">
+<div class="container">
+<div class="chat-list">
+
+{% for room in rooms %}
+<a href="{% url 'chat:chat_room' room.id %}" class="chat-item">
+<div class="avatar">{{ room.name|first|upper }}</div>
+
+<div class="chat-info">
+<div class="chat-name">{{ room.name }}</div>
+<div class="chat-last">
+{% if room.last_message %}
+{{ room.last_message.content|truncatechars:50 }}
+{% else %}
+Нет сообщений
+{% endif %}
+</div>
+</div>
+
+<div class="chat-time">
+{% if room.last_message %}
+{{ room.last_message.timestamp|date:"H:i" }}
+{% endif %}
+</div>
+</a>
+{% endfor %}
+
+</div>
+</div>
+</div>
+{% endblock %}

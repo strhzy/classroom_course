@@ -1,0 +1,902 @@
+{% extends "classroom_core/base_courses.html" %}
+
+{% block title %}📝 {{ assignment.title }}{% endblock %}
+
+{% block courses_content %}
+<style>
+   .dark-theme-assignment {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    /* Хлебные крошки */
+   .custom-breadcrumb {
+        background: rgba(106, 90, 205, 0.1);
+        padding: 0.8rem 1.2rem;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        display: inline-block;
+        animation: breadcrumbSlide 0.5s ease-out;
+    }
+    
+    @keyframes breadcrumbSlide {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+   .custom-breadcrumb.breadcrumb {
+        margin: 0;
+        background: transparent;
+    }
+    
+   .custom-breadcrumb.breadcrumb-item a {
+        color: #a8b8ff;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+   .custom-breadcrumb.breadcrumb-item a:hover {
+        color: #6a5acd;
+        text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
+    }
+    
+   .custom-breadcrumb.breadcrumb-item.active {
+        color: #fff;
+        font-weight: 500;
+    }
+    
+   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
+        color: #6a5acd;
+        content: "›";
+        font-size: 1.2rem;
+    }
+    
+    /* Заголовок */
+   .assignment-header {
+        animation: headerFade 0.5s ease-out;
+    }
+    
+    @keyframes headerFade {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+   .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, #a8b8ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+    }
+    
+    /* Кнопка редактирования */
+   .btn-edit {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 12px;
+        padding: 0.6rem 1.8rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+   .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+    }
+    
+   .btn-edit::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+   .btn-edit:hover::after {
+        width: 300px;
+        height: 300px;
+    }
+    
+    /* Карточки */
+   .custom-card {
+        background: rgba(30, 30, 46, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(106, 90, 205, 0.2);
+        transition: all 0.3s ease;
+        animation: cardAppear 0.5s ease-out;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    
+   .custom-card:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
+        transform: translateY(-2px);
+    }
+    
+    @keyframes cardAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+   .card-header-gradient {
+        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        border-bottom: 1px solid rgba(106, 90, 205, 0.3);
+        padding: 1.2rem 1.5rem;
+    }
+    
+   .card-header-gradient h5, 
+   .card-header-gradient h6 {
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+    
+   .card-header-gradient i {
+        color: #6a5acd;
+        margin-right: 0.8rem;
+        font-size: 1.3rem;
+    }
+    
+   .card-body-custom {
+        padding: 1.5rem;
+        color: #e0e0ff;
+    }
+    
+    /* Описание задания */
+   .assignment-description {
+        color: #e0e0ff;
+        line-height: 1.8;
+        font-size: 1.1rem;
+    }
+    
+   .assignment-description p {
+        margin-bottom: 1.2rem;
+    }
+    
+   .assignment-description img {
+        max-width: 100%;
+        border-radius: 10px;
+        border: 2px solid rgba(106, 90, 205, 0.3);
+        margin: 1rem 0;
+    }
+    
+   .assignment-description code {
+        background: rgba(106, 90, 205, 0.2);
+        color: #ff6b81;
+        padding: 0.2rem 0.4rem;
+        border-radius: 6px;
+    }
+    
+   .assignment-description pre {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 10px;
+        padding: 1rem;
+        overflow-x: auto;
+    }
+    
+    /* Файл вложения */
+   .attachment-alert {
+        background: rgba(106, 90, 205, 0.15);
+        border: 1px solid rgba(106, 90, 205, 0.4);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin-top: 1.5rem;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+   .attachment-icon {
+        color: #6a5acd;
+        font-size: 1.5rem;
+    }
+    
+   .attachment-info {
+        flex: 1;
+        color: #a8b8ff;
+    }
+    
+   .attachment-info strong {
+        color: #fff;
+    }
+    
+   .attachment-link {
+        background: rgba(106, 90, 205, 0.2);
+        border: 1px solid rgba(106, 90, 205, 0.5);
+        border-radius: 8px;
+        padding: 0.5rem 1.2rem;
+        color: #a8b8ff;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+   .attachment-link:hover {
+        background: rgba(106, 90, 205, 0.3);
+        border-color: #6a5acd;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+    
+    /* Срок выполнения */
+   .due-date-container {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-top: 1rem;
+        border-left: 4px solid #6a5acd;
+    }
+    
+   .due-date {
+        color: #a8b8ff;
+        font-size: 1.1rem;
+    }
+    
+   .due-date i {
+        color: #6a5acd;
+        margin-right: 0.5rem;
+    }
+    
+   .overdue-badge {
+        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        border: none;
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        color: white;
+        margin-left: 1rem;
+        animation: pulse 2s infinite;
+    }
+    
+    /* Кнопка отправки */
+   .submit-section {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(106, 90, 205, 0.3);
+    }
+    
+   .btn-submit {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        border-radius: 12px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+   .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
+        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+    }
+    
+   .btn-submit i {
+        transition: transform 0.3s ease;
+    }
+    
+   .btn-submit:hover i {
+        transform: translateX(5px) rotate(10deg);
+    }
+    
+    /* Решение студента */
+   .submission-card {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(106, 90, 205, 0.3);
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+   .submission-header {
+        background: rgba(106, 90, 205, 0.15);
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+   .status-badge {
+        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        border: none;
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-weight: 500;
+        color: white;
+    }
+    
+   .status-badge.returned {
+        background: linear-gradient(135deg, #ffa502, #ffb822);
+    }
+    
+   .late-badge {
+        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        color: white;
+        padding: 0.2rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+   .submission-body {
+        padding: 1rem;
+    }
+    
+   .submission-text {
+        color: #e0e0ff;
+        background: rgba(106, 90, 205, 0.1);
+        padding: 1rem;
+        border-radius: 10px;
+        border-left: 3px solid #6a5acd;
+    }
+    
+   .feedback-section {
+        background: rgba(74, 144, 226, 0.1);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-top: 1rem;
+        border-left: 3px solid #4a90e2;
+    }
+    
+   .feedback-section strong {
+        color: #4a90e2;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+    
+   .score-badge {
+        background: linear-gradient(135deg, #ffd700, #ffa502);
+        color: #1a1a2e;
+        padding: 0.3rem 1rem;
+        border-radius: 50px;
+        font-weight: 700;
+    }
+    
+    /* Информация в сайдбаре */
+   .info-list {
+        margin: 0;
+    }
+    
+   .info-list dt {
+        color: #a8b8ff;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+   .info-list dd {
+        color: #fff;
+        margin-bottom: 1rem;
+    }
+    
+   .info-badge {
+        background: rgba(106, 90, 205, 0.2);
+        border: 1px solid rgba(106, 90, 205, 0.4);
+        color: #a8b8ff;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        display: inline-block;
+    }
+    
+   .status-badge-small {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+   .status-draft {
+        background: rgba(255, 165, 2, 0.2);
+        color: #ffa502;
+        border: 1px solid #ffa502;
+    }
+    
+   .status-published {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4caf50;
+        border: 1px solid #4caf50;
+    }
+    
+   .status-closed {
+        background: rgba(108, 117, 125, 0.2);
+        color: #6c757d;
+        border: 1px solid #6c757d;
+    }
+    
+   .badge-group {
+        background: rgba(74, 144, 226, 0.2);
+        color: #4a90e2;
+        border: 1px solid #4a90e2;
+    }
+    
+    /* Подсказка */
+   .hint-card {
+        background: rgba(106, 90, 205, 0.1);
+        border-left: 4px solid #6a5acd;
+    }
+    
+   .hint-text {
+        color: #b0b0ff;
+        line-height: 1.6;
+    }
+    
+   .hint-text i {
+        color: #6a5acd;
+        margin-right: 0.5rem;
+    }
+    
+    /* Анимации */
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+    }
+    
+    /* Адаптивность */
+    @media(max-width: 768px) {
+       .dark-theme-assignment {
+            padding: 1rem 0.5rem;
+        }
+        
+       .page-title {
+            font-size: 1.6rem;
+        }
+        
+       .custom-breadcrumb {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+       .btn-edit {
+            padding: 0.5rem 1.2rem;
+            font-size: 0.9rem;
+        }
+        
+       .d-flex.justify-content-between {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 1rem;
+        }
+        
+       .btn-edit {
+            width: 100%;
+        }
+        
+       .attachment-alert {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+       .submission-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+    
+    @media(min-width: 769px) and(max-width: 992px) {
+       .page-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+
+<div class="dark-theme-assignment">
+    <div class="container">
+        <!-- Заголовок и хлебные крошки -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+            <div class="assignment-header">
+                <h1 class="page-title">{{ assignment.title }}</h1>
+                <nav aria-label="breadcrumb" class="custom-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'classroom_core:assignment_list' %}">
+                                <i class="bi bi-list-task me-1"></i>Задания
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            {{ assignment.title|truncatechars:30 }}
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            
+            <div>
+                {% if can_manage_course %}
+                <a href="{% url 'classroom_core:assignment_edit' assignment.id %}" class="btn-edit me-2">
+                    <i class="bi bi-pencil me-2"></i>Редактировать
+                </a>
+                <a href="{% url 'classroom_core:assignment_file_list' assignment.id %}" class="btn-edit" style="background: linear-gradient(135deg, #4a90e2, #6a5acd);">
+                    <i class="bi bi-folder2-open me-2"></i>Файлы
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Основной контент -->
+            <div class="col-lg-8">
+                <!-- Карточка с описанием -->
+                <div class="custom-card">
+                    <div class="card-header-gradient">
+                        <h5>
+                            <i class="bi bi-file-text"></i>
+                            Описание задания
+                        </h5>
+                    </div>
+                    <div class="card-body-custom">
+                        <div class="assignment-description">
+                            {{ assignment.description|safe }}
+                        </div>
+                        
+                        {% if assignment.attachment %}
+                        <div class="attachment-alert">
+                            <i class="bi bi-paperclip attachment-icon"></i>
+                            <div class="attachment-info">
+                                <strong>Прикрепленный файл:</strong>
+                                <span class="ms-2">{{ assignment.attachment.name|truncatechars:40 }}</span>
+                            </div>
+                            <a href="{{ assignment.attachment.url }}" class="attachment-link">
+                                <i class="bi bi-download"></i> Скачать
+                            </a>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="due-date-container">
+                            <h6 class="mb-3" style="color: #a8b8ff;">
+                                <i class="bi bi-hourglass-split"></i>
+                                Срок выполнения
+                            </h6>
+                            <div class="due-date">
+                                <i class="bi bi-calendar-check"></i>
+                                {{ assignment.due_date|date:"d.m.Y H:i" }}
+                                {% if assignment.is_overdue %}
+                                <span class="overdue-badge ms-3">
+                                    <i class="bi bi-exclamation-circle"></i> Просрочено
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if is_student and assignment.can_submit %}
+                        <div class="submit-section">
+                            <h6 class="mb-3" style="color: #a8b8ff;">
+                                <i class="bi bi-cloud-upload"></i>
+                                Отправить решение
+                            </h6>
+                            {% if submission %}
+                            <div class="alert" style="background: rgba(106, 90, 205, 0.15); border: 1px solid rgba(106, 90, 205, 0.3); color: #a8b8ff; border-radius: 10px;">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <strong>Вы уже отправили решение.</strong>
+                                {% if submission.status == 'returned' %}
+                                <br><i class="bi bi-arrow-return-left me-1"></i>Решение возвращено на доработку. Вы можете отправить новое решение.
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'classroom_core:assignment_submit' assignment.id %}" class="btn-submit">
+                                    <i class="bi bi-send"></i> Отправить решение
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Решение студента(если есть) -->
+                {% if submission %}
+                <div class="custom-card">
+                    <div class="card-header-gradient">
+                        <h5>
+                            <i class="bi bi-check-circle"></i>
+                            Мое решение
+                        </h5>
+                    </div>
+                    <div class="card-body-custom">
+                        <div class="submission-card">
+                            <div class="submission-header">
+                                <div>
+                                    <span class="status-badge {% if submission.status == 'returned' %}returned{% endif %}">
+                                        <i class="bi bi-{% if submission.status == 'submitted' %}clock{% elif submission.status == 'graded' %}star{% elif submission.status == 'returned' %}arrow-return-left{% endif %} me-1"></i>
+                                        {{ submission.get_status_display }}
+                                    </span>
+                                    {% if submission.is_late %}
+                                    <span class="late-badge ms-2">
+                                        <i class="bi bi-alarm"></i> С опозданием
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                {% if submission.score %}
+                                <span class="score-badge">
+                                    <i class="bi bi-star-fill me-1"></i>{{ submission.score }} баллов
+                                </span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="submission-body">
+                                <div class="submission-text">
+                                    {{ submission.text_response|linebreaks }}
+                                </div>
+
+                                {% if submission.file_submission %}
+                                <div class="mt-3">
+                                    <a href="{{ submission.file_submission.url }}" class="attachment-link" target="_blank">
+                                        <i class="bi bi-file-earmark"></i> Файл решения: {{ submission.file_submission.name|truncatechars:30 }}
+                                    </a>
+                                </div>
+                                {% endif %}
+
+                                <div class="d-flex justify-content-between mt-3">
+                                    <small style="color: #8080b0;">
+                                        <i class="bi bi-clock"></i>
+                                        Отправлено: {{ submission.submitted_at|date:"d.m.Y H:i" }}
+                                    </small>
+                                </div>
+
+                                {% if submission.feedback %}
+                                <div class="feedback-section">
+                                    <strong>
+                                        <i class="bi bi-chat-text me-1"></i>Обратная связь:
+                                    </strong>
+                                    <p class="mb-0" style="color: #b0b0ff;">{{ submission.feedback }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if can_manage_course %}
+                <!-- Все сданные работы(для преподавателя) -->
+                <div class="custom-card">
+                    <div class="card-header-gradient">
+                        <h5>
+                            <i class="bi bi-people-fill"></i>
+                            Работы студентов
+                        </h5>
+                    </div>
+                    <div class="card-body-custom">
+                        <!-- Статистика -->
+                        {% if submissions_stats %}
+                        <div class="row mb-4">
+                            <div class="col-md-3 col-6 mb-2">
+                                <div class="p-3" style="background: rgba(106, 90, 205, 0.15); border-radius: 10px; text-align: center;">
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: #fff;">{{ submissions_stats.total }}</div>
+                                    <div style="color: #a8b8ff; font-size: 0.85rem;">Всего работ</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-2">
+                                <div class="p-3" style="background: rgba(76, 175, 80, 0.15); border-radius: 10px; text-align: center;">
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: #4caf50;">{{ submissions_stats.graded }}</div>
+                                    <div style="color: #a8b8ff; font-size: 0.85rem;">Оценено</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-2">
+                                <div class="p-3" style="background: rgba(255, 165, 2, 0.15); border-radius: 10px; text-align: center;">
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: #ffa502;">{{ submissions_stats.submitted }}</div>
+                                    <div style="color: #a8b8ff; font-size: 0.85rem;">Ожидают</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-2">
+                                <div class="p-3" style="background: rgba(255, 71, 87, 0.15); border-radius: 10px; text-align: center;">
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: #ff4757;">{{ submissions_stats.late }}</div>
+                                    <div style="color: #a8b8ff; font-size: 0.85rem;">С опозданием</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Список работ -->
+                        {% if all_submissions %}
+                            <div class="table-responsive">
+                                <table class="table" style="color: #e0e0ff; --bs-table-bg: transparent;">
+                                    <thead>
+                                        <tr style="border-bottom: 2px solid rgba(106, 90, 205, 0.5);">
+                                            <th style="color: #a8b8ff; padding: 0.8rem; font-weight: 600;">Студент</th>
+                                            <th style="color: #a8b8ff; padding: 0.8rem; font-weight: 600;">Статус</th>
+                                            <th style="color: #a8b8ff; padding: 0.8rem; font-weight: 600;">Баллы</th>
+                                            <th style="color: #a8b8ff; padding: 0.8rem; font-weight: 600;">Дата</th>
+                                            <th style="color: #a8b8ff; padding: 0.8rem; font-weight: 600;">Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for sub in all_submissions %}
+                                        <tr style="border-bottom: 1px solid rgba(106, 90, 205, 0.2); transition: all 0.3s ease;">
+                                            <td style="padding: 1rem;">
+                                                <strong style="color: #fff;">{{ sub.student.get_full_name|default:sub.student.username }}</strong>
+                                                <br>
+                                                <small style="color: #8080b0;">{{ sub.student.email }}</small>
+                                            </td>
+                                            <td style="padding: 1rem;">
+                                                {% if sub.status == 'submitted' %}
+                                                    <span class="badge" style="background: rgba(13, 110, 253, 0.2); color: #0d6efd; border: 1px solid #0d6efd; padding: 0.4rem 0.8rem; border-radius: 50px;">Отправлено</span>
+                                                {% elif sub.status == 'graded' %}
+                                                    <span class="badge" style="background: rgba(25, 135, 84, 0.2); color: #198754; border: 1px solid #198754; padding: 0.4rem 0.8rem; border-radius: 50px;">Оценено</span>
+                                                {% elif sub.status == 'returned' %}
+                                                    <span class="badge" style="background: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid #ffc107; padding: 0.4rem 0.8rem; border-radius: 50px;">Возвращено</span>
+                                                {% endif %}
+                                                {% if sub.is_late %}
+                                                    <br>
+                                                    <small style="font-size: 0.7rem; color: #ff4757;">
+                                                        <i class="bi bi-exclamation-triangle"></i> С опозданием
+                                                    </small>
+                                                {% endif %}
+                                            </td>
+                                            <td style="padding: 1rem;">
+                                                {% if sub.score is not None %}
+                                                    <span class="score-badge" style="background: linear-gradient(135deg, #ffd700, #ffa502); color: #1a1a2e; padding: 0.3rem 0.8rem; border-radius: 50px; font-weight: 700; display: inline-block;">{{ sub.score }}/{{ assignment.max_points }}</span>
+                                                {% else %}
+                                                    <span style="color: #8080b0;">—</span>
+                                                {% endif %}
+                                            </td>
+                                            <td style="padding: 1rem; color: #b0b0ff;">
+                                                <small>{{ sub.submitted_at|date:"d.m.Y H:i" }}</small>
+                                            </td>
+                                            <td style="padding: 1rem;">
+                                                <div class="d-flex gap-2">
+                                                    {% if sub.status != 'graded' %}
+                                                    <a href="{% url 'classroom_core:assignment_grade' sub.id %}" class="btn btn-sm" style="background: rgba(25, 135, 84, 0.2); border: 1px solid rgba(25, 135, 84, 0.4); color: #198754;" title="Оценить">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    {% else %}
+                                                    <a href="{% url 'classroom_core:assignment_grade' sub.id %}" class="btn btn-sm" style="background: rgba(255, 193, 7, 0.2); border: 1px solid rgba(255, 193, 7, 0.4); color: #ffc107;" title="Вернуть">
+                                                        <i class="bi bi-arrow-return-left"></i>
+                                                    </a>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="empty-state" style="padding: 3rem; text-align: center;">
+                                <i class="bi bi-inbox" style="font-size: 3rem; color: #6a5acd; opacity: 0.5;"></i>
+                                <p style="color: #8080b0; margin-top: 1rem;">Студенты еще не сдали работы</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Сайдбар с информацией -->
+            <div class="col-lg-4">
+                <!-- Информация о задании -->
+                <div class="custom-card">
+                    <div class="card-header-gradient">
+                        <h6>
+                            <i class="bi bi-info-circle"></i>
+                            Информация о задании
+                        </h6>
+                    </div>
+                    <div class="card-body-custom">
+                        <dl class="info-list">
+                            <dt><i class="bi bi-book"></i> Курс:</dt>
+                            <dd>{{ assignment.course.title }}</dd>
+                            
+                            <dt><i class="bi bi-trophy"></i> Макс. баллов:</dt>
+                            <dd><span class="info-badge">{{ assignment.max_points }}</span></dd>
+                            
+                            <dt><i class="bi bi-check2-circle"></i> Проходной балл:</dt>
+                            <dd><span class="info-badge">{{ assignment.passing_score }}</span></dd>
+                            
+                            <dt><i class="bi bi-calendar"></i> Срок:</dt>
+                            <dd><span class="info-badge">{{ assignment.due_date|date:"d.m.Y H:i" }}</span></dd>
+                            
+                            <dt><i class="bi bi-flag"></i> Статус:</dt>
+                            <dd>
+                                {% if assignment.status == 'draft' %}
+                                <span class="status-badge-small status-draft">
+                                    <i class="bi bi-pencil"></i> Черновик
+                                </span>
+                                {% elif assignment.status == 'published' %}
+                                <span class="status-badge-small status-published">
+                                    <i class="bi bi-check-circle"></i> Опубликовано
+                                </span>
+                                {% elif assignment.status == 'closed' %}
+                                <span class="status-badge-small status-closed">
+                                    <i class="bi bi-lock"></i> Закрыто
+                                </span>
+                                {% endif %}
+                            </dd>
+                            
+                            <dt><i class="bi bi-people"></i> Групповое:</dt>
+                            <dd>
+                                {% if assignment.is_group_assignment %}
+                                <span class="status-badge-small badge-group">
+                                    <i class="bi bi-people-fill"></i> Да
+                                </span>
+                                {% else %}
+                                <span class="info-badge">
+                                    <i class="bi bi-person"></i> Нет
+                                </span>
+                                {% endif %}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+                
+                <!-- Подсказка -->
+                {% if assignment.status == 'published' %}
+                <div class="custom-card hint-card">
+                    <div class="card-header-gradient">
+                        <h6>
+                            <i class="bi bi-lightbulb"></i>
+                            Подсказка
+                        </h6>
+                    </div>
+                    <div class="card-body-custom">
+                        <div class="hint-text">
+                            <p>
+                                <i class="bi bi-calendar-check"></i>
+                                Это задание можно сдать до {{ assignment.due_date|date:"d.m.Y H:i" }}.
+                            </p>
+                            <p class="mb-0">
+                                {% if assignment.allow_late_submissions %}
+                                <i class="bi bi-clock-history"></i>
+                                Поздние решения принимаются, но могут быть оценены ниже.
+                                {% else %}
+                                <i class="bi bi-lock"></i>
+                                После срока сдачи задание будет закрыто.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

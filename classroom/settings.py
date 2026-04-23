@@ -10,22 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
-import os
-from pathlib import Path
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+import os 
+from pathlib import Path 
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
+BASE_DIR =Path(__file__ ).resolve().parent.parent 
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-g-!i=mz)8r*2$d##c)l=)m0j%hv8vbmn-6%^lnv)(=e-40sx=n'
+SECRET_KEY ='django-insecure-g-!i=mz)8r*2$d##c)l=)m0j%hv8vbmn-6%^lnv)(=e-40sx=n'
 
-DEBUG = True
+DEBUG =True 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS =[]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -33,10 +28,11 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'channels',
     'django.contrib.staticfiles',
-    
     'file_manager',
     'classroom_core',
+    'chat_manager',
 ]
 
 MIDDLEWARE = [
@@ -48,16 +44,16 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-DEFAULT_STORAGE_QUOTA_BYTES = 5368709120
-ROOT_URLCONF = 'classroom.urls'
+DEFAULT_STORAGE_QUOTA_BYTES =5368709120 
+ROOT_URLCONF ='classroom.urls'
 
-TEMPLATES = [
+TEMPLATES =[
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
+        'BACKEND':'django.template.backends.django.DjangoTemplates',
+        'DIRS':[BASE_DIR /'templates'],
+        'APP_DIRS':True ,
+        'OPTIONS':{
+            'context_processors':[
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -67,46 +63,53 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'classroom.wsgi.application'
+ASGI_APPLICATION ='classroom.asgi.application'
 
-DATABASES = {
+CHANNEL_LAYERS = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
+DATABASES ={
+    'default':{
+    'ENGINE':'django.db.backends.sqlite3',
+    'NAME':BASE_DIR /'db.sqlite3',
     }
 }
 
-AUTH_PASSWORD_VALIDATORS = [
+AUTH_PASSWORD_VALIDATORS =[
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    'NAME':'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    'NAME':'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    'NAME':'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    'NAME':'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
-LANGUAGE_CODE = 'ru-ru'
+LANGUAGE_CODE ='ru-ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE ='UTC'
 
-USE_I18N = True
+USE_I18N =True 
 
-USE_TZ = True
+USE_TZ =True 
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_URL ='/static/'
+STATICFILES_DIRS =[os.path.join(BASE_DIR ,'static')]
+STATIC_ROOT = os.path.join(BASE_DIR ,'staticfiles')
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL ='/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR ,'media')
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD ='django.db.models.BigAutoField'
 
-LOGIN_URL = '/admin/login/'
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
+

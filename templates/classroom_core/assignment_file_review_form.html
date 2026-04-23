@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Проверка файла{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Проверка файла задания</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Файл</h5>
+                            <p class="lead">
+                                {{ file.file.get_icon }} {{ file.file.title }}
+                            </p>
+                            <p>
+                                <strong>Размер:</strong> {{ file.file.get_file_size_display }}
+                                <br>
+                                <strong>Тип:</strong> {{ file.file.get_file_type_display }}
+                            </p>
+                            <a href="{{ file.file.file.url }}" target="_blank" class="btn btn-outline-primary btn-sm" download>
+                                <i class="bi bi-download"></i> Скачать файл
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Информация</h5>
+                            <p>
+                                <strong>Студент:</strong> {{ file.student.get_full_name|default:file.student.username }}
+                                <br>
+                                <strong>Задание:</strong> {{ assignment.title }}
+                                <br>
+                                <strong>Дата загрузки:</strong> {{ file.uploaded_at|date:"d.m.Y H:i" }}
+                            </p>
+                            {% if file.description %}
+                                <p><strong>Описание:</strong><br>{{ file.description }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if is_teacher or is_admin or is_assistant %}
+                    {% if review %}
+                        <div class="alert alert-info">
+                            <strong>Редактирование проверки</strong> от {{ review.reviewed_at|date:"d.m.Y H:i" }}
+                        </div>
+                    {% endif %}
+                    {% endif %}
+                    
+                    <hr>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.status.id_for_label }}" class="form-label">
+                                Статус проверки <span class="text-danger">*</span>
+                            </label>
+                            {{ form.status }}
+                            <small class="form-text text-muted">
+                                Выберите статус проверки файла.
+                            </small>
+                            {% if form.status.errors %}
+                                <div class="text-danger">{{ form.status.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.feedback.id_for_label }}" class="form-label">
+                                Комментарий / Обратная связь
+                            </label>
+                            {{ form.feedback }}
+                            <small class="form-text text-muted">
+                                Подробный комментарий для студента о его работе.
+                            </small>
+                            {% if form.feedback.errors %}
+                                <div class="text-danger">{{ form.feedback.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.points.id_for_label }}" class="form-label">
+                                Баллы за файл
+                            </label>
+                            {{ form.points }}
+                            <small class="form-text text-muted">
+                                Максимум баллов за задание: {{ assignment.max_points }}
+                            </small>
+                            {% if form.points.errors %}
+                                <div class="text-danger">{{ form.points.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'classroom_core:assignment_file_list' assignment.id %}" class="btn btn-secondary">
+                                Назад к списку файлов
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                {% if review %}Сохранить изменения{% else %}Сохранить проверку{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Проверка файла{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Проверка файла задания</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Файл</h5>
+                            <p class="lead">
+                                {{ file.file.get_icon }} {{ file.file.title }}
+                            </p>
+                            <p>
+                                <strong>Размер:</strong> {{ file.file.get_file_size_display }}
+                                <br>
+                                <strong>Тип:</strong> {{ file.file.get_file_type_display }}
+                            </p>
+                            <a href="{{ file.file.file.url }}" target="_blank" class="btn btn-outline-primary btn-sm" download>
+                                <i class="bi bi-download"></i> Скачать файл
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Информация</h5>
+                            <p>
+                                <strong>Студент:</strong> {{ file.student.get_full_name|default:file.student.username }}
+                                <br>
+                                <strong>Задание:</strong> {{ assignment.title }}
+                                <br>
+                                <strong>Дата загрузки:</strong> {{ file.uploaded_at|date:"d.m.Y H:i" }}
+                            </p>
+                            {% if file.description %}
+                                <p><strong>Описание:</strong><br>{{ file.description }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Результат проверки</h5>
+                            <p>
+                                <strong>Проверил:</strong> {{ review.reviewer.get_full_name|default:review.reviewer.username }}
+                                <br>
+                                <strong>Дата:</strong> {{ review.reviewed_at|date:"d.m.Y H:i" }}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Статус</h5>
+                            <p>
+                                {% if review.status == 'pending' %}
+                                    <span class="badge bg-warning fs-6">На проверке</span>
+                                {% elif review.status == 'approved' %}
+                                    <span class="badge bg-success fs-6">Принят</span>
+                                {% elif review.status == 'rejected' %}
+                                    <span class="badge bg-danger fs-6">Отклонен</span>
+                                {% elif review.status == 'needs_revision' %}
+                                    <span class="badge bg-info fs-6">Требует доработки</span>
+                                {% endif %}
+                            </p>
+                            {% if review.points %}
+                                <p><strong>Баллы:</strong> {{ review.points }} из {{ assignment.max_points }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if review.feedback %}
+                        <div class="mb-4">
+                            <h5>Комментарий преподавателя</h5>
+                            <div class="p-3 bg-light rounded">
+                                {{ review.feedback|linebreaks }}
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'classroom_core:assignment_file_list' assignment.id %}" class="btn btn-secondary">
+                            Назад к списку файлов
+                        </a>
+                        
+                        {% if review.can_review %}
+                            <a href="{% url 'classroom_core:assignment_file_review_edit' review.id %}" class="btn btn-primary">
+                                Редактировать проверку
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
