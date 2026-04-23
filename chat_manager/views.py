@@ -61,12 +61,10 @@ def create_course_chat(request, course_id):
     """Создание чата для курса"""
     course = get_object_or_404(Course, id=course_id)
     
-    # Проверяем доступ к курсу
     if not course.can_access(request.user):
         messages.error(request, 'У вас нет доступа к этому курсу')
         return redirect('classroom_core:course_list')
     
-    # Проверяем, существует ли уже чат для курса
     existing_room = ChatRoom.objects.filter(
         course=course,
         room_type='course',
@@ -76,7 +74,6 @@ def create_course_chat(request, course_id):
     if existing_room:
         return redirect('chat_manager:chat_room', room_id=existing_room.id)
     
-    # Создаем новую комнату
     room = ChatRoom.objects.create(
         name=f'Чат курса: {course.title}',
         room_type='course',
@@ -84,7 +81,6 @@ def create_course_chat(request, course_id):
         created_by=request.user
     )
     
-    # Добавляем всех участников курса
     all_participants = set()
     all_participants.add(course.instructor)
     all_participants.update(course.teaching_assistants.all())
@@ -100,12 +96,9 @@ def create_private_chat(request, user_id):
     """Создание личного чата с другим пользователем"""
     other_user = get_object_or_404(User, id=user_id)
     
-    # Проверяем, что пользователь не пытается создать чат с самим собой
     if other_user == request.user:
         messages.error(request, 'Нельзя создать чат с самим собой')
         return redirect('chat_manager:chat_list')
-    
-    # Получаем или создаем личный чат
     room = ChatRoom.get_or_create_private_chat(request.user, other_user)
     
     messages.success(request, f'Чат с {other_user.username} успешно создан')

@@ -168,7 +168,7 @@ def file_download(request ,file_id ):
 
         with open(file_path ,'rb')as fh :
             response =HttpResponse(fh.read(),content_type ="application/octet-stream")
-            response ['Content-Disposition']=f'attachment; filename="{os.path.basename(file_path )}"'
+            response ['Content-Disposition']=f'attachment; filename="{os.path.basename(file_path)}"'
             return response 
 
     raise Http404 

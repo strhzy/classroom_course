@@ -1289,7 +1289,6 @@ def course_enrollment_request_review(request, request_id):
     enrollment_request = get_object_or_404(CourseEnrollmentRequest, id=request_id)
     course = enrollment_request.course
 
-    # Проверка прав
     if not enrollment_request.can_review(request.user):
         raise PermissionDenied
 
@@ -1305,7 +1304,6 @@ def course_enrollment_request_review(request, request_id):
             enrollment_request.reviewed_at = timezone.now()
             enrollment_request.save()
 
-            # Если заявка одобрена, добавляем студента на курс
             if enrollment_request.status == 'approved':
                 course.add_student(enrollment_request.student)
                 messages.success(request, f'Заявка одобрена. Студент {enrollment_request.student.username} зачислен на курс')
