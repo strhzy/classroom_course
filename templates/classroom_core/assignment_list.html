@@ -563,7 +563,7 @@
                 <div class="col-md-5">
                     <select name="course_id" class="custom-select">
                         <option value="">📚 Все курсы</option>
-                        {% for course in user.courses_created.all %}
+                        {% for course in filter_courses %}
                         <option value="{{ course.id }}" {% if course_id|add:"0" == course.id %}selected{% endif %}>
                             {{ course.title }}
                         </option>
@@ -664,12 +664,6 @@
                                         <i class="bi bi-journal-text"></i>
                                     </div>
                                     <p class="empty-text">Нет заданий</p>
-                                    {% if user.profile.is_teacher or user.profile.is_staff or user.is_superuser %}
-                                    <a href="{% url 'classroom_core:assignment_create' %}" class="btn-create mt-3" style="display: inline-flex;">
-                                        <i class="bi bi-plus-lg"></i>
-                                        Создать задание
-                                    </a>
-                                    {% endif %}
                                 </div>
                             </td>
                         </tr>

@@ -492,11 +492,29 @@
                 </a>
                 {% endif %}
                 {% if can_delete %}
-                <a href="{% url 'file_manager:file_delete' file.id %}" class="action-btn btn-delete">
+                <a href="{% url 'file_manager:file_delete' file.id %}" class="action-btn btn-delete" onclick="return confirm('Вы точно хотите удалить этот файл?')">
                     <i class="bi bi-trash"></i> Удалить
                 </a>
                 {% endif %}
             </div>
+        </div>
+        <div class="mt-2 d-flex gap-2 flex-wrap">
+            <form method="post" action="{% url 'file_manager:favorite_collection_add_file' file.id %}" class="d-flex gap-2">
+                {% csrf_token %}
+                <select name="collection_id" class="form-select form-select-sm" required>
+                    <option value="">Категория избранного</option>
+                    {% for c in favorite_collections %}<option value="{{ c.id }}">{{ c.title }}</option>{% endfor %}
+                </select>
+                <button class="btn btn-sm btn-outline-warning">Добавить</button>
+            </form>
+            <form method="post" action="{% url 'file_manager:workspace_add_file' file.id %}" class="d-flex gap-2">
+                {% csrf_token %}
+                <select name="workspace_id" class="form-select form-select-sm" required>
+                    <option value="">Общий workspace</option>
+                    {% for w in shared_workspaces %}<option value="{{ w.id }}">{{ w.title }}</option>{% endfor %}
+                </select>
+                <button class="btn btn-sm btn-outline-info">Поделиться</button>
+            </form>
         </div>
 
         <div class="row">

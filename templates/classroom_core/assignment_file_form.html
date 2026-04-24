@@ -21,6 +21,7 @@
                         <h6><i class="bi bi-info-circle"></i> Как прикрепить файл</h6>
                         <ol class="mb-0">
                             <li>Загрузите файл через <a href="{% url 'file_manager:file_upload' %}" target="_blank">Файловый менеджер</a></li>
+                            <li>Или <a href="{% url 'file_manager:yandex_picker' %}?assignment_id={{ assignment.id }}" target="_blank">импортируйте файл с Яндекс.Диска</a></li>
                             <li>Вернитесь на эту страницу и выберите файл из списка</li>
                         </ol>
                     </div>

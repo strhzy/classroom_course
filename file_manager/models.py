@@ -37,6 +37,11 @@ class FileCategory(models.Model ):
         return self.name 
 
 class File(models.Model ):
+    IMPORTANCE_CHOICES = [
+        ("main", "Основное"),
+        ("important", "Важное"),
+        ("secondary", "Второстепенное"),
+    ]
     FILE_TYPE_CHOICES =[
    ('pdf','PDF Document'),
    ('txt','Text File'),
@@ -110,6 +115,7 @@ class File(models.Model ):
     related_name ='favorite_files'
     )
     download_count =models.IntegerField(default =0 )
+    importance = models.CharField(max_length=20, choices=IMPORTANCE_CHOICES, default="main")
 
     class Meta :
         ordering =['-uploaded_at']
@@ -380,3 +386,56 @@ class UserStorageQuota(models.Model ):
         ).aggregate(total =models.Sum('file_size'))['total']or 0 
         self.used_bytes =total_size 
         self.save(update_fields =['used_bytes','last_updated'])
+
+
+class ExternalStorageConnection(models.Model):
+    PROVIDER_CHOICES = [
+        ("yandex_disk", "Yandex Disk"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="external_storage_connections")
+    provider = models.CharField(max_length=32, choices=PROVIDER_CHOICES, default="yandex_disk")
+    access_token = models.TextField()
+    refresh_token = models.TextField(blank=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ["user", "provider"]
+
+    def __str__(self):
+        return f"{self.user.username}::{self.provider}"
+
+
+class FavoriteCollection(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="favorite_collections")
+    title = models.CharField(max_length=120)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ["user", "title"]
+        ordering = ["title"]
+
+    def __str__(self):
+        return f"{self.user.username}: {self.title}"
+
+
+class FavoriteCollectionItem(models.Model):
+    collection = models.ForeignKey(FavoriteCollection, on_delete=models.CASCADE, related_name="items")
+    file = models.ForeignKey(File, on_delete=models.CASCADE, related_name="favorite_collection_items")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ["collection", "file"]
+
+
+class SharedWorkspace(models.Model):
+    title = models.CharField(max_length=120)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owned_workspaces")
+    participants = models.ManyToManyField(User, related_name="shared_workspaces")
+    files = models.ManyToManyField(File, blank=True, related_name="workspaces")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title

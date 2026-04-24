@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Кастомная админка{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">Кастомная админ-панель</h2>
+    <div class="row g-3">
+        <div class="col-md-3"><div class="card p-3"><strong>Пользователи</strong><div>{{ users_count }}</div></div></div>
+        <div class="col-md-3"><div class="card p-3"><strong>Курсы</strong><div>{{ courses_count }}</div></div></div>
+        <div class="col-md-3"><div class="card p-3"><strong>Файлы</strong><div>{{ files_count }}</div></div></div>
+        <div class="col-md-3"><div class="card p-3"><strong>Заявки</strong><div>{{ pending_enrollments }}</div></div></div>
+    </div>
+    <div class="mt-4 d-flex gap-2">
+        <a class="btn btn-outline-primary" href="{% url 'classroom_core:course_list' %}">Курсы</a>
+        <a class="btn btn-outline-primary" href="{% url 'file_manager:file_list' %}">Файлы</a>
+    </div>
+</div>
+{% endblock %}

@@ -38,7 +38,7 @@ class CourseAdmin(admin.ModelAdmin ):
     'fields':('status','is_public','allow_self_enrollment','max_students')
     }),
   ('Даты',{
-    'fields':('start_date','end_date','created_at','updated_at')
+    'fields':('start_date','end_date','class_days','class_time','created_at','updated_at')
     }),
   ('Медиа',{
     'fields':('cover_image','color')

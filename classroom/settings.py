@@ -10,26 +10,48 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
-import os 
-from pathlib import Path 
+import os
+from pathlib import Path
 
 
-BASE_DIR =Path(__file__ ).resolve().parent.parent 
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY ='django-insecure-g-!i=mz)8r*2$d##c)l=)m0j%hv8vbmn-6%^lnv)(=e-40sx=n'
 
-DEBUG =True 
+def env_bool(name, default=False):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.lower() in {"1", "true", "yes", "on"}
 
-ALLOWED_HOSTS =[]
+
+def env_int(name, default):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    try:
+        return int(value)
+    except ValueError:
+        return default
+
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-dev-key")
+
+DEBUG = env_bool("DJANGO_DEBUG", True)
+
+ALLOWED_HOSTS = [host.strip() for host in os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",") if host.strip()]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.sites',
     'django.contrib.messages',
     'channels',
     'django.contrib.staticfiles',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.yandex',
     'file_manager',
     'classroom_core',
     'chat_manager',
@@ -41,19 +63,20 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-DEFAULT_STORAGE_QUOTA_BYTES =5368709120 
-ROOT_URLCONF ='classroom.urls'
+DEFAULT_STORAGE_QUOTA_BYTES = env_int("DEFAULT_STORAGE_QUOTA_BYTES", 5368709120)
+ROOT_URLCONF = 'classroom.urls'
 
 TEMPLATES =[
     {
         'BACKEND':'django.template.backends.django.DjangoTemplates',
-        'DIRS':[BASE_DIR /'templates'],
-        'APP_DIRS':True ,
-        'OPTIONS':{
-            'context_processors':[
+        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -63,17 +86,17 @@ TEMPLATES =[
     },
 ]
 
-ASGI_APPLICATION ='classroom.asgi.application'
+ASGI_APPLICATION = 'classroom.asgi.application'
 
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels.layers.InMemoryChannelLayer'
     }
 }
-DATABASES ={
-    'default':{
-    'ENGINE':'django.db.backends.sqlite3',
-    'NAME':BASE_DIR /'db.sqlite3',
+DATABASES = {
+    'default': {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -92,24 +115,65 @@ AUTH_PASSWORD_VALIDATORS =[
     },
 ]
 
-LANGUAGE_CODE ='ru-ru'
+LANGUAGE_CODE = 'ru-ru'
 
-TIME_ZONE ='UTC'
+TIME_ZONE = 'UTC'
 
-USE_I18N =True 
+USE_I18N = True
 
-USE_TZ =True 
+USE_TZ = True
 
-STATIC_URL ='/static/'
-STATICFILES_DIRS =[os.path.join(BASE_DIR ,'static')]
-STATIC_ROOT = os.path.join(BASE_DIR ,'staticfiles')
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-MEDIA_URL ='/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR ,'media')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-DEFAULT_AUTO_FIELD ='django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
+SITE_ID = env_int("DJANGO_SITE_ID", 1)
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+ACCOUNT_LOGIN_METHODS = {'username', 'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
+ACCOUNT_EMAIL_VERIFICATION = "optional"
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+SOCIALACCOUNT_PROVIDERS = {
+    "yandex": {
+        "APP": {
+            "client_id": os.getenv("YANDEX_AUTH_CLIENT_ID", ""),
+            "secret": os.getenv("YANDEX_AUTH_CLIENT_SECRET", ""),
+            "key": "",
+        },
+        "SCOPE": ["login:email", "login:info"],
+    }
+}
+
+YANDEX_DISK_CLIENT_ID = os.getenv("YANDEX_DISK_CLIENT_ID", "")
+YANDEX_DISK_CLIENT_SECRET = os.getenv("YANDEX_DISK_CLIENT_SECRET", "")
+YANDEX_DISK_REDIRECT_URI = os.getenv("YANDEX_DISK_REDIRECT_URI", "")
+
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_PORT = env_int("EMAIL_PORT", 587)
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@classroom.local")
+
+SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", False)
+SESSION_COOKIE_SECURE = env_bool("DJANGO_SESSION_COOKIE_SECURE", False)
+CSRF_COOKIE_SECURE = env_bool("DJANGO_CSRF_COOKIE_SECURE", False)
+SECURE_HSTS_SECONDS = env_int("DJANGO_SECURE_HSTS_SECONDS", 0)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", False)
+SECURE_HSTS_PRELOAD = env_bool("DJANGO_SECURE_HSTS_PRELOAD", False)
 

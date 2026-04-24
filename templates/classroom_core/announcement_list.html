@@ -494,7 +494,7 @@
                 <div class="col-md-8">
                     <select name="course_id" class="custom-select">
                         <option value="">Все курсы</option>
-                        {% for course in user.courses_created.all %}
+                        {% for course in filter_courses %}
                         <option value="{{ course.id }}" {% if course_id|add:"0" == course.id %}selected{% endif %}>
                             {{ course.title }}
                         </option>

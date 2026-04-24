@@ -7,10 +7,35 @@ app_name = 'classroom_core'
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='classroom_core/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='classroom_core:login'), name='logout'),
+    path(
+        'password-reset/',
+        auth_views.PasswordResetView.as_view(
+            template_name='classroom_core/password_reset_form.html',
+            email_template_name='classroom_core/password_reset_email.txt',
+            subject_template_name='classroom_core/password_reset_subject.txt',
+        ),
+        name='password_reset'
+    ),
+    path(
+        'password-reset/done/',
+        auth_views.PasswordResetDoneView.as_view(template_name='classroom_core/password_reset_done.html'),
+        name='password_reset_done'
+    ),
+    path(
+        'reset/<uidb64>/<token>/',
+        auth_views.PasswordResetConfirmView.as_view(template_name='classroom_core/password_reset_confirm.html'),
+        name='password_reset_confirm'
+    ),
+    path(
+        'reset/done/',
+        auth_views.PasswordResetCompleteView.as_view(template_name='classroom_core/password_reset_complete.html'),
+        name='password_reset_complete'
+    ),
     
     path('', views.course_list, name='course_list'),
     path('create/', views.course_create, name='course_create'),
     path('<int:course_id>/', views.course_detail, name='course_detail'),
+    path('<int:course_id>/teaching-assistants/manage/', views.course_manage_teaching_assistants, name='course_manage_teaching_assistants'),
     path('<int:course_id>/edit/', views.course_edit, name='course_edit'),
     path('<int:course_id>/delete/', views.course_delete, name='course_delete'),
     
@@ -39,8 +64,14 @@ urlpatterns = [
     path('<int:course_id>/students/', views.student_list, name='student_list'),
     path('<int:course_id>/students/enroll/', views.student_enroll, name='student_enroll'),
     path('<int:course_id>/students/<int:student_id>/remove/', views.student_remove, name='student_remove'),
+    path('<int:course_id>/submissions/', views.course_submissions, name='course_submissions'),
     path('<int:course_id>/gradebook/', views.course_gradebook, name='course_gradebook'),
+    path('<int:course_id>/gradebook/lessons/add/', views.course_gradebook_add_lesson, name='course_gradebook_add_lesson'),
+    path('<int:course_id>/gradebook/lessons/<int:lesson_id>/topic/', views.course_gradebook_update_topic, name='course_gradebook_update_topic'),
     path('<int:course_id>/gradebook/update/', views.course_gradebook_update, name='course_gradebook_update'),
+    path('<int:course_id>/gradebook/export/', views.course_gradebook_export, name='course_gradebook_export'),
+    path('<int:course_id>/gradebook/import/', views.course_gradebook_import, name='course_gradebook_import'),
+    path('<int:course_id>/gradebook/columns/create/', views.course_gradebook_column_create, name='course_gradebook_column_create'),
     
     path('groups/', views.group_list, name='group_list'),
     path('groups/create/', views.group_create, name='group_create'),
@@ -69,4 +100,5 @@ urlpatterns = [
     path('profile/', views.profile_view, name='profile_view'),
     path('profile/<int:user_id>/', views.profile_view, name='profile_view_user'),
     path('profile/edit/', views.profile_edit, name='profile_edit'),
+    path('management/dashboard/', views.custom_admin_dashboard, name='custom_admin_dashboard'),
 ]

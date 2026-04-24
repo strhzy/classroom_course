@@ -5,14 +5,31 @@ from django.http import HttpResponse ,Http404 ,JsonResponse
 from django.core.exceptions import PermissionDenied ,ValidationError 
 from django.db.models import Q 
 from django.core.paginator import Paginator 
+from django.contrib.auth.models import User
 from . models import File ,FileCategory ,Tag ,FileComment ,FileVersion ,FileActivity ,UserStorageQuota 
 from . forms import FileUploadForm ,FileEditForm ,FileVersionForm ,FileCommentForm ,FileCategoryForm ,TagForm ,FileSearchForm 
 from . utils import extract_text_from_file ,generate_preview ,search_files ,get_user_storage_usage 
 import os 
+import requests
+from django.conf import settings
+from django.utils.crypto import get_random_string
+from django.utils import timezone
+from django.views.decorators.http import require_http_methods
+from .models import ExternalStorageConnection
+from .models import FavoriteCollection, FavoriteCollectionItem, SharedWorkspace
+from .yandex_disk import get_authorize_url, exchange_code_for_token, list_files, get_download_url
+from .import_pipeline import import_yandex_file
+import zipfile
+import io
+import json
+from pathlib import Path
 
 @login_required 
 def file_list(request ):
     storage_quota =get_user_storage_usage(request.user )
+    yandex_connection = ExternalStorageConnection.objects.filter(
+        user=request.user, provider="yandex_disk"
+    ).first()
 
     files =search_files(
     query =request.GET.get('query'),
@@ -23,6 +40,8 @@ def file_list(request ):
     date_from =request.GET.get('date_from'),
     date_to =request.GET.get('date_to')
     )
+    if request.GET.get('favorites_only'):
+        files = files.filter(favorite=request.user)
 
     folders =File.objects.filter(
     Q(uploaded_by =request.user )|
@@ -49,6 +68,7 @@ def file_list(request ):
     'categories':FileCategory.objects.all(),
     'tags':Tag.objects.all(),
     'storage_quota':storage_quota ,
+    'yandex_connected': bool(yandex_connection),
     }
 
     return render(request ,'file_manager/file_list.html',context )
@@ -142,6 +162,8 @@ def file_detail(request ,file_id ):
     'can_edit':file_obj.can_edit(request.user ),
     'can_delete':file_obj.can_delete(request.user ),
     'is_favorite':file_obj.is_favorite(request.user ),
+    'favorite_collections': FavoriteCollection.objects.filter(user=request.user),
+    'shared_workspaces': SharedWorkspace.objects.filter(participants=request.user),
     }
 
     return render(request ,'file_manager/file_detail.html',context )
@@ -510,3 +532,210 @@ def get_storage_quota(request ):
         'used_percentage':storage_quota.get_used_percentage()
         })
     return JsonResponse({'error':'Method not allowed'},status =405 )
+
+
+@login_required
+def yandex_oauth_start(request):
+    state = get_random_string(24)
+    request.session["yandex_oauth_state"] = state
+    authorize_url = get_authorize_url(
+        os.getenv("YANDEX_DISK_CLIENT_ID", ""),
+        os.getenv("YANDEX_DISK_REDIRECT_URI", request.build_absolute_uri("/files/oauth/yandex/callback/")),
+        state,
+    )
+    return redirect(authorize_url)
+
+
+@login_required
+def yandex_oauth_callback(request):
+    state = request.GET.get("state")
+    code = request.GET.get("code")
+    if not state or state != request.session.get("yandex_oauth_state"):
+        messages.error(request, "Неверный OAuth state")
+        return redirect("file_manager:file_list")
+    if not code:
+        messages.error(request, "OAuth код не получен")
+        return redirect("file_manager:file_list")
+
+    try:
+        token_data = exchange_code_for_token(
+            os.getenv("YANDEX_DISK_CLIENT_ID", ""),
+            os.getenv("YANDEX_DISK_CLIENT_SECRET", ""),
+            code,
+        )
+    except Exception:
+        messages.error(request, "Не удалось подключить Яндекс.Диск")
+        return redirect("file_manager:file_list")
+
+    expires_at = timezone.now() + timezone.timedelta(seconds=int(token_data.get("expires_in", 0)))
+    ExternalStorageConnection.objects.update_or_create(
+        user=request.user,
+        provider="yandex_disk",
+        defaults={
+            "access_token": token_data.get("access_token", ""),
+            "refresh_token": token_data.get("refresh_token", ""),
+            "expires_at": expires_at,
+        },
+    )
+    messages.success(request, "Яндекс.Диск подключен")
+    return redirect("file_manager:file_list")
+
+
+@login_required
+def yandex_disconnect(request):
+    ExternalStorageConnection.objects.filter(user=request.user, provider="yandex_disk").delete()
+    messages.success(request, "Яндекс.Диск отключен")
+    return redirect("file_manager:file_list")
+
+
+@login_required
+def yandex_file_picker(request):
+    connection = ExternalStorageConnection.objects.filter(user=request.user, provider="yandex_disk").first()
+    if not connection:
+        messages.error(request, "Сначала подключите Яндекс.Диск")
+        return redirect("file_manager:file_list")
+
+    files = []
+    try:
+        files = [f for f in list_files(connection.access_token) if f.get("type") == "file"]
+    except Exception:
+        messages.error(request, "Не удалось получить список файлов с Яндекс.Диска")
+        return redirect("file_manager:file_list")
+
+    if request.method == "POST":
+        selected_path = request.POST.get("path")
+        selected_name = request.POST.get("name")
+        assignment_id = request.POST.get("assignment_id") or request.GET.get("assignment_id")
+        section_id = request.POST.get("section_id") or request.GET.get("section_id")
+        if not selected_path or not selected_name:
+            messages.error(request, "Файл не выбран")
+            return redirect("file_manager:yandex_picker")
+        download_url = get_download_url(connection.access_token, selected_path)
+        if not download_url:
+            messages.error(request, "Не удалось получить ссылку на скачивание")
+            return redirect("file_manager:yandex_picker")
+        response = requests.get(download_url, timeout=60)
+        response.raise_for_status()
+        file_obj = import_yandex_file(request.user, selected_name, response.content)
+        storage_quota = get_user_storage_usage(request.user)
+        storage_quota.update_usage()
+        if assignment_id:
+            from classroom_core.models import Assignment, AssignmentFile
+            assignment = Assignment.objects.filter(id=assignment_id).first()
+            if assignment:
+                AssignmentFile.objects.get_or_create(
+                    assignment=assignment,
+                    student=request.user,
+                    file=file_obj,
+                    defaults={"description": "Импортировано с Яндекс.Диска"},
+                )
+                messages.success(request, "Файл импортирован и прикреплен к заданию")
+                return redirect("classroom_core:assignment_detail", assignment_id=assignment.id)
+        if section_id:
+            from classroom_core.models import CourseSection, CourseMaterial
+            section = CourseSection.objects.filter(id=section_id).first()
+            if section:
+                CourseMaterial.objects.create(
+                    section=section,
+                    title=selected_name,
+                    description="Импортировано с Яндекс.Диска",
+                    material_type="link",
+                    url=request.build_absolute_uri(file_obj.file.url),
+                    is_visible=True,
+                    status="published",
+                )
+                messages.success(request, "Файл импортирован и добавлен как материал курса")
+                return redirect("classroom_core:course_detail", course_id=section.course_id)
+        messages.success(request, "Файл импортирован из Яндекс.Диска")
+        return redirect("file_manager:file_detail", file_id=file_obj.id)
+
+    return render(request, "file_manager/yandex_picker.html", {"yandex_files": files})
+
+
+@login_required
+def download_all_files_archive(request):
+    files = File.objects.filter(uploaded_by=request.user, is_folder=False)
+    archive_buffer = io.BytesIO()
+    with zipfile.ZipFile(archive_buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+        for file_obj in files:
+            try:
+                file_path = Path(file_obj.file.path)
+                if file_path.exists():
+                    archive.write(file_path, arcname=file_path.name)
+            except Exception:
+                continue
+    archive_buffer.seek(0)
+    response = HttpResponse(archive_buffer.getvalue(), content_type="application/zip")
+    response["Content-Disposition"] = 'attachment; filename="portfolio_files.zip"'
+    return response
+
+
+@login_required
+@require_http_methods(["POST"])
+def favorite_collection_create(request):
+    title = (request.POST.get("title") or "").strip()
+    if not title:
+        messages.error(request, "Название категории избранного обязательно")
+    else:
+        FavoriteCollection.objects.get_or_create(user=request.user, title=title)
+        messages.success(request, "Категория избранного создана")
+    return redirect(request.META.get("HTTP_REFERER", "file_manager:file_list"))
+
+
+@login_required
+@require_http_methods(["POST"])
+def favorite_collection_add_file(request, file_id):
+    file_obj = get_object_or_404(File, id=file_id)
+    collection_id = request.POST.get("collection_id")
+    collection = get_object_or_404(FavoriteCollection, id=collection_id, user=request.user)
+    FavoriteCollectionItem.objects.get_or_create(collection=collection, file=file_obj)
+    messages.success(request, "Файл добавлен в категорию избранного")
+    return redirect("file_manager:file_detail", file_id=file_id)
+
+
+@login_required
+@require_http_methods(["POST"])
+def workspace_create(request):
+    title = (request.POST.get("title") or "").strip()
+    participant_username = (request.POST.get("participant") or "").strip()
+    participant = User.objects.filter(username=participant_username).first()
+    if not title or not participant:
+        messages.error(request, "Укажите название и существующего пользователя")
+        return redirect("file_manager:file_list")
+    workspace = SharedWorkspace.objects.create(title=title, owner=request.user)
+    workspace.participants.add(request.user, participant)
+    messages.success(request, "Общий workspace создан")
+    return redirect("file_manager:file_list")
+
+
+@login_required
+@require_http_methods(["POST"])
+def workspace_add_file(request, file_id):
+    file_obj = get_object_or_404(File, id=file_id)
+    workspace_id = request.POST.get("workspace_id")
+    workspace = get_object_or_404(SharedWorkspace, id=workspace_id, participants=request.user)
+    workspace.files.add(file_obj)
+    if workspace.participants.exclude(id=request.user.id).exists():
+        file_obj.shared_with.add(*workspace.participants.exclude(id=request.user.id))
+        file_obj.visibility = "shared"
+        file_obj.save(update_fields=["visibility"])
+    messages.success(request, "Файл добавлен в общий workspace")
+    return redirect("file_manager:file_detail", file_id=file_id)
+
+
+@login_required
+def backup_compare(request):
+    backups_dir = Path(settings.BASE_DIR) / "backups"
+    first = request.GET.get("first")
+    second = request.GET.get("second")
+    backups = sorted([p.name for p in backups_dir.glob("snapshot_*.zip")], reverse=True)
+    diff = {"added": [], "removed": []}
+    if first and second:
+        first_set, second_set = set(), set()
+        with zipfile.ZipFile(backups_dir / first, "r") as z1:
+            first_set = set(z1.namelist())
+        with zipfile.ZipFile(backups_dir / second, "r") as z2:
+            second_set = set(z2.namelist())
+        diff["added"] = sorted(list(second_set - first_set))
+        diff["removed"] = sorted(list(first_set - second_set))
+    return render(request, "file_manager/backup_compare.html", {"backups": backups, "diff": diff, "first": first, "second": second})

@@ -543,18 +543,6 @@
                 <i class="bi bi-journal-bookmark-fill me-2"></i>
                 {{ title }}
             </h1>
-            <nav aria-label="breadcrumb" class="custom-breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="{% url 'classroom_core:course_list' %}">
-                            <i class="bi bi-grid me-1"></i>Мои курсы
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        {{ title }}
-                    </li>
-                </ol>
-            </nav>
         </div>
 
         <div class="row">
@@ -621,6 +609,19 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
+                                        <label for="id_status" class="form-label">
+                                            <i class="bi bi-flag"></i>
+                                            Статус курса
+                                        </label>
+                                        <select name="status" id="id_status" class="custom-input">
+                                            {% for value,label in form.status.field.choices %}
+                                            <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>{{ label }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
                                         <label for="id_start_date" class="form-label">
                                             <i class="bi bi-calendar-plus"></i>
                                             Дата начала
@@ -632,7 +633,7 @@
                                                value="{{ form.start_date.value|default:'' }}">
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 mt-2">
                                     <div class="form-group">
                                         <label for="id_end_date" class="form-label">
                                             <i class="bi bi-calendar-check"></i>
@@ -645,6 +646,42 @@
                                                value="{{ form.end_date.value|default:'' }}">
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="id_class_days" class="form-label">
+                                            <i class="bi bi-calendar-week"></i>
+                                            Дни занятий
+                                        </label>
+                                        <input type="text" name="class_days" id="id_class_days" class="custom-input"
+                                               value="{{ form.class_days.value|default:'' }}" placeholder="Пн, Ср, Пт">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="id_class_time" class="form-label">
+                                            <i class="bi bi-clock"></i>
+                                            Время занятий
+                                        </label>
+                                        <input type="text" name="class_time" id="id_class_time" class="custom-input"
+                                               value="{{ form.class_time.value|default:'' }}" placeholder="10:00-11:30">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_teaching_assistants" class="form-label">
+                                    <i class="bi bi-people-fill"></i>
+                                    Помощники преподавателя
+                                </label>
+                                <select name="teaching_assistants" id="id_teaching_assistants" class="custom-input" multiple>
+                                    {% for assistant in form.fields.teaching_assistants.queryset %}
+                                    <option value="{{ assistant.id }}" {% if assistant in form.instance.teaching_assistants.all %}selected{% endif %}>
+                                        {{ assistant.get_full_name|default:assistant.username }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
                             </div>
                             
                             

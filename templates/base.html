@@ -280,6 +280,7 @@
                             <i class="bi bi-shield"></i> Админка
                         </a>
                         <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'classroom_core:custom_admin_dashboard' %}"><i class="bi bi-columns-gap"></i> Кастомная панель</a></li>
                             <li><a class="dropdown-item" href="{% url 'admin:index' %}" target="_blank"><i class="bi bi-gear"></i> Админ панель</a></li>
                             <li><a class="dropdown-item" href="{% url 'admin:file_manager_file_changelist' %}" target="_blank"><i class="bi bi-files"></i> Файлы</a></li>
                             <li><a class="dropdown-item" href="{% url 'admin:classroom_core_course_changelist' %}" target="_blank"><i class="bi bi-book"></i> Курсы</a></li>
@@ -372,6 +373,15 @@
                 setTimeout(() => {
                     alert.remove();
                 }, 5000);
+            });
+
+            document.querySelectorAll('a.btn-delete, [data-confirm]').forEach(element => {
+                element.addEventListener('click', function(event) {
+                    const message = this.dataset.confirm || 'Вы точно хотите удалить этот объект?';
+                    if (!confirm(message)) {
+                        event.preventDefault();
+                    }
+                });
             });
         });
     </script>

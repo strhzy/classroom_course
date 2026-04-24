@@ -1,0 +1,50 @@
+{% extends "classroom_core/base_courses.html" %}
+
+{% block title %}Сданные задания - {{ course.title }}{% endblock %}
+
+{% block courses_content %}
+<style>
+.submissions-page { background: var(--bg-page-gradient); min-height: 100vh; padding: 1.5rem 1rem; }
+.submissions-wrap { max-width: 1000px; margin: 0 auto; }
+.submissions-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: .8rem; flex-wrap: wrap; }
+.submissions-title { margin: 0; color: var(--text-main); font-weight: 700; }
+.btn-back { background: var(--accent-gradient); color: var(--text-white); border: 1px solid var(--border-accent); border-radius: 8px; padding: .45rem .9rem; text-decoration: none; }
+.submission-card { background: var(--bg-card); border: 1px solid var(--border-accent-light); border-radius: 14px; box-shadow: var(--shadow-item); padding: 1rem; margin-bottom: .8rem; }
+.submission-meta { color: var(--text-secondary); font-size: .9rem; display: flex; flex-wrap: wrap; gap: .9rem; margin-top: .35rem; }
+.submission-title { color: var(--text-main); font-weight: 600; margin: 0; }
+.submission-status { font-size: .8rem; padding: .2rem .55rem; border-radius: 999px; border: 1px solid var(--border-accent); background: var(--bg-overlay-10); color: var(--text-main); }
+</style>
+
+<div class="submissions-page">
+  <div class="submissions-wrap">
+    <div class="submissions-header">
+      <h3 class="submissions-title">Сданные задания: {{ course.title }}</h3>
+      <a class="btn-back" href="{% url 'classroom_core:course_detail' course.id %}">Назад к курсу</a>
+    </div>
+
+    {% for submission in submissions %}
+    <div class="submission-card">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:.8rem;">
+        <div>
+          <p class="submission-title">{{ submission.assignment.title }}</p>
+          <div class="submission-meta">
+            <span><i class="bi bi-person"></i> {{ submission.student.get_full_name|default:submission.student.username }}</span>
+            <span><i class="bi bi-calendar3"></i> {{ submission.submitted_at|date:"d.m.Y H:i" }}</span>
+            {% if submission.score is not None %}
+            <span><i class="bi bi-star-fill"></i> {{ submission.score }}/{{ submission.assignment.max_points }}</span>
+            {% endif %}
+          </div>
+        </div>
+        <span class="submission-status">{{ submission.get_status_display }}</span>
+      </div>
+      <div style="margin-top:.7rem; display:flex; gap:.5rem;">
+        <a href="{% url 'classroom_core:assignment_detail' submission.assignment.id %}" class="btn-back">Просмотр</a>
+        <a href="{% url 'classroom_core:assignment_grade' submission.id %}" class="btn-back">Проверить</a>
+      </div>
+    </div>
+    {% empty %}
+    <div class="submission-card">Сданных работ пока нет.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "file_manager/base_files.html" %}
+
+{% block files_content %}
+<div class="container py-3">
+    <h3 class="mb-3">Сравнение бэкапов</h3>
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-md-4">
+            <label class="form-label">Снимок 1</label>
+            <select name="first" class="form-select" required>
+                <option value="">Выберите</option>
+                {% for b in backups %}<option value="{{ b }}" {% if b == first %}selected{% endif %}>{{ b }}</option>{% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Снимок 2</label>
+            <select name="second" class="form-select" required>
+                <option value="">Выберите</option>
+                {% for b in backups %}<option value="{{ b }}" {% if b == second %}selected{% endif %}>{{ b }}</option>{% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button class="btn btn-primary">Сравнить</button>
+        </div>
+    </form>
+    {% if first and second %}
+    <div class="row">
+        <div class="col-md-6">
+            <h5>Добавлено в {{ second }}</h5>
+            <ul>{% for item in diff.added %}<li>{{ item }}</li>{% empty %}<li>Нет</li>{% endfor %}</ul>
+        </div>
+        <div class="col-md-6">
+            <h5>Удалено относительно {{ first }}</h5>
+            <ul>{% for item in diff.removed %}<li>{{ item }}</li>{% empty %}<li>Нет</li>{% endfor %}</ul>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

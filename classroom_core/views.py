@@ -6,9 +6,55 @@ from django.db.models import Q
 from django.core.paginator import Paginator 
 from django.contrib.auth.models import User 
 from django.http import JsonResponse
+from django.http import HttpResponse
+from django.views.decorators.http import require_http_methods
+import io
+import csv
+from datetime import datetime, timedelta
+from openpyxl import Workbook, load_workbook
+from file_manager.models import File
 from . models import *
 from . forms import *
 from django.utils import timezone 
+
+
+WEEKDAY_MAP = {
+    "пн": 0, "mon": 0, "monday": 0,
+    "вт": 1, "tue": 1, "tuesday": 1,
+    "ср": 2, "wed": 2, "wednesday": 2,
+    "чт": 3, "thu": 3, "thursday": 3,
+    "пт": 4, "fri": 4, "friday": 4,
+    "сб": 5, "sat": 5, "saturday": 5,
+    "вс": 6, "sun": 6, "sunday": 6,
+}
+WEEKDAY_RU = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
+
+
+def _parse_class_days(class_days_raw):
+    selected = set()
+    for token in (class_days_raw or "").replace(" ", "").lower().split(","):
+        if token in WEEKDAY_MAP:
+            selected.add(WEEKDAY_MAP[token])
+    return selected
+
+
+def _ensure_year_schedule(course):
+    if not course.start_date:
+        return
+    selected_weekdays = _parse_class_days(course.class_days)
+    if not selected_weekdays:
+        return
+    start = course.start_date
+    finish = course.end_date or (start + timedelta(days=365))
+    current = start
+    while current <= finish:
+        if current.weekday() in selected_weekdays:
+            CourseLesson.objects.get_or_create(
+                course=course,
+                lesson_date=current,
+                lesson_number=1,
+            )
+        current += timedelta(days=1)
 
 @login_required 
 def course_list(request ):
@@ -68,12 +114,6 @@ def course_detail(request ,course_id ):
         raise PermissionDenied
 
 
-    announcements =course.announcements.all().order_by('-is_pinned','-created_at')[:5 ]
-    sections =course.sections.all().order_by('order')
-    assignments =course.assignments.filter(status ='published').order_by('-due_date')
-    students =course.students.all()
-
-
     is_student =course.students.filter(id =request.user.id ).exists()
     is_teacher = course.instructor == request.user
     is_assistant = request.user in course.teaching_assistants.all()
@@ -81,6 +121,61 @@ def course_detail(request ,course_id ):
     
                                                                                    
     can_manage_course = is_teacher or is_assistant or is_admin
+
+    announcements = course.announcements.all().order_by('-is_pinned', '-created_at')
+    sections = course.sections.prefetch_related('materials').all().order_by('order')
+    if not can_manage_course:
+        sections = sections.filter(is_visible=True)
+    assignments =course.assignments.filter(status ='published').order_by('-due_date')
+    materials_qs = CourseMaterial.objects.filter(
+        section__course=course,
+        status="published"
+    ).select_related("section").order_by("-created_at")
+
+    if not can_manage_course:
+        materials_qs = materials_qs.filter(is_visible=True, section__is_visible=True)
+
+    stream_items = []
+    for announcement in announcements:
+        stream_items.append({
+            "type": "announcement",
+            "title": announcement.title,
+            "description": announcement.content,
+            "section_title": None,
+            "date": announcement.created_at,
+            "meta": announcement.author.get_full_name() or announcement.author.username,
+            "announcement_id": announcement.id,
+            "is_pinned": announcement.is_pinned,
+        })
+
+    for material in materials_qs:
+        stream_items.append({
+            "type": "material",
+            "title": material.title,
+            "description": material.description or material.content,
+            "section_title": material.section.title,
+            "date": material.created_at,
+            "meta": material.get_material_type_display(),
+            "url": None,
+        })
+
+    for assignment in assignments:
+        stream_items.append({
+            "type": "assignment",
+            "title": assignment.title,
+            "description": assignment.description,
+            "section_title": None,
+            "date": assignment.created_at,
+            "meta": f"{assignment.max_points} баллов",
+            "assignment_id": assignment.id,
+        })
+
+    stream_items.sort(key=lambda item: item["date"] or timezone.now(), reverse=True)
+    students = course.get_all_enrolled_students()
+    current_assistants = course.teaching_assistants.select_related("profile").all()
+    available_teachers = User.objects.filter(profile__role='teacher').exclude(
+        id__in=list(current_assistants.values_list("id", flat=True)) + [course.instructor_id]
+    ).order_by("last_name", "first_name", "username")
 
                                                     
     user_has_enrollment_request = False
@@ -95,16 +190,6 @@ def course_detail(request ,course_id ):
             user_enrollment_request_id = enrollment_request.id
 
                                                
-    submissions_for_teacher = []
-    if can_manage_course:
-        for assignment in course.assignments.all():
-            for submission in assignment.submissions.all():
-                submissions_for_teacher.append({
-                    'assignment': assignment,
-                    'submission': submission,
-                })
-    
-                              
     student_submissions = []
     if is_student:
         student_submissions = AssignmentSubmission.objects.filter(
@@ -121,7 +206,10 @@ def course_detail(request ,course_id ):
     'announcements':announcements ,
     'sections':sections ,
     'assignments':assignments ,
+    'stream_items': stream_items,
     'students':students ,
+    'current_assistants': current_assistants,
+    'available_teachers': available_teachers,
     'is_student':is_student ,
     'is_teacher': is_teacher,
     'is_assistant': is_assistant,
@@ -129,12 +217,58 @@ def course_detail(request ,course_id ):
     'can_manage_course': can_manage_course,
     'user_has_enrollment_request': user_has_enrollment_request,
     'user_enrollment_request_id': user_enrollment_request_id,
-    'submissions_for_teacher': submissions_for_teacher,
     'student_submissions': student_submissions,
     'student_submissions_count': student_submissions_count if is_student else 0,
     }
 
     return render(request ,'classroom_core/course_detail.html',context )
+
+
+@login_required
+@require_http_methods(["POST"])
+def course_manage_teaching_assistants(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    if not course.can_edit(request.user):
+        raise PermissionDenied
+
+    action = request.POST.get("action", "add")
+    teacher_id = request.POST.get("teacher_id")
+    if not teacher_id:
+        messages.error(request, "Не выбран преподаватель")
+        return redirect("classroom_core:course_detail", course_id=course.id)
+
+    teacher = User.objects.filter(id=teacher_id, profile__role="teacher").first()
+    if not teacher:
+        messages.error(request, "Преподаватель не найден")
+        return redirect("classroom_core:course_detail", course_id=course.id)
+
+    if action == "remove":
+        course.teaching_assistants.remove(teacher)
+        messages.success(request, "Преподаватель удален из ассистентов")
+    else:
+        if teacher == course.instructor:
+            messages.info(request, "Этот пользователь уже основной преподаватель курса")
+        else:
+            course.teaching_assistants.add(teacher)
+            messages.success(request, "Преподаватель добавлен в ассистенты курса")
+
+    return redirect("classroom_core:course_detail", course_id=course.id)
+
+
+@login_required
+def course_submissions(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    if not course.can_edit(request.user):
+        raise PermissionDenied
+
+    submissions = AssignmentSubmission.objects.filter(
+        assignment__course=course
+    ).select_related("assignment", "student", "graded_by").order_by("-submitted_at", "-updated_at")
+
+    return render(request, "classroom_core/course_submissions.html", {
+        "course": course,
+        "submissions": submissions,
+    })
 
 @login_required
 def course_create(request):
@@ -150,8 +284,11 @@ def course_create(request):
         if form.is_valid():
             course = form.save(commit=False)
             course.instructor = request.user
+            if course.start_date and not course.end_date:
+                course.end_date = course.start_date + timedelta(days=365)
             course.save()
             form.save_m2m()
+            _ensure_year_schedule(course)
             
             messages.success(request, 'Курс успешно создан. Чат курса автоматически создан для всех участников.')
             return redirect('classroom_core:course_detail', course_id=course.id)
@@ -175,7 +312,8 @@ def course_edit(request ,course_id ):
     if request.method =='POST':
         form =CourseForm(request.POST ,request.FILES ,instance =course )
         if form.is_valid():
-            form.save()
+            updated_course = form.save()
+            _ensure_year_schedule(updated_course)
             messages.success(request ,'Курс успешно обновлен')
             return redirect('classroom_core:course_detail',course_id =course.id )
     else :
@@ -365,10 +503,21 @@ def material_delete(request ,material_id ):
 def assignment_list(request ):
     """Список заданий"""
     user_profile =request.user.profile 
+    course_queryset = Course.objects.filter(
+        Q(instructor=request.user) |
+        Q(teaching_assistants=request.user) |
+        Q(students=request.user)
+    ).distinct().order_by("title")
 
     if user_profile.is_teacher() or user_profile.is_staff() or request.user.is_superuser:
 
-        assignments =Assignment.objects.all()
+        assignments = Assignment.objects.all()
+        if not (user_profile.is_staff() or request.user.is_superuser):
+            assignments = assignments.filter(
+                Q(course__instructor=request.user) |
+                Q(course__teaching_assistants=request.user) |
+                Q(course__students=request.user)
+            ).distinct()
     else :
 
         assignments =Assignment.objects.filter(
@@ -377,9 +526,15 @@ def assignment_list(request ):
         )
 
 
-    course_id =request.GET.get('course_id')
-    if course_id :
-        assignments =assignments.filter(course_id =course_id )
+    course_id = request.GET.get('course_id')
+    selected_course_id = None
+    if course_id:
+        try:
+            selected_course_id = int(course_id)
+        except (TypeError, ValueError):
+            selected_course_id = None
+        if selected_course_id and course_queryset.filter(id=selected_course_id).exists():
+            assignments = assignments.filter(course_id=selected_course_id)
 
 
     status =request.GET.get('status')
@@ -397,9 +552,10 @@ def assignment_list(request ):
 
     context ={
     'page_obj':page_obj ,
-    'course_id':course_id ,
+    'course_id':selected_course_id ,
     'status':status ,
     'sort_by':sort_by ,
+    'filter_courses': course_queryset,
     }
 
     return render(request ,'classroom_core/assignment_list.html',context )
@@ -631,10 +787,21 @@ def assignment_grade(request ,submission_id ):
 def announcement_list(request ):
     """Список объявлений"""
     user_profile =request.user.profile 
+    course_queryset = Course.objects.filter(
+        Q(instructor=request.user) |
+        Q(teaching_assistants=request.user) |
+        Q(students=request.user)
+    ).distinct().order_by("title")
 
     if user_profile.is_teacher()or user_profile.is_staff()or request.user.is_superuser :
 
-        announcements =Announcement.objects.all()
+        announcements = Announcement.objects.all()
+        if not (user_profile.is_staff() or request.user.is_superuser):
+            announcements = announcements.filter(
+                Q(course__instructor=request.user) |
+                Q(course__teaching_assistants=request.user) |
+                Q(course__students=request.user)
+            ).distinct()
     else :
 
         announcements =Announcement.objects.filter(
@@ -642,9 +809,15 @@ def announcement_list(request ):
         )
 
 
-    course_id =request.GET.get('course_id')
-    if course_id :
-        announcements =announcements.filter(course_id =course_id )
+    course_id = request.GET.get('course_id')
+    selected_course_id = None
+    if course_id:
+        try:
+            selected_course_id = int(course_id)
+        except (TypeError, ValueError):
+            selected_course_id = None
+        if selected_course_id and course_queryset.filter(id=selected_course_id).exists():
+            announcements = announcements.filter(course_id=selected_course_id)
 
 
     sort_by =request.GET.get('sort','-is_pinned')
@@ -656,8 +829,9 @@ def announcement_list(request ):
 
     context ={
     'page_obj':page_obj ,
-    'course_id':course_id ,
+    'course_id':selected_course_id ,
     'sort_by':sort_by ,
+    'filter_courses': course_queryset,
     }
 
     return render(request ,'classroom_core/announcement_list.html',context )
@@ -1536,7 +1710,6 @@ def assignment_file_review_detail(request, review_id):
 
 @login_required
 def course_gradebook(request, course_id):
-    """Страница с таблицей оценок студентов по практическим работам курса"""
     course = get_object_or_404(Course, id=course_id)
 
     if not course.can_access(request.user):
@@ -1546,55 +1719,149 @@ def course_gradebook(request, course_id):
     if not can_grade:
         raise PermissionDenied
 
-    students = course.get_all_enrolled_students()                                                  
+    _ensure_year_schedule(course)
+    group_by = request.GET.get("group_by", "none")
+    students = list(course.get_all_enrolled_students())
+    students = sorted(students, key=lambda s: (s.last_name or "", s.first_name or "", s.username))
+    lessons_qs = course.lessons.all()
+    if course.end_date:
+        lessons_qs = lessons_qs.filter(lesson_date__lte=course.end_date)
+    lessons = list(lessons_qs)
+    assignments = list(
+        course.assignments.filter(status="published", due_date__isnull=False).order_by("due_date", "id")
+    )
 
-    assignments = course.assignments.filter(status='published').order_by('created_at')
+    marks = LessonGrade.objects.filter(lesson__course=course).select_related("student", "lesson")
+    marks_map = {(m.student_id, m.lesson_id): m for m in marks}
 
-    submissions = AssignmentSubmission.objects.filter(
-        assignment__in=assignments
-    ).select_related('student', 'assignment')
+    assignments_by_date = {}
+    for assignment in assignments:
+        due_date = assignment.due_date.date()
+        assignments_by_date.setdefault(due_date, []).append(assignment)
 
-    submissions_dict = {}
-    for sub in submissions:
-        key = (sub.student.id, sub.assignment.id)
-        submissions_dict[key] = sub
+    journal_columns = []
+    inserted_assignment_dates = set()
+    for lesson in lessons:
+        journal_columns.append({
+            "key": f"lesson-{lesson.id}",
+            "type": "lesson",
+            "id": lesson.id,
+            "date": lesson.lesson_date,
+            "weekday": WEEKDAY_RU[lesson.lesson_date.weekday()],
+            "number": lesson.lesson_number,
+            "topic": lesson.topic,
+        })
+        day_assignments = assignments_by_date.get(lesson.lesson_date, [])
+        if day_assignments and lesson.lesson_date not in inserted_assignment_dates:
+            for assignment in day_assignments:
+                journal_columns.append({
+                    "key": f"assignment-{assignment.id}",
+                    "type": "assignment",
+                    "id": assignment.id,
+                    "date": lesson.lesson_date,
+                    "weekday": WEEKDAY_RU[lesson.lesson_date.weekday()],
+                    "title": assignment.title,
+                    "max_points": assignment.max_points,
+                })
+            inserted_assignment_dates.add(lesson.lesson_date)
+
+    assignment_submissions = AssignmentSubmission.objects.filter(
+        assignment__in=assignments,
+        student__in=students
+    ).select_related("assignment", "student")
+    submissions_map = {(sub.student_id, sub.assignment_id): sub for sub in assignment_submissions}
 
     grade_matrix = []
     for student in students:
-        student_row = {
-            'student': student,
-            'grades': [],
-            'total_score': 0,
-            'max_score': 0,
-            'graded_count': 0,
-        }
-        for assignment in assignments:
-            key = (student.id, assignment.id)
-            submission = submissions_dict.get(key)
-            grade_entry = {
-                'assignment': assignment,
-                'submission': submission,
-                'score': submission.score if submission and submission.score is not None else None,
-                'max_points': assignment.max_points,
-                'status': submission.status if submission else None,
-            }
-            student_row['grades'].append(grade_entry)
-            if submission and submission.score is not None:
-                student_row['total_score'] += submission.score
-                student_row['graded_count'] += 1
-            student_row['max_score'] += assignment.max_points
+        student_group = getattr(getattr(student, "profile", None), "student_group", None)
+        row = {"student": student, "group_name": student_group.name if student_group else "Без группы", "cells": []}
+        assignment_scores = []
+        nb_count = 0
+        for column in journal_columns:
+            if column["type"] == "lesson":
+                record = marks_map.get((student.id, column["id"]))
+                mark_value = record.mark if record else ""
+                row["cells"].append({
+                    "type": "lesson",
+                    "lesson_id": column["id"],
+                    "mark": mark_value,
+                })
+                if isinstance(mark_value, str) and mark_value.strip().lower() in {"нб", "nb"}:
+                    nb_count += 1
+            else:
+                submission = submissions_map.get((student.id, column["id"]))
+                row["cells"].append({
+                    "type": "assignment",
+                    "assignment_id": column["id"],
+                    "score": submission.score if submission and submission.score is not None else "",
+                    "feedback": submission.feedback if submission else "",
+                    "status": submission.status if submission else "",
+                    "max_points": column["max_points"],
+                })
+                if submission and submission.score is not None:
+                    assignment_scores.append(submission.score)
+        row["assignment_avg"] = round(sum(assignment_scores) / len(assignment_scores), 2) if assignment_scores else None
+        row["nb_count"] = nb_count
+        grade_matrix.append(row)
 
-        grade_matrix.append(student_row)
+    if group_by == "group":
+        grade_matrix.sort(key=lambda item: (item["group_name"], item["student"].username))
 
-    context = {
-        'course': course,
-        'students': students,
-        'assignments': assignments,
-        'grade_matrix': grade_matrix,
-        'can_grade': can_grade,
-    }
+    return render(
+        request,
+        "classroom_core/course_gradebook.html",
+        {
+            "course": course,
+            "journal_columns": journal_columns,
+            "grade_matrix": grade_matrix,
+            "can_grade": can_grade,
+            "group_by": group_by,
+        },
+    )
 
-    return render(request, 'classroom_core/course_gradebook.html', context)
+
+@login_required
+@require_http_methods(["POST"])
+def course_gradebook_add_lesson(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    if not course.can_edit(request.user):
+        raise PermissionDenied
+
+    lesson_date_raw = request.POST.get("lesson_date")
+    topic = (request.POST.get("topic") or "").strip()
+    try:
+        lesson_date = datetime.strptime(lesson_date_raw, "%Y-%m-%d").date()
+    except (TypeError, ValueError):
+        messages.error(request, "Неверный формат даты пары")
+        return redirect("classroom_core:course_gradebook", course_id=course.id)
+
+    max_number = (
+        CourseLesson.objects.filter(course=course, lesson_date=lesson_date)
+        .order_by("-lesson_number")
+        .values_list("lesson_number", flat=True)
+        .first()
+        or 0
+    )
+    CourseLesson.objects.create(
+        course=course,
+        lesson_date=lesson_date,
+        lesson_number=max_number + 1,
+        topic=topic,
+    )
+    messages.success(request, "Пара добавлена в журнал")
+    return redirect("classroom_core:course_gradebook", course_id=course.id)
+
+
+@login_required
+@require_http_methods(["POST"])
+def course_gradebook_update_topic(request, course_id, lesson_id):
+    course = get_object_or_404(Course, id=course_id)
+    if not course.can_edit(request.user):
+        return JsonResponse({"success": False, "error": "Нет прав"}, status=403)
+    lesson = get_object_or_404(CourseLesson, id=lesson_id, course=course)
+    lesson.topic = (request.POST.get("topic") or "").strip()
+    lesson.save(update_fields=["topic"])
+    return JsonResponse({"success": True})
 
 
 @login_required
@@ -1608,34 +1875,74 @@ def course_gradebook_update(request, course_id):
     if request.method == 'POST':
         student_id = request.POST.get('student_id')
         assignment_id = request.POST.get('assignment_id')
+        column_id = request.POST.get('column_id')
+        lesson_id = request.POST.get("lesson_id")
         
-        if not student_id or not assignment_id or student_id == 'undefined' or assignment_id == 'undefined':
-            return JsonResponse({'success': False, 'error': 'Неверные ID студента или задания'}, status=400)
+        if not student_id or student_id == 'undefined':
+            return JsonResponse({'success': False, 'error': 'Неверный ID студента'}, status=400)
+        if (
+            (not assignment_id or assignment_id == 'undefined')
+            and (not column_id or column_id == 'undefined')
+            and (not lesson_id or lesson_id == 'undefined')
+        ):
+            return JsonResponse({'success': False, 'error': 'Неверный ID объекта журнала'}, status=400)
         
         try:
             student_id = int(student_id)
-            assignment_id = int(assignment_id)
+            assignment_id = int(assignment_id) if assignment_id and assignment_id != 'undefined' else None
+            column_id = int(column_id) if column_id and column_id != 'undefined' else None
+            lesson_id = int(lesson_id) if lesson_id and lesson_id != "undefined" else None
         except (ValueError, TypeError):
             return JsonResponse({'success': False, 'error': 'ID должны быть числами'}, status=400)
 
         score = request.POST.get('score')
         feedback = request.POST.get('feedback', '')
         status = request.POST.get('status')
+        mark = request.POST.get("mark")
 
         try:
             student = User.objects.get(id=student_id)
-            assignment = Assignment.objects.get(id=assignment_id)
-        except (User.DoesNotExist, Assignment.DoesNotExist):
-            return JsonResponse({'success': False, 'error': 'Студент или задание не найдены'}, status=404)
+            assignment = Assignment.objects.get(id=assignment_id) if assignment_id else None
+            column = GradebookColumn.objects.get(id=column_id, course=course) if column_id else None
+            lesson = CourseLesson.objects.get(id=lesson_id, course=course) if lesson_id else None
+        except (User.DoesNotExist, Assignment.DoesNotExist, GradebookColumn.DoesNotExist, CourseLesson.DoesNotExist):
+            return JsonResponse({'success': False, 'error': 'Студент или объект оценки не найдены'}, status=404)
 
-        if assignment.course != course:
+        if assignment and assignment.course != course:
             return JsonResponse({'success': False, 'error': 'Задание не принадлежит этому курсу'}, status=400)
 
-        submission, created = AssignmentSubmission.objects.get_or_create(
-            assignment=assignment,
-            student=student
-        )
-
+        if lesson:
+            lesson_grade, _ = LessonGrade.objects.get_or_create(lesson=lesson, student=student)
+            normalized = (mark if mark is not None else score or "").strip()
+            if normalized:
+                lowered = normalized.lower()
+                if lowered in {"нб", "nb"}:
+                    normalized = "нб"
+                else:
+                    try:
+                        int(normalized)
+                    except ValueError:
+                        return JsonResponse({'success': False, 'error': 'Разрешены только число или "нб"'}, status=400)
+            lesson_grade.mark = normalized
+            lesson_grade.feedback = feedback
+            lesson_grade.graded_by = request.user
+            lesson_grade.graded_at = timezone.now()
+            lesson_grade.save()
+            return JsonResponse({'success': True, 'message': 'Оценка в журнале обновлена'})
+        elif assignment:
+            submission, created = AssignmentSubmission.objects.get_or_create(
+                assignment=assignment,
+                student=student
+            )
+            if not created and submission.graded_at and (timezone.now() - submission.graded_at).days >= 3:
+                return JsonResponse({'success': False, 'error': 'Редактирование доступно только в течение 3 дней после оценки'}, status=400)
+        else:
+            submission, created = GradebookRecord.objects.get_or_create(
+                column=column,
+                student=student
+            )
+            if not created and submission.graded_at and (timezone.now() - submission.graded_at).days >= 3:
+                return JsonResponse({'success': False, 'error': 'Редактирование доступно только в течение 3 дней после оценки'}, status=400)
         if score is not None and score != '':
             try:
                 submission.score = int(score)
@@ -1647,7 +1954,6 @@ def course_gradebook_update(request, course_id):
             submission.status = status
             if status == 'graded':
                 submission.graded_by = request.user
-                from django.utils import timezone
                 submission.graded_at = timezone.now()
 
         submission.save()
@@ -1658,3 +1964,122 @@ def course_gradebook_update(request, course_id):
         })
 
     return JsonResponse({'success': False, 'error': 'Метод не разрешен'}, status=405)
+
+
+@login_required
+def course_gradebook_export(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    if not course.can_edit(request.user):
+        raise PermissionDenied
+
+    assignments = list(course.assignments.filter(status='published').order_by('created_at'))
+    students = list(course.get_all_enrolled_students())
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Gradebook"
+
+    header = ["student_id", "username", "full_name"] + [f"{a.id}:{a.title}" for a in assignments]
+    ws.append(header)
+    for student in students:
+        row = [student.id, student.username, student.get_full_name()]
+        for assignment in assignments:
+            submission = AssignmentSubmission.objects.filter(assignment=assignment, student=student).first()
+            row.append(submission.score if submission and submission.score is not None else "")
+        ws.append(row)
+
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    response = HttpResponse(
+        output.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response["Content-Disposition"] = f'attachment; filename="gradebook_course_{course.id}.xlsx"'
+    return response
+
+
+@login_required
+@require_http_methods(["POST"])
+def course_gradebook_import(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    if not course.can_edit(request.user):
+        raise PermissionDenied
+
+    upload = request.FILES.get("gradebook_file")
+    if not upload:
+        messages.error(request, "Файл не загружен")
+        return redirect("classroom_core:course_gradebook", course_id=course.id)
+
+    workbook = load_workbook(upload)
+    sheet = workbook.active
+    headers = [cell.value for cell in next(sheet.iter_rows(min_row=1, max_row=1))]
+    assignment_map = {}
+    for col_idx, header in enumerate(headers[3:], start=4):
+        if not header or ":" not in str(header):
+            continue
+        assignment_id = int(str(header).split(":", 1)[0])
+        assignment = Assignment.objects.filter(id=assignment_id, course=course).first()
+        if assignment:
+            assignment_map[col_idx] = assignment
+
+    updated = 0
+    for row in sheet.iter_rows(min_row=2):
+        student_id = row[0].value
+        if not student_id:
+            continue
+        student = User.objects.filter(id=int(student_id)).first()
+        if not student:
+            continue
+        for col_idx, assignment in assignment_map.items():
+            score = row[col_idx - 1].value
+            if score in (None, ""):
+                continue
+            submission, _ = AssignmentSubmission.objects.get_or_create(assignment=assignment, student=student)
+            if submission.graded_at and (timezone.now() - submission.graded_at).days >= 3:
+                continue
+            submission.score = int(score)
+            submission.status = "graded"
+            submission.graded_by = request.user
+            submission.graded_at = timezone.now()
+            submission.save()
+            updated += 1
+
+    messages.success(request, f"Импорт завершен. Обновлено оценок: {updated}")
+    return redirect("classroom_core:course_gradebook", course_id=course.id)
+
+
+@login_required
+@require_http_methods(["POST"])
+def course_gradebook_column_create(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    if not course.can_edit(request.user):
+        raise PermissionDenied
+    title = request.POST.get("title", "").strip()
+    column_type = request.POST.get("column_type", "custom")
+    max_points = int(request.POST.get("max_points") or 100)
+    if not title:
+        messages.error(request, "Название колонки обязательно")
+        return redirect("classroom_core:course_gradebook", course_id=course.id)
+    GradebookColumn.objects.create(
+        course=course,
+        title=title,
+        column_type=column_type,
+        max_points=max_points,
+        order=course.gradebook_columns.count(),
+    )
+    messages.success(request, "Колонка журнала добавлена")
+    return redirect("classroom_core:course_gradebook", course_id=course.id)
+
+
+@login_required
+def custom_admin_dashboard(request):
+    if not (request.user.is_superuser or request.user.profile.is_admin() or request.user.profile.is_staff()):
+        raise PermissionDenied
+    context = {
+        "users_count": User.objects.count(),
+        "courses_count": Course.objects.count(),
+        "files_count": File.objects.count(),
+        "pending_enrollments": CourseEnrollmentRequest.objects.filter(status="pending").count(),
+    }
+    return render(request, "classroom_core/admin_dashboard.html", context)

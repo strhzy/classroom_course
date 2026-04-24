@@ -5,13 +5,14 @@ class FileUploadForm(forms.ModelForm ):
     """Форма загрузки файла"""
     class Meta :
         model =File 
-        fields =['title','description','file','category','tags','visibility','shared_with','folder']
+        fields =['title','description','file','category','tags','importance','visibility','shared_with','folder']
         widgets ={
         'title':forms.TextInput(attrs ={'class':'form-control'}),
         'description':forms.Textarea(attrs ={'class':'form-control','rows':3 }),
         'file':forms.ClearableFileInput(attrs ={'class':'form-control'}),
         'category':forms.Select(attrs ={'class':'form-select'}),
         'tags':forms.SelectMultiple(attrs ={'class':'form-select','size':5 }),
+        'importance': forms.Select(attrs={'class': 'form-select'}),
         'visibility':forms.Select(attrs ={'class':'form-select'}),
         'shared_with':forms.SelectMultiple(attrs ={'class':'form-select','size':5 }),
         'folder':forms.Select(attrs ={'class':'form-select'}),
@@ -21,12 +22,13 @@ class FileEditForm(forms.ModelForm ):
     """Форма редактирования файла(без загрузки нового файла)"""
     class Meta :
         model =File 
-        fields =['title','description','category','tags','visibility','shared_with']
+        fields =['title','description','category','tags','importance','visibility','shared_with']
         widgets ={
         'title':forms.TextInput(attrs ={'class':'form-control'}),
         'description':forms.Textarea(attrs ={'class':'form-control','rows':3 }),
         'category':forms.Select(attrs ={'class':'form-select'}),
         'tags':forms.SelectMultiple(attrs ={'class':'form-select','size':5 }),
+        'importance': forms.Select(attrs={'class': 'form-select'}),
         'visibility':forms.Select(attrs ={'class':'form-select'}),
         'shared_with':forms.SelectMultiple(attrs ={'class':'form-select','size':5 }),
         }
@@ -94,6 +96,7 @@ class FileSearchForm(forms.Form ):
     required =False ,
     widget =forms.SelectMultiple(attrs ={'class':'form-select','size':5 })
     )
+    favorites_only = forms.BooleanField(required=False)
     date_from =forms.DateField(
     required =False ,
     widget =forms.DateInput(attrs ={'class':'form-control','type':'date'})

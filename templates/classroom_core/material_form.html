@@ -640,6 +640,18 @@
                                     <option value="assignment" {% if form.material_type.value == 'assignment' %}selected{% endif %}>📋 Задание</option>
                                 </select>
                             </div>
+
+                            <div class="form-group">
+                                <label for="id_status" class="form-label">
+                                    <i class="bi bi-flag"></i>
+                                    Статус материала
+                                </label>
+                                <select name="status" id="id_status" class="custom-select">
+                                    {% for value,label in form.status.field.choices %}
+                                    <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                             
                             
                             <div class="form-group" id="file-field">

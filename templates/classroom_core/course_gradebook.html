@@ -1,497 +1,206 @@
 {% extends "classroom_core/base_courses.html" %}
 
-{% block title %}📊 Таблица оценок - {{ course.title }}{% endblock %}
+{% block title %}Журнал занятий - {{ course.title }}{% endblock %}
 
 {% block courses_content %}
 <style>
-    .theme-gradebook {
-        background: var(--bg-page-gradient);
-        min-height: 100vh;
-        padding: 2rem 1rem;
-    }
-
-    .gradebook-container {
-        max-width: 100%;
-        overflow-x: auto;
-        background: var(--bg-overlay-10);
-        border-radius: 20px;
-        padding: 2rem;
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--bg-overlay-30);
-        box-shadow: 0 8px 32px var(--shadow-item);
-    }
-
-    .gradebook-table {
-        width: auto;
-        min-width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        table-layout: fixed;
-    }
-
-    .gradebook-table th,
-    .gradebook-table td {
-        padding: 0.75rem;
-        text-align: center;
-        border: 1px solid var(--bg-overlay-20);
-        vertical-align: top;
-    }
-
-    .gradebook-table th {
-        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-primary) 100%);
-        color: var(--text-white);
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        letter-spacing: 0.5px;
-        white-space: nowrap;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-    }
-
-    .gradebook-table th:first-child,
-    .gradebook-table td:first-child {
-        width: 220px;
-        min-width: 220px;
-        max-width: 220px;
-        text-align: left;
-    }
-
-    .assignment-column {
-        width: 180px;
-        min-width: 180px;
-        max-width: 180px;
-    }
-
-    .gradebook-table th:last-child,
-    .gradebook-table td:last-child {
-        width: 120px;
-        min-width: 120px;
-        max-width: 120px;
-    }
-
-    .gradebook-table tr:hover {
-        background: var(--bg-overlay-10);
-    }
-
-    .gradebook-table td:first-child {
-        font-weight: 500;
-        background: var(--status-assignment-bg-light);
-        position: sticky;
-        left: 0;
-        z-index: 5;
-    }
-
-    .student-cell {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .student-avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-primary) 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-white);
-        font-weight: 600;
-        font-size: 0.85rem;
-        flex-shrink: 0;
-    }
-
-    .grade-input {
-        width: 100%;
-        padding: 0.4rem;
-        border: 2px solid var(--bg-overlay-30);
-        border-radius: 6px;
-        background: var(--bg-overlay-10);
-        color: var(--text-white);
-        text-align: center;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
-        margin-bottom: 0.25rem;
-    }
-
-    .grade-input:focus {
-        outline: none;
-        border-color: var(--accent-primary);
-        background: var(--bg-overlay-20);
-        box-shadow: 0 0 8px var(--bg-overlay-30);
-    }
-
-    .grade-input.has-grade {
-        background: var(--status-success-bg);
-        border-color: var(--status-success);
-        color: var(--status-success);
-        font-weight: 600;
-    }
-
-    .status-select {
-        width: 100%;
-        padding: 0.3rem;
-        border: 2px solid var(--bg-overlay-30);
-        border-radius: 6px;
-        background: var(--bg-overlay-10);
-        color: var(--text-white);
-        font-size: 0.75rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .status-select:focus {
-        outline: none;
-        border-color: var(--accent-primary);
-    }
-
-    .status-select option {
-        background: var(--bg-page-start);
-        color: var(--text-white);
-    }
-
-    .total-score {
-        font-weight: 700;
-        color: var(--status-success);
-        font-size: 1rem;
-    }
-
-    .no-grade {
-        color: var(--shimmer-overlay);
-        font-style: italic;
-        font-size: 0.85rem;
-    }
-
-    .gradebook-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .gradebook-title {
-        color: var(--text-white);
-        font-size: 1.8rem;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .btn-save-grades {
-        background: linear-gradient(135deg, var(--status-success) 0%, var(--status-success) 100%);
-        color: var(--text-white);
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .btn-save-grades:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 20px var(--status-success-border);
-    }
-
-    .btn-back {
-        background: var(--bg-overlay-30);
-        color: var(--text-white);
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .btn-back:hover {
-        background: var(--accent-glow-strong);
-        color: var(--text-white);
-    }
-
-    .assignment-max-points {
-        font-size: 0.7rem;
-        color: var(--shimmer-overlay);
-        display: block;
-        margin-top: 0.2rem;
-    }
-
-    .submission-info {
-        font-size: 0.75rem;
-        color: var(--shimmer-overlay);
-        text-align: left;
-        margin-top: 0.25rem;
-        line-height: 1.3;
-    }
-
-    .status-submitted { color: var(--status-info); }
-    .status-graded { color: var(--status-success); font-weight: 600; }
-    .status-returned { color: var(--status-warning); }
-
-    .date-info {
-        color: var(--shimmer-overlay);
-        font-size: 0.7rem;
-    }
-
-    .feedback-info {
-        color: var(--shimmer-overlay);
-        font-style: italic;
-        font-size: 0.7rem;
-        margin-top: 0.2rem;
-    }
-
-    @media (max-width: 768px) {
-        .gradebook-container {
-            padding: 1rem;
-        }
-        
-        .gradebook-table th:first-child,
-        .gradebook-table td:first-child {
-            width: 180px;
-            min-width: 180px;
-        }
-        
-        .assignment-column {
-            width: 150px;
-            min-width: 150px;
-        }
-    }
+.theme-gradebook { background: var(--bg-page-gradient); min-height: 100vh; padding: 1.5rem; }
+.gradebook-wrap { background: var(--bg-card); border: 1px solid var(--border-accent); border-radius: 14px; padding: 1rem; overflow-x: auto; box-shadow: var(--shadow-card); }
+.gradebook-table { width: max-content; min-width: 100%; border-collapse: collapse; }
+.gradebook-table th, .gradebook-table td { border: 1px solid var(--border-accent-light); padding: .5rem; text-align: center; color: var(--text-main); background: var(--bg-item); }
+.gradebook-table th { position: sticky; top: 0; background: var(--bg-card); z-index: 5; }
+.gradebook-table th:first-child, .gradebook-table td:first-child { position: sticky; left: 0; background: var(--bg-card); z-index: 6; min-width: 220px; text-align: left; }
+.gradebook-table th.avg-col, .gradebook-table td.avg-col { position: sticky; right: 80px; background: var(--bg-card); z-index: 6; min-width: 120px; }
+.gradebook-table th.nb-col, .gradebook-table td.nb-col { position: sticky; right: 0; background: var(--bg-card); z-index: 7; min-width: 80px; }
+.gradebook-table tbody tr:hover td { background: var(--bg-item-hover); }
+.cell-date { font-size: .8rem; color: var(--text-muted); display: block; }
+.cell-kind { font-size: .75rem; color: var(--text-secondary); display: block; }
+.grade-input { width: 92px; background: var(--bg-input); border: 1px solid var(--bg-overlay-30); color: var(--text-main); border-radius: 6px; padding: .3rem; }
+.status-select { width: 96px; background: var(--bg-input); border: 1px solid var(--bg-overlay-30); color: var(--text-main); border-radius: 6px; padding: .3rem; margin-top: .2rem; }
+.header-row { display: flex; justify-content: space-between; align-items: center; gap: .8rem; margin-bottom: .8rem; flex-wrap: wrap; }
+.btn-back { background: var(--accent-gradient); color: var(--text-white); border: 1px solid var(--border-accent); border-radius: 8px; padding: .5rem .9rem; text-decoration: none; box-shadow: var(--accent-shadow); }
+.btn-back:hover { box-shadow: var(--accent-shadow-hover); transform: translateY(-1px); }
 </style>
 
 <div class="theme-gradebook">
-    <div class="gradebook-container">
-        <div class="gradebook-header">
-            <div>
-                <h1 class="gradebook-title">
-                    <i class="bi bi-table"></i>
-                    Таблица оценок
-                </h1>
-                <p style="color: var(--shimmer-overlay); margin-top: 0.5rem;">
-                    {{ course.title }}
-                </p>
-            </div>
-            <div style="display: flex; gap: 0.75rem;">
-                <a href="{% url 'classroom_core:course_detail' course.id %}" class="btn-back">
-                    <i class="bi bi-arrow-left"></i>
-                    Назад к курсу
-                </a>
-                <button class="btn-save-grades" onclick="saveAllGrades()">
-                    <i class="bi bi-save"></i>
-                    Сохранить все
-                </button>
-            </div>
+    <div class="header-row">
+        <h3 style="margin:0; color: var(--text-main);">Журнал занятий: {{ course.title }}</h3>
+        <div class="d-flex gap-2">
+            <a href="{% url 'classroom_core:course_detail' course.id %}" class="btn-back">Назад к курсу</a>
         </div>
+    </div>
+    <form method="post" action="{% url 'classroom_core:course_gradebook_add_lesson' course.id %}" class="d-flex gap-2 mb-3">
+        {% csrf_token %}
+        <input type="date" name="lesson_date" class="grade-input" required>
+        <input type="text" name="topic" class="grade-input" style="width:220px;" placeholder="Тема пары (опционально)">
+        <button type="submit" class="btn-back">Добавить пару (в т.ч. вторую в этот день)</button>
+    </form>
 
-        {% if students and assignments %}
+    <div class="gradebook-wrap">
+        {% if grade_matrix and journal_columns %}
         <table class="gradebook-table">
             <thead>
                 <tr>
                     <th>Студент</th>
-                    {% for assignment in assignments %}
-                    <th class="assignment-column">
-                        <a href="{% url 'classroom_core:assignment_detail' assignment.id %}" 
-                        style="color: var(--text-white); text-decoration: none; display: block; margin-bottom: 0.2rem;">
-                            {{ assignment.title }}
-                        </a>
-                        <span class="assignment-max-points">макс. {{ assignment.max_points }}</span>
+                    {% for col in journal_columns %}
+                    <th>
+                        <span class="cell-date">{{ col.date|date:"d.m.Y" }} ({{ col.weekday }})</span>
+                        {% if col.type == "lesson" %}
+                        <span class="cell-kind">Пара {{ col.number }}</span>
+                        <input type="text"
+                               class="grade-input lesson-topic-input"
+                               style="width:160px;"
+                               value="{{ col.topic }}"
+                               placeholder="Тема"
+                               data-lesson-id="{{ col.id }}"
+                               data-topic-url-template="{% url 'classroom_core:course_gradebook_update_topic' course.id 0 %}"
+                               onchange="updateLessonTopic(this)">
+                        {% else %}
+                        <span class="cell-kind">Задание</span>
+                        <div style="font-size:.75rem;">{{ col.title }}</div>
+                        <div style="font-size:.7rem; color:var(--text-muted);">макс: {{ col.max_points }}</div>
+                        {% endif %}
                     </th>
                     {% endfor %}
-                    <th>
-                        <i class="bi bi-trophy"></i>
-                        Итого
-                    </th>
+                    <th class="avg-col">Средняя по заданиям</th>
+                    <th class="nb-col">НБ</th>
                 </tr>
             </thead>
             <tbody>
                 {% for row in grade_matrix %}
                 <tr>
                     <td>
-                        <div class="student-cell">
-                            <div class="student-avatar">
-                                {{ row.student.get_full_name|default:row.student.username|slice:":1"|upper }}
-                            </div>
-                            <div>
-                                <div>{{ row.student.get_full_name|default:row.student.username }}</div>
-                                <small style="color: var(--shimmer-overlay);">{{ row.student.username }}</small>
-                            </div>
-                        </div>
+                        <div>{{ row.student.get_full_name|default:row.student.username }}</div>
+                        <small>{{ row.group_name }}</small>
                     </td>
-                    {% for grade in row.grades %}
-                    <td class="assignment-column">
-                        {% if grade.submission %}
-                        <div class="submission-info">
-                            <div>
-                                <span class="{% if grade.status == 'submitted' %}status-submitted{% elif grade.status == 'graded' %}status-graded{% else %}status-returned{% endif %}">
-                                    {{ grade.submission.get_status_display }}
-                                </span>
-                            </div>
-                            {% if grade.submission.submitted_at %}
-                            <div class="date-info">
-                                Сдано: {{ grade.submission.submitted_at|date:"d.m.Y" }}
-                            </div>
-                            {% endif %}
-                            {% if grade.submission.graded_at %}
-                            <div class="date-info">
-                                Проверено: {{ grade.submission.graded_at|date:"d.m.Y" }}
-                            </div>
-                            {% endif %}
-                            {% if grade.submission.feedback %}
-                            <div class="feedback-info">
-                                "{{ grade.submission.feedback|truncatechars:40 }}"
-                            </div>
-                            {% endif %}
-                        </div>
-                        {% endif %}
-                        
-                        <input type="number" 
-                            class="grade-input {% if grade.score is not None %}has-grade{% endif %}"
-                            id="score_{{ row.student.id }}_{{ grade.assignment.id }}"
-                            value="{{ grade.score|default:'' }}"
-                            min="0"
-                            max="{{ grade.max_points }}"
-                            data-student-id="{{ row.student.id }}"
-                            data-assignment-id="{{ grade.assignment.id }}"
-                            onchange="onGradeChange(this)"
-                            placeholder="Оценка">
-                        
-                        <select class="status-select" 
-                                id="status_{{ row.student.id }}_{{ grade.assignment.id }}"
+                    {% for cell in row.cells %}
+                    <td>
+                        {% if cell.type == "lesson" %}
+                        <input type="text"
+                               class="grade-input"
+                               value="{{ cell.mark|default:'' }}"
+                               data-student-id="{{ row.student.id }}"
+                               data-lesson-id="{{ cell.lesson_id }}"
+                               onchange="onGradeChange(this)">
+                        {% else %}
+                        <input type="number"
+                               class="grade-input"
+                               value="{{ cell.score }}"
+                               min="0"
+                               max="{{ cell.max_points }}"
+                               data-student-id="{{ row.student.id }}"
+                               data-assignment-id="{{ cell.assignment_id }}"
+                               data-field="score"
+                               onchange="onGradeChange(this)">
+                        <input type="text"
+                               class="grade-input"
+                               style="width:140px;"
+                               value="{{ cell.feedback }}"
+                               data-student-id="{{ row.student.id }}"
+                               data-assignment-id="{{ cell.assignment_id }}"
+                               data-field="feedback"
+                               onchange="onGradeChange(this)">
+                        <select class="status-select"
                                 data-student-id="{{ row.student.id }}"
-                                data-assignment-id="{{ grade.assignment.id }}"
-                                onchange="onGradeChange(this)">
-                            <option value="">Выберите статус</option>
-                            <option value="submitted" {% if grade.status == 'submitted' %}selected{% endif %}>Сдано</option>
-                            <option value="graded" {% if grade.status == 'graded' %}selected{% endif %}>Оценено</option>
-                            <option value="returned" {% if grade.status == 'returned' %}selected{% endif %}>На доработку</option>
+                                data-assignment-id="{{ cell.assignment_id }}"
+                                data-field="status"
+                                onchange="onGradeChange(this, true)">
+                            <option value="">Статус</option>
+                            <option value="submitted" {% if cell.status == "submitted" %}selected{% endif %}>Сдано</option>
+                            <option value="graded" {% if cell.status == "graded" %}selected{% endif %}>Оценено</option>
+                            <option value="returned" {% if cell.status == "returned" %}selected{% endif %}>Доработка</option>
                         </select>
+                        {% endif %}
                     </td>
                     {% endfor %}
-                    <td class="total-score">
-                        {{ row.total_score }} / {{ row.max_score }}
-                        {% if row.max_score > 0 %}
-                        <div style="font-size: 0.75rem; color: var(--shimmer-overlay); margin-top: 0.25rem;">
-                            {{ row.graded_count }} из {{ assignments.count }}
-                        </div>
+                    <td class="avg-col">
+                        {% if row.assignment_avg is not None %}
+                            <strong>{{ row.assignment_avg }}</strong>
+                        {% else %}
+                            -
                         {% endif %}
                     </td>
+                    <td class="nb-col"><strong>{{ row.nb_count }}</strong></td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         {% else %}
-        <div style="text-align: center; padding: 3rem; color: var(--shimmer-overlay);">
-            <i class="bi bi-inbox" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
-            {% if not students %}
-            <p>На курсе пока нет студентов</p>
-            {% elif not assignments %}
-            <p>На курсе пока нет опубликованных заданий</p>
-            {% endif %}
-            <a href="{% url 'classroom_core:course_detail' course.id %}" class="btn-back" style="margin-top: 1rem;">
-                <i class="bi bi-arrow-left"></i>
-                Вернуться к курсу
-            </a>
-        </div>
+        <div class="p-3">Нет данных для журнала. Укажи даты начала/конца курса и дни занятий.</div>
         {% endif %}
     </div>
 </div>
 
 <script>
-    let saveTimeout = null;
-
-    function onGradeChange(input) {
-        const studentId = input.dataset.studentId;
-        const assignmentId = input.dataset.assignmentId;
-        
-        if (input.classList.contains('grade-input') && input.value) {
-            input.classList.add('has-grade');
-        } else if (input.classList.contains('grade-input') && !input.value) {
-            input.classList.remove('has-grade');
-        }
-        
-        clearTimeout(saveTimeout);
-        saveTimeout = setTimeout(() => {
-            saveGrade(studentId, assignmentId);
-        }, 1000);
+let saveTimeout = null;
+function onGradeChange(input, immediate = false) {
+  const studentId = input.dataset.studentId;
+  const lessonId = input.dataset.lessonId;
+  const assignmentId = input.dataset.assignmentId;
+  clearTimeout(saveTimeout);
+  if (immediate) {
+    saveGrade(studentId, lessonId, assignmentId, input);
+    return;
+  }
+  saveTimeout = setTimeout(() => saveGrade(studentId, lessonId, assignmentId, input), 400);
+}
+function saveGrade(studentId, lessonId, assignmentId, input) {
+  if (!studentId) return;
+  const formData = new FormData();
+  formData.append('student_id', studentId);
+  if (lessonId) {
+    const rawValue = (input.value || '').trim();
+    const normalized = rawValue.toLowerCase();
+    const isAllowed = rawValue === '' || normalized === 'нб' || normalized === 'nb' || /^\d+$/.test(rawValue);
+    if (!isAllowed) {
+      alert('Разрешены только число или "нб"');
+      input.style.borderColor = 'var(--status-danger, #dc3545)';
+      return;
     }
+    input.style.borderColor = '';
+    formData.append('lesson_id', lessonId);
+    formData.append('mark', rawValue);
+    formData.append('score', rawValue);
+    formData.append('status', 'graded');
+    formData.append('feedback', '');
+  } else if (assignmentId) {
+    formData.append('assignment_id', assignmentId);
+    const td = input.closest('td');
+    const scoreInput = td.querySelector('[data-field="score"]');
+    const feedbackInput = td.querySelector('[data-field="feedback"]');
+    const statusInput = td.querySelector('[data-field="status"]');
+    formData.append('score', scoreInput ? scoreInput.value : '');
+    formData.append('feedback', feedbackInput ? feedbackInput.value : '');
+    formData.append('status', statusInput ? statusInput.value : '');
+  } else {
+    return;
+  }
+  formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  fetch("{% url 'classroom_core:course_gradebook_update' course.id %}", { method: 'POST', body: formData })
+    .then(r => r.json())
+    .then(data => {
+      if (!data.success) {
+        alert(data.error || 'Ошибка сохранения');
+        return;
+      }
+      if (lessonId && (input.value || '').trim().toLowerCase() === 'nb') {
+        input.value = 'нб';
+      }
+    })
+    .catch(() => alert('Ошибка сети'));
+}
 
-    function saveGrade(studentId, assignmentId) {
-        if (!studentId || !assignmentId || studentId === 'undefined' || assignmentId === 'undefined') {
-            return;
-        }
-        
-        const scoreInput = document.getElementById(`score_${studentId}_${assignmentId}`);
-        const statusSelect = document.getElementById(`status_${studentId}_${assignmentId}`);
-        
-        const score = scoreInput ? scoreInput.value : '';
-        const status = statusSelect ? statusSelect.value : '';
-        
-        const formData = new FormData();
-        formData.append('student_id', studentId);
-        formData.append('assignment_id', assignmentId);
-        formData.append('score', score);
-        formData.append('status', status);
-        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
-        
-        fetch("{% url 'classroom_core:course_gradebook_update' course.id %}", {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                if (scoreInput) {
-                    scoreInput.style.borderColor = 'var(--status-success)';
-                    setTimeout(() => {
-                        scoreInput.style.borderColor = '';
-                    }, 1000);
-                }
-            } else {
-                alert('Ошибка при сохранении: ' + data.error);
-            }
-        })
-        .catch(error => {
-            alert('Ошибка при сохранении оценки');
-        });
-    }
-
-    function saveAllGrades() {
-        const inputs = document.querySelectorAll('.grade-input');
-        let savedCount = 0;
-        
-        inputs.forEach(input => {
-            const studentId = input.dataset.studentId;
-            const assignmentId = input.dataset.assignmentId;
-            
-            if ((input.value || input.value === '0') && studentId && assignmentId) {
-                saveGrade(studentId, assignmentId);
-                savedCount++;
-            }
-        });
-        
-        if (savedCount > 0) {
-            const btn = document.querySelector('.btn-save-grades');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="bi bi-check-circle"></i> Сохранено!';
-            btn.classList.add('save-success');
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.classList.remove('save-success');
-            }, 2000);
-        } else {
-            alert('Нет оценок для сохранения');
-        }
-    }
+function updateLessonTopic(input) {
+  const lessonId = input.dataset.lessonId;
+  const baseTemplate = input.dataset.topicUrlTemplate;
+  const endpoint = baseTemplate.replace('/0/topic/', `/${lessonId}/topic/`);
+  const formData = new FormData();
+  formData.append('topic', input.value || '');
+  formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  fetch(endpoint, { method: 'POST', body: formData })
+    .then(r => r.json())
+    .then(data => { if (!data.success) alert(data.error || 'Ошибка сохранения темы'); })
+    .catch(() => alert('Ошибка сети'));
+}
 </script>
 {% endblock %}

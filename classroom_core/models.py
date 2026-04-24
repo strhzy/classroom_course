@@ -35,6 +35,11 @@ class UserProfile(models.Model):
        ('staff', 'Сотрудник учебной части'),
        ('admin', 'Администратор'),
     ]
+    ACCESS_CLASS_CHOICES = [
+        ("main", "Основное"),
+        ("important", "Важное"),
+        ("secondary", "Не важное"),
+    ]
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
@@ -49,6 +54,7 @@ class UserProfile(models.Model):
     )
     phone = models.CharField(max_length=20, blank=True)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    access_class = models.CharField(max_length=20, choices=ACCESS_CLASS_CHOICES, default="main")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -114,8 +120,8 @@ class Course(models.Model):
         default='draft'
     )
 
-    start_date = models.DateTimeField(null=True, blank=True)
-    end_date = models.DateTimeField(null=True, blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -129,6 +135,8 @@ class Course(models.Model):
     is_public = models.BooleanField(default=False)
     allow_self_enrollment = models.BooleanField(default=True)
     max_students = models.IntegerField(null=True, blank=True)
+    class_days = models.CharField(max_length=100, blank=True)
+    class_time = models.CharField(max_length=100, blank=True)
     
     class Meta:
         ordering = ['-created_at']
@@ -143,7 +151,7 @@ class Course(models.Model):
             from django.utils.crypto import get_random_string
             self.code = f"COURSE-{get_random_string(6).upper()}"
         
-        if self.status == 'active' and self.end_date and self.end_date < timezone.now():
+        if self.status == 'active' and self.end_date and self.end_date < timezone.localdate():
             self.status = 'completed'
         
         super().save(*args, **kwargs)
@@ -155,14 +163,14 @@ class Course(models.Model):
         if not self.start_date or not self.end_date:
             return 0
         
-        total_duration =(self.end_date - self.start_date).total_seconds()
-        elapsed_duration =(timezone.now() - self.start_date).total_seconds()
+        total_duration = (self.end_date - self.start_date).days
+        elapsed_duration = (timezone.localdate() - self.start_date).days
         
-        if elapsed_duration <= 0:
+        if elapsed_duration <= 0 or total_duration <= 0:
             return 0
         if elapsed_duration >= total_duration:
             return 100
-        
+
         return int((elapsed_duration / total_duration) * 100)
     
     def can_access(self, user):
@@ -179,7 +187,12 @@ class Course(models.Model):
         return False
     
     def can_edit(self, user):
-        return user == self.instructor or user.is_superuser or user.profile.is_staff()
+        return (
+            user == self.instructor
+            or user in self.teaching_assistants.all()
+            or user.is_superuser
+            or user.profile.is_staff()
+        )
     
     def can_delete(self, user):
         return user == self.instructor or user.is_superuser or user.profile.is_staff()
@@ -260,6 +273,11 @@ class CourseSection(models.Model ):
         return f"{self.course.title } - {self.title }"
 
 class CourseMaterial(models.Model ):
+    STATUS_CHOICES = [
+   ('draft', 'Черновик'),
+   ('published', 'Опубликовано'),
+    ]
+
     """Учебные материалы курса"""
 
     MATERIAL_TYPE_CHOICES =[
@@ -297,6 +315,7 @@ class CourseMaterial(models.Model ):
     order =models.IntegerField(default =0 )
     is_visible =models.BooleanField(default =True )
     is_required =models.BooleanField(default =False )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='published')
 
     created_at =models.DateTimeField(auto_now_add =True )
     updated_at =models.DateTimeField(auto_now =True )
@@ -465,6 +484,82 @@ class AssignmentSubmission(models.Model ):
     def can_grade(self ,user ):
         """Проверка, может ли пользователь оценивать решение"""
         return self.assignment.can_grade(user )
+
+    def can_edit_grade(self, now=None, days_limit=3):
+        now = now or timezone.now()
+        if not self.graded_at:
+            return True
+        return (now - self.graded_at).days < days_limit
+
+
+class GradebookColumn(models.Model):
+    COLUMN_TYPES = [
+        ("lecture", "Лекция"),
+        ("attendance", "Посещаемость"),
+        ("exam", "Экзамен"),
+        ("custom", "Кастом"),
+    ]
+
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="gradebook_columns")
+    title = models.CharField(max_length=255)
+    column_type = models.CharField(max_length=20, choices=COLUMN_TYPES, default="custom")
+    max_points = models.IntegerField(default=100)
+    order = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return f"{self.course.title}: {self.title}"
+
+
+class GradebookRecord(models.Model):
+    column = models.ForeignKey(GradebookColumn, on_delete=models.CASCADE, related_name="records")
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="gradebook_records")
+    score = models.IntegerField(null=True, blank=True)
+    status = models.CharField(max_length=20, default="graded")
+    feedback = models.TextField(blank=True)
+    graded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="graded_gradebook_records")
+    graded_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ["column", "student"]
+
+    def __str__(self):
+        return f"{self.student.username}: {self.column.title}"
+
+
+class CourseLesson(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="lessons")
+    lesson_date = models.DateField()
+    lesson_number = models.PositiveSmallIntegerField(default=1)
+    topic = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ["course", "lesson_date", "lesson_number"]
+        ordering = ["lesson_date", "lesson_number", "id"]
+
+    def __str__(self):
+        return f"{self.course.title} {self.lesson_date} #{self.lesson_number}"
+
+
+class LessonGrade(models.Model):
+    lesson = models.ForeignKey(CourseLesson, on_delete=models.CASCADE, related_name="grades")
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="lesson_grades")
+    mark = models.CharField(max_length=8, blank=True)
+    feedback = models.TextField(blank=True)
+    graded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="graded_lesson_grades")
+    graded_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ["lesson", "student"]
+
+    def __str__(self):
+        return f"{self.student.username}: {self.lesson.lesson_date} #{self.lesson.lesson_number} = {self.mark}"
 
 class Announcement(models.Model ):
     """Объявление в курсе"""

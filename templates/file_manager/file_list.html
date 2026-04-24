@@ -452,7 +452,38 @@
                 <a href="{% url 'file_manager:folder_create' %}" class="btn-folder">
                     <i class="bi bi-folder-plus"></i> Папка
                 </a>
+                <a href="{% url 'file_manager:download_all_files_archive' %}" class="btn-folder">
+                    <i class="bi bi-file-earmark-zip"></i> Скачать все архивом
+                </a>
+                <a href="{% url 'file_manager:backup_compare' %}" class="btn-folder">
+                    <i class="bi bi-arrow-left-right"></i> Сравнить бэкапы
+                </a>
+                {% if yandex_connected %}
+                <a href="{% url 'file_manager:yandex_picker' %}" class="btn-folder">
+                    <i class="bi bi-cloud-arrow-down"></i> Импорт с Яндекс.Диска
+                </a>
+                <a href="{% url 'file_manager:yandex_disconnect' %}" class="btn-folder">
+                    <i class="bi bi-plug"></i> Отключить Яндекс
+                </a>
+                {% else %}
+                <a href="{% url 'file_manager:yandex_oauth_start' %}" class="btn-folder">
+                    <i class="bi bi-plug"></i> Подключить Яндекс.Диск
+                </a>
+                {% endif %}
             </div>
+        </div>
+        <div class="mt-3 d-flex gap-2 flex-wrap">
+            <form method="post" action="{% url 'file_manager:favorite_collection_create' %}" class="d-flex gap-2">
+                {% csrf_token %}
+                <input type="text" name="title" class="filter-input" placeholder="Новая категория избранного" required>
+                <button type="submit" class="btn-reset">Создать</button>
+            </form>
+            <form method="post" action="{% url 'file_manager:workspace_create' %}" class="d-flex gap-2">
+                {% csrf_token %}
+                <input type="text" name="title" class="filter-input" placeholder="Общий workspace" required>
+                <input type="text" name="participant" class="filter-input" placeholder="username второго пользователя" required>
+                <button type="submit" class="btn-reset">Создать workspace</button>
+            </form>
         </div>
 
         <div class="row">

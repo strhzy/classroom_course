@@ -24,7 +24,7 @@ class CourseMaterialForm(forms.ModelForm ):
         model =CourseMaterial 
         fields =[
         'title','description','material_type',
-        'file','url','content','order','is_visible','is_required'
+        'file','url','content','order','is_visible','is_required','status'
         ]
         widgets ={
         'title':forms.TextInput(attrs ={'class':'form-control'}),
@@ -36,6 +36,7 @@ class CourseMaterialForm(forms.ModelForm ):
         'order':forms.NumberInput(attrs ={'class':'form-control'}),
         'is_visible':forms.CheckboxInput(attrs ={'class':'form-check-input'}),
         'is_required':forms.CheckboxInput(attrs ={'class':'form-check-input'}),
+        'status': forms.Select(attrs={'class': 'form-select'}),
         }
 
 class AssignmentForm(forms.ModelForm ):
@@ -98,25 +99,39 @@ class AnnouncementForm(forms.ModelForm ):
 
 class CourseForm(forms.ModelForm):
     """Форма для создания/редактирования курса"""
+    teaching_assistants = forms.ModelMultipleChoiceField(
+        queryset=User.objects.filter(profile__role='teacher'),
+        required=False,
+        widget=forms.SelectMultiple(attrs={'class': 'form-select'}),
+        label='Помощники преподавателя'
+    )
+
     class Meta:
         model = Course
         fields = [
             'title', 
             'description', 
             'short_description', 
+            'status',
+            'class_days',
+            'class_time',
             'start_date', 
             'end_date',
             'is_public',
             'allow_self_enrollment',
             'max_students',
-            'cover_image'
+            'cover_image',
+            'teaching_assistants',
         ]
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
             'short_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
-            'start_date': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
-            'end_date': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'status': forms.Select(attrs={'class': 'form-select'}),
+            'class_days': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'пн,ср,пт'}),
+            'class_time': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '10:00-11:30'}),
+            'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'max_students': forms.NumberInput(attrs={'class': 'form-control'}),
             'is_public': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'allow_self_enrollment': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
@@ -154,9 +169,10 @@ class UserProfileForm(forms.ModelForm):
     """Форма для редактирования профиля пользователя"""
     class Meta:
         model = UserProfile
-        fields = ['role', 'department', 'position', 'student_group', 'phone', 'avatar']
+        fields = ['role', 'access_class', 'department', 'position', 'student_group', 'phone', 'avatar']
         widgets = {
             'role': forms.Select(attrs={'class': 'form-select'}),
+            'access_class': forms.Select(attrs={'class': 'form-select'}),
             'department': forms.TextInput(attrs={'class': 'form-control'}),
             'position': forms.TextInput(attrs={'class': 'form-control'}),
             'student_group': forms.Select(attrs={'class': 'form-select'}),
