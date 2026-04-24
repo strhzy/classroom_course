@@ -48,7 +48,7 @@ class ChatRoom(models.Model):
     @classmethod
     def get_or_create_private_chat(cls, user1, user2):
         """Получить или создать личный чат между двумя пользователями"""
-        # Найти существующий чат
+                                
         rooms = cls.objects.filter(
             room_type='private',
             is_active=True,
@@ -58,7 +58,7 @@ class ChatRoom(models.Model):
         if rooms.exists():
             return rooms.first()
         
-        # Создать новый чат
+                           
         room_name = f"Чат с {user2.username}"
         room = cls.objects.create(
             name=room_name,

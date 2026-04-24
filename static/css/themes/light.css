@@ -20,10 +20,10 @@
   --text-main: #212529;
   --text-secondary: #495057;
   --text-muted: #6c757d;
-  --text-disabled: #adb5bd;        /* Пустые состояния, отключённый текст */
+  --text-disabled: #adb5bd;        
 
-  --accent-primary: #6c5ce7;       /* Фиолетовый - основной акцент */
-  --accent-secondary: #0984e3;     /* Синий - вторичный акцент */
+  --accent-primary: #6c5ce7;       
+  --accent-secondary: #0984e3;     
   --accent-gradient: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
 
   --accent-glow: rgba(108, 92, 231, 0.15);

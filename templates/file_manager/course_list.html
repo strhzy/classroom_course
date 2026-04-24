@@ -10,7 +10,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Заголовок */
+    
    .page-header {
         display: flex;
         justify-content: space-between;
@@ -33,16 +33,16 @@
     }
     
    .page-title i {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         font-size: 2.5rem;
     }
     
-    /* Кнопка "Все файлы" */
+    
    .btn-all-files {
         background: var(--bg-overlay-15);
-        border: 1px solid rgba(106, 90, 205, 0.5);
+        border: 1px solid var(--accent-glow-strong);
         border-radius: 12px;
         padding: 0.6rem 1.5rem;
         font-weight: 600;
@@ -56,15 +56,15 @@
     
    .btn-all-files:hover {
         background: var(--bg-overlay-25);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
     }
     
    .btn-all-files i {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
-    /* Карточки курсов */
+    
    .course-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -78,8 +78,8 @@
     
    .course-card:hover {
         transform: translateY(-4px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px var(--bg-overlay-20);
-        border-color: rgba(106, 90, 205, 0.6);
+        box-shadow: 0 15px 35px var(--shadow-card-hover), 0 0 20px var(--bg-overlay-20);
+        border-color: var(--border-accent-hover);
     }
     
    .card-body-custom {
@@ -89,7 +89,7 @@
         height: 100%;
     }
     
-    /* Заголовок карточки */
+    
    .course-header {
         display: flex;
         align-items: center;
@@ -100,7 +100,7 @@
    .course-icon {
         width: 48px;
         height: 48px;
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border-radius: 15px;
         display: flex;
         align-items: center;
@@ -128,7 +128,7 @@
     }
     
    .course-title h5 a:hover {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
    .instructor {
@@ -141,11 +141,11 @@
     }
     
    .instructor i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 0.9rem;
     }
     
-    /* Описание */
+    
    .course-description {
         color: var(--text-secondary);;
         font-size: 0.95rem;
@@ -158,7 +158,7 @@
         overflow: hidden;
     }
     
-    /* Футер карточки */
+    
    .course-footer {
         display: flex;
         justify-content: space-between;
@@ -177,11 +177,11 @@
     }
     
    .files-count i {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
    .btn-open {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 8px;
         padding: 0.4rem 1.2rem;
@@ -196,11 +196,11 @@
     }
     
    .btn-open:hover {
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
         color: white;
     }
     
-    /* Пустое состояние */
+    
    .empty-state {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -212,7 +212,7 @@
     
    .empty-state i {
         font-size: 4rem;
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 1rem;
@@ -231,7 +231,7 @@
         margin-bottom: 0;
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-courses {
             padding: 1rem 0.5rem;
@@ -283,7 +283,7 @@
 
 <div class="theme-courses">
     <div class="container">
-        <!-- Заголовок -->
+        
         <div class="page-header">
             <h1 class="page-title">
                 <i class="bi bi-book-fill"></i>
@@ -297,13 +297,13 @@
             </div>
         </div>
 
-        <!-- Список курсов -->
+        
         <div class="row g-4">
             {% for item in courses %}
             <div class="col-md-6 col-lg-4">
                 <div class="course-card">
                     <div class="card-body-custom">
-                        <!-- Заголовок курса -->
+                        
                         <div class="course-header">
                             <div class="course-icon">
                                 <i class="bi bi-book"></i>
@@ -321,12 +321,12 @@
                             </div>
                         </div>
                         
-                        <!-- Описание -->
+                        
                         <div class="course-description">
                             {{ item.course.short_description|default:item.course.description|truncatechars:120 }}
                         </div>
                         
-                        <!-- Футер -->
+                        
                         <div class="course-footer">
                             <span class="files-count">
                                 <i class="bi bi-files"></i>

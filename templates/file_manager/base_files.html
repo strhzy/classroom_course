@@ -2,11 +2,11 @@
 
 {% block content %}
 <style>
-    /* Темная тема для навигации файлового менеджера */
+    
    .file-nav {
         background: linear-gradient(135deg, var(--bg-page-start) 0%, var(--bg-page-end) 100%);
         border-bottom: 1px solid var(--bg-overlay-30);
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 5px 20px var(--shadow-card);
         padding: 0.8rem 1rem;
     }
     
@@ -34,13 +34,13 @@
     }
     
    .file-nav .nav-link.active {
-        background: linear-gradient(135deg, rgba(106, 90, 205, 0.25), rgba(74, 144, 226, 0.25));
+        background: linear-gradient(135deg, var(--bg-overlay-25), var(--status-info-bg));
         color: var(--text-white) !important;
-        border: 1px solid rgba(106, 90, 205, 0.5);
+        border: 1px solid var(--accent-glow-strong);
     }
     
    .file-nav .nav-link i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.2rem;
     }
     
@@ -48,28 +48,28 @@
         color: var(--text-white);
     }
     
-    /* Индикатор хранилища */
+    
    .storage-alert {
         background: var(--bg-card) !important;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3) !important;
+        border: 1px solid var(--bg-overlay-30) !important;
         border-radius: 15px !important;
         color: var(--text-white) !important;
         margin: 1rem 1.5rem !important;
         padding: 1rem 1.5rem !important;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 5px 15px var(--shadow-item);
     }
     
    .storage-alert.alert-success {
-        border-left: 5px solid #4caf50 !important;
+        border-left: 5px solid var(--status-success) !important;
     }
     
    .storage-alert.alert-warning {
-        border-left: 5px solid #ffa502 !important;
+        border-left: 5px solid var(--status-warning) !important;
     }
     
    .storage-alert.alert-danger {
-        border-left: 5px solid #ff4757 !important;
+        border-left: 5px solid var(--status-danger) !important;
     }
     
    .storage-label {
@@ -81,7 +81,7 @@
     }
     
    .storage-label i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.2rem;
     }
     
@@ -93,11 +93,19 @@
         border-radius: 50px;
         margin-left: 0.5rem;
     }
+
+   .storage-percent {
+        color: var(--text-muted);
+        font-weight: 600;
+        margin-left: 0.5rem;
+        min-width: 4.5rem;
+        text-align: right;
+    }
     
    .storage-progress {
         width: 250px;
         height: 30px;
-        background: rgba(20, 20, 35, 0.8) !important;
+        background: var(--bg-input) !important;
         border-radius: 15px !important;
         border: 1px solid var(--bg-overlay-30);
         overflow: hidden;
@@ -111,23 +119,23 @@
         font-size: 0.85rem;
         font-weight: 600;
         transition: width 0.3s ease;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        text-shadow: 0 1px 2px var(--shadow-item);
     }
     
    .storage-progress-bar.bg-success {
-        background: linear-gradient(90deg, #4caf50, #45a049) !important;
+        background: linear-gradient(90deg, var(--status-success), var(--status-success)) !important;
     }
     
    .storage-progress-bar.bg-warning {
-        background: linear-gradient(90deg, #ffa502, #ffb822) !important;
+        background: linear-gradient(90deg, var(--status-warning), var(--status-warning)) !important;
         color: var(--bg-page-start);
     }
     
    .storage-progress-bar.bg-danger {
-        background: linear-gradient(90deg, #ff4757, #ff6b81) !important;
+        background: linear-gradient(90deg, var(--status-danger), var(--status-danger-light)) !important;
     }
     
-    /* Основной контент */
+    
    .file-main-content {
         background: var(--bg-page-gradient);
         min-height: calc(100vh - 70px);
@@ -135,15 +143,15 @@
     }
     
    .file-content-container {
-        background: rgba(30, 30, 46, 0.3);
+        background: var(--border-accent);
         backdrop-filter: blur(10px);
         border: 1px solid var(--bg-overlay-20);
         border-radius: 20px;
         padding: 1.5rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 10px 30px var(--shadow-item);
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .file-nav .navbar-nav {
             flex-direction: column;
@@ -191,11 +199,11 @@
     }
 </style>
 
-<!-- Навигация файлового менеджера -->
+
 <nav class="navbar navbar-expand-lg file-nav">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fileNavbar" 
-                style="background: var(--bg-overlay-30); border: 1px solid rgba(106, 90, 205, 0.5);">
+                style="background: var(--bg-overlay-30); border: 1px solid var(--accent-glow-strong);">
             <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
         </button>
         <div class="collapse navbar-collapse" id="fileNavbar">
@@ -225,7 +233,7 @@
     </div>
 </nav>
 
-<!-- Индикатор хранилища -->
+
 {% if storage_quota %}
 <div class="storage-alert alert" id="storage-quota-alert">
     <div class="d-flex justify-content-between align-items-center">
@@ -233,6 +241,7 @@
             <i class="bi bi-database"></i>
             <span>Хранилище:</span>
             <span class="storage-value" id="storage-quota-display">Загрузка...</span>
+            <span class="storage-percent" id="storage-quota-percent">0%</span>
         </div>
         <div class="storage-progress" id="storage-quota-progress">
             <div class="storage-progress-bar bg-success" 
@@ -279,18 +288,26 @@
     }
     
     function updateStorageQuota(usedBytes, totalQuota) {
-        const percentage = totalQuota > 0 ?(usedBytes / totalQuota) * 100 : 0;
+        const percentage = totalQuota > 0 ? (usedBytes / totalQuota) * 100 : 0;
+        const safePercentage = Math.max(0, Math.min(percentage, 100));
+        const percentageText = percentage.toFixed(1) + '%';
         
         const progressBar = document.getElementById('storage-quota-bar');
         if(progressBar) {
-            progressBar.style.width = percentage + '%';
-            progressBar.textContent = percentage.toFixed(1) + '%';
-            progressBar.setAttribute('aria-valuenow', percentage.toFixed(1));
+            progressBar.style.width = safePercentage + '%';
+            progressBar.textContent = safePercentage >= 18 ? percentageText : '';
+            progressBar.setAttribute('aria-valuenow', safePercentage.toFixed(1));
+            progressBar.title = percentageText;
             
             const currentClasses = progressBar.className.split(' ');
             const newClasses = currentClasses.filter(cls => !cls.startsWith('bg-'));
             newClasses.push(getProgressBarClass(percentage));
             progressBar.className = newClasses.join(' ');
+        }
+
+        const percentDisplay = document.getElementById('storage-quota-percent');
+        if(percentDisplay) {
+            percentDisplay.textContent = percentageText;
         }
         
         const quotaDisplay = document.getElementById('storage-quota-display');
@@ -303,7 +320,7 @@
             const currentClasses = alertElement.className.split(' ');
             const newClasses = currentClasses.filter(cls => !cls.startsWith('alert-') && cls !== '');
             newClasses.push(getAlertClass(percentage));
-            alertElement.className = newClasses.join(' ') + ' storage-alert';
+            alertElement.className = newClasses.join(' ');
         }
     }
     
@@ -363,7 +380,7 @@
 </script>
 {% endif %}
 
-<!-- Основной контент -->
+
 <div class="file-main-content">
     <div class="container-fluid">
         <div class="row">
@@ -376,7 +393,7 @@
     </div>
 </div>
 
-<!-- Скрипт для мобильного меню -->
+
 <script>
     document.addEventListener('click', function(e) {
         if(window.innerWidth <= 768) {

@@ -32,7 +32,7 @@
     }
     
    .version-title h1 i {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         background-clip: text;
         -webkit-text-fill-color: transparent;
     }
@@ -44,25 +44,25 @@
     }
     
    .version-title strong {
-        color: #6a5acd;
+        color: var(--accent-primary);
         background: var(--bg-overlay-15);
         padding: 0.2rem 0.8rem;
         border-radius: 50px;
         border: 1px solid var(--bg-overlay-30);
     }
     
-    /* Карточка формы */
+    
    .form-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 10px 30px var(--shadow-card);
         overflow: hidden;
     }
     
    .card-header-custom {
-        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
         border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 1.5rem;
     }
@@ -76,14 +76,14 @@
     }
     
    .card-header-custom i {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
    .card-body-custom {
         padding: 2rem;
     }
     
-    /* Поля формы */
+    
    .form-group {
         margin-bottom: 1.8rem;
     }
@@ -98,10 +98,10 @@
     }
     
    .form-label i {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
-    /* File input */
+    
    .file-input-container {
         position: relative;
     }
@@ -116,8 +116,8 @@
     }
     
    .file-label {
-        background: rgba(20, 20, 35, 0.8);
-        border: 2px dashed rgba(106, 90, 205, 0.4);
+        background: var(--bg-input);
+        border: 2px dashed var(--border-accent-hover);
         border-radius: 10px;
         padding: 1.5rem;
         display: flex;
@@ -133,24 +133,24 @@
     }
     
    .file-label:hover {
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         background: var(--bg-overlay-10);
     }
     
    .file-label i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 2rem;
     }
     
    .file-name {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-weight: 600;
         margin-top: 0.5rem;
     }
     
-    /* Текстовое поле */
+    
    .custom-textarea {
-        background: rgba(20, 20, 35, 0.8);
+        background: var(--bg-input);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 10px;
         padding: 0.8rem 1rem;
@@ -162,12 +162,12 @@
     
    .custom-textarea:focus {
         outline: none;
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
     }
     
-    /* Подсказки */
+    
    .form-text {
-        color: #8080b0;
+        color: var(--text-disabled);
         font-size: 0.85rem;
         margin-top: 0.3rem;
         display: flex;
@@ -176,20 +176,20 @@
     }
     
    .form-text i {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
-    /* Информационный блок */
+    
    .info-alert {
-        background: rgba(74, 144, 226, 0.15);
-        border: 1px solid rgba(74, 144, 226, 0.3);
+        background: var(--status-info-bg);
+        border: 1px solid var(--status-info-border);
         border-radius: 12px;
         padding: 1.2rem;
         margin: 1.5rem 0;
     }
     
    .info-alert strong {
-        color: #4a90e2;
+        color: var(--accent-secondary);
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -205,7 +205,7 @@
         margin-bottom: 0.3rem;
     }
     
-    /* Кнопки */
+    
    .button-group {
         display: flex;
         gap: 1rem;
@@ -213,7 +213,7 @@
     }
     
    .btn-create {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 10px;
         padding: 0.8rem 2rem;
@@ -228,12 +228,12 @@
     }
     
    .btn-create:hover {
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
     }
     
    .btn-cancel {
         background: var(--bg-overlay-15);
-        border: 1px solid rgba(106, 90, 205, 0.5);
+        border: 1px solid var(--accent-glow-strong);
         border-radius: 10px;
         padding: 0.8rem 2rem;
         font-weight: 600;
@@ -249,22 +249,22 @@
     
    .btn-cancel:hover {
         background: var(--bg-overlay-25);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
     }
     
-    /* Карточка с информацией о файле */
+    
    .file-info-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 10px 30px var(--shadow-card);
         overflow: hidden;
     }
     
    .file-info-header {
-        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
         border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1rem 1.5rem;
         color: var(--text-white);
@@ -274,7 +274,7 @@
     }
     
    .file-info-header i {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
    .file-info-body {
@@ -334,11 +334,11 @@
     
    .btn-view:hover {
         background: var(--bg-overlay-25);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-version {
             padding: 1rem 0.5rem;
@@ -369,7 +369,7 @@
 
 <div class="theme-version">
     <div class="container">
-        <!-- Заголовок -->
+        
         <div class="version-title">
             <h1>
                 <i class="bi bi-arrow-repeat"></i>
@@ -379,7 +379,7 @@
         </div>
 
         <div class="row">
-            <!-- Основная форма -->
+            
             <div class="col-md-8">
                 <div class="form-card">
                     <div class="card-header-custom">
@@ -393,11 +393,11 @@
                         <form method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             
-                            <!-- Загрузка файла -->
+                            
                             <div class="form-group">
                                 <label for="{{ form.version_file.id_for_label }}" class="form-label">
                                     <i class="bi bi-file-earmark"></i>
-                                    Новый файл <span style="color: #ff6b81;">*</span>
+                                    Новый файл <span style="color: var(--status-danger-light);">*</span>
                                 </label>
                                 <div class="file-input-container">
                                     <input type="file" 
@@ -424,7 +424,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Описание изменений -->
+                            
                             <div class="form-group">
                                 <label for="{{ form.change_description.id_for_label }}" class="form-label">
                                     <i class="bi bi-card-text"></i>
@@ -446,7 +446,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Информационный блок -->
+                            
                             <div class="info-alert">
                                 <strong>
                                     <i class="bi bi-info-circle"></i>
@@ -460,7 +460,7 @@
                                 </ul>
                             </div>
                             
-                            <!-- Кнопки -->
+                            
                             <div class="button-group">
                                 <button type="submit" class="btn-create">
                                     <i class="bi bi-save"></i>
@@ -476,7 +476,7 @@
                 </div>
             </div>
             
-            <!-- Информация о текущем файле -->
+            
             <div class="col-md-4">
                 <div class="file-info-card">
                     <div class="file-info-header">
@@ -528,7 +528,7 @@
         if(input.files && input.files.length > 0) {
             const file = input.files[0];
             fileNameDisplay.textContent = `📄 ${file.name}`;
-            fileLabel.style.borderColor = '#4caf50';
+            fileLabel.style.borderColor = 'var(--status-success)';
         } else {
             fileNameDisplay.textContent = '';
             fileLabel.style.borderColor = '';

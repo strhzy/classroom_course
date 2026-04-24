@@ -79,10 +79,10 @@ def course_detail(request ,course_id ):
     is_assistant = request.user in course.teaching_assistants.all()
     is_admin = request.user.is_superuser or(hasattr(request.user, 'profile') and request.user.profile.is_staff())
     
-    # Флаг: может ли пользователь управлять курсом(преподаватель, ассистент, админ)
+                                                                                   
     can_manage_course = is_teacher or is_assistant or is_admin
 
-    # Проверка заявки пользователя на запись на курс
+                                                    
     user_has_enrollment_request = False
     user_enrollment_request_id = None
     if not is_student and not can_manage_course:
@@ -94,7 +94,7 @@ def course_detail(request ,course_id ):
             user_has_enrollment_request = True
             user_enrollment_request_id = enrollment_request.id
 
-    # Получаем сданные работы для преподавателя
+                                               
     submissions_for_teacher = []
     if can_manage_course:
         for assignment in course.assignments.all():
@@ -104,7 +104,7 @@ def course_detail(request ,course_id ):
                     'submission': submission,
                 })
     
-    # Получаем работы студента
+                              
     student_submissions = []
     if is_student:
         student_submissions = AssignmentSubmission.objects.filter(
@@ -141,7 +141,7 @@ def course_create(request):
     """Создание нового курса"""
     user_profile = request.user.profile
     
-    # Только преподаватели и сотрудники могут создавать курсы
+                                                             
     if not (user_profile.is_teacher() or user_profile.is_staff() or request.user.is_superuser):
         raise PermissionDenied
     
@@ -420,7 +420,7 @@ def assignment_detail(request ,assignment_id ):
     is_assistant = request.user in course.teaching_assistants.all()
     is_admin = request.user.is_superuser or(hasattr(request.user, 'profile') and request.user.profile.is_staff())
     
-    # Флаг: может ли пользователь управлять курсом
+                                                  
     can_manage_course = is_teacher or is_assistant or is_admin
 
     submission =None
@@ -430,14 +430,14 @@ def assignment_detail(request ,assignment_id ):
         student =request.user
         ).first()
     
-    # Получаем все сданные работы для преподавателя
+                                                   
     all_submissions = []
     if can_manage_course:
         all_submissions = AssignmentSubmission.objects.filter(
             assignment=assignment
         ).select_related('student', 'graded_by').order_by('-submitted_at')
     
-    # Статистика по работам
+                           
     submissions_stats = {}
     if can_manage_course:
         total = all_submissions.count()
@@ -853,14 +853,14 @@ def student_list(request, course_id):
     """Список студентов курса"""
     course = get_object_or_404(Course, id=course_id)
     
-    # Проверка прав
+                   
     if not course.can_edit(request.user):
         raise PermissionDenied
     
-    # Получаем всех студентов курса(индивидуальных + из групп)
+                                                              
     all_students = course.get_all_enrolled_students()
     
-    # Поиск
+           
     query = request.GET.get('query')
     if query:
         all_students = all_students.filter(
@@ -870,7 +870,7 @@ def student_list(request, course_id):
             Q(email__icontains=query)
         )
     
-    # Пагинация
+               
     paginator = Paginator(list(all_students), 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -890,19 +890,19 @@ def student_enroll(request, course_id):
     """Зачисление студентов и групп на курс"""
     course = get_object_or_404(Course, id=course_id)
 
-    # Проверка прав
+                   
     if not course.can_edit(request.user):
         raise PermissionDenied
 
     if request.method == 'POST':
-        # Получаем выбранных студентов и группы из POST данных
+                                                              
         student_ids = request.POST.getlist('students')
         group_ids = request.POST.getlist('groups')
 
         students_added = 0
         groups_added = 0
 
-        # Обработка индивидуальных студентов
+                                            
         for student_id in student_ids:
             try:
                 student = User.objects.get(id=student_id)
@@ -914,7 +914,7 @@ def student_enroll(request, course_id):
             except User.DoesNotExist:
                 messages.error(request, 'Студент не найден')
 
-        # Обработка групп студентов
+                                   
         for group_id in group_ids:
             try:
                 group = StudentGroup.objects.get(id=group_id)
@@ -933,15 +933,15 @@ def student_enroll(request, course_id):
         
         return redirect('classroom_core:student_list', course_id=course.id)
 
-    # GET запрос - показываем форму
-    # Получаем студентов, которые еще не на курсе
+                                   
+                                                 
     available_students = User.objects.filter(
         profile__role='student'
     ).exclude(
         id__in=course.students.all()
     )
     
-    # Получаем группы, которые еще не на курсе
+                                              
     available_groups = StudentGroup.objects.exclude(
         id__in=course.student_groups.all()
     )
@@ -960,7 +960,7 @@ def student_remove(request, course_id, student_id):
     course = get_object_or_404(Course, id=course_id)
     student = get_object_or_404(User, id=student_id)
     
-    # Проверка прав
+                   
     if not course.can_edit(request.user):
         raise PermissionDenied
     
@@ -985,7 +985,7 @@ def group_list(request):
     
     groups = StudentGroup.objects.all()
     
-    # Поиск
+           
     query = request.GET.get('query')
     if query:
         groups = groups.filter(
@@ -993,7 +993,7 @@ def group_list(request):
             Q(description__icontains=query)
         )
     
-    # Пагинация
+               
     paginator = Paginator(groups, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -1075,7 +1075,7 @@ def group_detail(request, group_id):
     
     students = group.students.all()
     
-    # Пагинация студентов
+                         
     paginator = Paginator(students, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -1112,7 +1112,7 @@ def group_add_students(request, group_id):
         messages.success(request, f'В группу добавлено {students_added} студентов')
         return redirect('classroom_core:group_detail', group_id=group.id)
 
-    # Получаем студентов, которые еще не в группе
+                                                 
     available_students = User.objects.filter(
         profile__role='student',
         profile__student_group__isnull=True
@@ -1126,21 +1126,21 @@ def group_add_students(request, group_id):
     return render(request, 'classroom_core/group_add_students.html', context)
 
 
-# =============================================================================
-# Заявки на запись на курс
-# =============================================================================
+                                                                               
+                          
+                                                                               
 
 @login_required
 def course_enrollment_request_create(request, course_id):
     """Создание заявки студента на запись на курс"""
     course = get_object_or_404(Course, id=course_id)
 
-    # Проверка, что пользователь не уже записан на курс
+                                                       
     if course.students.filter(id=request.user.id).exists():
         messages.error(request, 'Вы уже записаны на этот курс')
         return redirect('classroom_core:course_detail', course_id=course.id)
 
-    # Проверка, нет ли уже заявки
+                                 
     existing_request = CourseEnrollmentRequest.objects.filter(
         course=course,
         student=request.user
@@ -1225,7 +1225,7 @@ def course_enrollment_request_list(request, course_id):
     """Список заявок на запись на курс(для преподавателя)"""
     course = get_object_or_404(Course, id=course_id)
 
-    # Проверка прав
+                   
     if not course.can_edit(request.user):
         raise PermissionDenied
 
@@ -1262,7 +1262,7 @@ def course_enrollment_request_detail(request, request_id):
     enrollment_request = get_object_or_404(CourseEnrollmentRequest, id=request_id)
     course = enrollment_request.course
 
-    # Проверка прав
+                   
     if not enrollment_request.can_review(request.user) and enrollment_request.student != request.user:
         raise PermissionDenied
 
@@ -1324,9 +1324,9 @@ def course_enrollment_request_review(request, request_id):
     })
 
 
-# =============================================================================
-# Файлы заданий
-# =============================================================================
+                                                                               
+               
+                                                                               
 
 @login_required
 def assignment_file_create(request, assignment_id):
@@ -1334,11 +1334,11 @@ def assignment_file_create(request, assignment_id):
     assignment = get_object_or_404(Assignment, id=assignment_id)
     course = assignment.course
 
-    # Проверка прав
+                   
     if not course.can_access(request.user):
         raise PermissionDenied
 
-    # Только студенты могут прикреплять файлы
+                                             
     if not course.students.filter(id=request.user.id).exists():
         raise PermissionDenied
 
@@ -1368,7 +1368,7 @@ def assignment_file_list(request, assignment_id):
     assignment = get_object_or_404(Assignment, id=assignment_id)
     course = assignment.course
 
-    # Проверка прав
+                   
     if not assignment.can_grade(request.user):
         raise PermissionDenied
 
@@ -1397,7 +1397,7 @@ def assignment_file_delete(request, file_id):
     assignment = file_obj.assignment
     course = assignment.course
 
-    # Проверка прав
+                   
     if not file_obj.can_delete(request.user):
         raise PermissionDenied
 
@@ -1413,9 +1413,9 @@ def assignment_file_delete(request, file_id):
     })
 
 
-# =============================================================================
-# Проверка файлов заданий
-# =============================================================================
+                                                                               
+                         
+                                                                               
 
 @login_required
 def assignment_file_review_create(request, file_id):
@@ -1424,7 +1424,7 @@ def assignment_file_review_create(request, file_id):
     assignment = file_obj.assignment
     course = assignment.course
 
-    # Проверка прав
+                   
     if not assignment.can_grade(request.user):
         raise PermissionDenied
 
@@ -1432,7 +1432,7 @@ def assignment_file_review_create(request, file_id):
     is_assistant = request.user in course.teaching_assistants.all() if hasattr(course, 'teaching_assistants') else False
     is_admin = request.user.is_superuser or(hasattr(request.user, 'profile') and request.user.profile.is_staff())
 
-    # Проверяем, есть ли уже проверка от этого преподавателя
+                                                            
     existing_review = AssignmentFileReview.objects.filter(
         file=file_obj,
         reviewer=request.user
@@ -1474,7 +1474,7 @@ def assignment_file_review_edit(request, review_id):
     assignment = file_obj.assignment
     course = assignment.course
 
-    # Проверка прав
+                   
     if not review.can_review(request.user):
         raise PermissionDenied
 
@@ -1511,7 +1511,7 @@ def assignment_file_review_detail(request, review_id):
     assignment = file_obj.assignment
     course = assignment.course
 
-    # Проверка прав
+                   
     if not assignment.can_grade(request.user) and file_obj.student != request.user:
         raise PermissionDenied
 
@@ -1546,7 +1546,7 @@ def course_gradebook(request, course_id):
     if not can_grade:
         raise PermissionDenied
 
-    students = course.get_all_enrolled_students() #.order_by('first_name', 'last_name', 'username')
+    students = course.get_all_enrolled_students()                                                  
 
     assignments = course.assignments.filter(status='published').order_by('created_at')
 

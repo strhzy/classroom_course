@@ -10,7 +10,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Хлебные крошки */
+    
    .custom-breadcrumb {
         background: var(--bg-overlay-10);
         padding: 0.8rem 1.2rem;
@@ -45,8 +45,8 @@
     }
     
    .custom-breadcrumb.breadcrumb-item a:hover {
-        color: #6a5acd;
-        text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
+        color: var(--accent-primary);
+        text-shadow: 0 0 8px var(--accent-glow-strong);
     }
     
    .custom-breadcrumb.breadcrumb-item a::after {
@@ -56,7 +56,7 @@
         left: 0;
         width: 0;
         height: 2px;
-        background: linear-gradient(90deg, #6a5acd, #4a90e2);
+        background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
         transition: width 0.3s ease;
     }
     
@@ -70,13 +70,13 @@
     }
     
    .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
-        color: #6a5acd;
+        color: var(--accent-primary);
         content: "›";
         font-size: 1.2rem;
         line-height: 1;
     }
     
-    /* Заголовок */
+    
    .page-header {
         animation: headerFade 0.5s ease-out;
     }
@@ -102,13 +102,13 @@
         text-shadow: 0 0 20px var(--bg-overlay-30);
     }
     
-    /* Карточка */
+    
    .submit-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--bg-overlay-20);
+        box-shadow: 0 10px 30px var(--shadow-card), 0 0 20px var(--bg-overlay-20);
         transition: all 0.3s ease;
         animation: cardAppear 0.6s ease-out 0.2s both;
         overflow: hidden;
@@ -126,11 +126,11 @@
     }
     
    .submit-card:hover {
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
+        box-shadow: 0 15px 40px var(--shadow-card-hover), 0 0 30px var(--border-accent-hover);
     }
     
    .card-header-gradient {
-        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
         border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 1.5rem;
     }
@@ -145,7 +145,7 @@
     }
     
    .card-header-gradient h5 i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.5rem;
     }
     
@@ -153,7 +153,7 @@
         padding: 2rem;
     }
     
-    /* Заголовок задания */
+    
    .assignment-title {
         color: var(--text-white);
         font-size: 1.4rem;
@@ -164,10 +164,10 @@
         word-break: break-word;
     }
     
-    /* Информация о сроке */
+    
    .deadline-info {
         background: var(--bg-overlay-15);
-        border: 1px solid rgba(106, 90, 205, 0.4);
+        border: 1px solid var(--border-accent-hover);
         border-radius: 12px;
         padding: 1.2rem;
         margin-bottom: 2rem;
@@ -180,17 +180,17 @@
     
     @keyframes deadlinePulse {
         0%, 100% {
-            border-color: rgba(106, 90, 205, 0.4);
+            border-color: var(--border-accent-hover);
             box-shadow: 0 0 15px var(--bg-overlay-20);
         }
         50% {
-            border-color: rgba(106, 90, 205, 0.8);
-            box-shadow: 0 0 25px rgba(106, 90, 205, 0.4);
+            border-color: var(--border-accent-hover);
+            box-shadow: 0 0 25px var(--border-accent-hover);
         }
     }
     
    .deadline-icon {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.8rem;
     }
     
@@ -206,7 +206,7 @@
     }
     
    .overdue-badge {
-        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        background: linear-gradient(135deg, var(--status-danger), var(--status-danger-light));
         border: none;
         padding: 0.5rem 1.2rem;
         border-radius: 50px;
@@ -229,7 +229,7 @@
         }
     }
     
-    /* Поля формы */
+    
    .form-group {
         margin-bottom: 2rem;
         animation: fieldAppear 0.5s ease-out;
@@ -261,12 +261,12 @@
     }
     
    .form-label i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.2rem;
     }
     
    .custom-textarea {
-        background: rgba(20, 20, 35, 0.8);
+        background: var(--bg-input);
         border: 2px solid var(--bg-overlay-30);
         border-radius: 12px;
         padding: 1rem 1.2rem;
@@ -281,17 +281,17 @@
     
    .custom-textarea:focus {
         outline: none;
-        border-color: #6a5acd;
-        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2), 0 0 20px var(--bg-overlay-30);
-        background: rgba(30, 30, 50, 0.9);
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 4px var(--bg-overlay-20), 0 0 20px var(--bg-overlay-30);
+        background: var(--bg-item-hover);
         transform: translateY(-2px);
     }
     
    .custom-textarea:hover {
-        border-color: rgba(106, 90, 205, 0.6);
+        border-color: var(--border-accent-hover);
     }
     
-    /* File input */
+    
    .file-input-container {
         position: relative;
     }
@@ -306,8 +306,8 @@
     }
     
    .file-label {
-        background: rgba(20, 20, 35, 0.8);
-        border: 2px dashed rgba(106, 90, 205, 0.4);
+        background: var(--bg-input);
+        border: 2px dashed var(--border-accent-hover);
         border-radius: 12px;
         padding: 1.5rem;
         display: flex;
@@ -324,14 +324,14 @@
     }
     
    .file-label:hover {
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         background: var(--bg-overlay-10);
         transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 10px 20px var(--shadow-item);
     }
     
    .file-label i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 2.5rem;
         transition: transform 0.3s ease;
     }
@@ -346,13 +346,13 @@
     }
     
    .file-hint {
-        color: #8080b0;
+        color: var(--text-disabled);
         font-size: 0.9rem;
         margin-top: 0.5rem;
     }
     
    .file-name {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-weight: 600;
         margin-top: 0.5rem;
         padding: 0.3rem 1rem;
@@ -361,7 +361,7 @@
         display: inline-block;
     }
     
-    /* Поддерживаемые форматы */
+    
    .supported-formats {
         display: flex;
         flex-wrap: wrap;
@@ -382,14 +382,14 @@
     
    .format-badge:hover {
         background: var(--bg-overlay-30);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         transform: translateY(-2px);
     }
     
-    /* Предупреждение */
+    
    .warning-alert {
-        background: rgba(255, 165, 2, 0.1);
-        border: 1px solid rgba(255, 165, 2, 0.4);
+        background: var(--status-warning-bg);
+        border: 1px solid var(--status-warning-border);
         border-radius: 12px;
         padding: 1.2rem;
         margin: 2rem 0;
@@ -401,25 +401,25 @@
     
     @keyframes warningPulse {
         0%, 100% {
-            border-color: rgba(255, 165, 2, 0.4);
+            border-color: var(--status-warning-border);
         }
         50% {
-            border-color: rgba(255, 165, 2, 0.8);
+            border-color: var(--status-warning-border);
         }
     }
     
    .warning-icon {
-        color: #ffa502;
+        color: var(--status-warning);
         font-size: 1.8rem;
     }
     
    .warning-text {
         flex: 1;
-        color: #ffd;
+        color: var(--status-warning);
     }
     
    .warning-text strong {
-        color: #ffa502;
+        color: var(--status-warning);
         display: block;
         margin-bottom: 0.3rem;
         font-size: 1.1rem;
@@ -431,7 +431,7 @@
         line-height: 1.6;
     }
     
-    /* Кнопки */
+    
    .button-group {
         display: flex;
         gap: 1rem;
@@ -451,7 +451,7 @@
     }
     
    .btn-submit {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 12px;
         padding: 0.8rem 2rem;
@@ -471,8 +471,8 @@
     
    .btn-submit:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        box-shadow: 0 8px 25px var(--accent-glow-strong);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
     }
     
    .btn-submit:active {
@@ -487,7 +487,7 @@
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--shimmer-overlay);
         transform: translate(-50%, -50%);
         transition: width 0.6s, height 0.6s;
     }
@@ -499,7 +499,7 @@
     
    .btn-cancel {
         background: var(--bg-overlay-20);
-        border: 1px solid rgba(106, 90, 205, 0.5);
+        border: 1px solid var(--accent-glow-strong);
         border-radius: 12px;
         padding: 0.8rem 2rem;
         font-weight: 600;
@@ -516,17 +516,17 @@
     
    .btn-cancel:hover {
         background: var(--bg-overlay-30);
-        border-color: rgba(106, 90, 205, 0.8);
+        border-color: var(--border-accent-hover);
         color: var(--text-white);
         transform: translateY(-2px);
-        box-shadow: 0 5px 20px rgba(106, 90, 205, 0.4);
+        box-shadow: 0 5px 20px var(--border-accent-hover);
     }
     
    .btn-cancel:active {
         transform: translateY(0);
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-submit {
             padding: 1rem 0.5rem;
@@ -590,7 +590,7 @@
 
 <div class="theme-submit">
     <div class="container">
-        <!-- Заголовок и хлебные крошки -->
+        
         <div class="page-header mb-4">
             <h1 class="page-title">
                 <i class="bi bi-cloud-upload me-2"></i>
@@ -630,7 +630,7 @@
                             {{ assignment.title }}
                         </div>
                         
-                        <!-- Информация о сроке -->
+                        
                         <div class="deadline-info">
                             <i class="bi bi-calendar-check deadline-icon"></i>
                             <div class="deadline-text">
@@ -647,7 +647,7 @@
                         <form method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             
-                            <!-- Текстовое описание -->
+                            
                             <div class="form-group">
                                 <label for="id_text_response" class="form-label">
                                     <i class="bi bi-chat-text"></i>
@@ -660,7 +660,7 @@
                                           placeholder="Опишите ваше решение, добавьте пояснения или комментарии..."></textarea>
                             </div>
                             
-                            <!-- Файл с решением -->
+                            
                             <div class="form-group">
                                 <label for="id_file_submission" class="form-label">
                                     <i class="bi bi-file-earmark"></i>
@@ -689,7 +689,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Предупреждение -->
+                            
                             <div class="warning-alert">
                                 <i class="bi bi-exclamation-triangle-fill warning-icon"></i>
                                 <div class="warning-text">
@@ -698,7 +698,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Кнопки -->
+                            
                             <div class="button-group">
                                 <button type="submit" class="btn-submit">
                                     <i class="bi bi-send"></i>
@@ -729,8 +729,8 @@
             fileNameDisplay.style.display = 'inline-block';
             
             // Визуальная обратная связь
-            fileLabel.style.borderColor = '#4caf50';
-            fileLabel.style.background = 'rgba(76, 175, 80, 0.1)';
+            fileLabel.style.borderColor = 'var(--status-success)';
+            fileLabel.style.background = 'var(--status-success-bg)';
         } else {
             fileNameDisplay.textContent = '';
             fileNameDisplay.style.display = 'none';
@@ -766,8 +766,8 @@
             });
             
             function highlight() {
-                fileLabel.style.borderColor = '#6a5acd';
-                fileLabel.style.background = 'rgba(106, 90, 205, 0.2)';
+                fileLabel.style.borderColor = 'var(--accent-primary)';
+                fileLabel.style.background = 'var(--bg-overlay-20)';
                 fileLabel.style.transform = 'scale(1.02)';
             }
             

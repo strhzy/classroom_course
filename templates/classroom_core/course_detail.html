@@ -43,8 +43,8 @@
     }
     
     .custom-breadcrumb .breadcrumb-item a:hover {
-        color: #6a5acd;
-        text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
+        color: var(--accent-primary);
+        text-shadow: 0 0 8px var(--accent-glow-strong);
     }
     
     .custom-breadcrumb .breadcrumb-item.active {
@@ -53,7 +53,7 @@
     }
     
     .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
-        color: #6a5acd;
+        color: var(--accent-primary);
         content: "›";
         font-size: 1.2rem;
     }
@@ -85,7 +85,7 @@
     }
     
     .btn-edit {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 12px;
         padding: 0.6rem 1.5rem;
@@ -101,14 +101,14 @@
     
     .btn-edit:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        box-shadow: 0 8px 25px var(--accent-glow-strong);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
         color: white;
     }
     
     .btn-students {
         background: var(--bg-overlay-15);
-        border: 1px solid rgba(106, 90, 205, 0.5);
+        border: 1px solid var(--accent-glow-strong);
         border-radius: 12px;
         padding: 0.6rem 1.5rem;
         font-weight: 600;
@@ -120,14 +120,14 @@
     
     .btn-students:hover {
         background: var(--bg-overlay-25);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
         transform: translateY(-2px);
     }
     
     .btn-add {
         background: var(--bg-overlay-20);
-        border: 1px solid rgba(106, 90, 205, 0.5);
+        border: 1px solid var(--accent-glow-strong);
         border-radius: 8px;
         padding: 0.4rem 1rem;
         color: var(--text-muted);
@@ -141,47 +141,47 @@
     
     .btn-add:hover {
         background: var(--bg-overlay-30);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
         transform: translateY(-2px);
     }
     
-    /* Основные карточки с разными цветовыми акцентами */
+    
     .section-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 10px 30px var(--shadow-card);
         transition: all 0.3s ease;
         animation: cardAppear 0.5s ease-out;
         margin-bottom: 1.5rem;
         overflow: hidden;
     }
     
-    /* Цветовые акценты для разных типов контента */
+    
     .section-card.announcements {
-        border-left: 4px solid #ffa502;
-        box-shadow: 0 10px 30px rgba(255, 165, 2, 0.1);
+        border-left: 4px solid var(--status-warning);
+        box-shadow: 0 10px 30px var(--status-warning-bg);
     }
     
     .section-card.sections {
-        border-left: 4px solid #4a90e2;
-        box-shadow: 0 10px 30px rgba(74, 144, 226, 0.1);
+        border-left: 4px solid var(--accent-secondary);
+        box-shadow: 0 10px 30px var(--status-info-bg-light);
     }
     
     .section-card.assignments {
-        border-left: 4px solid #6a5acd;
+        border-left: 4px solid var(--accent-primary);
         box-shadow: 0 10px 30px var(--bg-overlay-10);
     }
     
     .section-card.submissions {
-        border-left: 4px solid #4caf50;
-        box-shadow: 0 10px 30px rgba(76, 175, 80, 0.1);
+        border-left: 4px solid var(--status-success);
+        box-shadow: 0 10px 30px var(--status-success-bg);
     }
     
     .section-card:hover {
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+        box-shadow: 0 15px 40px var(--shadow-card-hover);
         transform: translateY(-2px);
     }
     
@@ -196,9 +196,9 @@
         }
     }
     
-    /* Цветные заголовки карточек */
+    
     .card-header-custom {
-        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
         border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1rem 1.5rem;
         display: flex;
@@ -209,23 +209,23 @@
     }
     
     .announcements .card-header-custom {
-        background: linear-gradient(135deg, rgba(255, 165, 2, 0.15), rgba(255, 165, 2, 0.05));
-        border-bottom-color: rgba(255, 165, 2, 0.3);
+        background: linear-gradient(135deg, var(--status-warning-bg), var(--status-warning-bg-light));
+        border-bottom-color: var(--status-warning-border);
     }
     
     .sections .card-header-custom {
-        background: linear-gradient(135deg, rgba(74, 144, 226, 0.15), rgba(74, 144, 226, 0.05));
-        border-bottom-color: rgba(74, 144, 226, 0.3);
+        background: linear-gradient(135deg, var(--status-info-bg), var(--status-info-bg-light));
+        border-bottom-color: var(--status-info-border);
     }
     
     .assignments .card-header-custom {
-        background: linear-gradient(135deg, rgba(106, 90, 205, 0.15), rgba(106, 90, 205, 0.05));
+        background: linear-gradient(135deg, var(--bg-overlay-15), var(--status-assignment-bg-light));
         border-bottom-color: var(--bg-overlay-30);
     }
     
     .submissions .card-header-custom {
-        background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.05));
-        border-bottom-color: rgba(76, 175, 80, 0.3);
+        background: linear-gradient(135deg, var(--status-success-bg), var(--status-success-bg-light));
+        border-bottom-color: var(--status-success-border);
     }
     
     .card-header-custom h5 {
@@ -241,22 +241,22 @@
     }
     
     .announcements .card-header-custom h5 i {
-        color: #ffa502;
+        color: var(--status-warning);
     }
     
     .sections .card-header-custom h5 i {
-        color: #4a90e2;
+        color: var(--accent-secondary);
     }
     
     .assignments .card-header-custom h5 i {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
     .submissions .card-header-custom h5 i {
-        color: #4caf50;
+        color: var(--status-success);
     }
     
-    /* Информационные карточки в правой колонке */
+    
     .info-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -266,30 +266,30 @@
         animation: sidebarAppear 0.6s ease-out 0.2s both;
     }
     
-    /* Цветные рамки для информационных карточек */
+    
     .info-card.course-info {
         border: 1px solid var(--bg-overlay-30);
-        border-top: 3px solid #6a5acd;
+        border-top: 3px solid var(--accent-primary);
     }
     
     .info-card.students-info {
-        border: 1px solid rgba(74, 144, 226, 0.3);
-        border-top: 3px solid #4a90e2;
+        border: 1px solid var(--status-info-border);
+        border-top: 3px solid var(--accent-secondary);
     }
     
     .info-card.progress-info {
-        border: 1px solid rgba(76, 175, 80, 0.3);
-        border-top: 3px solid #4caf50;
+        border: 1px solid var(--status-success-border);
+        border-top: 3px solid var(--status-success);
     }
     
     .info-card.my-assignments {
-        border: 1px solid rgba(255, 165, 2, 0.3);
-        border-top: 3px solid #ffa502;
+        border: 1px solid var(--status-warning-border);
+        border-top: 3px solid var(--status-warning);
     }
     
     .info-card.management {
-        border: 1px solid rgba(255, 71, 87, 0.3);
-        border-top: 3px solid #ff4757;
+        border: 1px solid var(--status-danger-border);
+        border-top: 3px solid var(--status-danger);
     }
     
     @keyframes sidebarAppear {
@@ -316,23 +316,23 @@
     }
     
     .course-info .info-title {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
     .students-info .info-title {
-        color: #4a90e2;
+        color: var(--accent-secondary);
     }
     
     .progress-info .info-title {
-        color: #4caf50;
+        color: var(--status-success);
     }
     
     .my-assignments .info-title {
-        color: #ffa502;
+        color: var(--status-warning);
     }
     
     .management .info-title {
-        color: #ff4757;
+        color: var(--status-danger);
     }
     
     .info-title i {
@@ -377,7 +377,7 @@
     .student-avatar {
         width: 32px;
         height: 32px;
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -416,7 +416,7 @@
     
     .progress-fill {
         height: 100%;
-        background: linear-gradient(90deg, #6a5acd, #4a90e2);
+        background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
         border-radius: 10px;
         transition: width 1s ease;
         position: relative;
@@ -430,7 +430,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        background: linear-gradient(90deg, transparent, var(--shimmer-overlay), transparent);
         animation: shimmer 2s infinite;
     }
     
@@ -450,9 +450,9 @@
         font-size: 0.9rem;
     }
     
-    /* Разделитель */
+    
     .separator {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-weight: 300;
         margin: 0 0.5rem;
         opacity: 0.5;
@@ -461,12 +461,12 @@
     .empty-state {
         text-align: center;
         padding: 2rem;
-        color: #8080b0;
+        color: var(--text-disabled);
     }
     
     .empty-state i {
         font-size: 2.5rem;
-        color: #6a5acd;
+        color: var(--accent-primary);
         margin-bottom: 1rem;
         opacity: 0.5;
     }
@@ -483,9 +483,9 @@
     
     .item-card:hover {
         background: var(--bg-card-hover);
-        border-color: rgba(106, 90, 205, 0.5);
+        border-color: var(--accent-glow-strong);
         transform: translateX(5px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 5px 15px var(--shadow-item);
     }
     
     @keyframes itemAppear {
@@ -518,7 +518,7 @@
     }
     
     .item-meta {
-        color: #8080b0;
+        color: var(--text-disabled);
         font-size: 0.85rem;
         display: flex;
         align-items: center;
@@ -527,7 +527,7 @@
     }
     
     .item-meta i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         margin-right: 0.3rem;
     }
     
@@ -545,24 +545,24 @@
     }
     
     .badge-active {
-        background: rgba(76, 175, 80, 0.2);
-        color: #4caf50;
-        border: 1px solid #4caf50;
+        background: var(--status-success-bg);
+        color: var(--status-success);
+        border: 1px solid var(--status-success);
     }
     
     .badge-inactive {
-        background: rgba(255, 165, 2, 0.2);
-        color: #ffa502;
-        border: 1px solid #ffa502;
+        background: var(--status-warning-bg);
+        color: var(--status-warning);
+        border: 1px solid var(--status-warning);
     }
     
     .overdue-badge {
-        background: rgba(255, 71, 87, 0.2);
-        color: #ff6b81;
+        background: var(--status-danger-bg);
+        color: var(--status-danger-light);
         padding: 0.2rem 0.8rem;
         border-radius: 50px;
         font-size: 0.8rem;
-        border: 1px solid #ff4757;
+        border: 1px solid var(--status-danger);
         animation: pulse 2s infinite;
         display: inline-flex;
         align-items: center;
@@ -688,7 +688,7 @@
 
         <div class="row">
             <div class="col-lg-8">
-                <!-- Объявления - оранжевый акцент -->
+                
                 <div class="section-card announcements">
                     <div class="card-header-custom">
                         <h5>
@@ -731,7 +731,7 @@
                     </div>
                 </div>
                 
-                <!-- Разделы курса - синий акцент -->
+                
                 <div class="section-card sections">
                     <div class="card-header-custom">
                         <h5>
@@ -779,7 +779,7 @@
                     </div>
                 </div>
                 
-                <!-- Задания - фиолетовый акцент -->
+                
                 <div class="section-card assignments">
                     <div class="card-header-custom">
                         <h5>
@@ -846,7 +846,7 @@
                     </div>
                 </div>
                 
-                <!-- Сданные задания (для преподавателя) - зеленый акцент -->
+                
                 {% if can_manage_course %}
                 <div class="section-card submissions">
                     <div class="card-header-custom">
@@ -915,7 +915,7 @@
             </div>
             
             <div class="col-lg-4">
-                <!-- Информация о курсе - фиолетовый акцент -->
+                
                 <div class="info-card course-info">
                     <div class="info-title">
                         <i class="bi bi-info-circle"></i>
@@ -962,7 +962,7 @@
                     </div>
                 </div>
                 
-                <!-- Студенты - синий акцент -->
+                
                 <div class="info-card students-info">
                     <div class="info-title">
                         <i class="bi bi-people-fill"></i>
@@ -995,7 +995,7 @@
                     </div>
                 </div>
                 
-                <!-- Прогресс курса - зеленый акцент с разделителем -->
+                
                 <div class="info-card progress-info">
                     <div class="info-title">
                         <i class="bi bi-graph-up"></i>
@@ -1004,7 +1004,7 @@
                     <div class="progress-container">
                         <div class="d-flex justify-content-between mb-2">
                             <span style="color: var(--text-muted);">Выполнено</span>
-                            <span style="color: #6a5acd; font-weight: 600;">{{ course.get_progress }}%</span>
+                            <span style="color: var(--accent-primary); font-weight: 600;">{{ course.get_progress }}%</span>
                         </div>
                         <div class="progress-bar-custom">
                             <div class="progress-fill"></div>
@@ -1017,7 +1017,7 @@
                     </div>
                 </div>
                 
-                <!-- Мои задания (для студента) - оранжевый акцент -->
+                
                 {% if is_student %}
                 <div class="info-card my-assignments">
                     <div class="info-title">
@@ -1062,7 +1062,7 @@
                 </div>
                 {% endif %}
                 
-                <!-- Управление (для преподавателя) - красный акцент -->
+                
                 {% if can_manage_course %}
                 <div class="info-card management">
                     <div class="info-title">
@@ -1073,10 +1073,10 @@
                         <a href="{% url 'classroom_core:course_edit' course.id %}" class="btn-add w-100 justify-content-center">
                             <i class="bi bi-pencil"></i> Редактировать курс
                         </a>
-                        <a href="{% url 'classroom_core:course_gradebook' course.id %}" class="btn-add w-100 justify-content-center" style="border-color: #4caf50; color: #81c784;">
+                        <a href="{% url 'classroom_core:course_gradebook' course.id %}" class="btn-add w-100 justify-content-center" style="border-color: var(--status-success); color: var(--status-success);">
                             <i class="bi bi-table"></i> Таблица оценок
                         </a>
-                        <a href="{% url 'classroom_core:course_delete' course.id %}" class="btn-add w-100 justify-content-center" style="border-color: #ff4757; color: #ff6b81;">
+                        <a href="{% url 'classroom_core:course_delete' course.id %}" class="btn-add w-100 justify-content-center" style="border-color: var(--status-danger); color: var(--status-danger-light);">
                             <i class="bi bi-trash"></i> Удалить курс
                         </a>
                     </div>

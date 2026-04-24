@@ -10,7 +10,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Хлебные крошки */
+    
    .custom-breadcrumb {
         background: var(--bg-overlay-10);
         padding: 0.8rem 1.2rem;
@@ -44,8 +44,8 @@
     }
     
    .custom-breadcrumb.breadcrumb-item a:hover {
-        color: #6a5acd;
-        text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
+        color: var(--accent-primary);
+        text-shadow: 0 0 8px var(--accent-glow-strong);
     }
     
    .custom-breadcrumb.breadcrumb-item.active {
@@ -54,12 +54,12 @@
     }
     
    .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
-        color: #6a5acd;
+        color: var(--accent-primary);
         content: "›";
         font-size: 1.2rem;
     }
     
-    /* Заголовок */
+    
    .page-header {
         animation: headerFade 0.5s ease-out;
         margin-bottom: 2rem;
@@ -90,14 +90,14 @@
     }
     
    .page-title i {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         font-size: 2.2rem;
     }
     
    .course-name {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-weight: 600;
         background: var(--bg-overlay-15);
         padding: 0.3rem 1rem;
@@ -108,13 +108,13 @@
         border: 1px solid var(--bg-overlay-30);
     }
     
-    /* Карточка */
+    
    .enroll-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--bg-overlay-20);
+        box-shadow: 0 10px 30px var(--shadow-card), 0 0 20px var(--bg-overlay-20);
         transition: all 0.3s ease;
         animation: cardAppear 0.6s ease-out 0.2s both;
         overflow: hidden;
@@ -132,11 +132,11 @@
     }
     
    .enroll-card:hover {
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
+        box-shadow: 0 15px 40px var(--shadow-card-hover), 0 0 30px var(--border-accent-hover);
     }
     
    .card-header-gradient {
-        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
         border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 1.5rem;
     }
@@ -151,7 +151,7 @@
     }
     
    .card-header-gradient h5 i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.4rem;
     }
     
@@ -159,7 +159,7 @@
         padding: 1.5rem;
     }
     
-    /* Информация о курсе */
+    
    .course-info {
         background: var(--bg-overlay-10);
         border: 1px solid var(--bg-overlay-30);
@@ -178,7 +178,7 @@
             border-color: var(--bg-overlay-30);
         }
         50% {
-            border-color: rgba(106, 90, 205, 0.6);
+            border-color: var(--border-accent-hover);
         }
     }
     
@@ -190,7 +190,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.2rem;
     }
     
@@ -204,7 +204,7 @@
         font-size: 1.1rem;
     }
     
-    /* Секции */
+    
    .section-title {
         color: var(--text-muted);
         font-weight: 600;
@@ -217,7 +217,7 @@
     }
     
    .section-title i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.2rem;
     }
     
@@ -230,7 +230,7 @@
         margin-left: 0.5rem;
     }
     
-    /* Списки */
+    
    .items-list {
         background: var(--bg-item);
         border: 1px solid var(--bg-overlay-20);
@@ -255,7 +255,7 @@
     }
     
    .items-list::-webkit-scrollbar-thumb:hover {
-        background: rgba(106, 90, 205, 0.5);
+        background: var(--accent-glow-strong);
     }
     
    .item-row {
@@ -298,7 +298,7 @@
         width: 1.2rem;
         height: 1.2rem;
         cursor: pointer;
-        accent-color: #6a5acd;
+        accent-color: var(--accent-primary);
         transition: all 0.2s ease;
     }
     
@@ -309,7 +309,7 @@
    .item-avatar {
         width: 40px;
         height: 40px;
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -329,7 +329,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.2rem;
         margin-right: 1rem;
         min-width: 40px;
@@ -354,7 +354,7 @@
     }
     
    .item-details i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         margin-right: 0.2rem;
     }
     
@@ -367,7 +367,7 @@
         border: 1px solid var(--bg-overlay-30);
     }
     
-    /* Инструменты выделения */
+    
    .selection-tools {
         display: flex;
         gap: 0.5rem;
@@ -391,13 +391,13 @@
     
    .selection-btn:hover {
         background: var(--bg-overlay-25);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
         transform: translateY(-2px);
     }
     
    .selection-btn i {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
    .selected-counter {
@@ -413,16 +413,16 @@
     }
     
    .selected-counter i {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
    .selected-counter span {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-weight: 600;
         margin-left: 0.2rem;
     }
     
-    /* Кнопки */
+    
    .button-group {
         display: flex;
         gap: 1rem;
@@ -442,14 +442,14 @@
     }
     
    .btn-enroll {
-        background: linear-gradient(135deg, #4caf50, #45a049);
+        background: linear-gradient(135deg, var(--status-success), var(--status-success));
         border: none;
         border-radius: 12px;
         padding: 0.8rem 2rem;
         font-weight: 600;
         color: white;
         transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        box-shadow: 0 5px 15px var(--status-success-border);
         position: relative;
         overflow: hidden;
         flex: 1;
@@ -462,8 +462,8 @@
     
    .btn-enroll:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
-        background: linear-gradient(135deg, #45a049, #4caf50);
+        box-shadow: 0 8px 25px var(--status-success-shadow);
+        background: linear-gradient(135deg, var(--status-success), var(--status-success));
         color: white;
     }
     
@@ -475,7 +475,7 @@
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--shimmer-overlay);
         transform: translate(-50%, -50%);
         transition: width 0.6s, height 0.6s;
     }
@@ -495,7 +495,7 @@
     
    .btn-cancel {
         background: var(--bg-overlay-20);
-        border: 1px solid rgba(106, 90, 205, 0.5);
+        border: 1px solid var(--accent-glow-strong);
         border-radius: 12px;
         padding: 0.8rem 2rem;
         font-weight: 600;
@@ -512,10 +512,10 @@
     
    .btn-cancel:hover {
         background: var(--bg-overlay-30);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+        box-shadow: 0 5px 15px var(--border-accent-hover);
     }
     
    .btn-cancel i {
@@ -526,16 +526,16 @@
         transform: rotate(90deg);
     }
     
-    /* Пустые состояния */
+    
    .empty-state {
         text-align: center;
         padding: 2rem;
-        color: #8080b0;
+        color: var(--text-disabled);
     }
     
    .empty-state i {
         font-size: 2.5rem;
-        color: #6a5acd;
+        color: var(--accent-primary);
         margin-bottom: 0.5rem;
         opacity: 0.5;
     }
@@ -545,7 +545,7 @@
         font-size: 0.95rem;
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-enroll {
             padding: 1rem 0.5rem;
@@ -614,7 +614,7 @@
 
 <div class="theme-enroll">
     <div class="container">
-        <!-- Заголовок и хлебные крошки -->
+        
         <div class="page-header">
             <h1 class="page-title">
                 <i class="bi bi-person-plus-fill"></i>
@@ -656,7 +656,7 @@
                     </div>
                     
                     <div class="card-body-custom">
-                        <!-- Информация о курсе -->
+                        
                         <div class="course-info">
                             <div class="course-info-icon">
                                 <i class="bi bi-book-fill"></i>
@@ -671,7 +671,7 @@
                         <form method="post" id="enrollForm">
                             {% csrf_token %}
                             
-                            <!-- Инструменты выделения -->
+                            
                             <div class="selection-tools">
                                 <span class="selection-btn" onclick="selectAll('student')">
                                     <i class="bi bi-check-all"></i> Все студенты
@@ -688,7 +688,7 @@
                                 </span>
                             </div>
                             
-                            <!-- Индивидуальные студенты -->
+                            
                             <div class="mb-4">
                                 <div class="section-title">
                                     <i class="bi bi-person"></i>
@@ -739,7 +739,7 @@
                                 </div>
                             </div>
 
-                            <!-- Группы студентов -->
+                            
                             <div class="mb-4">
                                 <div class="section-title">
                                     <i class="bi bi-people"></i>
@@ -784,7 +784,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Кнопки -->
+                            
                             <div class="button-group">
                                 <button type="submit" class="btn-enroll">
                                     <i class="bi bi-person-plus"></i>
@@ -824,10 +824,10 @@
         // Подсветка счетчика
         const counter = document.getElementById('selectedCounter');
         if(count > 0) {
-            counter.style.background = 'rgba(76, 175, 80, 0.2)';
-            counter.style.borderColor = '#4caf50';
+            counter.style.background = 'var(--status-success-bg)';
+            counter.style.borderColor = 'var(--status-success)';
         } else {
-            counter.style.background = 'rgba(106, 90, 205, 0.2)';
+            counter.style.background = 'var(--bg-overlay-20)';
             counter.style.borderColor = '';
         }
     }

@@ -20,10 +20,10 @@ def create_course_chat(sender, instance, created, **kwargs):
     Автоматическое создание чата при создании курса
     """
     if created:
-        # Проверяем, нет ли уже чата для этого курса
+                                                    
         existing_chat = ChatRoom.objects.filter(course=instance, room_type='course').first()
         if not existing_chat:
-            # Создаем чат комнату для курса
+                                           
             room = ChatRoom.objects.create(
                 name=f'Чат курса: {instance.title}',
                 room_type='course',
@@ -31,7 +31,7 @@ def create_course_chat(sender, instance, created, **kwargs):
                 created_by=instance.instructor
             )
             
-            # Добавляем всех участников курса
+                                             
             participants = set()
             participants.add(instance.instructor)
             participants.update(instance.teaching_assistants.all())
@@ -44,15 +44,15 @@ def update_course_chat_on_student_change(sender, instance, action, pk_set, **kwa
     Обновление чата при добавлении/удалении студентов из курса
     """
     if action in ['post_add', 'post_remove']:
-        # Находим чат курса
+                           
         chat_room = ChatRoom.objects.filter(course=instance, room_type='course').first()
         
         if chat_room:
             if action == 'post_add':
-                # Добавляем новых студентов в чат
+                                                 
                 chat_room.participants.add(*pk_set)
             elif action == 'post_remove':
-                # Удаляем студентов из чата
+                                           
                 chat_room.participants.remove(*pk_set)
 
 @receiver(m2m_changed, sender=Course.teaching_assistants.through)
@@ -61,15 +61,15 @@ def update_course_chat_on_ta_change(sender, instance, action, pk_set, **kwargs):
     Обновление чата при добавлении/удалении помощников преподавателя
     """
     if action in ['post_add', 'post_remove']:
-        # Находим чат курса
+                           
         chat_room = ChatRoom.objects.filter(course=instance, room_type='course').first()
         
         if chat_room:
             if action == 'post_add':
-                # Добавляем новых помощников в чат
+                                                  
                 chat_room.participants.add(*pk_set)
             elif action == 'post_remove':
-                # Удаляем помощников из чата
+                                            
                 chat_room.participants.remove(*pk_set)
 
 @receiver(m2m_changed, sender=Course.student_groups.through)
@@ -78,11 +78,11 @@ def update_course_chat_on_group_change(sender, instance, action, pk_set, **kwarg
     Обновление чата при добавлении/удалении групп студентов из курса
     """
     if action == 'post_add':
-        # Находим чат курса
+                           
         chat_room = ChatRoom.objects.filter(course=instance, room_type='course').first()
         
         if chat_room:
-            # Добавляем всех студентов из новых групп в чат
+                                                           
             from classroom_core.models import StudentGroup
             for group_id in pk_set:
                 try:

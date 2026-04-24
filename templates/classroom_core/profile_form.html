@@ -10,7 +10,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Хлебные крошки */
+    
    .custom-breadcrumb {
         background: var(--bg-overlay-10);
         padding: 0.8rem 1.2rem;
@@ -44,8 +44,8 @@
     }
     
    .custom-breadcrumb.breadcrumb-item a:hover {
-        color: #6a5acd;
-        text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
+        color: var(--accent-primary);
+        text-shadow: 0 0 8px var(--accent-glow-strong);
     }
     
    .custom-breadcrumb.breadcrumb-item.active {
@@ -54,12 +54,12 @@
     }
     
    .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
-        color: #6a5acd;
+        color: var(--accent-primary);
         content: "›";
         font-size: 1.2rem;
     }
     
-    /* Заголовок */
+    
    .page-header {
         animation: headerFade 0.5s ease-out;
     }
@@ -89,19 +89,19 @@
     }
     
    .page-title i {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         font-size: 2rem;
     }
     
-    /* Карточка формы */
+    
    .form-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--bg-overlay-20);
+        box-shadow: 0 10px 30px var(--shadow-card), 0 0 20px var(--bg-overlay-20);
         transition: all 0.3s ease;
         animation: cardAppear 0.6s ease-out 0.2s both;
         overflow: hidden;
@@ -119,11 +119,11 @@
     }
     
    .form-card:hover {
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
+        box-shadow: 0 15px 40px var(--shadow-card-hover), 0 0 30px var(--border-accent-hover);
     }
     
    .card-header-gradient {
-        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
         border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 1.5rem;
     }
@@ -138,7 +138,7 @@
     }
     
    .card-header-gradient h5 i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.5rem;
     }
     
@@ -146,7 +146,7 @@
         padding: 2rem;
     }
     
-    /* Поля формы */
+    
    .form-group {
         margin-bottom: 1.8rem;
         animation: fieldAppear 0.5s ease-out;
@@ -182,19 +182,19 @@
     }
     
    .form-label i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.1rem;
     }
     
    .form-label.required {
-        color: #ff6b81;
+        color: var(--status-danger-light);
         margin-left: 0.3rem;
         font-size: 1.2rem;
     }
     
-    /* Стили для полей ввода */
+    
    .custom-input {
-        background: rgba(20, 20, 35, 0.8);
+        background: var(--bg-input);
         border: 2px solid var(--bg-overlay-30);
         border-radius: 12px;
         padding: 0.8rem 1.2rem;
@@ -206,19 +206,19 @@
     
    .custom-input:focus {
         outline: none;
-        border-color: #6a5acd;
-        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2), 0 0 20px var(--bg-overlay-30);
-        background: rgba(30, 30, 50, 0.9);
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 4px var(--bg-overlay-20), 0 0 20px var(--bg-overlay-30);
+        background: var(--bg-item-hover);
         transform: translateY(-2px);
     }
     
    .custom-input:hover {
-        border-color: rgba(106, 90, 205, 0.6);
+        border-color: var(--border-accent-hover);
     }
     
-    /* Стили для select */
+    
    .custom-select {
-        background: rgba(20, 20, 35, 0.8);
+        background: var(--bg-input);
         border: 2px solid var(--bg-overlay-30);
         border-radius: 12px;
         padding: 0.8rem 1.2rem;
@@ -235,12 +235,12 @@
     
    .custom-select:focus {
         outline: none;
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         box-shadow: 0 0 0 4px var(--bg-overlay-20);
     }
     
    .custom-select:hover {
-        border-color: rgba(106, 90, 205, 0.6);
+        border-color: var(--border-accent-hover);
     }
     
    .custom-select option {
@@ -248,7 +248,7 @@
         color: var(--text-white);
     }
     
-    /* File input для аватара */
+    
    .avatar-container {
         display: flex;
         align-items: center;
@@ -261,14 +261,14 @@
         width: 80px;
         height: 80px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
         font-size: 2rem;
         font-weight: 600;
-        border: 3px solid rgba(106, 90, 205, 0.5);
+        border: 3px solid var(--accent-glow-strong);
         box-shadow: 0 5px 15px var(--bg-overlay-30);
         position: relative;
         overflow: hidden;
@@ -283,7 +283,7 @@
     
    .avatar-preview i {
         font-size: 2.5rem;
-        color: rgba(255, 255, 255, 0.9);
+        color: var(--shimmer-overlay);
     }
     
    .avatar-upload {
@@ -304,8 +304,8 @@
     }
     
    .file-label {
-        background: rgba(20, 20, 35, 0.8);
-        border: 2px dashed rgba(106, 90, 205, 0.4);
+        background: var(--bg-input);
+        border: 2px dashed var(--border-accent-hover);
         border-radius: 12px;
         padding: 1rem;
         display: flex;
@@ -320,13 +320,13 @@
     }
     
    .file-label:hover {
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         background: var(--bg-overlay-10);
         transform: translateY(-2px);
     }
     
    .file-label i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.5rem;
         transition: transform 0.3s ease;
     }
@@ -336,14 +336,14 @@
     }
     
    .file-name {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-weight: 600;
         margin-left: 0.5rem;
     }
     
-    /* Подсказки */
+    
    .form-text {
-        color: #8080b0;
+        color: var(--text-disabled);
         font-size: 0.85rem;
         margin-top: 0.3rem;
         display: flex;
@@ -352,11 +352,11 @@
     }
     
    .form-text i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 0.9rem;
     }
     
-    /* Индикатор обязательных полей */
+    
    .required-note {
         color: var(--text-secondary);;
         font-size: 0.9rem;
@@ -369,10 +369,10 @@
     }
     
    .required-note i {
-        color: #ff6b81;
+        color: var(--status-danger-light);
     }
     
-    /* Кнопки */
+    
    .button-group {
         display: flex;
         gap: 1rem;
@@ -392,7 +392,7 @@
     }
     
    .btn-save {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 12px;
         padding: 0.8rem 2rem;
@@ -413,8 +413,8 @@
     
    .btn-save:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        box-shadow: 0 8px 25px var(--accent-glow-strong);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
         color: white;
     }
     
@@ -426,7 +426,7 @@
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--shimmer-overlay);
         transform: translate(-50%, -50%);
         transition: width 0.6s, height 0.6s;
     }
@@ -446,7 +446,7 @@
     
    .btn-cancel {
         background: var(--bg-overlay-20);
-        border: 1px solid rgba(106, 90, 205, 0.5);
+        border: 1px solid var(--accent-glow-strong);
         border-radius: 12px;
         padding: 0.8rem 2rem;
         font-weight: 600;
@@ -463,10 +463,10 @@
     
    .btn-cancel:hover {
         background: var(--bg-overlay-30);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+        box-shadow: 0 5px 15px var(--border-accent-hover);
     }
     
    .btn-cancel i {
@@ -477,7 +477,7 @@
         transform: rotate(90deg);
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-profile-edit {
             padding: 1rem 0.5rem;
@@ -529,7 +529,7 @@
 
 <div class="theme-profile-edit">
     <div class="container">
-        <!-- Заголовок и хлебные крошки -->
+        
         <div class="page-header mb-4">
             <h1 class="page-title">
                 <i class="bi bi-person-circle"></i>
@@ -563,7 +563,7 @@
                         <form method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             
-                            <!-- Роль -->
+                            
                             <div class="form-group">
                                 <label for="id_role" class="form-label">
                                     <i class="bi bi-person-badge"></i>
@@ -580,7 +580,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Кафедра/Отдел -->
+                            
                             <div class="form-group">
                                 <label for="id_department" class="form-label">
                                     <i class="bi bi-building"></i>
@@ -594,7 +594,7 @@
                                        placeholder="Например: Кафедра информатики">
                             </div>
                             
-                            <!-- Должность -->
+                            
                             <div class="form-group">
                                 <label for="id_position" class="form-label">
                                     <i class="bi bi-briefcase"></i>
@@ -608,7 +608,7 @@
                                        placeholder="Например: Доцент">
                             </div>
                             
-                            <!-- Группа для студентов -->
+                            
                             <div class="form-group">
                                 <label for="id_student_group" class="form-label">
                                     <i class="bi bi-people"></i>
@@ -626,7 +626,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Телефон -->
+                            
                             <div class="form-group">
                                 <label for="id_phone" class="form-label">
                                     <i class="bi bi-telephone"></i>
@@ -640,7 +640,7 @@
                                        placeholder="+7(999) 123-45-67">
                             </div>
                             
-                            <!-- Аватар -->
+                            
                             <div class="form-group">
                                 <label class="form-label">
                                     <i class="bi bi-image"></i>
@@ -676,13 +676,13 @@
                                 </div>
                             </div>
                             
-                            <!-- Обязательные поля -->
+                            
                             <div class="required-note">
                                 <i class="bi bi-asterisk"></i>
                                 Поля, отмеченные звездочкой, обязательны для заполнения
                             </div>
                             
-                            <!-- Кнопки -->
+                            
                             <div class="button-group">
                                 <button type="submit" class="btn-save">
                                     <i class="bi bi-save"></i>
@@ -714,8 +714,8 @@
             fileNameDisplay.style.display = 'inline';
             
             // Визуальная обратная связь
-            fileLabel.style.borderColor = '#4caf50';
-            fileLabel.style.background = 'rgba(76, 175, 80, 0.1)';
+            fileLabel.style.borderColor = 'var(--status-success)';
+            fileLabel.style.background = 'var(--status-success-bg)';
             
             // Предпросмотр изображения
             if(file.type.startsWith('image/')) {

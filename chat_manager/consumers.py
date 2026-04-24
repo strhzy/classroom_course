@@ -44,9 +44,9 @@ class ChatConsumer(WebsocketConsumer):
         user = User.objects.get(id=self.scope['user'].id)
         room = ChatRoom.objects.get(id=self.room_id)
 
-        # Если есть файл, создаем сообщение с файлом
+                                                    
         if file_url and file_name:
-            # Файл уже загружен через view, просто отправляем уведомление
+                                                                         
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
@@ -63,7 +63,7 @@ class ChatConsumer(WebsocketConsumer):
                 }
             )
         else:
-            # Обычное текстовое сообщение
+                                         
             msg = Message.objects.create(
                 room=room,
                 user=user,

@@ -10,7 +10,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Заголовок */
+    
    .page-header {
         animation: headerSlide 0.5s ease-out;
     }
@@ -39,14 +39,14 @@
     }
     
    .page-title i {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-right: 0.8rem;
         font-size: 2.5rem;
     }
     
-    /* Фильтр */
+    
    .filter-section {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -55,7 +55,7 @@
         padding: 1.5rem;
         margin-bottom: 2rem;
         animation: filterAppear 0.6s ease-out 0.1s both;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 5px 20px var(--shadow-item);
     }
     
     @keyframes filterAppear {
@@ -78,13 +78,13 @@
     }
     
    .filter-label i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         margin-right: 0.5rem;
         font-size: 1.2rem;
     }
     
    .custom-select {
-        background: rgba(20, 20, 35, 0.8);
+        background: var(--bg-input);
         border: 2px solid var(--bg-overlay-30);
         border-radius: 10px;
         padding: 0.7rem 1rem;
@@ -97,12 +97,12 @@
     
    .custom-select:focus {
         outline: none;
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         box-shadow: 0 0 0 4px var(--bg-overlay-20);
     }
     
    .custom-select:hover {
-        border-color: rgba(106, 90, 205, 0.6);
+        border-color: var(--border-accent-hover);
     }
     
    .custom-select option {
@@ -111,7 +111,7 @@
     }
     
    .btn-filter {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 10px;
         padding: 0.7rem 1.5rem;
@@ -126,8 +126,8 @@
     
    .btn-filter:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        box-shadow: 0 8px 25px var(--accent-glow-strong);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
     }
     
    .btn-filter::after {
@@ -138,7 +138,7 @@
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--shimmer-overlay);
         transform: translate(-50%, -50%);
         transition: width 0.6s, height 0.6s;
     }
@@ -148,7 +148,7 @@
         height: 300px;
     }
     
-    /* Карточки объявлений */
+    
    .announcement-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -169,7 +169,7 @@
         left: 0;
         right: 0;
         height: 3px;
-        background: linear-gradient(90deg, #6a5acd, #4a90e2, #ff6b81, #4a90e2, #6a5acd);
+        background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--status-danger-light), var(--accent-secondary), var(--accent-primary));
         transform: translateX(-100%);
         transition: transform 0.6s ease;
     }
@@ -180,8 +180,8 @@
     
    .announcement-card:hover {
         transform: translateY(-8px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px var(--bg-overlay-30);
-        border-color: rgba(106, 90, 205, 0.6);
+        box-shadow: 0 15px 35px var(--shadow-card), 0 0 25px var(--bg-overlay-30);
+        border-color: var(--border-accent-hover);
     }
     
     @keyframes cardAppear {
@@ -220,7 +220,7 @@
     }
     
    .pinned-badge {
-        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        background: linear-gradient(135deg, var(--status-danger), var(--status-danger-light));
         border: none;
         padding: 0.3rem 0.8rem;
         border-radius: 50px;
@@ -230,7 +230,7 @@
         margin-left: 0.8rem;
         white-space: nowrap;
         animation: pulse 2s infinite;
-        box-shadow: 0 2px 8px rgba(255, 71, 87, 0.3);
+        box-shadow: 0 2px 8px var(--status-danger-border);
     }
     
     @keyframes pulse {
@@ -264,21 +264,21 @@
     }
     
    .announcement-date {
-        color: #8080b0;
+        color: var(--text-disabled);
         font-size: 0.9rem;
         display: flex;
         align-items: center;
     }
     
    .announcement-date i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         margin-right: 0.3rem;
         font-size: 0.9rem;
     }
     
    .btn-view {
         background: var(--bg-overlay-15);
-        border: 1px solid rgba(106, 90, 205, 0.4);
+        border: 1px solid var(--border-accent-hover);
         border-radius: 8px;
         padding: 0.4rem 1.2rem;
         color: var(--text-muted);
@@ -292,7 +292,7 @@
     
    .btn-view:hover {
         background: var(--bg-overlay-30);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
         transform: translateX(3px);
     }
@@ -306,7 +306,7 @@
         transform: translateX(3px);
     }
     
-    /* Пустое состояние */
+    
    .empty-state {
         text-align: center;
         padding: 4rem 1rem;
@@ -326,7 +326,7 @@
     
    .empty-icon {
         font-size: 5rem;
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 1.5rem;
@@ -356,7 +356,7 @@
     }
     
    .btn-create {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 12px;
         padding: 0.8rem 2rem;
@@ -373,8 +373,8 @@
     
    .btn-create:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        box-shadow: 0 8px 25px var(--accent-glow-strong);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
         color: white;
     }
     
@@ -387,7 +387,7 @@
         transform: rotate(90deg);
     }
     
-    /* Пагинация */
+    
    .custom-pagination {
         margin-top: 2rem;
         animation: paginationAppear 0.6s ease-out 0.5s both;
@@ -415,26 +415,26 @@
     
    .pagination.page-link:hover {
         background: var(--bg-overlay-30);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
         transform: translateY(-2px);
         box-shadow: 0 5px 15px var(--bg-overlay-30);
     }
     
    .pagination.page-item.active.page-link {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
-        border-color: #6a5acd;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border-color: var(--accent-primary);
         color: white;
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+        box-shadow: 0 5px 15px var(--border-accent-hover);
     }
     
    .pagination.page-item.disabled.page-link {
-        background: rgba(30, 30, 46, 0.5);
+        background: var(--border-accent-hover);
         border-color: var(--bg-overlay-10);
-        color: #8080b0;
+        color: var(--text-disabled);
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-announcements {
             padding: 1rem 0.5rem;
@@ -476,7 +476,7 @@
 
 <div class="theme-announcements">
     <div class="container">
-        <!-- Заголовок -->
+        
         <div class="page-header mb-4">
             <h1 class="page-title">
                 <i class="bi bi-megaphone-fill"></i>
@@ -484,7 +484,7 @@
             </h1>
         </div>
 
-        <!-- Фильтр по курсам -->
+        
         <div class="filter-section">
             <div class="filter-label">
                 <i class="bi bi-funnel-fill"></i>
@@ -509,7 +509,7 @@
             </form>
         </div>
 
-        <!-- Список объявлений -->
+        
         <div class="row g-4">
             {% for announcement in page_obj %}
             <div class="col-md-6 col-lg-4 mb-4">
@@ -560,7 +560,7 @@
             {% endfor %}
         </div>
 
-        <!-- Пагинация -->
+        
         {% if page_obj.has_other_pages %}
         <nav aria-label="Страницы" class="custom-pagination">
             <ul class="pagination justify-content-center">

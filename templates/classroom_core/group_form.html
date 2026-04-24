@@ -12,7 +12,7 @@
         align-items: center;
     }
     
-    /* Заголовок */
+    
    .page-header {
         animation: headerSlide 0.5s ease-out;
         margin-bottom: 2rem;
@@ -43,19 +43,19 @@
     }
     
    .page-title i {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         font-size: 2.2rem;
     }
     
-    /* Карточка формы */
+    
    .form-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--bg-overlay-20);
+        box-shadow: 0 10px 30px var(--shadow-card), 0 0 20px var(--bg-overlay-20);
         transition: all 0.3s ease;
         animation: cardAppear 0.6s ease-out 0.2s both;
         overflow: hidden;
@@ -73,11 +73,11 @@
     }
     
    .form-card:hover {
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
+        box-shadow: 0 15px 40px var(--shadow-card-hover), 0 0 30px var(--border-accent-hover);
     }
     
    .card-header-gradient {
-        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
         border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 1.5rem;
     }
@@ -92,7 +92,7 @@
     }
     
    .card-header-gradient h5 i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.4rem;
     }
     
@@ -100,7 +100,7 @@
         padding: 2rem;
     }
     
-    /* Поля формы */
+    
    .form-group {
         margin-bottom: 1.8rem;
         animation: fieldAppear 0.5s ease-out;
@@ -132,19 +132,19 @@
     }
     
    .form-label i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.1rem;
     }
     
    .form-label.required {
-        color: #ff6b81;
+        color: var(--status-danger-light);
         margin-left: 0.3rem;
         font-size: 1.2rem;
     }
     
-    /* Стили для полей ввода */
+    
    .custom-input {
-        background: rgba(20, 20, 35, 0.8);
+        background: var(--bg-input);
         border: 2px solid var(--bg-overlay-30);
         border-radius: 12px;
         padding: 0.8rem 1.2rem;
@@ -156,14 +156,14 @@
     
    .custom-input:focus {
         outline: none;
-        border-color: #6a5acd;
-        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2), 0 0 20px var(--bg-overlay-30);
-        background: rgba(30, 30, 50, 0.9);
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 4px var(--bg-overlay-20), 0 0 20px var(--bg-overlay-30);
+        background: var(--bg-item-hover);
         transform: translateY(-2px);
     }
     
    .custom-input:hover {
-        border-color: rgba(106, 90, 205, 0.6);
+        border-color: var(--border-accent-hover);
     }
     
     textarea.custom-input {
@@ -172,9 +172,9 @@
         line-height: 1.6;
     }
     
-    /* Подсказки */
+    
    .form-text {
-        color: #8080b0;
+        color: var(--text-disabled);
         font-size: 0.85rem;
         margin-top: 0.3rem;
         display: flex;
@@ -183,11 +183,11 @@
     }
     
    .form-text i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 0.9rem;
     }
     
-    /* Индикатор обязательных полей */
+    
    .required-note {
         color: var(--text-secondary);;
         font-size: 0.9rem;
@@ -200,10 +200,10 @@
     }
     
    .required-note i {
-        color: #ff6b81;
+        color: var(--status-danger-light);
     }
     
-    /* Кнопки */
+    
    .button-group {
         display: flex;
         gap: 1rem;
@@ -223,7 +223,7 @@
     }
     
    .btn-save {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 12px;
         padding: 0.8rem 2rem;
@@ -244,8 +244,8 @@
     
    .btn-save:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        box-shadow: 0 8px 25px var(--accent-glow-strong);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
         color: white;
     }
     
@@ -257,7 +257,7 @@
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--shimmer-overlay);
         transform: translate(-50%, -50%);
         transition: width 0.6s, height 0.6s;
     }
@@ -277,7 +277,7 @@
     
    .btn-cancel {
         background: var(--bg-overlay-20);
-        border: 1px solid rgba(106, 90, 205, 0.5);
+        border: 1px solid var(--accent-glow-strong);
         border-radius: 12px;
         padding: 0.8rem 2rem;
         font-weight: 600;
@@ -294,10 +294,10 @@
     
    .btn-cancel:hover {
         background: var(--bg-overlay-30);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+        box-shadow: 0 5px 15px var(--border-accent-hover);
     }
     
    .btn-cancel i {
@@ -308,7 +308,7 @@
         transform: rotate(90deg);
     }
     
-    /* Декоративные элементы */
+    
    .form-decoration {
         position: relative;
     }
@@ -320,12 +320,12 @@
         left: -10px;
         width: 50px;
         height: 50px;
-        background: radial-gradient(circle, rgba(106, 90, 205, 0.2) 0%, transparent 70%);
+        background: radial-gradient(circle, var(--bg-overlay-20) 0%, transparent 70%);
         border-radius: 50%;
         z-index: -1;
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-group-form {
             padding: 1rem 0.5rem;
@@ -367,7 +367,7 @@
         }
     }
     
-    /* Анимация для иконки группы */
+    
    .group-icon-animation {
         animation: floatIcon 3s infinite ease-in-out;
     }
@@ -384,7 +384,7 @@
 
 <div class="theme-group-form">
     <div class="container">
-        <!-- Заголовок -->
+        
         <div class="page-header">
             <h1 class="page-title">
                 <i class="bi bi-people-fill group-icon-animation"></i>
@@ -406,7 +406,7 @@
                         <form method="post">
                             {% csrf_token %}
                             
-                            <!-- Название группы -->
+                            
                             <div class="form-group">
                                 <label for="id_name" class="form-label">
                                     <i class="bi bi-tag"></i>
@@ -426,7 +426,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Описание группы -->
+                            
                             <div class="form-group">
                                 <label for="id_description" class="form-label">
                                     <i class="bi bi-card-text"></i>
@@ -443,13 +443,13 @@
                                 </div>
                             </div>
                             
-                            <!-- Обязательные поля -->
+                            
                             <div class="required-note">
                                 <i class="bi bi-asterisk"></i>
                                 Поля, отмеченные звездочкой, обязательны для заполнения
                             </div>
                             
-                            <!-- Кнопки -->
+                            
                             <div class="button-group">
                                 <button type="submit" class="btn-save">
                                     <i class="bi bi-save"></i>
@@ -464,8 +464,8 @@
                     </div>
                 </div>
                 
-                <!-- Дополнительная информация -->
-                <div class="text-center mt-3" style="color: #8080b0; font-size: 0.9rem;">
+                
+                <div class="text-center mt-3" style="color: var(--text-disabled); font-size: 0.9rem;">
                     <i class="bi bi-info-circle me-1"></i>
                     После создания группы вы сможете добавить в нее студентов
                 </div>
@@ -487,9 +487,9 @@
         if(requiredInput) {
             requiredInput.addEventListener('blur', function() {
                 if(this.value.trim() === '') {
-                    this.style.borderColor = '#ff6b81';
+                    this.style.borderColor = 'var(--status-danger-light)';
                 } else {
-                    this.style.borderColor = 'rgba(106, 90, 205, 0.6)';
+                    this.style.borderColor = 'var(--border-accent-hover)';
                 }
             });
         }

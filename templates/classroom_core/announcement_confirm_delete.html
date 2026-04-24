@@ -15,13 +15,13 @@
         backdrop-filter: blur(10px);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--bg-overlay-30);
+        box-shadow: 0 10px 30px var(--shadow-card), 0 0 20px var(--bg-overlay-30);
         transition: all 0.3s ease;
         animation: cardAppear 0.5s ease-out;
     }
     
    .delete-card:hover {
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.5);
+        box-shadow: 0 15px 40px var(--shadow-card-hover), 0 0 30px var(--accent-glow-strong);
         transform: translateY(-5px);
     }
     
@@ -38,22 +38,22 @@
     
    .warning-icon {
         font-size: 4rem;
-        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        background: linear-gradient(135deg, var(--status-danger), var(--status-danger-light));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         display: inline-block;
         animation: pulseWarning 2s infinite;
-        filter: drop-shadow(0 0 15px rgba(255, 71, 87, 0.5));
+        filter: drop-shadow(0 0 15px var(--text-glow-danger));
     }
     
     @keyframes pulseWarning {
         0%, 100% {
             transform: scale(1);
-            filter: drop-shadow(0 0 15px rgba(255, 71, 87, 0.5));
+            filter: drop-shadow(0 0 15px var(--text-glow-danger));
         }
         50% {
             transform: scale(1.1);
-            filter: drop-shadow(0 0 25px rgba(255, 71, 87, 0.8));
+            filter: drop-shadow(0 0 25px var(--text-glow-danger));
         }
     }
     
@@ -61,7 +61,7 @@
         color: var(--text-white);
         font-size: 2rem;
         font-weight: 600;
-        text-shadow: 0 0 10px rgba(106, 90, 205, 0.5);
+        text-shadow: 0 0 10px var(--accent-glow-strong);
         margin-bottom: 1.5rem;
         background: linear-gradient(135deg, var(--text-white), var(--text-muted));
         background-clip: text;
@@ -70,7 +70,7 @@
     
    .announcement-alert {
         background: var(--bg-overlay-15);
-        border: 1px solid rgba(106, 90, 205, 0.4);
+        border: 1px solid var(--border-accent-hover);
         border-radius: 12px;
         padding: 1.2rem;
         margin: 1.5rem 0;
@@ -80,12 +80,12 @@
     
     @keyframes glowPulse {
         0%, 100% {
-            border-color: rgba(106, 90, 205, 0.4);
+            border-color: var(--border-accent-hover);
             box-shadow: 0 0 10px var(--bg-overlay-20);
         }
         50% {
-            border-color: rgba(106, 90, 205, 0.8);
-            box-shadow: 0 0 20px rgba(106, 90, 205, 0.4);
+            border-color: var(--border-accent-hover);
+            box-shadow: 0 0 20px var(--border-accent-hover);
         }
     }
     
@@ -105,22 +105,22 @@
     }
     
    .btn-delete {
-        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        background: linear-gradient(135deg, var(--status-danger), var(--status-danger-light));
         border: none;
         border-radius: 12px;
         padding: 0.8rem 2rem;
         font-weight: 600;
         color: white;
         transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+        box-shadow: 0 5px 15px var(--status-danger-border);
         position: relative;
         overflow: hidden;
     }
     
    .btn-delete:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(255, 71, 87, 0.5);
-        background: linear-gradient(135deg, #ff6b81, #ff4757);
+        box-shadow: 0 8px 25px var(--text-glow-danger);
+        background: linear-gradient(135deg, var(--status-danger-light), var(--status-danger));
     }
     
    .btn-delete:active {
@@ -135,7 +135,7 @@
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--shimmer-overlay);
         transform: translate(-50%, -50%);
         transition: width 0.6s, height 0.6s;
     }
@@ -147,7 +147,7 @@
     
    .btn-cancel {
         background: var(--bg-overlay-20);
-        border: 1px solid rgba(106, 90, 205, 0.5);
+        border: 1px solid var(--accent-glow-strong);
         border-radius: 12px;
         padding: 0.8rem 2rem;
         font-weight: 600;
@@ -160,10 +160,10 @@
     
    .btn-cancel:hover {
         background: var(--bg-overlay-30);
-        border-color: rgba(106, 90, 205, 0.8);
+        border-color: var(--border-accent-hover);
         color: var(--text-white);
         transform: translateY(-2px);
-        box-shadow: 0 5px 20px rgba(106, 90, 205, 0.4);
+        box-shadow: 0 5px 20px var(--border-accent-hover);
     }
     
    .btn-cancel:active {
@@ -184,7 +184,7 @@
         min-width: 140px;
     }
     
-    /* Мобильная адаптация */
+    
     @media(max-width: 576px) {
        .theme {
             padding: 1rem 0.5rem;
@@ -226,7 +226,7 @@
         }
     }
     
-    /* Планшеты */
+    
     @media(min-width: 577px) and(max-width: 768px) {
        .delete-card {
             margin: 0 1rem;
@@ -237,7 +237,7 @@
         }
     }
     
-    /* Большие экраны */
+    
     @media(min-width: 1400px) {
        .delete-card {
             max-width: 700px;

@@ -25,7 +25,7 @@
             backdrop-filter: blur(10px);
             border: 1px solid var(--bg-overlay-30);
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px var(--bg-overlay-30);
+            box-shadow: 0 20px 40px var(--shadow-card), 0 0 30px var(--bg-overlay-30);
             animation: cardAppear 0.8s ease-out;
             overflow: hidden;
             position: relative;
@@ -38,7 +38,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #6a5acd, #4a90e2, #ff6b81, #4a90e2, #6a5acd);
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--status-danger-light), var(--accent-secondary), var(--accent-primary));
             background-size: 200% 100%;
             animation: borderFlow 4s linear infinite;
         }
@@ -68,7 +68,7 @@
        .logo {
             font-size: 4rem;
             margin-bottom: 1rem;
-            background: linear-gradient(135deg, #6a5acd, #4a90e2, #ff6b81);
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), var(--status-danger-light));
             background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: logoFloat 3s infinite ease-in-out;
@@ -91,7 +91,7 @@
             margin-bottom: 2rem;
         }
         
-        /* Форма */
+        
        .form-group {
             margin-bottom: 1.5rem;
             animation: fieldAppear 0.5s ease-out;
@@ -122,12 +122,12 @@
         }
         
        .form-label i {
-            color: #6a5acd;
+            color: var(--accent-primary);
             font-size: 1.1rem;
         }
         
        .form-control {
-            background: rgba(20, 20, 35, 0.8);
+            background: var(--bg-input);
             border: 2px solid var(--bg-overlay-30);
             border-radius: 12px;
             padding: 0.8rem 1.2rem;
@@ -139,24 +139,24 @@
         
        .form-control:focus {
             outline: none;
-            border-color: #6a5acd;
-            box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2), 0 0 20px var(--bg-overlay-30);
-            background: rgba(30, 30, 50, 0.9);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 4px var(--bg-overlay-20), 0 0 20px var(--bg-overlay-30);
+            background: var(--bg-item-hover);
             transform: translateY(-2px);
         }
         
        .form-control:hover {
-            border-color: rgba(106, 90, 205, 0.6);
+            border-color: var(--border-accent-hover);
         }
         
        .form-control::placeholder {
-            color: #8080b0;
+            color: var(--text-disabled);
             opacity: 0.7;
         }
         
-        /* Ошибки */
+        
        .error-message {
-            color: #ff6b81;
+            color: var(--status-danger-light);
             font-size: 0.85rem;
             margin-top: 0.3rem;
             display: flex;
@@ -168,12 +168,12 @@
             font-size: 1rem;
         }
         
-        /* Alert */
+        
        .custom-alert {
-            background: rgba(255, 71, 87, 0.15);
-            border: 1px solid rgba(255, 71, 87, 0.4);
+            background: var(--status-danger-bg);
+            border: 1px solid var(--status-danger-border);
             border-radius: 12px;
-            color: #ffa0a8;
+            color: var(--status-danger-light);
             padding: 1rem;
             margin-bottom: 1.5rem;
             display: flex;
@@ -184,18 +184,18 @@
         
         @keyframes alertPulse {
             0%, 100% {
-                border-color: rgba(255, 71, 87, 0.4);
-                box-shadow: 0 0 15px rgba(255, 71, 87, 0.2);
+                border-color: var(--status-danger-border);
+                box-shadow: 0 0 15px var(--status-danger-bg);
             }
             50% {
-                border-color: rgba(255, 71, 87, 0.8);
-                box-shadow: 0 0 25px rgba(255, 71, 87, 0.4);
+                border-color: var(--text-glow-danger);
+                box-shadow: 0 0 25px var(--status-danger-border);
             }
         }
         
        .custom-alert i {
             font-size: 1.3rem;
-            color: #ff4757;
+            color: var(--status-danger);
         }
         
        .alert-close {
@@ -214,9 +214,9 @@
             transform: scale(1.2);
         }
         
-        /* Кнопка */
+        
        .btn-login {
-            background: linear-gradient(135deg, #6a5acd, #4a90e2);
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             border: none;
             border-radius: 12px;
             padding: 0.8rem 1.5rem;
@@ -248,8 +248,8 @@
         
        .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
-            background: linear-gradient(135deg, #4a90e2, #6a5acd);
+            box-shadow: 0 8px 25px var(--accent-glow-strong);
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
         }
         
        .btn-login::after {
@@ -260,7 +260,7 @@
             width: 0;
             height: 0;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
+            background: var(--shimmer-overlay);
             transform: translate(-50%, -50%);
             transition: width 0.6s, height 0.6s;
         }
@@ -278,11 +278,11 @@
             transform: translateX(5px);
         }
         
-        /* Футер */
+        
        .footer {
             margin-top: 2rem;
             text-align: center;
-            color: #8080b0;
+            color: var(--text-disabled);
             font-size: 0.9rem;
             animation: footerAppear 0.5s ease-out 0.5s both;
         }
@@ -297,7 +297,7 @@
         }
         
        .footer i {
-            color: #ff6b81;
+            color: var(--status-danger-light);
             animation: heartBeat 1.5s infinite;
         }
         
@@ -310,7 +310,7 @@
             }
         }
         
-        /* Декоративные элементы */
+        
        .background-effects {
             position: absolute;
             top: 0;
@@ -324,7 +324,7 @@
         
        .background-effects span {
             position: absolute;
-            background: radial-gradient(circle, rgba(106, 90, 205, 0.15) 0%, transparent 70%);
+            background: radial-gradient(circle, var(--bg-overlay-15) 0%, transparent 70%);
             border-radius: 50%;
         }
         
@@ -341,7 +341,7 @@
             height: 200px;
             bottom: -100px;
             left: -100px;
-            background: radial-gradient(circle, rgba(74, 144, 226, 0.15) 0%, transparent 70%);
+            background: radial-gradient(circle, var(--status-info-bg) 0%, transparent 70%);
             animation: float2 20s infinite reverse;
         }
         
@@ -355,7 +355,7 @@
             50% { transform: translate(-30px, -30px); }
         }
         
-        /* Адаптивность */
+        
         @media(max-width: 576px) {
            .card-content {
                 padding: 2rem 1.5rem;
@@ -380,7 +380,7 @@
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-5 col-xl-4">
                 <div class="login-card">
-                    <!-- Фоновые эффекты -->
+                    
                     <div class="background-effects">
                         <span></span>
                         <span></span>
@@ -388,7 +388,7 @@
                     
                     <div class="card-content">
                         <div class="text-center">
-                            <!-- Логотип -->
+                            
                             <div class="logo">
                                 <img src="{% static 'images/logo.png' %}" 
                                     alt="MeowCourse" 
@@ -396,11 +396,10 @@
                                     style="width: 240px; height: auto; object-fit: contain;">
                             </div>
 
-                            <!-- <h1 class="title">Classroom</h1> -->
                             <p class="subtitle">Войдите в свою учетную запись</p>
                         </div>
                         
-                        <!-- Ошибки -->
+                        
                         {% if form.errors %}
                         <div class="custom-alert" role="alert">
                             <i class="bi bi-exclamation-triangle-fill"></i>
@@ -411,7 +410,7 @@
                         </div>
                         {% endif %}
                         
-                        <!-- Форма -->
+                        
                         <form method="post">
                             {% csrf_token %}
                             
@@ -460,7 +459,7 @@
                             </button>
                         </form>
                         
-                        <!-- Футер -->
+                        
                         <div class="footer">
                             <small>
                                 <i class="bi bi-heart-fill"></i>

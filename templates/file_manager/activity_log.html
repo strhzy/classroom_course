@@ -10,7 +10,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Заголовок */
+    
    .page-header {
         margin-bottom: 2rem;
     }
@@ -28,25 +28,24 @@
     }
     
    .page-title i {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         font-size: 2.5rem;
     }
     
-    /* Карточка фильтров */
    .filters-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 10px 30px var(--shadow-card);
         margin-bottom: 2rem;
         overflow: hidden;
     }
     
    .card-header-custom {
-        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
         border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 1.5rem;
     }
@@ -60,7 +59,7 @@
     }
     
    .card-header-custom h5 i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.3rem;
     }
     
@@ -68,7 +67,7 @@
         padding: 1.5rem;
     }
     
-    /* Форма фильтров */
+    
    .filter-label {
         color: var(--text-muted);
         font-weight: 600;
@@ -79,11 +78,11 @@
     }
     
    .filter-label i {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
    .custom-select {
-        background: rgba(20, 20, 35, 0.8);
+        background: var(--bg-input);
         border: 2px solid var(--bg-overlay-30);
         border-radius: 10px;
         padding: 0.7rem 1rem;
@@ -100,11 +99,11 @@
     
    .custom-select:focus {
         outline: none;
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
     }
     
    .custom-select:hover {
-        border-color: rgba(106, 90, 205, 0.6);
+        border-color: var(--border-accent-hover);
     }
     
    .custom-select option {
@@ -113,7 +112,7 @@
     }
     
    .btn-apply {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 10px;
         padding: 0.7rem 1.5rem;
@@ -128,20 +127,20 @@
     }
     
    .btn-apply:hover {
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
     }
     
-    /* Карточка с логом */
+    
    .log-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 10px 30px var(--shadow-card);
         overflow: hidden;
     }
     
-    /* Таблица */
+    
    .log-table {
         width: 100%;
         border-collapse: collapse;
@@ -175,7 +174,7 @@
         vertical-align: middle;
     }
     
-    /* Бейджи для типов активности */
+    
    .activity-badge {
         display: inline-flex;
         align-items: center;
@@ -188,42 +187,42 @@
     }
     
    .badge-upload {
-        background: rgba(76, 175, 80, 0.15);
-        color: #4caf50;
-        border: 1px solid #4caf50;
+        background: var(--status-success-bg);
+        color: var(--status-success);
+        border: 1px solid var(--status-success);
     }
     
    .badge-download {
-        background: rgba(33, 150, 243, 0.15);
-        color: #2196f3;
-        border: 1px solid #2196f3;
+        background: var(--status-info-bg);
+        color: var(--status-info);
+        border: 1px solid var(--status-info);
     }
     
    .badge-delete {
-        background: rgba(255, 71, 87, 0.15);
-        color: #ff6b81;
-        border: 1px solid #ff4757;
+        background: var(--status-danger-bg);
+        color: var(--status-danger-light);
+        border: 1px solid var(--status-danger);
     }
     
    .badge-edit {
-        background: rgba(255, 165, 2, 0.15);
-        color: #ffa502;
-        border: 1px solid #ffa502;
+        background: var(--status-warning-bg);
+        color: var(--status-warning);
+        border: 1px solid var(--status-warning);
     }
     
    .badge-view {
         background: var(--bg-overlay-15);
         color: var(--text-muted);
-        border: 1px solid #6a5acd;
+        border: 1px solid var(--accent-primary);
     }
     
    .badge-share {
-        background: rgba(156, 39, 176, 0.15);
-        color: #9c27b0;
-        border: 1px solid #9c27b0;
+        background: var(--status-assignment-bg);
+        color: var(--accent-primary);
+        border: 1px solid var(--accent-primary);
     }
     
-    /* Ссылки на файлы */
+    
    .file-link {
         color: var(--text-muted);
         text-decoration: none;
@@ -234,16 +233,16 @@
     }
     
    .file-link:hover {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
    .file-link i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 0.9rem;
     }
     
    .deleted-file {
-        color: #8080b0;
+        color: var(--text-disabled);
         font-style: italic;
         display: flex;
         align-items: center;
@@ -251,10 +250,10 @@
     }
     
    .deleted-file i {
-        color: #ff6b81;
+        color: var(--status-danger-light);
     }
     
-    /* IP адрес */
+    
    .ip-address {
         font-family: 'Courier New', monospace;
         color: var(--text-secondary);;
@@ -264,16 +263,16 @@
         font-size: 0.9rem;
     }
     
-    /* Пустое состояние */
+    
    .empty-state {
         text-align: center;
         padding: 4rem;
-        color: #8080b0;
+        color: var(--text-disabled);
     }
     
    .empty-state i {
         font-size: 4rem;
-        color: #6a5acd;
+        color: var(--accent-primary);
         margin-bottom: 1rem;
         opacity: 0.5;
     }
@@ -283,7 +282,7 @@
         margin: 0;
     }
     
-    /* Пагинация */
+    
    .custom-pagination {
         margin-top: 2rem;
     }
@@ -299,17 +298,17 @@
     
    .pagination.page-link:hover {
         background: var(--bg-overlay-30);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
     }
     
    .pagination.page-item.active.page-link {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
-        border-color: #6a5acd;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border-color: var(--accent-primary);
         color: white;
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-log {
             padding: 1rem 0.5rem;
@@ -332,7 +331,7 @@
             margin-bottom: 1rem;
             border: 1px solid var(--bg-overlay-30);
             border-radius: 10px;
-            background: rgba(30, 30, 46, 0.8);
+            background: var(--bg-card-hover);
             padding: 1rem;
         }
         
@@ -364,7 +363,7 @@
 
 <div class="theme-log">
     <div class="container">
-        <!-- Заголовок -->
+        
         <div class="page-header">
             <h1 class="page-title">
                 <i class="bi bi-clock-history"></i>
@@ -374,7 +373,7 @@
 
         <div class="row">
             <div class="col-lg-12">
-                <!-- Карточка фильтров -->
+                
                 <div class="filters-card">
                     <div class="card-header-custom">
                         <h5>
@@ -408,7 +407,7 @@
                     </div>
                 </div>
                 
-                <!-- Карточка с логом -->
+                
                 <div class="log-card">
                     <div class="card-header-custom">
                         <h5>
@@ -434,11 +433,11 @@
                                     {% for activity in page_obj %}
                                     <tr>
                                         <td data-label="Дата и время">
-                                            <i class="bi bi-calendar3" style="color: #6a5acd; margin-right: 0.3rem;"></i>
+                                            <i class="bi bi-calendar3" style="color: var(--accent-primary); margin-right: 0.3rem;"></i>
                                             {{ activity.created_at|date:"d.m.Y H:i:s" }}
                                         </td>
                                         <td data-label="Пользователь">
-                                            <i class="bi bi-person-circle" style="color: #6a5acd; margin-right: 0.3rem;"></i>
+                                            <i class="bi bi-person-circle" style="color: var(--accent-primary); margin-right: 0.3rem;"></i>
                                             {{ activity.user.username }}
                                         </td>
                                         <td data-label="Файл">
@@ -487,7 +486,7 @@
                             </table>
                         </div>
                         
-                        <!-- Пагинация -->
+                        
                         {% if page_obj.has_other_pages %}
                         <nav aria-label="Страницы" class="custom-pagination">
                             <ul class="pagination justify-content-center">

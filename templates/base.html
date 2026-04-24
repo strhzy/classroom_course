@@ -8,7 +8,20 @@
     <title>{% block title %}Classroom{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="{% static 'css/themes/light.css' %}">
+    <link id="theme-stylesheet" rel="stylesheet" href="{% static 'css/themes/light.css' %}" data-light-href="{% static 'css/themes/light.css' %}" data-dark-href="{% static 'css/themes/dark.css' %}">
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('site-theme') || 'light';
+            const themeHref = savedTheme === 'dark'
+                ? "{% static 'css/themes/dark.css' %}"
+                : "{% static 'css/themes/light.css' %}";
+            const themeLink = document.getElementById('theme-stylesheet');
+            if (themeLink) {
+                themeLink.href = themeHref;
+            }
+            document.documentElement.dataset.theme = savedTheme;
+        })();
+    </script>
     <style>
         body {
             background: var(--bg-page-gradient);;
@@ -18,7 +31,7 @@
        .navbar {
             background: linear-gradient(135deg, var(--bg-page-start) 0%, var(--bg-page-end) 100%);
             border-bottom: 1px solid var(--bg-overlay-30);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 5px 20px var(--shadow-card);
             padding: 0.5rem 1rem;
         }
         
@@ -29,7 +42,7 @@
         }
         
        .navbar .navbar-brand i {
-            color: #6a5acd;
+            color: var(--accent-primary);
         }
         
        .navbar .navbar-brand:hover {
@@ -50,7 +63,7 @@
         }
         
        .navbar .nav-link i {
-            color: #6a5acd;
+            color: var(--accent-primary);
         }
         
        .navbar .nav-link:hover i {
@@ -64,7 +77,7 @@
             border-radius: 12px;
             padding: 0.5rem;
             margin-top: 0.5rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 30px var(--shadow-card);
         }
         
        .navbar .dropdown-item {
@@ -83,7 +96,7 @@
         }
         
        .navbar .dropdown-item i {
-            color: #6a5acd;
+            color: var(--accent-primary);
         }
         
        .navbar .dropdown-item:hover i {
@@ -103,19 +116,33 @@
        .navbar .navbar-toggler-icon {
             filter: invert(1);
         }
+
+       .theme-toggle-btn {
+            border: 1px solid var(--bg-overlay-30);
+            background: var(--bg-overlay-15);
+            color: var(--text-muted);
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+       .theme-toggle-btn:hover {
+            background: var(--bg-overlay-20);
+            color: var(--text-white);
+        }
         
-        /* Аватар пользователя */
+        
        .user-avatar {
-            background: linear-gradient(135deg, #6a5acd, #4a90e2) !important;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)) !important;
             color: white !important;
             font-weight: 600;
-            border: 2px solid rgba(106, 90, 205, 0.5);
+            border: 2px solid var(--accent-glow-strong);
             transition: all 0.2s ease;
         }
         
        .user-avatar:hover {
             transform: scale(1.05);
-            border-color: #6a5acd;
+            border-color: var(--accent-primary);
         }
         
        .username-text {
@@ -128,13 +155,13 @@
             color: var(--text-white);
         }
         
-        /* Основной контент */
+        
        .main-content {
             background: transparent;
             padding: 2rem 1rem;
         }
         
-        /* Сообщения */
+        
        .custom-alert {
             background: var(--bg-card);
             backdrop-filter: blur(10px);
@@ -149,14 +176,14 @@
         }
         
        .custom-alert i {
-            color: #6a5acd;
+            color: var(--accent-primary);
             margin-right: 0.5rem;
         }
         
        .btn-close-custom {
             background: none;
             border: none;
-            color: #8080b0;
+            color: var(--text-disabled);
             font-size: 1.2rem;
             cursor: pointer;
             padding: 0 0.5rem;
@@ -167,7 +194,7 @@
             color: var(--text-white);
         }
         
-        /* Адаптивность */
+        
         @media(max-width: 768px) {
            .navbar .navbar-collapse {
                 background: var(--bg-card);
@@ -208,7 +235,7 @@
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <!-- Files Section -->
+                    
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-folder2"></i> Файлы
@@ -222,7 +249,7 @@
                         </ul>
                     </li>
                     
-                    <!-- Courses Section -->
+                    
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-book"></i> Курсы
@@ -246,7 +273,7 @@
                         </ul>
                     </li>
                     
-                    <!-- Admin Section(only for staff/superuser) -->
+                    
                     {% if user.is_authenticated and user.is_staff or user.is_superuser %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
@@ -261,8 +288,11 @@
                     {% endif %}
                 </ul>
                 
-                <!-- Authentication Links -->
-                <div class="d-flex align-items-center">
+                
+                <div class="d-flex align-items-center gap-2">
+                    <button id="theme-toggle" class="theme-toggle-btn" type="button" aria-label="Переключить тему">
+                        <i class="bi bi-moon-stars"></i>
+                    </button>
                     {% if user.is_authenticated %}
                     <div class="dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
@@ -294,7 +324,7 @@
         </div>
     </nav>
 
-    <!-- Основной контент -->
+    
     <div class="main-content">
         <div class="container-fluid">
             
@@ -305,8 +335,38 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
+        function updateThemeToggleIcon(theme) {
+            const icon = document.querySelector('#theme-toggle i');
+            if (!icon) return;
+            icon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+        }
+
+        function applyTheme(theme) {
+            const themeLink = document.getElementById('theme-stylesheet');
+            if (!themeLink) return;
+            const nextHref = theme === 'dark'
+                ? themeLink.dataset.darkHref
+                : themeLink.dataset.lightHref;
+            themeLink.href = nextHref;
+            document.documentElement.dataset.theme = theme;
+            localStorage.setItem('site-theme', theme);
+            updateThemeToggleIcon(theme);
+        }
+
         // Автоматическое закрытие сообщений через 5 секунд
         document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('site-theme') || 'light';
+            updateThemeToggleIcon(savedTheme);
+
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function() {
+                    const currentTheme = localStorage.getItem('site-theme') || 'light';
+                    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                    applyTheme(nextTheme);
+                });
+            }
+
             const alerts = document.querySelectorAll('.custom-alert');
             alerts.forEach(alert => {
                 setTimeout(() => {

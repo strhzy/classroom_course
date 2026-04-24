@@ -18,11 +18,11 @@ def chat_list(request):
         is_active=True
     ).prefetch_related('participants')
     
-    # Добавляем последнее сообщение для каждой комнаты
+                                                      
     for room in rooms:
         room.last_message = room.get_last_message()
     
-    # Получаем всех пользователей для создания новых чатов (кроме текущего)
+                                                                           
     other_users = User.objects.exclude(id=request.user.id).exclude(is_active=False)
     
     return render(request, 'chat_manager/chat_list.html', {
@@ -35,16 +35,16 @@ def chat_room(request, room_id):
     """Страница конкретной комнаты чата"""
     room = get_object_or_404(ChatRoom, id=room_id, is_active=True)
     
-    # Проверяем, есть ли пользователь в комнате
+                                               
     if not room.participants.filter(id=request.user.id).exists():
         messages.error(request, 'У вас нет доступа к этой комнате чата')
         return redirect('chat_manager:chat_list')
     
-    # Получаем последние 50 сообщений (только для первоначальной загрузки)
+                                                                          
     messages_qs = Message.objects.filter(room=room).order_by('-timestamp')[:50]
     messages_list = reversed(messages_qs)
     
-    # Отмечаем сообщения как прочитанные
+                                        
     Message.objects.filter(
         room=room,
         user__in=room.participants.exclude(id=request.user.id),
@@ -128,7 +128,7 @@ def upload_file_to_chat(request, room_id):
     """Загрузка файла в чат"""
     room = get_object_or_404(ChatRoom, id=room_id, is_active=True)
     
-    # Проверяем, есть ли пользователь в комнате
+                                               
     if not room.participants.filter(id=request.user.id).exists():
         return JsonResponse({'error': 'У вас нет доступа к этой комнате чата'}, status=403)
     
@@ -138,7 +138,7 @@ def upload_file_to_chat(request, room_id):
         content = form.cleaned_data.get('content', '')
         file_attachment = form.cleaned_data['file_attachment']
         
-        # Создаем сообщение с файлом
+                                    
         message = Message.objects.create(
             room=room,
             user=request.user,
@@ -146,7 +146,7 @@ def upload_file_to_chat(request, room_id):
             file_attachment=file_attachment
         )
         
-        # Возвращаем данные для WebSocket
+                                         
         response_data = {
             'id': message.id,
             'user_id': request.user.id,
@@ -174,7 +174,7 @@ def download_message_file(request, message_id):
     
     message = get_object_or_404(Message, id=message_id)
     
-    # Проверяем доступ к комнате чата
+                                     
     if not message.room.participants.filter(id=request.user.id).exists():
         return HttpResponse('У вас нет доступа к этому файлу', status=403)
     
@@ -186,7 +186,7 @@ def download_message_file(request, message_id):
     if not os.path.exists(file_path):
         return HttpResponse('Файл не найден на сервере', status=404)
     
-    # Открываем и возвращаем файл
+                                 
     with open(file_path, 'rb') as fh:
         response = HttpResponse(fh.read(), content_type="application/octet-stream")
         response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'

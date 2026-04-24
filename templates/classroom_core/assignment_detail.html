@@ -10,7 +10,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Хлебные крошки */
+    
    .custom-breadcrumb {
         background: var(--bg-overlay-10);
         padding: 0.8rem 1.2rem;
@@ -44,8 +44,8 @@
     }
     
    .custom-breadcrumb.breadcrumb-item a:hover {
-        color: #6a5acd;
-        text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
+        color: var(--accent-primary);
+        text-shadow: 0 0 8px var(--accent-glow-strong);
     }
     
    .custom-breadcrumb.breadcrumb-item.active {
@@ -54,12 +54,12 @@
     }
     
    .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
-        color: #6a5acd;
+        color: var(--accent-primary);
         content: "›";
         font-size: 1.2rem;
     }
     
-    /* Заголовок */
+    
    .assignment-header {
         animation: headerFade 0.5s ease-out;
     }
@@ -85,9 +85,9 @@
         text-shadow: 0 0 20px var(--bg-overlay-30);
     }
     
-    /* Кнопка редактирования */
+    
    .btn-edit {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 12px;
         padding: 0.6rem 1.8rem;
@@ -101,8 +101,8 @@
     
    .btn-edit:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        box-shadow: 0 8px 25px var(--accent-glow-strong);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
     }
     
    .btn-edit::after {
@@ -113,7 +113,7 @@
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--shimmer-overlay);
         transform: translate(-50%, -50%);
         transition: width 0.6s, height 0.6s;
     }
@@ -123,13 +123,13 @@
         height: 300px;
     }
     
-    /* Карточки */
+    
    .custom-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--bg-overlay-20);
+        box-shadow: 0 10px 30px var(--shadow-card), 0 0 20px var(--bg-overlay-20);
         transition: all 0.3s ease;
         animation: cardAppear 0.5s ease-out;
         overflow: hidden;
@@ -137,7 +137,7 @@
     }
     
    .custom-card:hover {
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
+        box-shadow: 0 15px 40px var(--shadow-card-hover), 0 0 30px var(--border-accent-hover);
         transform: translateY(-2px);
     }
     
@@ -153,7 +153,7 @@
     }
     
    .card-header-gradient {
-        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
         border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 1.5rem;
     }
@@ -167,7 +167,7 @@
     }
     
    .card-header-gradient i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         margin-right: 0.8rem;
         font-size: 1.3rem;
     }
@@ -177,7 +177,7 @@
         color: var(--text-main);;
     }
     
-    /* Описание задания */
+    
    .assignment-description {
         color: var(--text-main);;
         line-height: 1.8;
@@ -197,23 +197,23 @@
     
    .assignment-description code {
         background: var(--bg-overlay-20);
-        color: #ff6b81;
+        color: var(--status-danger-light);
         padding: 0.2rem 0.4rem;
         border-radius: 6px;
     }
     
    .assignment-description pre {
-        background: rgba(0, 0, 0, 0.3);
+        background: var(--shadow-item);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 10px;
         padding: 1rem;
         overflow-x: auto;
     }
     
-    /* Файл вложения */
+    
    .attachment-alert {
         background: var(--bg-overlay-15);
-        border: 1px solid rgba(106, 90, 205, 0.4);
+        border: 1px solid var(--border-accent-hover);
         border-radius: 12px;
         padding: 1rem 1.5rem;
         margin-top: 1.5rem;
@@ -224,7 +224,7 @@
     }
     
    .attachment-icon {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.5rem;
     }
     
@@ -239,7 +239,7 @@
     
    .attachment-link {
         background: var(--bg-overlay-20);
-        border: 1px solid rgba(106, 90, 205, 0.5);
+        border: 1px solid var(--accent-glow-strong);
         border-radius: 8px;
         padding: 0.5rem 1.2rem;
         color: var(--text-muted);
@@ -252,18 +252,18 @@
     
    .attachment-link:hover {
         background: var(--bg-overlay-30);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
         transform: translateY(-2px);
     }
     
-    /* Срок выполнения */
+    
    .due-date-container {
-        background: rgba(0, 0, 0, 0.2);
+        background: var(--shadow-item);
         border-radius: 10px;
         padding: 1rem;
         margin-top: 1rem;
-        border-left: 4px solid #6a5acd;
+        border-left: 4px solid var(--accent-primary);
     }
     
    .due-date {
@@ -272,12 +272,12 @@
     }
     
    .due-date i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         margin-right: 0.5rem;
     }
     
    .overdue-badge {
-        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        background: linear-gradient(135deg, var(--status-danger), var(--status-danger-light));
         border: none;
         padding: 0.4rem 1rem;
         border-radius: 50px;
@@ -287,7 +287,7 @@
         animation: pulse 2s infinite;
     }
     
-    /* Кнопка отправки */
+    
    .submit-section {
         margin-top: 2rem;
         padding-top: 1.5rem;
@@ -295,7 +295,7 @@
     }
     
    .btn-submit {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 12px;
         padding: 0.8rem 2rem;
@@ -310,8 +310,8 @@
     
    .btn-submit:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        box-shadow: 0 8px 25px var(--accent-glow-strong);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
     }
     
    .btn-submit i {
@@ -322,9 +322,9 @@
         transform: translateX(5px) rotate(10deg);
     }
     
-    /* Решение студента */
+    
    .submission-card {
-        background: rgba(0, 0, 0, 0.2);
+        background: var(--shadow-item);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 15px;
         overflow: hidden;
@@ -341,7 +341,7 @@
     }
     
    .status-badge {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         padding: 0.4rem 1rem;
         border-radius: 50px;
@@ -350,11 +350,11 @@
     }
     
    .status-badge.returned {
-        background: linear-gradient(135deg, #ffa502, #ffb822);
+        background: linear-gradient(135deg, var(--status-warning), var(--status-warning));
     }
     
    .late-badge {
-        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        background: linear-gradient(135deg, var(--status-danger), var(--status-danger-light));
         color: white;
         padding: 0.2rem 0.8rem;
         border-radius: 50px;
@@ -371,32 +371,32 @@
         background: var(--bg-overlay-10);
         padding: 1rem;
         border-radius: 10px;
-        border-left: 3px solid #6a5acd;
+        border-left: 3px solid var(--accent-primary);
     }
     
    .feedback-section {
-        background: rgba(74, 144, 226, 0.1);
+        background: var(--status-info-bg-light);
         border-radius: 10px;
         padding: 1rem;
         margin-top: 1rem;
-        border-left: 3px solid #4a90e2;
+        border-left: 3px solid var(--accent-secondary);
     }
     
    .feedback-section strong {
-        color: #4a90e2;
+        color: var(--accent-secondary);
         display: block;
         margin-bottom: 0.5rem;
     }
     
    .score-badge {
-        background: linear-gradient(135deg, #ffd700, #ffa502);
+        background: linear-gradient(135deg, var(--status-warning), var(--status-warning));
         color: var(--bg-page-start);
         padding: 0.3rem 1rem;
         border-radius: 50px;
         font-weight: 700;
     }
     
-    /* Информация в сайдбаре */
+    
    .info-list {
         margin: 0;
     }
@@ -414,7 +414,7 @@
     
    .info-badge {
         background: var(--bg-overlay-20);
-        border: 1px solid rgba(106, 90, 205, 0.4);
+        border: 1px solid var(--border-accent-hover);
         color: var(--text-muted);
         padding: 0.3rem 0.8rem;
         border-radius: 50px;
@@ -431,33 +431,33 @@
     }
     
    .status-draft {
-        background: rgba(255, 165, 2, 0.2);
-        color: #ffa502;
-        border: 1px solid #ffa502;
+        background: var(--status-warning-bg);
+        color: var(--status-warning);
+        border: 1px solid var(--status-warning);
     }
     
    .status-published {
-        background: rgba(76, 175, 80, 0.2);
-        color: #4caf50;
-        border: 1px solid #4caf50;
+        background: var(--status-success-bg);
+        color: var(--status-success);
+        border: 1px solid var(--status-success);
     }
     
    .status-closed {
-        background: rgba(108, 117, 125, 0.2);
-        color: #6c757d;
-        border: 1px solid #6c757d;
+        background: var(--bg-overlay-20);
+        color: var(--text-muted);
+        border: 1px solid var(--text-muted);
     }
     
    .badge-group {
-        background: rgba(74, 144, 226, 0.2);
-        color: #4a90e2;
-        border: 1px solid #4a90e2;
+        background: var(--status-info-bg);
+        color: var(--accent-secondary);
+        border: 1px solid var(--accent-secondary);
     }
     
-    /* Подсказка */
+    
    .hint-card {
         background: var(--bg-overlay-10);
-        border-left: 4px solid #6a5acd;
+        border-left: 4px solid var(--accent-primary);
     }
     
    .hint-text {
@@ -466,11 +466,11 @@
     }
     
    .hint-text i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         margin-right: 0.5rem;
     }
     
-    /* Анимации */
+    
     @keyframes pulse {
         0%, 100% {
             opacity: 1;
@@ -481,7 +481,7 @@
         }
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-assignment {
             padding: 1rem 0.5rem;
@@ -531,7 +531,7 @@
 
 <div class="theme-assignment">
     <div class="container">
-        <!-- Заголовок и хлебные крошки -->
+        
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
             <div class="assignment-header">
                 <h1 class="page-title">{{ assignment.title }}</h1>
@@ -554,7 +554,7 @@
                 <a href="{% url 'classroom_core:assignment_edit' assignment.id %}" class="btn-edit me-2">
                     <i class="bi bi-pencil me-2"></i>Редактировать
                 </a>
-                <a href="{% url 'classroom_core:assignment_file_list' assignment.id %}" class="btn-edit" style="background: linear-gradient(135deg, #4a90e2, #6a5acd);">
+                <a href="{% url 'classroom_core:assignment_file_list' assignment.id %}" class="btn-edit" style="background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));">
                     <i class="bi bi-folder2-open me-2"></i>Файлы
                 </a>
                 {% endif %}
@@ -562,9 +562,9 @@
         </div>
 
         <div class="row">
-            <!-- Основной контент -->
+            
             <div class="col-lg-8">
-                <!-- Карточка с описанием -->
+                
                 <div class="custom-card">
                     <div class="card-header-gradient">
                         <h5>
@@ -631,7 +631,7 @@
                     </div>
                 </div>
                 
-                <!-- Решение студента(если есть) -->
+                
                 {% if submission %}
                 <div class="custom-card">
                     <div class="card-header-gradient">
@@ -675,7 +675,7 @@
                                 {% endif %}
 
                                 <div class="d-flex justify-content-between mt-3">
-                                    <small style="color: #8080b0;">
+                                    <small style="color: var(--text-disabled);">
                                         <i class="bi bi-clock"></i>
                                         Отправлено: {{ submission.submitted_at|date:"d.m.Y H:i" }}
                                     </small>
@@ -696,7 +696,7 @@
                 {% endif %}
                 
                 {% if can_manage_course %}
-                <!-- Все сданные работы(для преподавателя) -->
+                
                 <div class="custom-card">
                     <div class="card-header-gradient">
                         <h5>
@@ -705,7 +705,7 @@
                         </h5>
                     </div>
                     <div class="card-body-custom">
-                        <!-- Статистика -->
+                        
                         {% if submissions_stats %}
                         <div class="row mb-4">
                             <div class="col-md-3 col-6 mb-2">
@@ -715,32 +715,32 @@
                                 </div>
                             </div>
                             <div class="col-md-3 col-6 mb-2">
-                                <div class="p-3" style="background: rgba(76, 175, 80, 0.15); border-radius: 10px; text-align: center;">
-                                    <div style="font-size: 1.5rem; font-weight: 700; color: #4caf50;">{{ submissions_stats.graded }}</div>
+                                <div class="p-3" style="background: var(--status-success-bg); border-radius: 10px; text-align: center;">
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--status-success);">{{ submissions_stats.graded }}</div>
                                     <div style="color: var(--text-muted); font-size: 0.85rem;">Оценено</div>
                                 </div>
                             </div>
                             <div class="col-md-3 col-6 mb-2">
-                                <div class="p-3" style="background: rgba(255, 165, 2, 0.15); border-radius: 10px; text-align: center;">
-                                    <div style="font-size: 1.5rem; font-weight: 700; color: #ffa502;">{{ submissions_stats.submitted }}</div>
+                                <div class="p-3" style="background: var(--status-warning-bg); border-radius: 10px; text-align: center;">
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--status-warning);">{{ submissions_stats.submitted }}</div>
                                     <div style="color: var(--text-muted); font-size: 0.85rem;">Ожидают</div>
                                 </div>
                             </div>
                             <div class="col-md-3 col-6 mb-2">
-                                <div class="p-3" style="background: rgba(255, 71, 87, 0.15); border-radius: 10px; text-align: center;">
-                                    <div style="font-size: 1.5rem; font-weight: 700; color: #ff4757;">{{ submissions_stats.late }}</div>
+                                <div class="p-3" style="background: var(--status-danger-bg); border-radius: 10px; text-align: center;">
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--status-danger);">{{ submissions_stats.late }}</div>
                                     <div style="color: var(--text-muted); font-size: 0.85rem;">С опозданием</div>
                                 </div>
                             </div>
                         </div>
                         {% endif %}
                         
-                        <!-- Список работ -->
+                        
                         {% if all_submissions %}
                             <div class="table-responsive">
                                 <table class="table" style="color: var(--text-main);; --bs-table-bg: transparent;">
                                     <thead>
-                                        <tr style="border-bottom: 2px solid rgba(106, 90, 205, 0.5);">
+                                        <tr style="border-bottom: 2px solid var(--accent-glow-strong);">
                                             <th style="color: var(--text-muted); padding: 0.8rem; font-weight: 600;">Студент</th>
                                             <th style="color: var(--text-muted); padding: 0.8rem; font-weight: 600;">Статус</th>
                                             <th style="color: var(--text-muted); padding: 0.8rem; font-weight: 600;">Баллы</th>
@@ -754,28 +754,28 @@
                                             <td style="padding: 1rem;">
                                                 <strong style="color: var(--text-white);">{{ sub.student.get_full_name|default:sub.student.username }}</strong>
                                                 <br>
-                                                <small style="color: #8080b0;">{{ sub.student.email }}</small>
+                                                <small style="color: var(--text-disabled);">{{ sub.student.email }}</small>
                                             </td>
                                             <td style="padding: 1rem;">
                                                 {% if sub.status == 'submitted' %}
-                                                    <span class="badge" style="background: rgba(13, 110, 253, 0.2); color: #0d6efd; border: 1px solid #0d6efd; padding: 0.4rem 0.8rem; border-radius: 50px;">Отправлено</span>
+                                                    <span class="badge" style="background: var(--status-info-bg); color: var(--status-info); border: 1px solid var(--status-info); padding: 0.4rem 0.8rem; border-radius: 50px;">Отправлено</span>
                                                 {% elif sub.status == 'graded' %}
-                                                    <span class="badge" style="background: rgba(25, 135, 84, 0.2); color: #198754; border: 1px solid #198754; padding: 0.4rem 0.8rem; border-radius: 50px;">Оценено</span>
+                                                    <span class="badge" style="background: var(--status-success-bg); color: var(--status-success); border: 1px solid var(--status-success); padding: 0.4rem 0.8rem; border-radius: 50px;">Оценено</span>
                                                 {% elif sub.status == 'returned' %}
-                                                    <span class="badge" style="background: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid #ffc107; padding: 0.4rem 0.8rem; border-radius: 50px;">Возвращено</span>
+                                                    <span class="badge" style="background: var(--status-warning-bg); color: var(--status-warning); border: 1px solid var(--status-warning); padding: 0.4rem 0.8rem; border-radius: 50px;">Возвращено</span>
                                                 {% endif %}
                                                 {% if sub.is_late %}
                                                     <br>
-                                                    <small style="font-size: 0.7rem; color: #ff4757;">
+                                                    <small style="font-size: 0.7rem; color: var(--status-danger);">
                                                         <i class="bi bi-exclamation-triangle"></i> С опозданием
                                                     </small>
                                                 {% endif %}
                                             </td>
                                             <td style="padding: 1rem;">
                                                 {% if sub.score is not None %}
-                                                    <span class="score-badge" style="background: linear-gradient(135deg, #ffd700, #ffa502); color: var(--bg-page-start); padding: 0.3rem 0.8rem; border-radius: 50px; font-weight: 700; display: inline-block;">{{ sub.score }}/{{ assignment.max_points }}</span>
+                                                    <span class="score-badge" style="background: linear-gradient(135deg, var(--status-warning), var(--status-warning)); color: var(--bg-page-start); padding: 0.3rem 0.8rem; border-radius: 50px; font-weight: 700; display: inline-block;">{{ sub.score }}/{{ assignment.max_points }}</span>
                                                 {% else %}
-                                                    <span style="color: #8080b0;">—</span>
+                                                    <span style="color: var(--text-disabled);">—</span>
                                                 {% endif %}
                                             </td>
                                             <td style="padding: 1rem; color: var(--text-secondary);;">
@@ -784,11 +784,11 @@
                                             <td style="padding: 1rem;">
                                                 <div class="d-flex gap-2">
                                                     {% if sub.status != 'graded' %}
-                                                    <a href="{% url 'classroom_core:assignment_grade' sub.id %}" class="btn btn-sm" style="background: rgba(25, 135, 84, 0.2); border: 1px solid rgba(25, 135, 84, 0.4); color: #198754;" title="Оценить">
+                                                    <a href="{% url 'classroom_core:assignment_grade' sub.id %}" class="btn btn-sm" style="background: var(--status-success-bg); border: 1px solid var(--status-success-border); color: var(--status-success);" title="Оценить">
                                                         <i class="bi bi-pencil"></i>
                                                     </a>
                                                     {% else %}
-                                                    <a href="{% url 'classroom_core:assignment_grade' sub.id %}" class="btn btn-sm" style="background: rgba(255, 193, 7, 0.2); border: 1px solid rgba(255, 193, 7, 0.4); color: #ffc107;" title="Вернуть">
+                                                    <a href="{% url 'classroom_core:assignment_grade' sub.id %}" class="btn btn-sm" style="background: var(--status-warning-bg); border: 1px solid var(--status-warning-border); color: var(--status-warning);" title="Вернуть">
                                                         <i class="bi bi-arrow-return-left"></i>
                                                     </a>
                                                     {% endif %}
@@ -801,8 +801,8 @@
                             </div>
                         {% else %}
                             <div class="empty-state" style="padding: 3rem; text-align: center;">
-                                <i class="bi bi-inbox" style="font-size: 3rem; color: #6a5acd; opacity: 0.5;"></i>
-                                <p style="color: #8080b0; margin-top: 1rem;">Студенты еще не сдали работы</p>
+                                <i class="bi bi-inbox" style="font-size: 3rem; color: var(--accent-primary); opacity: 0.5;"></i>
+                                <p style="color: var(--text-disabled); margin-top: 1rem;">Студенты еще не сдали работы</p>
                             </div>
                         {% endif %}
                     </div>
@@ -810,9 +810,9 @@
                 {% endif %}
             </div>
 
-            <!-- Сайдбар с информацией -->
+            
             <div class="col-lg-4">
-                <!-- Информация о задании -->
+                
                 <div class="custom-card">
                     <div class="card-header-gradient">
                         <h6>
@@ -867,7 +867,7 @@
                     </div>
                 </div>
                 
-                <!-- Подсказка -->
+                
                 {% if assignment.status == 'published' %}
                 <div class="custom-card hint-card">
                     <div class="card-header-gradient">

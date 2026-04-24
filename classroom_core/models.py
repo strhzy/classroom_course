@@ -193,12 +193,6 @@ class Course(models.Model):
         
         self.students.add(user)
         
-        # # Автоматически добавляем студента в чат курса
-        # from chat_manager.models import ChatRoom
-        # chat_room = ChatRoom.objects.filter(course=self, room_type='course').first()
-        # if chat_room:
-        #     chat_room.participants.add(user)
-        
         return True, "Студент успешно добавлен"
     
     def remove_student(self, user):

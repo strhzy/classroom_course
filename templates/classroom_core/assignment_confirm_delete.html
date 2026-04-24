@@ -15,9 +15,9 @@
    .delete-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 71, 87, 0.3);
+        border: 1px solid var(--status-danger-border);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 71, 87, 0.3);
+        box-shadow: 0 10px 30px var(--shadow-card), 0 0 20px var(--status-danger-border);
         transition: all 0.3s ease;
         animation: cardAppear 0.5s ease-out;
         overflow: hidden;
@@ -31,7 +31,7 @@
         left: 0;
         right: 0;
         height: 4px;
-        background: linear-gradient(90deg, #ff4757, #ff6b81, #ff4757);
+        background: linear-gradient(90deg, var(--status-danger), var(--status-danger-light), var(--status-danger));
         animation: borderGlow 2s infinite;
     }
     
@@ -56,29 +56,29 @@
     }
     
    .delete-card:hover {
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 71, 87, 0.5);
+        box-shadow: 0 15px 40px var(--shadow-card-hover), 0 0 30px var(--text-glow-danger);
         transform: translateY(-5px);
     }
     
    .warning-icon {
         font-size: 4rem;
-        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        background: linear-gradient(135deg, var(--status-danger), var(--status-danger-light));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         display: inline-block;
         animation: warningPulse 2s infinite;
-        filter: drop-shadow(0 0 20px rgba(255, 71, 87, 0.5));
+        filter: drop-shadow(0 0 20px var(--text-glow-danger));
         margin-bottom: 1rem;
     }
     
     @keyframes warningPulse {
         0%, 100% {
             transform: scale(1);
-            filter: drop-shadow(0 0 20px rgba(255, 71, 87, 0.5));
+            filter: drop-shadow(0 0 20px var(--text-glow-danger));
         }
         50% {
             transform: scale(1.1);
-            filter: drop-shadow(0 0 40px rgba(255, 71, 87, 0.8));
+            filter: drop-shadow(0 0 40px var(--text-glow-danger));
         }
     }
     
@@ -87,15 +87,15 @@
         font-size: 2rem;
         font-weight: 700;
         margin-bottom: 1.5rem;
-        text-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
-        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        text-shadow: 0 0 15px var(--text-glow-danger);
+        background: linear-gradient(135deg, var(--status-danger), var(--status-danger-light));
         background-clip: text;
         -webkit-text-fill-color: transparent;
     }
     
    .assignment-alert {
-        background: rgba(255, 71, 87, 0.1);
-        border: 1px solid rgba(255, 71, 87, 0.4);
+        background: var(--status-danger-bg);
+        border: 1px solid var(--status-danger-border);
         border-radius: 15px;
         padding: 1.5rem;
         margin: 1.5rem 0;
@@ -105,12 +105,12 @@
     
     @keyframes alertGlow {
         0%, 100% {
-            border-color: rgba(255, 71, 87, 0.4);
-            box-shadow: 0 0 15px rgba(255, 71, 87, 0.2);
+            border-color: var(--status-danger-border);
+            box-shadow: 0 0 15px var(--status-danger-bg);
         }
         50% {
-            border-color: rgba(255, 71, 87, 0.8);
-            box-shadow: 0 0 30px rgba(255, 71, 87, 0.4);
+            border-color: var(--text-glow-danger);
+            box-shadow: 0 0 30px var(--status-danger-border);
         }
     }
     
@@ -123,18 +123,18 @@
     }
     
    .warning-details {
-        background: rgba(0, 0, 0, 0.2);
+        background: var(--shadow-item);
         border-radius: 12px;
         padding: 1.2rem;
         margin: 1.5rem 0;
-        border: 1px solid rgba(255, 71, 87, 0.2);
+        border: 1px solid var(--status-danger-bg);
     }
     
    .warning-item {
         display: flex;
         align-items: center;
         margin-bottom: 0.8rem;
-        color: #ffa0a8;
+        color: var(--status-danger-light);
         animation: slideIn 0.3s ease-out;
         animation-fill-mode: both;
     }
@@ -159,7 +159,7 @@
     }
     
    .warning-item i {
-        color: #ff4757;
+        color: var(--status-danger);
         font-size: 1.2rem;
         margin-right: 0.8rem;
     }
@@ -170,13 +170,13 @@
         margin: 1.5rem 0;
         line-height: 1.6;
         padding: 0.5rem;
-        background: rgba(255, 71, 87, 0.05);
+        background: var(--status-danger-bg);
         border-radius: 10px;
-        border-left: 4px solid #ff4757;
+        border-left: 4px solid var(--status-danger);
     }
     
    .warning-text i {
-        color: #ff4757;
+        color: var(--status-danger);
         margin-right: 0.5rem;
     }
     
@@ -201,14 +201,14 @@
     }
     
    .btn-delete {
-        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        background: linear-gradient(135deg, var(--status-danger), var(--status-danger-light));
         border: none;
         border-radius: 12px;
         padding: 0.8rem 2rem;
         font-weight: 600;
         color: white;
         transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+        box-shadow: 0 5px 15px var(--status-danger-border);
         position: relative;
         overflow: hidden;
         min-width: 140px;
@@ -219,8 +219,8 @@
     
    .btn-delete:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(255, 71, 87, 0.6);
-        background: linear-gradient(135deg, #ff6b81, #ff4757);
+        box-shadow: 0 8px 25px var(--text-glow-danger);
+        background: linear-gradient(135deg, var(--status-danger-light), var(--status-danger));
     }
     
    .btn-delete:active {
@@ -235,7 +235,7 @@
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--shimmer-overlay);
         transform: translate(-50%, -50%);
         transition: width 0.6s, height 0.6s;
     }
@@ -247,7 +247,7 @@
     
    .btn-cancel {
         background: var(--bg-overlay-20);
-        border: 1px solid rgba(106, 90, 205, 0.5);
+        border: 1px solid var(--accent-glow-strong);
         border-radius: 12px;
         padding: 0.8rem 2rem;
         font-weight: 600;
@@ -264,10 +264,10 @@
     
    .btn-cancel:hover {
         background: var(--bg-overlay-30);
-        border-color: rgba(106, 90, 205, 0.8);
+        border-color: var(--border-accent-hover);
         color: var(--text-white);
         transform: translateY(-3px);
-        box-shadow: 0 5px 20px rgba(106, 90, 205, 0.4);
+        box-shadow: 0 5px 20px var(--border-accent-hover);
     }
     
    .btn-cancel:active {
@@ -287,11 +287,11 @@
         transform: scale(1.2);
     }
     
-    /* Дополнительная информация */
+    
    .additional-info {
         margin-top: 2rem;
         font-size: 0.9rem;
-        color: #8080b0;
+        color: var(--text-disabled);
         animation: infoAppear 0.5s ease-out 0.6s both;
     }
     
@@ -305,11 +305,11 @@
     }
     
    .additional-info i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         margin-right: 0.3rem;
     }
     
-    /* Модальное окно подтверждения(эффект) */
+    
    .confirm-shake {
         animation: shake 0.5s ease-in-out;
     }
@@ -320,7 +320,7 @@
         20%, 40%, 60%, 80% { transform: translateX(5px); }
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 576px) {
        .theme-delete {
             padding: 1rem 0.5rem;
@@ -374,7 +374,7 @@
         }
     }
     
-    /* Декоративные элементы */
+    
    .delete-card.background-effects {
         position: absolute;
         top: 0;
@@ -387,7 +387,7 @@
     
    .delete-card.background-effects span {
         position: absolute;
-        background: radial-gradient(circle, rgba(255, 71, 87, 0.1) 0%, transparent 70%);
+        background: radial-gradient(circle, var(--status-danger-bg) 0%, transparent 70%);
         border-radius: 50%;
     }
     
@@ -404,7 +404,7 @@
         height: 150px;
         bottom: -30px;
         left: -30px;
-        background: radial-gradient(circle, rgba(106, 90, 205, 0.1) 0%, transparent 70%);
+        background: radial-gradient(circle, var(--bg-overlay-10) 0%, transparent 70%);
         animation: float 10s infinite reverse;
     }
     
@@ -423,7 +423,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-6 col-md-8 col-sm-10">
                 <div class="delete-card">
-                    <!-- Фоновые эффекты -->
+                    
                     <div class="background-effects">
                         <span></span>
                         <span></span>

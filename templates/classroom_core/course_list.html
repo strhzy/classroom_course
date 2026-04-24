@@ -10,7 +10,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Заголовок */
+    
    .page-header {
         animation: headerSlide 0.5s ease-out;
         margin-bottom: 2rem;
@@ -45,16 +45,16 @@
     }
     
    .page-title i {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-right: 0.8rem;
         font-size: 2.5rem;
     }
     
-    /* Кнопка создания */
+    
    .btn-create {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 12px;
         padding: 0.7rem 1.8rem;
@@ -72,8 +72,8 @@
     
    .btn-create:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        box-shadow: 0 8px 25px var(--accent-glow-strong);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
         color: white;
     }
     
@@ -85,7 +85,7 @@
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--shimmer-overlay);
         transform: translate(-50%, -50%);
         transition: width 0.6s, height 0.6s;
     }
@@ -103,7 +103,7 @@
         transform: rotate(90deg);
     }
     
-    /* Фильтры */
+    
    .filters-section {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -112,7 +112,7 @@
         padding: 1.5rem;
         margin-bottom: 2rem;
         animation: filterAppear 0.6s ease-out 0.1s both;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 5px 20px var(--shadow-item);
     }
     
     @keyframes filterAppear {
@@ -136,12 +136,12 @@
     }
     
    .filter-label i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.2rem;
     }
     
    .custom-input {
-        background: rgba(20, 20, 35, 0.8);
+        background: var(--bg-input);
         border: 2px solid var(--bg-overlay-30);
         border-radius: 10px;
         padding: 0.7rem 1rem;
@@ -153,20 +153,20 @@
     
    .custom-input:focus {
         outline: none;
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         box-shadow: 0 0 0 4px var(--bg-overlay-20);
     }
     
    .custom-input:hover {
-        border-color: rgba(106, 90, 205, 0.6);
+        border-color: var(--border-accent-hover);
     }
     
    .custom-input::placeholder {
-        color: #8080b0;
+        color: var(--text-disabled);
     }
     
    .custom-select {
-        background: rgba(20, 20, 35, 0.8);
+        background: var(--bg-input);
         border: 2px solid var(--bg-overlay-30);
         border-radius: 10px;
         padding: 0.7rem 1rem;
@@ -183,12 +183,12 @@
     
    .custom-select:focus {
         outline: none;
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         box-shadow: 0 0 0 4px var(--bg-overlay-20);
     }
     
    .custom-select:hover {
-        border-color: rgba(106, 90, 205, 0.6);
+        border-color: var(--border-accent-hover);
     }
     
    .custom-select option {
@@ -197,7 +197,7 @@
     }
     
    .btn-filter {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 10px;
         padding: 0.7rem 1.5rem;
@@ -216,15 +216,15 @@
     
    .btn-filter:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        box-shadow: 0 8px 25px var(--accent-glow-strong);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
     }
     
    .btn-filter:hover i {
         transform: scale(1.1);
     }
     
-    /* Карточки курсов */
+    
    .course-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -245,7 +245,7 @@
         left: 0;
         right: 0;
         height: 4px;
-        background: linear-gradient(90deg, #6a5acd, #4a90e2, #ff6b81, #4a90e2, #6a5acd);
+        background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--status-danger-light), var(--accent-secondary), var(--accent-primary));
         transform: translateX(-100%);
         transition: transform 0.6s ease;
     }
@@ -256,8 +256,8 @@
     
    .course-card:hover {
         transform: translateY(-8px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px var(--bg-overlay-30);
-        border-color: rgba(106, 90, 205, 0.6);
+        box-shadow: 0 15px 35px var(--shadow-card), 0 0 25px var(--bg-overlay-30);
+        border-color: var(--border-accent-hover);
     }
     
     @keyframes cardAppear {
@@ -278,19 +278,19 @@
    .course-icon {
         width: 50px;
         height: 50px;
-        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
         border-radius: 15px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.8rem;
         transition: all 0.3s ease;
     }
     
    .course-card:hover.course-icon {
         transform: rotate(5deg) scale(1.1);
-        background: linear-gradient(135deg, rgba(106, 90, 205, 0.3), rgba(74, 144, 226, 0.3));
+        background: linear-gradient(135deg, var(--bg-overlay-30), var(--status-info-border));
     }
     
    .course-title {
@@ -309,7 +309,7 @@
     }
     
    .instructor-info i {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
    .course-description {
@@ -342,7 +342,7 @@
     }
     
    .stat i {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
    .stat strong {
@@ -361,31 +361,31 @@
     }
     
    .badge-draft {
-        background: rgba(255, 165, 2, 0.15);
-        color: #ffa502;
-        border: 1px solid #ffa502;
+        background: var(--status-warning-bg);
+        color: var(--status-warning);
+        border: 1px solid var(--status-warning);
     }
     
    .badge-active {
-        background: rgba(76, 175, 80, 0.15);
-        color: #4caf50;
-        border: 1px solid #4caf50;
+        background: var(--status-success-bg);
+        color: var(--status-success);
+        border: 1px solid var(--status-success);
     }
     
    .badge-archived {
-        background: rgba(108, 117, 125, 0.15);
+        background: var(--bg-overlay-15);
         color: var(--text-muted);
-        border: 1px solid #6c757d;
+        border: 1px solid var(--text-muted);
     }
     
    .badge-completed {
-        background: rgba(74, 144, 226, 0.15);
-        color: #4a90e2;
-        border: 1px solid #4a90e2;
+        background: var(--status-info-bg);
+        color: var(--accent-secondary);
+        border: 1px solid var(--accent-secondary);
     }
     
    .btn-primary-course {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 10px;
         padding: 0.6rem;
@@ -402,14 +402,14 @@
     
    .btn-primary-course:hover {
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        box-shadow: 0 5px 15px var(--border-accent-hover);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
         color: white;
     }
     
    .btn-outline-course {
         background: var(--bg-overlay-10);
-        border: 1px solid rgba(106, 90, 205, 0.5);
+        border: 1px solid var(--accent-glow-strong);
         border-radius: 10px;
         padding: 0.6rem;
         font-weight: 600;
@@ -425,7 +425,7 @@
     
    .btn-outline-course:hover {
         background: var(--bg-overlay-20);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
         transform: translateY(-2px);
     }
@@ -436,7 +436,7 @@
         margin-top: 1rem;
     }
     
-    /* Пустое состояние */
+    
    .empty-state {
         text-align: center;
         padding: 4rem 1rem;
@@ -456,7 +456,7 @@
     
    .empty-icon {
         font-size: 5rem;
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 1.5rem;
@@ -485,7 +485,7 @@
         margin-bottom: 2rem;
     }
     
-    /* Пагинация */
+    
    .custom-pagination {
         margin-top: 2rem;
         animation: paginationAppear 0.6s ease-out 0.5s both;
@@ -513,26 +513,26 @@
     
    .pagination.page-link:hover {
         background: var(--bg-overlay-30);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
         transform: translateY(-2px);
         box-shadow: 0 5px 15px var(--bg-overlay-30);
     }
     
    .pagination.page-item.active.page-link {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
-        border-color: #6a5acd;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border-color: var(--accent-primary);
         color: white;
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+        box-shadow: 0 5px 15px var(--border-accent-hover);
     }
     
    .pagination.page-item.disabled.page-link {
-        background: rgba(30, 30, 46, 0.5);
+        background: var(--border-accent-hover);
         border-color: var(--bg-overlay-10);
-        color: #8080b0;
+        color: var(--text-disabled);
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-courses {
             padding: 1rem 0.5rem;
@@ -586,7 +586,7 @@
 
 <div class="theme-courses">
     <div class="container">
-        <!-- Заголовок и кнопка создания -->
+        
         <div class="page-header">
             <h1 class="page-title">
                 <i class="bi bi-journal-bookmark-fill"></i>
@@ -601,7 +601,7 @@
             {% endif %}
         </div>
 
-        <!-- Фильтры -->
+        
         <div class="filters-section">
             <div class="filter-label">
                 <i class="bi bi-funnel-fill"></i>
@@ -633,13 +633,13 @@
             </form>
         </div>
 
-        <!-- Список курсов -->
+        
         <div class="row g-4">
             {% for course in page_obj %}
             <div class="col-md-6 col-lg-4">
                 <div class="course-card" data-index="{{ forloop.counter }}">
                     <div class="card-body-custom">
-                        <!-- Заголовок и преподаватель -->
+                        
                         <div class="d-flex align-items-center mb-3">
                             <div class="course-icon me-3">
                                 <i class="bi bi-journal-bookmark"></i>
@@ -653,10 +653,10 @@
                             </div>
                         </div>
                         
-                        <!-- Описание -->
+                        
                         <p class="course-description">{{ course.short_description|default:course.description|truncatechars:100 }}</p>
                         
-                        <!-- Статистика -->
+                        
                         <div class="stats-row">
                             <div class="stat">
                                 <i class="bi bi-people-fill"></i>
@@ -681,7 +681,7 @@
                             </div>
                         </div>
                         
-                        <!-- Кнопки -->
+                        
                         <div class="button-group">
                             <a href="{% url 'classroom_core:course_detail' course.id %}" class="btn-primary-course">
                                 <i class="bi bi-box-arrow-in-right"></i>
@@ -695,8 +695,8 @@
                             {% endif %}
                         </div>
                         
-                        <!-- ID курса(скрытый для отладки) -->
-                        <div class="mt-2 text-end small" style="color: #8080b0;">
+                        
+                        <div class="mt-2 text-end small" style="color: var(--text-disabled);">
                             <i class="bi bi-hash"></i> ID: {{ course.id }}
                         </div>
                     </div>
@@ -721,7 +721,7 @@
             {% endfor %}
         </div>
 
-        <!-- Пагинация -->
+        
         {% if page_obj.has_other_pages %}
         <nav aria-label="Страницы" class="custom-pagination">
             <ul class="pagination justify-content-center">

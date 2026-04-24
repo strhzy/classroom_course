@@ -10,7 +10,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Заголовок */
+    
    .page-header {
         animation: headerSlide 0.5s ease-out;
         margin-bottom: 2rem;
@@ -40,14 +40,14 @@
     }
     
    .page-title i {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-right: 0.8rem;
         font-size: 2.5rem;
     }
     
-    /* Фильтры */
+    
    .filters-section {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -56,7 +56,7 @@
         padding: 1.5rem;
         margin-bottom: 2rem;
         animation: filterAppear 0.6s ease-out 0.1s both;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 5px 20px var(--shadow-item);
     }
     
     @keyframes filterAppear {
@@ -80,12 +80,12 @@
     }
     
    .filter-label i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.2rem;
     }
     
    .custom-select {
-        background: rgba(20, 20, 35, 0.8);
+        background: var(--bg-input);
         border: 2px solid var(--bg-overlay-30);
         border-radius: 10px;
         padding: 0.7rem 1rem;
@@ -102,12 +102,12 @@
     
    .custom-select:focus {
         outline: none;
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         box-shadow: 0 0 0 4px var(--bg-overlay-20);
     }
     
    .custom-select:hover {
-        border-color: rgba(106, 90, 205, 0.6);
+        border-color: var(--border-accent-hover);
     }
     
    .custom-select option {
@@ -116,7 +116,7 @@
     }
     
    .btn-filter {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 10px;
         padding: 0.7rem 1.5rem;
@@ -135,8 +135,8 @@
     
    .btn-filter:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        box-shadow: 0 8px 25px var(--accent-glow-strong);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
     }
     
    .btn-filter::after {
@@ -147,7 +147,7 @@
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--shimmer-overlay);
         transform: translate(-50%, -50%);
         transition: width 0.6s, height 0.6s;
     }
@@ -157,13 +157,13 @@
         height: 300px;
     }
     
-    /* Карточка с таблицей */
+    
    .table-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--bg-overlay-20);
+        box-shadow: 0 10px 30px var(--shadow-card), 0 0 20px var(--bg-overlay-20);
         transition: all 0.3s ease;
         animation: cardAppear 0.6s ease-out 0.2s both;
         overflow: hidden;
@@ -181,7 +181,7 @@
     }
     
    .card-header-gradient {
-        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
         border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 1.5rem;
         display: flex;
@@ -200,12 +200,12 @@
     }
     
    .card-header-gradient h5 i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.3rem;
     }
     
    .btn-create {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 10px;
         padding: 0.5rem 1.2rem;
@@ -221,8 +221,8 @@
     
    .btn-create:hover {
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        box-shadow: 0 5px 15px var(--border-accent-hover);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
         color: white;
     }
     
@@ -234,7 +234,7 @@
         transform: rotate(90deg);
     }
     
-    /* Таблица */
+    
    .custom-table {
         width: 100%;
         border-collapse: separate;
@@ -276,7 +276,7 @@
    .custom-table tbody tr:hover {
         background: var(--bg-overlay-15);
         transform: scale(1.01);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 5px 15px var(--shadow-item);
     }
     
    .custom-table tbody td {
@@ -294,7 +294,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.2rem;
         transition: all 0.3s ease;
     }
@@ -319,7 +319,7 @@
         overflow: hidden;
     }
     
-    /* Бейджи статусов */
+    
    .status-badge {
         display: inline-flex;
         align-items: center;
@@ -332,21 +332,21 @@
     }
     
    .status-draft {
-        background: rgba(255, 165, 2, 0.15);
-        color: #ffa502;
-        border: 1px solid #ffa502;
+        background: var(--status-warning-bg);
+        color: var(--status-warning);
+        border: 1px solid var(--status-warning);
     }
     
    .status-published {
-        background: rgba(76, 175, 80, 0.15);
-        color: #4caf50;
-        border: 1px solid #4caf50;
+        background: var(--status-success-bg);
+        color: var(--status-success);
+        border: 1px solid var(--status-success);
     }
     
    .status-closed {
-        background: rgba(108, 117, 125, 0.15);
+        background: var(--bg-overlay-15);
         color: var(--text-muted);
-        border: 1px solid #6c757d;
+        border: 1px solid var(--text-muted);
     }
     
    .due-date {
@@ -358,12 +358,12 @@
     }
     
    .due-date i {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
    .btn-view {
         background: var(--bg-overlay-15);
-        border: 1px solid rgba(106, 90, 205, 0.4);
+        border: 1px solid var(--border-accent-hover);
         border-radius: 8px;
         padding: 0.4rem 1.2rem;
         color: var(--text-muted);
@@ -379,7 +379,7 @@
     
    .btn-view:hover {
         background: var(--bg-overlay-30);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
         transform: translateX(3px);
     }
@@ -392,7 +392,7 @@
         transform: translateX(3px);
     }
     
-    /* Пустое состояние */
+    
    .empty-state {
         text-align: center;
         padding: 4rem 1rem;
@@ -400,7 +400,7 @@
     
    .empty-icon {
         font-size: 4rem;
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 1.5rem;
@@ -422,7 +422,7 @@
         margin-top: 1rem;
     }
     
-    /* Пагинация */
+    
    .custom-pagination {
         margin-top: 2rem;
         animation: paginationAppear 0.6s ease-out 0.5s both;
@@ -450,20 +450,20 @@
     
    .pagination.page-link:hover {
         background: var(--bg-overlay-30);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
         transform: translateY(-2px);
         box-shadow: 0 5px 15px var(--bg-overlay-30);
     }
     
    .pagination.page-item.active.page-link {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
-        border-color: #6a5acd;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border-color: var(--accent-primary);
         color: white;
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+        box-shadow: 0 5px 15px var(--border-accent-hover);
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-assignments {
             padding: 1rem 0.5rem;
@@ -494,7 +494,7 @@
             margin-bottom: 1rem;
             border: 1px solid var(--bg-overlay-30);
             border-radius: 10px;
-            background: rgba(30, 30, 46, 0.8);
+            background: var(--bg-card-hover);
         }
         
        .custom-table tbody td {
@@ -545,7 +545,7 @@
 
 <div class="theme-assignments">
     <div class="container">
-        <!-- Заголовок -->
+        
         <div class="page-header">
             <h1 class="page-title">
                 <i class="bi bi-journal-bookmark-fill"></i>
@@ -553,7 +553,7 @@
             </h1>
         </div>
 
-        <!-- Фильтры -->
+        
         <div class="filters-section">
             <div class="filter-label">
                 <i class="bi bi-funnel-fill"></i>
@@ -587,7 +587,7 @@
             </form>
         </div>
 
-        <!-- Таблица с заданиями -->
+        
         <div class="table-card">
             <div class="card-header-gradient">
                 <h5>
@@ -624,7 +624,7 @@
                             </td>
                             <td data-label="Курс">
                                 <div class="d-flex align-items-center">
-                                    <i class="bi bi-book me-2" style="color: #6a5acd;"></i>
+                                    <i class="bi bi-book me-2" style="color: var(--accent-primary);"></i>
                                     {{ assignment.course.title }}
                                 </div>
                             </td>
@@ -679,7 +679,7 @@
             </div>
         </div>
 
-        <!-- Пагинация -->
+        
         {% if page_obj.has_other_pages %}
         <nav aria-label="Страницы" class="custom-pagination">
             <ul class="pagination justify-content-center">

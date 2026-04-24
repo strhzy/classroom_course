@@ -15,9 +15,9 @@
    .delete-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 71, 87, 0.3);
+        border: 1px solid var(--status-danger-border);
         border-radius: 30px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 71, 87, 0.3);
+        box-shadow: 0 10px 30px var(--shadow-card), 0 0 30px var(--status-danger-border);
         transition: all 0.3s ease;
         animation: cardAppear 0.6s ease-out;
         overflow: hidden;
@@ -31,7 +31,7 @@
         left: 0;
         right: 0;
         height: 5px;
-        background: linear-gradient(90deg, #ff4757, #ff6b81, #ff4757, #ff6b81, #ff4757);
+        background: linear-gradient(90deg, var(--status-danger), var(--status-danger-light), var(--status-danger), var(--status-danger-light), var(--status-danger));
         background-size: 200% 100%;
         animation: borderFlow 3s linear infinite;
     }
@@ -43,7 +43,7 @@
         left: -50%;
         width: 200%;
         height: 200%;
-        background: radial-gradient(circle, rgba(255, 71, 87, 0.1) 0%, transparent 70%);
+        background: radial-gradient(circle, var(--status-danger-bg) 0%, transparent 70%);
         animation: rotate 20s linear infinite;
         z-index: 0;
     }
@@ -70,7 +70,7 @@
     }
     
    .delete-card:hover {
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 50px rgba(255, 71, 87, 0.5);
+        box-shadow: 0 20px 50px var(--shadow-card-hover), 0 0 50px var(--text-glow-danger);
         transform: translateY(-5px);
     }
     
@@ -82,23 +82,23 @@
     
    .warning-icon {
         font-size: 5rem;
-        background: linear-gradient(135deg, #ff4757, #ff6b81, #ff4757);
+        background: linear-gradient(135deg, var(--status-danger), var(--status-danger-light), var(--status-danger));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         display: inline-block;
         animation: warningPulse 2s infinite;
-        filter: drop-shadow(0 0 30px rgba(255, 71, 87, 0.5));
+        filter: drop-shadow(0 0 30px var(--text-glow-danger));
         margin-bottom: 1.5rem;
     }
     
     @keyframes warningPulse {
         0%, 100% {
             transform: scale(1);
-            filter: drop-shadow(0 0 20px rgba(255, 71, 87, 0.5));
+            filter: drop-shadow(0 0 20px var(--text-glow-danger));
         }
         50% {
             transform: scale(1.15);
-            filter: drop-shadow(0 0 40px rgba(255, 71, 87, 0.8));
+            filter: drop-shadow(0 0 40px var(--text-glow-danger));
         }
     }
     
@@ -107,16 +107,16 @@
         font-size: 2.2rem;
         font-weight: 800;
         margin-bottom: 1.5rem;
-        text-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
-        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        text-shadow: 0 0 15px var(--text-glow-danger);
+        background: linear-gradient(135deg, var(--status-danger), var(--status-danger-light));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         letter-spacing: 1px;
     }
     
    .student-info {
-        background: rgba(255, 71, 87, 0.1);
-        border: 2px solid rgba(255, 71, 87, 0.4);
+        background: var(--status-danger-bg);
+        border: 2px solid var(--status-danger-border);
         border-radius: 20px;
         padding: 1.8rem;
         margin: 2rem 0;
@@ -126,12 +126,12 @@
     
     @keyframes infoGlow {
         0%, 100% {
-            border-color: rgba(255, 71, 87, 0.4);
-            box-shadow: 0 0 20px rgba(255, 71, 87, 0.2);
+            border-color: var(--status-danger-border);
+            box-shadow: 0 0 20px var(--status-danger-bg);
         }
         50% {
-            border-color: rgba(255, 71, 87, 0.8);
-            box-shadow: 0 0 40px rgba(255, 71, 87, 0.4);
+            border-color: var(--text-glow-danger);
+            box-shadow: 0 0 40px var(--status-danger-border);
         }
     }
     
@@ -144,25 +144,25 @@
     }
     
    .student-details {
-        color: #ffa0a8;
+        color: var(--status-danger-light);
         font-size: 1.1rem;
         margin-top: 0.8rem;
         padding-top: 0.8rem;
-        border-top: 1px solid rgba(255, 71, 87, 0.3);
+        border-top: 1px solid var(--status-danger-border);
         display: flex;
         flex-direction: column;
         gap: 0.3rem;
     }
     
    .student-details i {
-        color: #ff4757;
+        color: var(--status-danger);
         margin-right: 0.5rem;
         width: 20px;
     }
     
    .course-context {
         background: var(--bg-overlay-15);
-        border: 1px solid rgba(106, 90, 205, 0.4);
+        border: 1px solid var(--border-accent-hover);
         border-radius: 12px;
         padding: 1rem;
         margin: 1.5rem 0;
@@ -172,7 +172,7 @@
     }
     
    .course-context i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.5rem;
     }
     
@@ -187,18 +187,18 @@
     }
     
    .warning-details {
-        background: rgba(0, 0, 0, 0.3);
+        background: var(--shadow-item);
         border-radius: 15px;
         padding: 1.5rem;
         margin: 2rem 0;
-        border: 1px solid rgba(255, 71, 87, 0.3);
+        border: 1px solid var(--status-danger-border);
     }
     
    .warning-item {
         display: flex;
         align-items: center;
         margin-bottom: 1rem;
-        color: #ffa0a8;
+        color: var(--status-danger-light);
         animation: slideIn 0.3s ease-out;
         animation-fill-mode: both;
         font-size: 1.1rem;
@@ -224,26 +224,26 @@
     }
     
    .warning-item i {
-        color: #ff4757;
+        color: var(--status-danger);
         font-size: 1.4rem;
         margin-right: 1rem;
         min-width: 1.8rem;
     }
     
    .warning-text {
-        color: #ffa0a8 !important;
+        color: var(--status-danger-light) !important;
         font-size: 1.1rem;
         margin: 1.5rem 0;
         line-height: 1.8;
         padding: 1rem;
-        background: rgba(255, 71, 87, 0.1);
+        background: var(--status-danger-bg);
         border-radius: 15px;
-        border-left: 5px solid #ff4757;
+        border-left: 5px solid var(--status-danger);
         font-weight: 500;
     }
     
    .warning-text i {
-        color: #ff4757;
+        color: var(--status-danger);
         margin-right: 0.8rem;
         font-size: 1.4rem;
     }
@@ -253,7 +253,7 @@
         justify-content: space-around;
         margin: 2rem 0;
         padding: 1rem;
-        background: rgba(0, 0, 0, 0.2);
+        background: var(--shadow-item);
         border-radius: 12px;
         flex-wrap: wrap;
         gap: 1rem;
@@ -268,7 +268,7 @@
    .stat-value {
         font-size: 1.5rem;
         font-weight: 700;
-        color: #ff4757;
+        color: var(--status-danger);
         line-height: 1.2;
     }
     
@@ -298,7 +298,7 @@
     }
     
    .btn-delete {
-        background: linear-gradient(135deg, #ff4757, #ff6b81, #ff4757);
+        background: linear-gradient(135deg, var(--status-danger), var(--status-danger-light), var(--status-danger));
         background-size: 200% 100%;
         border: none;
         border-radius: 15px;
@@ -306,7 +306,7 @@
         font-weight: 700;
         color: white;
         transition: all 0.3s ease;
-        box-shadow: 0 8px 20px rgba(255, 71, 87, 0.4);
+        box-shadow: 0 8px 20px var(--status-danger-border);
         position: relative;
         overflow: hidden;
         min-width: 180px;
@@ -321,16 +321,16 @@
     
     @keyframes buttonPulse {
         0%, 100% {
-            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.4);
+            box-shadow: 0 8px 20px var(--status-danger-border);
         }
         50% {
-            box-shadow: 0 12px 30px rgba(255, 71, 87, 0.7);
+            box-shadow: 0 12px 30px var(--text-glow-danger);
         }
     }
     
    .btn-delete:hover {
         transform: translateY(-5px) scale(1.02);
-        box-shadow: 0 15px 35px rgba(255, 71, 87, 0.7);
+        box-shadow: 0 15px 35px var(--text-glow-danger);
         background-position: 100% 0;
     }
     
@@ -346,7 +346,7 @@
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.4);
+        background: var(--shimmer-overlay);
         transform: translate(-50%, -50%);
         transition: width 0.8s, height 0.8s;
     }
@@ -358,7 +358,7 @@
     
    .btn-cancel {
         background: var(--bg-overlay-20);
-        border: 2px solid rgba(106, 90, 205, 0.6);
+        border: 2px solid var(--border-accent-hover);
         border-radius: 15px;
         padding: 1rem 2.5rem;
         font-weight: 700;
@@ -379,10 +379,10 @@
     
    .btn-cancel:hover {
         background: var(--bg-overlay-30);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
         transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(106, 90, 205, 0.5);
+        box-shadow: 0 10px 25px var(--accent-glow-strong);
     }
     
    .btn-cancel:active {
@@ -402,7 +402,7 @@
         transform: scale(1.2);
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 576px) {
        .theme-delete-student {
             padding: 1rem 0.5rem;
@@ -498,11 +498,11 @@
         }
     }
     
-    /* Дополнительные эффекты */
+    
    .student-avatar-mini {
         width: 60px;
         height: 60px;
-        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        background: linear-gradient(135deg, var(--status-danger), var(--status-danger-light));
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -511,8 +511,8 @@
         font-size: 1.8rem;
         font-weight: 600;
         margin: 0 auto 1rem;
-        border: 3px solid rgba(255, 71, 87, 0.5);
-        box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+        border: 3px solid var(--text-glow-danger);
+        box-shadow: 0 5px 15px var(--status-danger-border);
     }
 </style>
 
@@ -521,23 +521,23 @@
         <div class="row justify-content-center">
             <div class="col-lg-6 col-md-8 col-sm-10">
                 <div class="delete-card">
-                    <!-- Фоновые эффекты -->
+                    
                     <div class="card-content">
                         <div class="text-center">
-                            <!-- Мини-аватар студента -->
+                            
                             <div class="student-avatar-mini">
                                 {{ student.username|slice:":1"|upper }}
                             </div>
                             
-                            <!-- Иконка предупреждения -->
+                            
                             <div class="warning-icon">
                                 <i class="bi bi-exclamation-triangle-fill"></i>
                             </div>
                             
-                            <!-- Заголовок -->
+                            
                             <h3 class="delete-title">Удалить студента с курса?</h3>
                             
-                            <!-- Информация о студенте -->
+                            
                             <div class="student-info">
                                 <div class="student-name">{{ student.username }}</div>
                                 <div class="student-details">
@@ -552,7 +552,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Контекст курса -->
+                            
                             <div class="course-context">
                                 <i class="bi bi-book-fill"></i>
                                 <div class="course-context-text">
@@ -562,7 +562,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Детали удаления -->
+                            
                             <div class="warning-details">
                                 <div class="warning-item">
                                     <i class="bi bi-person-dash-fill"></i>
@@ -578,7 +578,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Статистика студента на курсе -->
+                            
                             <div class="student-stats">
                                 <div class="stat-item">
                                     <div class="stat-value">{{ student.submissions.count|default:"0" }}</div>
@@ -594,13 +594,13 @@
                                 </div>
                             </div>
                             
-                            <!-- Предупреждение -->
+                            
                             <p class="warning-text">
                                 <i class="bi bi-info-circle-fill"></i>
                                 Студент будет удален с курса "{{ course.title }}", но его аккаунт останется в системе.
                             </p>
                             
-                            <!-- Кнопки -->
+                            
                             <div class="button-container">
                                 <form method="post" style="display: inline; width: auto;">
                                     {% csrf_token %}
@@ -615,8 +615,8 @@
                                 </a>
                             </div>
                             
-                            <!-- Дополнительная информация -->
-                            <div class="mt-3" style="color: #8080b0; font-size: 0.85rem;">
+                            
+                            <div class="mt-3" style="color: var(--text-disabled); font-size: 0.85rem;">
                                 <i class="bi bi-info-circle"></i>
                                 ID студента: #{{ student.id }} • ID курса: #{{ course.id }}
                             </div>

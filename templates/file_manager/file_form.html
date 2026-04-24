@@ -10,7 +10,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Хлебные крошки */
+    
    .custom-breadcrumb {
         background: var(--bg-overlay-10);
         padding: 0.8rem 1.2rem;
@@ -32,7 +32,7 @@
     }
     
    .custom-breadcrumb.breadcrumb-item a:hover {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
    .custom-breadcrumb.breadcrumb-item.active {
@@ -41,12 +41,12 @@
     }
     
    .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
-        color: #6a5acd;
+        color: var(--accent-primary);
         content: "›";
         font-size: 1.2rem;
     }
     
-    /* Заголовок */
+    
    .page-header {
         animation: headerFade 0.5s ease-out;
         margin-bottom: 2rem;
@@ -72,18 +72,18 @@
         margin-bottom: 0.5rem;
     }
     
-    /* Карточка формы */
+    
    .form-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 10px 30px var(--shadow-card);
         overflow: hidden;
     }
     
    .card-header-custom {
-        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
         border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 1.5rem;
     }
@@ -98,7 +98,7 @@
     }
     
    .card-header-custom i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.3rem;
     }
     
@@ -106,7 +106,7 @@
         padding: 2rem;
     }
     
-    /* Поля формы */
+    
    .form-group {
         margin-bottom: 1.8rem;
     }
@@ -121,18 +121,18 @@
     }
     
    .form-label i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.1rem;
     }
     
    .form-label.required {
-        color: #ff6b81;
+        color: var(--status-danger-light);
         margin-left: 0.3rem;
     }
     
-    /* Стили для полей ввода */
+    
    .custom-input {
-        background: rgba(20, 20, 35, 0.8);
+        background: var(--bg-input);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 10px;
         padding: 0.8rem 1rem;
@@ -144,11 +144,11 @@
     
    .custom-input:focus {
         outline: none;
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
     }
     
    .custom-input:hover {
-        border-color: rgba(106, 90, 205, 0.6);
+        border-color: var(--border-accent-hover);
     }
     
     textarea.custom-input {
@@ -157,7 +157,7 @@
     }
     
    .custom-select {
-        background: rgba(20, 20, 35, 0.8);
+        background: var(--bg-input);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 10px;
         padding: 0.8rem 1rem;
@@ -174,7 +174,7 @@
     
    .custom-select:focus {
         outline: none;
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
     }
     
    .custom-select option {
@@ -182,7 +182,7 @@
         color: var(--text-white);
     }
     
-    /* File input */
+    
    .file-input-container {
         position: relative;
     }
@@ -197,8 +197,8 @@
     }
     
    .file-label {
-        background: rgba(20, 20, 35, 0.8);
-        border: 2px dashed rgba(106, 90, 205, 0.4);
+        background: var(--bg-input);
+        border: 2px dashed var(--border-accent-hover);
         border-radius: 10px;
         padding: 1.2rem;
         display: flex;
@@ -213,29 +213,29 @@
     }
     
    .file-label:hover {
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         background: var(--bg-overlay-10);
     }
     
    .file-label i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.5rem;
     }
     
    .file-name {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-weight: 600;
         margin-left: 0.5rem;
     }
     
-    /* Multiple select */
+    
     select[multiple] {
         min-height: 120px;
     }
     
-    /* Подсказки */
+    
    .form-text {
-        color: #8080b0;
+        color: var(--text-disabled);
         font-size: 0.85rem;
         margin-top: 0.3rem;
         display: flex;
@@ -244,10 +244,10 @@
     }
     
    .form-text i {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
-    /* Индикатор обязательных полей */
+    
    .required-note {
         color: var(--text-secondary);;
         font-size: 0.9rem;
@@ -260,10 +260,10 @@
     }
     
    .required-note i {
-        color: #ff6b81;
+        color: var(--status-danger-light);
     }
     
-    /* Кнопки */
+    
    .button-group {
         display: flex;
         gap: 1rem;
@@ -271,7 +271,7 @@
     }
     
    .btn-save {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 10px;
         padding: 0.8rem 2rem;
@@ -287,12 +287,12 @@
     }
     
    .btn-save:hover {
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
     }
     
    .btn-cancel {
         background: var(--bg-overlay-15);
-        border: 1px solid rgba(106, 90, 205, 0.5);
+        border: 1px solid var(--accent-glow-strong);
         border-radius: 10px;
         padding: 0.8rem 2rem;
         font-weight: 600;
@@ -308,11 +308,11 @@
     
    .btn-cancel:hover {
         background: var(--bg-overlay-25);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-file-form {
             padding: 1rem 0.5rem;
@@ -349,7 +349,7 @@
 
 <div class="theme-file-form">
     <div class="container">
-        <!-- Заголовок и хлебные крошки -->
+        
         <div class="page-header">
             <h1 class="page-title">{{ title }}</h1>
             <nav aria-label="breadcrumb" class="custom-breadcrumb">
@@ -384,7 +384,7 @@
                             <input type="hidden" name="file_id" value="{{ file.id }}">
                             {% endif %}
                             
-                            <!-- Название файла -->
+                            
                             <div class="form-group">
                                 <label for="id_title" class="form-label">
                                     <i class="bi bi-tag"></i>
@@ -399,7 +399,7 @@
                                        placeholder="Введите название файла">
                             </div>
                             
-                            <!-- Описание -->
+                            
                             <div class="form-group">
                                 <label for="id_description" class="form-label">
                                     <i class="bi bi-card-text"></i>
@@ -412,7 +412,7 @@
                                           placeholder="Краткое описание файла...">{{ form.description.value|default:'' }}</textarea>
                             </div>
                             
-                            <!-- Файл -->
+                            
                             <div class="form-group">
                                 <label for="id_file" class="form-label">
                                     <i class="bi bi-file-earmark"></i>
@@ -437,7 +437,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Курс -->
+                            
                             <div class="form-group">
                                 <label for="id_course" class="form-label">
                                     <i class="bi bi-book"></i>
@@ -457,7 +457,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Видимость -->
+                            
                             <div class="form-group">
                                 <label for="id_visibility" class="form-label">
                                     <i class="bi bi-eye"></i>
@@ -470,7 +470,7 @@
                                 </select>
                             </div>
                             
-                            <!-- Общий доступ -->
+                            
                             <div class="form-group">
                                 <label for="id_shared_with" class="form-label">
                                     <i class="bi bi-people"></i>
@@ -489,7 +489,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Папка(если есть) -->
+                            
                             {% if form.folder %}
                             <div class="form-group">
                                 <label for="id_folder" class="form-label">
@@ -507,13 +507,13 @@
                             </div>
                             {% endif %}
                             
-                            <!-- Обязательные поля -->
+                            
                             <div class="required-note">
                                 <i class="bi bi-asterisk"></i>
                                 Поля, отмеченные звездочкой, обязательны для заполнения
                             </div>
                             
-                            <!-- Кнопки -->
+                            
                             <div class="button-group">
                                 <button type="submit" class="btn-save">
                                     <i class="bi bi-save"></i>
@@ -541,7 +541,7 @@
             const file = input.files[0];
             fileNameDisplay.textContent = `📄 ${file.name}`;
             fileNameDisplay.style.display = 'inline';
-            fileLabel.style.borderColor = '#4caf50';
+            fileLabel.style.borderColor = 'var(--status-success)';
         } else {
             fileNameDisplay.textContent = '';
             fileNameDisplay.style.display = 'none';

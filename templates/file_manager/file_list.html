@@ -10,7 +10,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Заголовок */
+    
    .page-header {
         display: flex;
         justify-content: space-between;
@@ -33,20 +33,20 @@
     }
     
    .page-title i {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         background-clip: text;
         -webkit-text-fill-color: transparent;
         font-size: 2.5rem;
     }
     
-    /* Кнопки действий */
+    
    .action-buttons {
         display: flex;
         gap: 0.5rem;
     }
     
    .btn-upload {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 10px;
         padding: 0.6rem 1.2rem;
@@ -60,13 +60,13 @@
     }
     
    .btn-upload:hover {
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
         color: white;
     }
     
    .btn-folder {
         background: var(--bg-overlay-15);
-        border: 1px solid rgba(106, 90, 205, 0.5);
+        border: 1px solid var(--accent-glow-strong);
         border-radius: 10px;
         padding: 0.6rem 1.2rem;
         font-weight: 500;
@@ -80,11 +80,11 @@
     
    .btn-folder:hover {
         background: var(--bg-overlay-25);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
     }
     
-    /* Фильтры */
+    
    .filters-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -104,11 +104,11 @@
     }
     
    .filters-title i {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
    .filter-input {
-        background: rgba(20, 20, 35, 0.8);
+        background: var(--bg-input);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 8px;
         padding: 0.6rem 1rem;
@@ -119,11 +119,11 @@
     
    .filter-input:focus {
         outline: none;
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
     }
     
    .filter-select {
-        background: rgba(20, 20, 35, 0.8);
+        background: var(--bg-input);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 8px;
         padding: 0.6rem 1rem;
@@ -150,13 +150,13 @@
     }
     
    .filter-checkbox input {
-        accent-color: #6a5acd;
+        accent-color: var(--accent-primary);
         width: 1.1rem;
         height: 1.1rem;
     }
     
    .btn-apply {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 8px;
         padding: 0.6rem;
@@ -167,7 +167,7 @@
     }
     
    .btn-apply:hover {
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
     }
     
    .btn-reset {
@@ -184,11 +184,11 @@
     
    .btn-reset:hover {
         background: var(--bg-overlay-25);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
     }
     
-    /* Папки */
+    
    .folders-section {
         margin-bottom: 2rem;
     }
@@ -203,11 +203,11 @@
     }
     
    .section-title i {
-        color: #6a5acd;
+        color: var(--accent-primary);
     }
     
    .folder-card {
-        background: rgba(30, 30, 46, 0.9);
+        background: var(--bg-card);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 12px;
         padding: 1rem;
@@ -217,14 +217,14 @@
     
    .folder-card:hover {
         transform: translateY(-2px);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         box-shadow: 0 5px 15px var(--bg-overlay-20);
     }
     
    .folder-icon {
         width: 48px;
         height: 48px;
-        background: linear-gradient(135deg, #4caf50, #45a049);
+        background: linear-gradient(135deg, var(--status-success), var(--status-success));
         border-radius: 12px;
         display: flex;
         align-items: center;
@@ -245,7 +245,7 @@
         font-size: 0.85rem;
     }
     
-    /* Таблица */
+    
    .files-table {
         width: 100%;
         border-collapse: collapse;
@@ -285,7 +285,7 @@
    .file-icon {
         width: 40px;
         height: 40px;
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border-radius: 10px;
         display: flex;
         align-items: center;
@@ -331,20 +331,20 @@
     
    .btn-table-action:hover {
         background: var(--bg-overlay-25);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
     }
     
-    /* Пустое состояние */
+    
    .empty-state {
         text-align: center;
         padding: 3rem;
-        color: #8080b0;
+        color: var(--text-disabled);
     }
     
    .empty-state i {
         font-size: 3rem;
-        color: #6a5acd;
+        color: var(--accent-primary);
         margin-bottom: 1rem;
         opacity: 0.5;
     }
@@ -353,7 +353,7 @@
         margin: 0;
     }
     
-    /* Пагинация */
+    
    .custom-pagination {
         margin-top: 2rem;
     }
@@ -369,17 +369,17 @@
     
    .pagination.page-link:hover {
         background: var(--bg-overlay-30);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
     }
     
    .pagination.page-item.active.page-link {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
-        border-color: #6a5acd;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border-color: var(--accent-primary);
         color: white;
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-files {
             padding: 1rem 0.5rem;
@@ -439,7 +439,7 @@
 
 <div class="theme-files">
     <div class="container-fluid">
-        <!-- Заголовок -->
+        
         <div class="page-header">
             <h1 class="page-title">
                 <i class="bi bi-files"></i>
@@ -456,7 +456,7 @@
         </div>
 
         <div class="row">
-            <!-- Фильтры -->
+            
             <div class="col-lg-3">
                 <div class="filters-card">
                     <div class="filters-title">
@@ -505,7 +505,7 @@
                 </div>
             </div>
             
-            <!-- Список файлов -->
+            
             <div class="col-lg-9">
                 {% if folders %}
                 <div class="folders-section">

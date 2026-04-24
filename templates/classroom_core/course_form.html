@@ -10,7 +10,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Хлебные крошки */
+    
    .custom-breadcrumb {
         background: var(--bg-overlay-10);
         padding: 0.8rem 1.2rem;
@@ -44,8 +44,8 @@
     }
     
    .custom-breadcrumb.breadcrumb-item a:hover {
-        color: #6a5acd;
-        text-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
+        color: var(--accent-primary);
+        text-shadow: 0 0 8px var(--accent-glow-strong);
     }
     
    .custom-breadcrumb.breadcrumb-item.active {
@@ -54,12 +54,12 @@
     }
     
    .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
-        color: #6a5acd;
+        color: var(--accent-primary);
         content: "›";
         font-size: 1.2rem;
     }
     
-    /* Заголовок */
+    
    .page-header {
         animation: headerFade 0.5s ease-out;
     }
@@ -85,13 +85,13 @@
         text-shadow: 0 0 20px var(--bg-overlay-30);
     }
     
-    /* Карточка формы */
+    
    .form-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
         border: 1px solid var(--bg-overlay-30);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--bg-overlay-20);
+        box-shadow: 0 10px 30px var(--shadow-card), 0 0 20px var(--bg-overlay-20);
         transition: all 0.3s ease;
         animation: cardAppear 0.6s ease-out 0.2s both;
         overflow: hidden;
@@ -109,11 +109,11 @@
     }
     
    .form-card:hover {
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(106, 90, 205, 0.4);
+        box-shadow: 0 15px 40px var(--shadow-card-hover), 0 0 30px var(--border-accent-hover);
     }
     
    .card-header-gradient {
-        background: linear-gradient(135deg, rgba(106, 90, 205, 0.2), rgba(74, 144, 226, 0.2));
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
         border-bottom: 1px solid var(--bg-overlay-30);
         padding: 1.2rem 1.5rem;
     }
@@ -128,7 +128,7 @@
     }
     
    .card-header-gradient h5 i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.5rem;
     }
     
@@ -136,7 +136,7 @@
         padding: 2rem;
     }
     
-    /* Поля формы */
+    
    .form-group {
         margin-bottom: 1.8rem;
         animation: fieldAppear 0.5s ease-out;
@@ -175,19 +175,19 @@
     }
     
    .form-label i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 1.1rem;
     }
     
    .form-label.required {
-        color: #ff6b81;
+        color: var(--status-danger-light);
         margin-left: 0.3rem;
         font-size: 1.2rem;
     }
     
-    /* Стили для полей ввода */
+    
    .custom-input {
-        background: rgba(20, 20, 35, 0.8);
+        background: var(--bg-input);
         border: 2px solid var(--bg-overlay-30);
         border-radius: 12px;
         padding: 0.8rem 1.2rem;
@@ -199,14 +199,14 @@
     
    .custom-input:focus {
         outline: none;
-        border-color: #6a5acd;
-        box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.2), 0 0 20px var(--bg-overlay-30);
-        background: rgba(30, 30, 50, 0.9);
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 4px var(--bg-overlay-20), 0 0 20px var(--bg-overlay-30);
+        background: var(--bg-item-hover);
         transform: translateY(-2px);
     }
     
    .custom-input:hover {
-        border-color: rgba(106, 90, 205, 0.6);
+        border-color: var(--border-accent-hover);
     }
     
     textarea.custom-input {
@@ -215,7 +215,7 @@
         line-height: 1.6;
     }
     
-    /* Чекбоксы */
+    
    .checkbox-group {
         background: var(--bg-overlay-10);
         border-radius: 15px;
@@ -238,8 +238,8 @@
     
    .checkbox-group:hover {
         background: var(--bg-overlay-15);
-        border-color: rgba(106, 90, 205, 0.4);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        border-color: var(--border-accent-hover);
+        box-shadow: 0 5px 15px var(--shadow-item);
     }
     
    .custom-checkbox {
@@ -262,7 +262,7 @@
         margin-right: 0.8rem;
         margin-top: 0.2rem;
         cursor: pointer;
-        accent-color: #6a5acd;
+        accent-color: var(--accent-primary);
         transition: all 0.2s ease;
     }
     
@@ -286,7 +286,7 @@
         line-height: 1.4;
     }
     
-    /* File input */
+    
    .file-input-container {
         position: relative;
     }
@@ -301,8 +301,8 @@
     }
     
    .file-label {
-        background: rgba(20, 20, 35, 0.8);
-        border: 2px dashed rgba(106, 90, 205, 0.4);
+        background: var(--bg-input);
+        border: 2px dashed var(--border-accent-hover);
         border-radius: 12px;
         padding: 1.5rem;
         display: flex;
@@ -319,14 +319,14 @@
     }
     
    .file-label:hover {
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         background: var(--bg-overlay-10);
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 5px 15px var(--shadow-item);
     }
     
    .file-label i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 2.5rem;
         transition: transform 0.3s ease;
     }
@@ -336,12 +336,12 @@
     }
     
    .file-hint {
-        color: #8080b0;
+        color: var(--text-disabled);
         font-size: 0.9rem;
     }
     
    .file-name {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-weight: 600;
         margin-top: 0.5rem;
         padding: 0.3rem 1rem;
@@ -350,9 +350,9 @@
         display: inline-block;
     }
     
-    /* Подсказки */
+    
    .form-text {
-        color: #8080b0;
+        color: var(--text-disabled);
         font-size: 0.85rem;
         margin-top: 0.3rem;
         display: flex;
@@ -361,11 +361,11 @@
     }
     
    .form-text i {
-        color: #6a5acd;
+        color: var(--accent-primary);
         font-size: 0.9rem;
     }
     
-    /* Кнопки */
+    
    .button-group {
         display: flex;
         gap: 1rem;
@@ -385,7 +385,7 @@
     }
     
    .btn-save {
-        background: linear-gradient(135deg, #6a5acd, #4a90e2);
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 12px;
         padding: 0.8rem 2rem;
@@ -406,8 +406,8 @@
     
    .btn-save:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
-        background: linear-gradient(135deg, #4a90e2, #6a5acd);
+        box-shadow: 0 8px 25px var(--accent-glow-strong);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
         color: white;
     }
     
@@ -423,7 +423,7 @@
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--shimmer-overlay);
         transform: translate(-50%, -50%);
         transition: width 0.6s, height 0.6s;
     }
@@ -435,7 +435,7 @@
     
    .btn-cancel {
         background: var(--bg-overlay-20);
-        border: 1px solid rgba(106, 90, 205, 0.5);
+        border: 1px solid var(--accent-glow-strong);
         border-radius: 12px;
         padding: 0.8rem 2rem;
         font-weight: 600;
@@ -452,10 +452,10 @@
     
    .btn-cancel:hover {
         background: var(--bg-overlay-30);
-        border-color: #6a5acd;
+        border-color: var(--accent-primary);
         color: var(--text-white);
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+        box-shadow: 0 5px 15px var(--border-accent-hover);
     }
     
    .btn-cancel:active {
@@ -474,7 +474,7 @@
         transform: rotate(90deg);
     }
     
-    /* Индикатор обязательных полей */
+    
    .required-note {
         color: var(--text-secondary);;
         font-size: 0.9rem;
@@ -483,11 +483,11 @@
     }
     
    .required-note i {
-        color: #ff6b81;
+        color: var(--status-danger-light);
         margin-right: 0.2rem;
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-course-form {
             padding: 1rem 0.5rem;
@@ -537,7 +537,7 @@
 
 <div class="theme-course-form">
     <div class="container">
-        <!-- Заголовок и хлебные крошки -->
+        
         <div class="page-header mb-4">
             <h1 class="page-title">
                 <i class="bi bi-journal-bookmark-fill me-2"></i>
@@ -571,7 +571,7 @@
                         <form method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             
-                            <!-- Название курса -->
+                            
                             <div class="form-group">
                                 <label for="id_title" class="form-label">
                                     <i class="bi bi-type"></i>
@@ -586,7 +586,7 @@
                                        placeholder="Введите название курса">
                             </div>
                             
-                            <!-- Описание курса -->
+                            
                             <div class="form-group">
                                 <label for="id_description" class="form-label">
                                     <i class="bi bi-text-paragraph"></i>
@@ -600,7 +600,7 @@
                                           placeholder="Подробное описание курса, целей и содержания...">{{ form.description.value|default:'' }}</textarea>
                             </div>
                             
-                            <!-- Краткое описание -->
+                            
                             <div class="form-group">
                                 <label for="id_short_description" class="form-label">
                                     <i class="bi bi-quote"></i>
@@ -617,7 +617,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Даты -->
+                            
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -647,7 +647,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Настройки видимости -->
+                            
                             <div class="form-group">
                                 <label class="form-label">
                                     <i class="bi bi-eye"></i>
@@ -658,7 +658,7 @@
                                         <input type="checkbox" name="is_public" id="id_is_public" class="form-check-input" {% if form.is_public.value %}checked{% endif %}>
                                         <div>
                                             <label for="id_is_public">
-                                                <i class="bi bi-globe me-1" style="color: #6a5acd;"></i>
+                                                <i class="bi bi-globe me-1" style="color: var(--accent-primary);"></i>
                                                 Сделать курс публичным
                                             </label>
                                             <div class="checkbox-description">
@@ -671,7 +671,7 @@
                                         <input type="checkbox" name="allow_self_enrollment" id="id_allow_self_enrollment" class="form-check-input" {% if form.allow_self_enrollment.value|default:"True" %}checked{% endif %}>
                                         <div>
                                             <label for="id_allow_self_enrollment">
-                                                <i class="bi bi-person-plus me-1" style="color: #6a5acd;"></i>
+                                                <i class="bi bi-person-plus me-1" style="color: var(--accent-primary);"></i>
                                                 Разрешить самозапись
                                             </label>
                                             <div class="checkbox-description">
@@ -682,7 +682,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Максимум студентов -->
+                            
                             <div class="form-group">
                                 <label for="id_max_students" class="form-label">
                                     <i class="bi bi-people"></i>
@@ -701,7 +701,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Обложка курса -->
+                            
                             <div class="form-group">
                                 <label for="id_cover_image" class="form-label">
                                     <i class="bi bi-image"></i>
@@ -723,19 +723,19 @@
                                 </div>
                                 {% if course.cover_image %}
                                 <div class="mt-2 p-2" style="background: var(--bg-overlay-10); border-radius: 8px;">
-                                    <i class="bi bi-image me-1" style="color: #6a5acd;"></i>
+                                    <i class="bi bi-image me-1" style="color: var(--accent-primary);"></i>
                                     Текущая обложка: {{ course.cover_image.name }}
                                 </div>
                                 {% endif %}
                             </div>
                             
-                            <!-- Обязательные поля -->
+                            
                             <div class="required-note">
                                 <i class="bi bi-asterisk"></i>
                                 Поля, отмеченные звездочкой, обязательны для заполнения
                             </div>
                             
-                            <!-- Кнопки -->
+                            
                             <div class="button-group">
                                 <button type="submit" class="btn-save">
                                     <i class="bi bi-save"></i>
@@ -766,8 +766,8 @@
             fileNameDisplay.style.display = 'inline-block';
             
             // Визуальная обратная связь
-            fileLabel.style.borderColor = '#4caf50';
-            fileLabel.style.background = 'rgba(76, 175, 80, 0.1)';
+            fileLabel.style.borderColor = 'var(--status-success)';
+            fileLabel.style.background = 'var(--status-success-bg)';
         } else {
             fileNameDisplay.textContent = '';
             fileNameDisplay.style.display = 'none';
@@ -802,8 +802,8 @@
             });
             
             function highlight() {
-                fileLabel.style.borderColor = '#6a5acd';
-                fileLabel.style.background = 'rgba(106, 90, 205, 0.2)';
+                fileLabel.style.borderColor = 'var(--accent-primary)';
+                fileLabel.style.background = 'var(--bg-overlay-20)';
                 fileLabel.style.transform = 'scale(1.02)';
             }
             

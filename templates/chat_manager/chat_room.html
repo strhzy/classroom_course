@@ -15,9 +15,9 @@ html, body{
     height:calc(100vh - 70px);
     padding: 55px 0;
     background:
-        radial-gradient(circle at 20% 20%, rgba(106,90,205,.15), transparent 40%),
-        radial-gradient(circle at 80% 80%, rgba(74,144,226,.12), transparent 40%),
-        #0f1123;
+        radial-gradient(circle at 20% 20%, var(--bg-overlay-15), transparent 40%),
+        radial-gradient(circle at 80% 80%, var(--status-info-bg), transparent 40%),
+        var(--bg-page-end);
 }
 
 .container, .row, .col-lg-8, .col-lg-4{
@@ -25,15 +25,15 @@ html, body{
 }
 
 .chat-card{
-    background:rgba(20,23,51,.85);
+    background:var(--bg-input);
     backdrop-filter:blur(10px);
     border-radius:22px;
-    border:1px solid rgba(106,90,205,.25);
+    border:1px solid var(--bg-overlay-25);
     display:flex;
     flex-direction:column;
     height:100%;
     overflow:hidden;
-    box-shadow:0 0 40px rgba(106,90,205,.15);
+    box-shadow:0 0 40px var(--bg-overlay-15);
 }
 
 .chat-messages{
@@ -50,7 +50,7 @@ html, body{
     width:6px;
 }
 .chat-messages::-webkit-scrollbar-thumb{
-    background:rgba(106,90,205,.5);
+    background:var(--accent-glow-strong);
     border-radius:10px;
 }
 
@@ -74,50 +74,50 @@ html, body{
 .message-header{
     font-size:12px;
     font-weight:600;
-    color:#9aa0ff;
+    color:var(--text-muted);
     margin-bottom:4px;
 }
 
 .message-own{
     align-self:flex-end;
-    background:linear-gradient(135deg,#6a5acd,#4a90e2);
+    background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
     color:var(--text-white);
     border-bottom-right-radius:6px;
-    box-shadow:0 0 10px rgba(106,90,205,.4);
+    box-shadow:0 0 10px var(--border-accent-hover);
 }
 
 .message-other{
     align-self:flex-start;
-    background:#1c2045;
-    color:#e5e7ff;
-    border:1px solid rgba(106,90,205,.25);
+    background:var(--bg-page-end);
+    color:var(--text-main);
+    border:1px solid var(--bg-overlay-25);
     border-bottom-left-radius:6px;
 }
 
-/* ----------------- Галочка снизу ----------------- */
+
 .read-status{
     position:absolute;
     bottom:4px;
     right:8px;
     font-size:12px;
-    color:#9aa0ff;
+    color:var(--text-muted);
     transition:all 0.3s ease;
 }
 
-/* ----------------- Ввод сообщения ----------------- */
+
 .chat-input{
     padding:14px;
-    border-top:1px solid rgba(106,90,205,.2);
+    border-top:1px solid var(--bg-overlay-20);
     display:flex;
     gap:10px;
     align-items:center;
-    background:rgba(20,23,51,.9);
+    background:var(--bg-input);
 }
 
 .chat-input input{
     flex:1;
-    background:#0f1123;
-    border:1px solid rgba(106,90,205,.3);
+    background:var(--bg-page-end);
+    border:1px solid var(--bg-overlay-30);
     border-radius:30px;
     padding:11px 16px;
     color:var(--text-white);
@@ -126,8 +126,8 @@ html, body{
 
 .chat-input input:focus{
     outline:none;
-    border-color:#6a5acd;
-    box-shadow:0 0 8px rgba(106,90,205,.5);
+    border-color:var(--accent-primary);
+    box-shadow:0 0 8px var(--accent-glow-strong);
 }
 
 .send-btn{
@@ -135,7 +135,7 @@ html, body{
     height:44px;
     border:none;
     border-radius:50%;
-    background:linear-gradient(135deg,#6a5acd,#4a90e2);
+    background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
     color:var(--text-white);
     cursor:pointer;
     transition:.2s;
@@ -143,17 +143,17 @@ html, body{
 
 .send-btn:hover{
     transform:scale(1.08);
-    box-shadow:0 0 12px rgba(106,90,205,.6);
+    box-shadow:0 0 12px var(--border-accent-hover);
 }
 
-/* ----------------- Кнопка прикрепления файла ----------------- */
+
 .attach-btn{
     width:44px;
     height:44px;
     border:none;
     border-radius:50%;
-    background:rgba(106,90,205,.2);
-    color:#9aa0ff;
+    background:var(--bg-overlay-20);
+    color:var(--text-muted);
     cursor:pointer;
     transition:.2s;
     display:flex;
@@ -163,20 +163,20 @@ html, body{
 }
 
 .attach-btn:hover{
-    background:rgba(106,90,205,.4);
+    background:var(--border-accent-hover);
     transform:scale(1.08);
 }
 
-/* ----------------- Скрытый input для файла ----------------- */
+
 #file-input{
     display:none;
 }
 
-/* ----------------- Превью выбранного файла ----------------- */
+
 .file-preview{
     padding:10px 14px;
-    border-top:1px solid rgba(106,90,205,.2);
-    background:rgba(20,23,51,.9);
+    border-top:1px solid var(--bg-overlay-20);
+    background:var(--bg-input);
     display:none;
     align-items:center;
     gap:10px;
@@ -191,12 +191,12 @@ html, body{
     height:60px;
     object-fit:cover;
     border-radius:8px;
-    border:2px solid rgba(106,90,205,.4);
+    border:2px solid var(--border-accent-hover);
 }
 
 .file-preview .file-info{
     flex:1;
-    color:#e5e7ff;
+    color:var(--text-main);
     font-size:13px;
 }
 
@@ -207,13 +207,13 @@ html, body{
 
 .file-preview .file-size{
     font-size:11px;
-    color:#9aa0ff;
+    color:var(--text-muted);
 }
 
 .file-preview .remove-file{
-    background:rgba(255,80,80,.2);
+    background:var(--status-danger-bg);
     border:none;
-    color:#ff5050;
+    color:var(--status-danger);
     width:30px;
     height:30px;
     border-radius:50%;
@@ -223,11 +223,11 @@ html, body{
 }
 
 .file-preview .remove-file:hover{
-    background:rgba(255,80,80,.4);
+    background:var(--status-danger-border);
     transform:scale(1.1);
 }
 
-/* ----------------- Отображение файла в сообщении ----------------- */
+
 .message-file{
     margin-top:8px;
     border-radius:12px;
@@ -244,7 +244,7 @@ html, body{
 
 .message-file img:hover{
     transform:scale(1.02);
-    box-shadow:0 4px 20px rgba(0,0,0,.3);
+    box-shadow:0 4px 20px var(--shadow-item);
 }
 
 .message-file .file-attachment{
@@ -252,15 +252,15 @@ html, body{
     align-items:center;
     gap:10px;
     padding:10px 12px;
-    background:rgba(15,17,35,.6);
+    background:var(--bg-item);
     border-radius:12px;
     text-decoration:none;
-    color:#e5e7ff;
+    color:var(--text-main);
     transition:.2s;
 }
 
 .message-file .file-attachment:hover{
-    background:rgba(15,17,35,.8);
+    background:var(--bg-input);
     transform:translateX(4px);
 }
 
@@ -280,15 +280,15 @@ html, body{
 
 .message-file .file-size{
     font-size:11px;
-    color:#9aa0ff;
+    color:var(--text-muted);
 }
 
-/* ----------------- SIDEBAR ----------------- */
+
 .sidebar{
-    background:rgba(20,23,51,.85);
+    background:var(--bg-input);
     backdrop-filter:blur(10px);
     border-radius:22px;
-    border:1px solid rgba(106,90,205,.25);
+    border:1px solid var(--bg-overlay-25);
     padding:15px;
     height:100%;
     overflow-y:auto;
@@ -297,7 +297,7 @@ html, body{
 }
 
 .sidebar-title{
-    color:#9aa0ff;
+    color:var(--text-muted);
     font-size:13px;
     margin-bottom:10px;
 }
@@ -316,13 +316,13 @@ html, body{
     border-radius:12px;
     color:var(--text-white);
     transition:.2s;
-    background:rgba(255,255,255,.02);
+    background:var(--bg-overlay-10);
     border:1px solid transparent;
 }
 
 .user-item:hover{
-    background:rgba(106,90,205,.15);
-    border:1px solid rgba(106,90,205,.3);
+    background:var(--bg-overlay-15);
+    border:1px solid var(--bg-overlay-30);
     transform:translateX(4px);
 }
 
@@ -330,7 +330,7 @@ html, body{
     width:34px;
     height:34px;
     border-radius:50%;
-    background:linear-gradient(135deg,#6a5acd,#4a90e2);
+    background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
     display:flex;
     align-items:center;
     justify-content:center;
@@ -347,11 +347,11 @@ html, body{
     width:6px;
 }
 .sidebar::-webkit-scrollbar-thumb{
-    background:rgba(106,90,205,.5);
+    background:var(--accent-glow-strong);
     border-radius:10px;
 }
 
-/* ----------------- Модальное окно для изображений ----------------- */
+
 .image-modal{
     display:none;
     position:fixed;
@@ -359,7 +359,7 @@ html, body{
     left:0;
     width:100%;
     height:100%;
-    background:rgba(0,0,0,.9);
+    background:var(--shadow-card-hover);
     z-index:9999;
     justify-content:center;
     align-items:center;
@@ -374,7 +374,7 @@ html, body{
     max-width:90%;
     max-height:90%;
     border-radius:12px;
-    box-shadow:0 0 40px rgba(0,0,0,.5);
+    box-shadow:0 0 40px var(--shadow-card);
 }
 </style>
 
@@ -382,7 +382,7 @@ html, body{
     <div class="container">
         <div class="row">
 
-            <!-- Чат -->
+            
             <div class="col-lg-8">
                 <div class="chat-card">
 
@@ -437,7 +437,7 @@ html, body{
                         {% endfor %}
                     </div>
 
-                    <!-- Превью выбранного файла -->
+                    
                     <div class="file-preview" id="file-preview">
                         <div id="file-preview-content"></div>
                         <div class="file-info">
@@ -457,7 +457,7 @@ html, body{
                 </div>
             </div>
 
-            <!-- SIDEBAR -->
+            
             <div class="col-lg-4">
                 <div class="sidebar">
                     <div class="sidebar-title">
@@ -478,7 +478,7 @@ html, body{
     </div>
 </div>
 
-<!-- Модальное окно для просмотра изображений -->
+
 <div class="image-modal" id="image-modal" onclick="closeImageModal()">
     <img id="modal-image" src="" alt="Просмотр изображения">
 </div>
@@ -699,7 +699,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             reader.readAsDataURL(file)
         } else {
             const icon = getFileIcon(file.name.split('.').pop())
-            previewContent.innerHTML = `<div style="font-size:32px;width:60px;height:60px;display:flex;align-items:center;justify-content:center;background:rgba(106,90,205,.2);border-radius:8px;">${icon}</div>`
+            previewContent.innerHTML = `<div style="font-size:32px;width:60px;height:60px;display:flex;align-items:center;justify-content:center;background:var(--bg-overlay-20);border-radius:8px;">${icon}</div>`
         }
     }
 
