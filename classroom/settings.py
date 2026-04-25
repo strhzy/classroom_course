@@ -13,31 +13,34 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
 
 
 def env_bool(name, default=False):
     value = os.getenv(name)
     if value is None:
         return default
-    return value.lower() in {"1", "true", "yes", "on"}
+    return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
-def env_int(name, default):
+def env_int(name, default=0):
     value = os.getenv(name)
-    if value is None:
+    if value is None or value == "":
         return default
     try:
         return int(value)
     except ValueError:
         return default
 
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-dev-key")
 
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-dev-key-change-me")
 DEBUG = env_bool("DJANGO_DEBUG", True)
-
 ALLOWED_HOSTS = [host.strip() for host in os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",") if host.strip()]
+DEFAULT_STORAGE_QUOTA_BYTES = env_int("DEFAULT_STORAGE_QUOTA_BYTES", 5368709120)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -67,7 +70,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-DEFAULT_STORAGE_QUOTA_BYTES = env_int("DEFAULT_STORAGE_QUOTA_BYTES", 5368709120)
 ROOT_URLCONF = 'classroom.urls'
 
 TEMPLATES =[
@@ -124,18 +126,18 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
-SITE_ID = env_int("DJANGO_SITE_ID", 1)
+SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -147,20 +149,24 @@ ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 SOCIALACCOUNT_LOGIN_ON_GET = True
 
+YANDEX_AUTH_CLIENT_ID = os.getenv("YANDEX_AUTH_CLIENT_ID", "")
+YANDEX_AUTH_CLIENT_SECRET = os.getenv("YANDEX_AUTH_CLIENT_SECRET", "")
+YANDEX_DISK_CLIENT_ID = os.getenv("YANDEX_DISK_CLIENT_ID", YANDEX_AUTH_CLIENT_ID)
+YANDEX_DISK_CLIENT_SECRET = os.getenv("YANDEX_DISK_CLIENT_SECRET", YANDEX_AUTH_CLIENT_SECRET)
+YANDEX_DISK_REDIRECT_URI = os.getenv(
+    "YANDEX_DISK_REDIRECT_URI",
+    "http://127.0.0.1:8000/files/oauth/yandex/callback/",
+)
+
 SOCIALACCOUNT_PROVIDERS = {
     "yandex": {
         "APP": {
-            "client_id": os.getenv("YANDEX_AUTH_CLIENT_ID", ""),
-            "secret": os.getenv("YANDEX_AUTH_CLIENT_SECRET", ""),
-            "key": "",
+            "client_id": YANDEX_AUTH_CLIENT_ID,
+            "secret": YANDEX_AUTH_CLIENT_SECRET,
         },
-        "SCOPE": ["login:email", "login:info"],
+        "SCOPE": ["login:email", "login:avatar"],
     }
 }
-
-YANDEX_DISK_CLIENT_ID = os.getenv("YANDEX_DISK_CLIENT_ID", "")
-YANDEX_DISK_CLIENT_SECRET = os.getenv("YANDEX_DISK_CLIENT_SECRET", "")
-YANDEX_DISK_REDIRECT_URI = os.getenv("YANDEX_DISK_REDIRECT_URI", "")
 
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
 EMAIL_HOST = os.getenv("EMAIL_HOST", "")
@@ -170,10 +176,10 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@classroom.local")
 
-SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", False)
-SESSION_COOKIE_SECURE = env_bool("DJANGO_SESSION_COOKIE_SECURE", False)
-CSRF_COOKIE_SECURE = env_bool("DJANGO_CSRF_COOKIE_SECURE", False)
-SECURE_HSTS_SECONDS = env_int("DJANGO_SECURE_HSTS_SECONDS", 0)
-SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", False)
-SECURE_HSTS_PRELOAD = env_bool("DJANGO_SECURE_HSTS_PRELOAD", False)
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+SECURE_HSTS_SECONDS = 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_PRELOAD = False
 

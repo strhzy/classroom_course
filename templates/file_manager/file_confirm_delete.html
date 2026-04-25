@@ -306,14 +306,14 @@
                                 <div class="meta-icon">
                                     <i class="bi bi-file-earmark"></i>
                                 </div>
-                                <div class="meta-value">{{ file.file.size|filesizeformat }}</div>
+                                <div class="meta-value">{{ file.get_file_size_display }}</div>
                                 <div class="meta-label">Размер</div>
                             </div>
                             <div class="meta-item">
                                 <div class="meta-icon">
                                     <i class="bi bi-calendar3"></i>
                                 </div>
-                                <div class="meta-value">{{ file.created_at|date:"d.m.Y" }}</div>
+                                <div class="meta-value">{{ file.uploaded_at|date:"d.m.Y" }}</div>
                                 <div class="meta-label">Загружен</div>
                             </div>
                             <div class="meta-item">

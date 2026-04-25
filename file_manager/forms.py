@@ -18,20 +18,30 @@ class FileUploadForm(forms.ModelForm ):
         'folder':forms.Select(attrs ={'class':'form-select'}),
         }
 
+    def clean(self):
+        cleaned_data = super().clean()
+        visibility = cleaned_data.get("visibility")
+        if visibility != "shared":
+            cleaned_data["shared_with"] = []
+        return cleaned_data
+
 class FileEditForm(forms.ModelForm ):
     """Форма редактирования файла(без загрузки нового файла)"""
     class Meta :
         model =File 
-        fields =['title','description','category','tags','importance','visibility','shared_with']
+        fields =['title','visibility','shared_with']
         widgets ={
         'title':forms.TextInput(attrs ={'class':'form-control'}),
-        'description':forms.Textarea(attrs ={'class':'form-control','rows':3 }),
-        'category':forms.Select(attrs ={'class':'form-select'}),
-        'tags':forms.SelectMultiple(attrs ={'class':'form-select','size':5 }),
-        'importance': forms.Select(attrs={'class': 'form-select'}),
         'visibility':forms.Select(attrs ={'class':'form-select'}),
         'shared_with':forms.SelectMultiple(attrs ={'class':'form-select','size':5 }),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        visibility = cleaned_data.get("visibility")
+        if visibility != "shared":
+            cleaned_data["shared_with"] = []
+        return cleaned_data
 
 class FileVersionForm(forms.ModelForm ):
     """Форма для новой версии файла"""

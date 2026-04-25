@@ -7,7 +7,7 @@
    .theme-files {
         background: var(--bg-page-gradient);
         min-height: 100vh;
-        padding: 2rem 1rem;
+        padding: 1rem 0.25rem;
     }
     
     
@@ -21,7 +21,7 @@
     }
     
    .page-title {
-        font-size: 2.2rem;
+        font-size: 1.9rem;
         font-weight: 700;
         background: linear-gradient(135deg, var(--text-white), var(--text-muted));
         background-clip: text;
@@ -43,20 +43,63 @@
    .action-buttons {
         display: flex;
         gap: 0.5rem;
+        flex-wrap: wrap;
     }
     
    .btn-upload {
         background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
-        border-radius: 10px;
-        padding: 0.6rem 1.2rem;
-        font-weight: 500;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
         color: white;
         transition: background-color 0.2s ease;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
+    }
+   .quick-upload-form {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+   .hidden-file-input {
+        display: none;
+    }
+   .drop-upload-zone {
+        margin-top: 0.8rem;
+        border: 2px dashed var(--border-accent-hover);
+        border-radius: 10px;
+        padding: 0.8rem;
+        color: var(--text-muted);
+        background: var(--bg-overlay-10);
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+   .drop-upload-zone.active {
+        border-color: var(--accent-primary);
+        background: var(--bg-overlay-20);
+        color: var(--text-white);
+    }
+   .global-drop-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(2px);
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 1.2rem;
+        font-weight: 600;
+        text-align: center;
+        padding: 2rem;
+        border: 3px dashed var(--accent-primary);
+    }
+   .global-drop-overlay.active {
+        display: flex;
     }
     
    .btn-upload:hover {
@@ -65,11 +108,11 @@
     }
     
    .btn-folder {
-        background: var(--bg-overlay-15);
-        border: 1px solid var(--accent-glow-strong);
-        border-radius: 10px;
-        padding: 0.6rem 1.2rem;
-        font-weight: 500;
+        background: var(--bg-card);
+        border: 1px solid var(--border-accent-light);
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
         color: var(--text-muted);
         transition: all 0.2s ease;
         text-decoration: none;
@@ -87,11 +130,11 @@
     
    .filters-card {
         background: var(--bg-card);
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--bg-overlay-30);
-        border-radius: 15px;
-        padding: 1.2rem;
+        border: 1px solid var(--border-accent-light);
+        border-radius: 12px;
+        padding: 1rem;
         margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-item);
     }
     
    .filters-title {
@@ -208,9 +251,9 @@
     
    .folder-card {
         background: var(--bg-card);
-        border: 1px solid var(--bg-overlay-30);
-        border-radius: 12px;
-        padding: 1rem;
+        border: 1px solid var(--border-accent-light);
+        border-radius: 10px;
+        padding: 0.85rem;
         transition: all 0.2s ease;
         height: 100%;
     }
@@ -249,10 +292,14 @@
    .files-table {
         width: 100%;
         border-collapse: collapse;
+        background: var(--bg-card);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--shadow-item);
     }
     
    .files-table thead th {
-        background: var(--bg-overlay-15);
+        background: var(--bg-item);
         color: var(--text-muted);
         font-weight: 600;
         font-size: 0.9rem;
@@ -272,7 +319,7 @@
     
    .files-table tbody td {
         padding: 1rem;
-        color: var(--text-main);;
+        color: var(--text-main);
         vertical-align: middle;
     }
     
@@ -316,6 +363,15 @@
         padding: 0.3rem 0.8rem;
         border-radius: 50px;
         font-size: 0.85rem;
+    }
+   .shared-badge {
+        background: var(--status-info-bg);
+        border: 1px solid var(--status-info-border);
+        color: var(--status-info);
+        padding: 0.25rem 0.6rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        margin-left: 0.5rem;
     }
     
    .btn-table-action {
@@ -438,6 +494,9 @@
 </style>
 
 <div class="theme-files">
+    <div id="global-drop-overlay" class="global-drop-overlay">
+        Отпустите файл в любом месте экрана для загрузки
+    </div>
     <div class="container-fluid">
         
         <div class="page-header">
@@ -446,24 +505,22 @@
                 Мои файлы
             </h1>
             <div class="action-buttons">
-                <a href="{% url 'file_manager:file_upload' %}" class="btn-upload">
-                    <i class="bi bi-upload"></i> Загрузить
-                </a>
+                <form id="quick-upload-form" class="quick-upload-form" method="post" action="{% url 'file_manager:file_upload' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input id="quick-upload-input" class="hidden-file-input" type="file" name="file" required>
+                    <button type="button" id="quick-upload-button" class="btn-upload">
+                        <i class="bi bi-upload"></i> Загрузить
+                    </button>
+                </form>
                 <a href="{% url 'file_manager:folder_create' %}" class="btn-folder">
                     <i class="bi bi-folder-plus"></i> Папка
                 </a>
                 <a href="{% url 'file_manager:download_all_files_archive' %}" class="btn-folder">
                     <i class="bi bi-file-earmark-zip"></i> Скачать все архивом
                 </a>
-                <a href="{% url 'file_manager:backup_compare' %}" class="btn-folder">
-                    <i class="bi bi-arrow-left-right"></i> Сравнить бэкапы
-                </a>
                 {% if yandex_connected %}
                 <a href="{% url 'file_manager:yandex_picker' %}" class="btn-folder">
                     <i class="bi bi-cloud-arrow-down"></i> Импорт с Яндекс.Диска
-                </a>
-                <a href="{% url 'file_manager:yandex_disconnect' %}" class="btn-folder">
-                    <i class="bi bi-plug"></i> Отключить Яндекс
                 </a>
                 {% else %}
                 <a href="{% url 'file_manager:yandex_oauth_start' %}" class="btn-folder">
@@ -472,20 +529,9 @@
                 {% endif %}
             </div>
         </div>
-        <div class="mt-3 d-flex gap-2 flex-wrap">
-            <form method="post" action="{% url 'file_manager:favorite_collection_create' %}" class="d-flex gap-2">
-                {% csrf_token %}
-                <input type="text" name="title" class="filter-input" placeholder="Новая категория избранного" required>
-                <button type="submit" class="btn-reset">Создать</button>
-            </form>
-            <form method="post" action="{% url 'file_manager:workspace_create' %}" class="d-flex gap-2">
-                {% csrf_token %}
-                <input type="text" name="title" class="filter-input" placeholder="Общий workspace" required>
-                <input type="text" name="participant" class="filter-input" placeholder="username второго пользователя" required>
-                <button type="submit" class="btn-reset">Создать workspace</button>
-            </form>
+        <div id="drop-upload-zone" class="drop-upload-zone">
+            Перетащите файл сюда для быстрой загрузки
         </div>
-
         <div class="row">
             
             <div class="col-lg-3">
@@ -591,6 +637,9 @@
                                         </div>
                                         <div class="file-details">
                                             <div class="file-name">{{ file.title }}</div>
+                                            {% if file.visibility == 'shared' or file.shared_with.count > 0 %}
+                                            <span class="shared-badge"><i class="bi bi-share"></i> Общий</span>
+                                            {% endif %}
                                             <div class="file-desc">{{ file.description|truncatechars:50 }}</div>
                                         </div>
                                     </div>
@@ -666,4 +715,83 @@
         </div>
     </div>
 </div>
+<script>
+(() => {
+    const form = document.getElementById('quick-upload-form');
+    const input = document.getElementById('quick-upload-input');
+    const button = document.getElementById('quick-upload-button');
+    const dropZone = document.getElementById('drop-upload-zone');
+    const overlay = document.getElementById('global-drop-overlay');
+    if (!form || !input || !button || !dropZone || !overlay) return;
+
+    const csrfInput = form.querySelector('input[name="csrfmiddlewaretoken"]');
+    const csrfToken = csrfInput ? csrfInput.value : '';
+    const uploadUrl = form.getAttribute('action');
+
+    const uploadSingleFile = (file) => {
+        if (!file) return;
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('csrfmiddlewaretoken', csrfToken);
+        fetch(uploadUrl, {
+            method: 'POST',
+            body: fd,
+            credentials: 'same-origin',
+        }).then(() => window.location.reload())
+          .catch(() => alert('Ошибка загрузки файла'));
+    };
+
+    button.addEventListener('click', () => input.click());
+    input.addEventListener('change', () => {
+        if (input.files && input.files.length > 0) uploadSingleFile(input.files[0]);
+    });
+
+    const activate = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.add('active');
+    };
+    const deactivate = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.remove('active');
+    };
+    ['dragenter', 'dragover'].forEach(evt => dropZone.addEventListener(evt, activate));
+    ['dragleave', 'drop'].forEach(evt => dropZone.addEventListener(evt, deactivate));
+
+    dropZone.addEventListener('drop', (e) => {
+        if (!e.dataTransfer || !e.dataTransfer.files || e.dataTransfer.files.length === 0) return;
+        uploadSingleFile(e.dataTransfer.files[0]);
+    });
+
+    let dragCounter = 0;
+    const showOverlay = () => overlay.classList.add('active');
+    const hideOverlay = () => {
+        dragCounter = 0;
+        overlay.classList.remove('active');
+    };
+
+    window.addEventListener('dragenter', (e) => {
+        e.preventDefault();
+        dragCounter += 1;
+        showOverlay();
+    });
+    window.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        showOverlay();
+    });
+    window.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        dragCounter -= 1;
+        if (dragCounter <= 0) hideOverlay();
+    });
+    window.addEventListener('drop', (e) => {
+        e.preventDefault();
+        hideOverlay();
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            uploadSingleFile(e.dataTransfer.files[0]);
+        }
+    });
+})();
+</script>
 {% endblock %}

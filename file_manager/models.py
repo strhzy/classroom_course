@@ -37,6 +37,10 @@ class FileCategory(models.Model ):
         return self.name 
 
 class File(models.Model ):
+    STORAGE_PROVIDER_CHOICES = [
+        ("local", "Local"),
+        ("yandex_disk", "Yandex Disk"),
+    ]
     IMPORTANCE_CHOICES = [
         ("main", "Основное"),
         ("important", "Важное"),
@@ -64,9 +68,11 @@ class File(models.Model ):
 
     title =models.CharField(max_length =255 )
     description =models.TextField(blank =True )
-    file =models.FileField(upload_to =file_upload_path )
+    file =models.FileField(upload_to =file_upload_path, null=True, blank=True)
     file_type =models.CharField(max_length =10 ,choices =FILE_TYPE_CHOICES ,default ='other')
     file_size =models.BigIntegerField(default =0 )
+    storage_provider = models.CharField(max_length=20, choices=STORAGE_PROVIDER_CHOICES, default="local")
+    yandex_path = models.CharField(max_length=1024, blank=True, default="")
 
     uploaded_by =models.ForeignKey(
     User ,
@@ -200,6 +206,9 @@ class File(models.Model ):
 
     def can_delete(self ,user ):
         return self.uploaded_by ==user or user.is_superuser or user.is_staff 
+
+    def is_shared(self):
+        return self.visibility == "shared" or self.shared_with.exists()
 
     def increment_download(self ):
         self.download_count +=1 

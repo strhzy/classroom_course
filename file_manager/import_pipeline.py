@@ -1,21 +1,26 @@
-from django.core.files.base import ContentFile
+from pathlib import PurePosixPath
 
-from .models import File
-from .utils import extract_text_from_file
+from .models import ExternalStorageConnection, File
+from .yandex_disk import upload_file_bytes
 
 
 def import_yandex_file(user, filename, content, folder=None):
+    connection = ExternalStorageConnection.objects.filter(user=user, provider="yandex_disk").first()
+    if not connection:
+        raise RuntimeError("Yandex Disk is not connected")
+
+    remote_path = f"app:/Classroom/{user.id}/{PurePosixPath(filename).name}"
+    upload_file_bytes(connection.access_token, remote_path, content, overwrite=True)
+
     file_obj = File(
         title=filename,
         uploaded_by=user,
         visibility="private",
         folder=folder,
         is_folder=False,
+        storage_provider="yandex_disk",
+        yandex_path=remote_path,
+        file_size=len(content),
     )
-    file_obj.file.save(filename, ContentFile(content), save=True)
-    try:
-        file_obj.extracted_text = extract_text_from_file(file_obj.file.path)
-        file_obj.save(update_fields=["extracted_text"])
-    except Exception:
-        pass
+    file_obj.save()
     return file_obj

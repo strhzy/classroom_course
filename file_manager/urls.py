@@ -26,6 +26,7 @@ path('oauth/yandex/start/', views.yandex_oauth_start, name='yandex_oauth_start')
 path('oauth/yandex/callback/', views.yandex_oauth_callback, name='yandex_oauth_callback'),
 path('oauth/yandex/disconnect/', views.yandex_disconnect, name='yandex_disconnect'),
 path('yandex/picker/', views.yandex_file_picker, name='yandex_picker'),
+path('<int:file_id>/yandex/export/', views.yandex_export_file, name='yandex_export_file'),
 path('download-all/', views.download_all_files_archive, name='download_all_files_archive'),
 path('favorite-collections/create/', views.favorite_collection_create, name='favorite_collection_create'),
 path('<int:file_id>/favorite-collections/add/', views.favorite_collection_add_file, name='favorite_collection_add_file'),

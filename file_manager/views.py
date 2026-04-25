@@ -17,19 +17,91 @@ from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 from .models import ExternalStorageConnection
 from .models import FavoriteCollection, FavoriteCollectionItem, SharedWorkspace
-from .yandex_disk import get_authorize_url, exchange_code_for_token, list_files, get_download_url
+from .yandex_disk import (
+    get_authorize_url,
+    exchange_code_for_token,
+    list_files,
+    get_disk_info,
+    resource_exists,
+    get_download_url,
+    upload_file_bytes,
+    delete_resource,
+)
 from .import_pipeline import import_yandex_file
 import zipfile
 import io
 import json
 from pathlib import Path
+from pathlib import PurePosixPath
+
+
+def get_yandex_connection(user, autocreate_from_social=False):
+    connection = ExternalStorageConnection.objects.filter(
+        user=user, provider="yandex_disk"
+    ).first()
+    if connection or not autocreate_from_social:
+        return connection
+
+    try:
+        from allauth.socialaccount.models import SocialToken
+    except Exception:
+        return None
+
+    social_token = (
+        SocialToken.objects.filter(account__user=user, account__provider="yandex")
+        .order_by("-id")
+        .first()
+    )
+    if not social_token or not social_token.token:
+        return None
+
+    expires_at = social_token.expires_at if social_token.expires_at else timezone.now() + timezone.timedelta(days=30)
+    connection, _ = ExternalStorageConnection.objects.update_or_create(
+        user=user,
+        provider="yandex_disk",
+        defaults={
+            "access_token": social_token.token,
+            "refresh_token": social_token.token_secret or "",
+            "expires_at": expires_at,
+        },
+    )
+    return connection
+
+
+def build_unique_title(user, original_name):
+    base_name = (original_name or "").strip() or "file"
+    stem, ext = os.path.splitext(base_name)
+    stem = stem or "file"
+    ext = ext or ""
+    candidate = f"{stem}{ext}"
+    counter = 1
+    while File.objects.filter(uploaded_by=user, title=candidate).exists():
+        candidate = f"{stem}{counter}{ext}"
+        counter += 1
+    return candidate
+
+
+def sync_deleted_yandex_files_for_user(user):
+    connection = get_yandex_connection(user, autocreate_from_social=True)
+    if not connection:
+        return
+    yandex_files = File.objects.filter(
+        uploaded_by=user,
+        storage_provider="yandex_disk",
+    ).exclude(yandex_path="")
+    for file_obj in yandex_files:
+        try:
+            exists = resource_exists(connection.access_token, file_obj.yandex_path)
+        except Exception:
+            continue
+        if not exists:
+            file_obj.delete()
 
 @login_required 
 def file_list(request ):
+    sync_deleted_yandex_files_for_user(request.user)
     storage_quota =get_user_storage_usage(request.user )
-    yandex_connection = ExternalStorageConnection.objects.filter(
-        user=request.user, provider="yandex_disk"
-    ).first()
+    yandex_connection = get_yandex_connection(request.user, autocreate_from_social=True)
 
     files =search_files(
     query =request.GET.get('query'),
@@ -75,66 +147,103 @@ def file_list(request ):
 
 @login_required 
 def file_upload(request ):
-    storage_quota =get_user_storage_usage(request.user )
+    print("[file_upload] start", {"method": request.method, "user_id": request.user.id, "username": request.user.username})
+    if request.method != 'POST':
+        print("[file_upload] non-POST -> redirect file_list")
+        return redirect('file_manager:file_list')
 
-    if request.method =='POST':
-        form =FileUploadForm(request.POST ,request.FILES )
-        if form.is_valid():
-            file_size =request.FILES ['file'].size 
-            if not storage_quota.has_enough_space(file_size ):
-                messages.error(request ,f'Недостаточно места в хранилище. Доступно: {storage_quota.get_quota_display()}')
-                return redirect('file_manager:file_upload')
-
-            file_obj =form.save(commit =False )
-            file_obj.uploaded_by =request.user 
-
-            if file_obj.folder and not file_obj.folder.can_edit(request.user ):
-                messages.error(request ,'Вы не можете добавлять файлы в эту папку')
-                return redirect('file_manager:file_upload')
-
-            file_obj.save()
-            form.save_m2m()
-            try :
-                file_path =file_obj.file.path 
-                extracted_text =extract_text_from_file(file_path )
-                file_obj.extracted_text =extracted_text 
-                file_obj.save()
-
-                if file_obj.file_type in ['jpg','png','pdf']:
-                    preview_path =generate_preview(file_path ,os.path.dirname(file_path ))
-                    if preview_path :
-                        file_obj.has_preview =True 
-                        file_obj.save()
-
-                messages.success(request ,'Файл успешно загружен')
-            except Exception as e :
-                messages.warning(request ,f'Файл загружен, но текст не извлечен: {e }')
-
-            FileActivity.log_activity(
-            file =file_obj ,
-            user =request.user ,
-            activity_type ='upload',
-            description =f'File uploaded: {file_obj.title }'
-            )
-
-            storage_quota.update_usage()
-
-            return redirect('file_manager:file_detail',file_id =file_obj.id )
-    else :
-        form =FileUploadForm()
-        form.fields ['folder'].queryset =File.objects.filter(
-        uploaded_by =request.user ,
-        is_folder =True 
-        )
-        form.fields ['shared_with'].queryset =form.fields ['shared_with'].queryset.exclude(
-        id =request.user.id 
-        )
-
-    return render(request ,'file_manager/file_form.html',{
-    'form':form ,
-    'title':'Загрузить файл',
-    'storage_quota':storage_quota ,
+    storage_quota = get_user_storage_usage(request.user)
+    print("[file_upload] quota", {
+        "used_bytes": storage_quota.used_bytes,
+        "total_quota_bytes": storage_quota.total_quota_bytes,
     })
+    uploaded_file = request.FILES.get('file')
+    if not uploaded_file:
+        print("[file_upload] no file in request.FILES", {"keys": list(request.FILES.keys())})
+        messages.error(request, 'Файл не выбран')
+        return redirect('file_manager:file_list')
+
+    file_size = uploaded_file.size
+    print("[file_upload] incoming file", {
+        "name": uploaded_file.name,
+        "size": file_size,
+        "content_type": getattr(uploaded_file, "content_type", None),
+    })
+    if not storage_quota.has_enough_space(file_size):
+        print("[file_upload] quota check failed")
+        messages.error(request, f'Недостаточно места в хранилище. Доступно: {storage_quota.get_quota_display()}')
+        return redirect('file_manager:file_list')
+
+    file_name = PurePosixPath(uploaded_file.name).name
+    unique_title = build_unique_title(request.user, file_name)
+    yandex_connection = get_yandex_connection(request.user, autocreate_from_social=True)
+    file_obj = None
+
+    if yandex_connection:
+        yandex_path = f"disk:/{unique_title}"
+        print("[file_upload] yandex storage target", {"file_name": unique_title, "yandex_path": yandex_path})
+        try:
+            upload_file_bytes(yandex_connection.access_token, yandex_path, uploaded_file.read(), overwrite=True)
+            file_obj = File.objects.create(
+                title=unique_title,
+                description="",
+                uploaded_by=request.user,
+                visibility="private",
+                importance="main",
+                is_folder=False,
+                storage_provider="yandex_disk",
+                yandex_path=yandex_path,
+                file_size=file_size,
+            )
+            messages.success(request, "Файл успешно загружен на Яндекс.Диск")
+            print("[file_upload] yandex save success", {"file_id": file_obj.id, "yandex_path": yandex_path})
+        except Exception as exc:
+            print("[file_upload] yandex save failed, fallback to local", {"error": repr(exc)})
+            messages.warning(request, f"Не удалось загрузить на Яндекс.Диск, сохранено локально: {exc}")
+
+    if not file_obj:
+        print("[file_upload] local storage target", {"file_name": unique_title})
+        try:
+            if hasattr(uploaded_file, "seek"):
+                uploaded_file.seek(0)
+            file_obj = File(
+                title=unique_title,
+                description="",
+                uploaded_by=request.user,
+                visibility="private",
+                importance="main",
+                is_folder=False,
+                storage_provider="local",
+                yandex_path="",
+                file_size=file_size,
+            )
+            file_obj.file.save(unique_title, uploaded_file, save=True)
+            print("[file_upload] local save success", {"file_id": file_obj.id, "path": file_obj.file.name})
+            messages.success(request, "Файл успешно загружен в локальное хранилище")
+        except Exception as exc:
+            print("[file_upload] local save failed", {"error": repr(exc)})
+            messages.error(request, f"Не удалось сохранить файл: {exc}")
+            return redirect('file_manager:file_list')
+
+    try:
+        FileActivity.log_activity(
+            file=file_obj,
+            user=request.user,
+            activity_type='upload',
+            description=f'File uploaded: {file_obj.title }'
+        )
+        print("[file_upload] activity logged", {"file_id": file_obj.id})
+    except Exception as exc:
+        print("[file_upload] activity log failed", {"error": repr(exc), "file_id": file_obj.id})
+
+    try:
+        storage_quota.update_usage()
+        print("[file_upload] quota updated")
+    except Exception as exc:
+        print("[file_upload] quota update failed", {"error": repr(exc)})
+
+    print("[file_upload] done", {"redirect_file_id": file_obj.id})
+    return redirect('file_manager:file_detail', file_id=file_obj.id)
 
 @login_required 
 def file_detail(request ,file_id ):
@@ -175,25 +284,33 @@ def file_download(request ,file_id ):
     if not file_obj.can_access(request.user ):
         raise PermissionDenied 
 
-    file_path =file_obj.file.path 
-
-    if os.path.exists(file_path ):
+    if file_obj.storage_provider == "yandex_disk" and file_obj.yandex_path:
+        connection = get_yandex_connection(file_obj.uploaded_by, autocreate_from_social=True)
+        if not connection:
+            raise Http404
+        download_url = get_download_url(connection.access_token, file_obj.yandex_path)
+        response = requests.get(download_url, timeout=60)
+        response.raise_for_status()
         FileActivity.log_activity(
-        file =file_obj ,
-        user =request.user ,
-        activity_type ='download',
-        description =f'File downloaded: {file_obj.title }',
-        ip_address =request.META.get('REMOTE_ADDR')
+            file=file_obj,
+            user=request.user,
+            activity_type='download',
+            description=f'File downloaded: {file_obj.title }',
+            ip_address=request.META.get('REMOTE_ADDR')
         )
-
         file_obj.increment_download()
+        output = HttpResponse(response.content, content_type="application/octet-stream")
+        output['Content-Disposition'] = f'attachment; filename="{file_obj.title}"'
+        return output
 
-        with open(file_path ,'rb')as fh :
+    if file_obj.file and os.path.exists(file_obj.file.path):
+        FileActivity.log_activity(file=file_obj, user=request.user, activity_type='download', description=f'File downloaded: {file_obj.title }', ip_address=request.META.get('REMOTE_ADDR'))
+        file_obj.increment_download()
+        with open(file_obj.file.path ,'rb')as fh :
             response =HttpResponse(fh.read(),content_type ="application/octet-stream")
-            response ['Content-Disposition']=f'attachment; filename="{os.path.basename(file_path)}"'
-            return response 
-
-    raise Http404 
+            response ['Content-Disposition']=f'attachment; filename="{os.path.basename(file_obj.file.path)}"'
+            return response
+    raise Http404
 
 @login_required 
 def file_preview(request ,file_id ):
@@ -202,29 +319,34 @@ def file_preview(request ,file_id ):
     if not file_obj.can_access(request.user ):
         raise PermissionDenied 
 
-    file_path =file_obj.file.path 
+    file_ext = (file_obj.get_extension() or "").lower()
+    content_type = 'application/octet-stream'
+    if file_ext in ['txt']:
+        content_type ='text/plain'
+    elif file_ext in ['pdf']:
+        content_type ='application/pdf'
+    elif file_ext in ['jpg','jpeg']:
+        content_type ='image/jpeg'
+    elif file_ext in ['png']:
+        content_type ='image/png'
 
-    if os.path.exists(file_path ):
-        file_ext =file_obj.file.name.split('.')[-1 ].lower()
-        content_type =''
+    if file_obj.storage_provider == "yandex_disk" and file_obj.yandex_path:
+        connection = get_yandex_connection(file_obj.uploaded_by, autocreate_from_social=True)
+        if not connection:
+            raise Http404
+        download_url = get_download_url(connection.access_token, file_obj.yandex_path)
+        resp = requests.get(download_url, timeout=60)
+        resp.raise_for_status()
+        response = HttpResponse(resp.content, content_type=content_type)
+        response['Content-Disposition'] = f'inline; filename="{file_obj.title}"'
+        return response
 
-        if file_ext in ['txt']:
-            content_type ='text/plain'
-        elif file_ext in ['pdf']:
-            content_type ='application/pdf'
-        elif file_ext in ['jpg','jpeg']:
-            content_type ='image/jpeg'
-        elif file_ext in ['png']:
-            content_type ='image/png'
-        else :
-            content_type ='application/octet-stream'
-
-        with open(file_path ,'rb')as fh :
+    if file_obj.file and os.path.exists(file_obj.file.path):
+        with open(file_obj.file.path ,'rb')as fh :
             response =HttpResponse(fh.read(),content_type =content_type )
-            response ['Content-Disposition']=f'inline; filename="{os.path.basename(file_path )}"'
-            return response 
-
-    raise Http404 
+            response ['Content-Disposition']=f'inline; filename="{os.path.basename(file_obj.file.path )}"'
+            return response
+    raise Http404
 
 @login_required 
 def file_edit(request ,file_id ):
@@ -234,8 +356,13 @@ def file_edit(request ,file_id ):
     if not file_obj.can_edit(request.user ):
         raise PermissionDenied 
 
+    students_queryset = User.objects.filter(profile__role='student').exclude(
+        id=request.user.id
+    ).order_by("username")
+
     if request.method =='POST':
         form =FileEditForm(request.POST ,instance =file_obj )
+        form.fields ['shared_with'].queryset = students_queryset
         if form.is_valid():
             form.save()
 
@@ -250,9 +377,7 @@ def file_edit(request ,file_id ):
             return redirect('file_manager:file_detail',file_id =file_obj.id )
     else :
         form =FileEditForm(instance =file_obj )
-        form.fields ['shared_with'].queryset =form.fields ['shared_with'].queryset.exclude(
-        id =request.user.id 
-        )
+        form.fields ['shared_with'].queryset = students_queryset
 
     return render(request ,'file_manager/file_form.html',{
     'form':form ,
@@ -272,9 +397,9 @@ def file_delete(request ,file_id ):
         file_size =file_obj.file_size 
         file_uploaded_by =file_obj.uploaded_by 
 
-        file_path =None 
-        if file_obj.file :
-            file_path =file_obj.file.path 
+        yandex_path = file_obj.yandex_path
+        local_path = file_obj.file.path if file_obj.file else None
+        owner = file_obj.uploaded_by
 
         file_obj.delete()
 
@@ -284,9 +409,17 @@ def file_delete(request ,file_id ):
         description =f'File deleted: {file_title }'
         )
 
-        if file_path and os.path.exists(file_path ):
+        if yandex_path:
+            connection = get_yandex_connection(owner, autocreate_from_social=True)
+            if connection:
+                try:
+                    delete_resource(connection.access_token, yandex_path, permanently=False)
+                except Exception:
+                    pass
+
+        if local_path and os.path.exists(local_path):
             try :
-                os.remove(file_path )
+                os.remove(local_path)
             except OSError :
                 pass 
 
@@ -525,6 +658,20 @@ def tag_create(request ):
 @login_required 
 def get_storage_quota(request ):
     if request.method =='GET':
+        yandex_connection = get_yandex_connection(request.user, autocreate_from_social=True)
+        if yandex_connection:
+            try:
+                disk_info = get_disk_info(yandex_connection.access_token)
+                used_bytes = int(disk_info.get("used_space", 0))
+                total_quota_bytes = int(disk_info.get("total_space", 0))
+                used_percentage = (used_bytes / total_quota_bytes * 100) if total_quota_bytes > 0 else 0
+                return JsonResponse({
+                    'used_bytes': used_bytes,
+                    'total_quota_bytes': total_quota_bytes,
+                    'used_percentage': used_percentage,
+                })
+            except Exception:
+                pass
         storage_quota =get_user_storage_usage(request.user )
         return JsonResponse({
         'used_bytes':storage_quota.used_bytes ,
@@ -539,8 +686,8 @@ def yandex_oauth_start(request):
     state = get_random_string(24)
     request.session["yandex_oauth_state"] = state
     authorize_url = get_authorize_url(
-        os.getenv("YANDEX_DISK_CLIENT_ID", ""),
-        os.getenv("YANDEX_DISK_REDIRECT_URI", request.build_absolute_uri("/files/oauth/yandex/callback/")),
+        settings.YANDEX_DISK_CLIENT_ID,
+        settings.YANDEX_DISK_REDIRECT_URI or request.build_absolute_uri("/files/oauth/yandex/callback/"),
         state,
     )
     return redirect(authorize_url)
@@ -559,8 +706,8 @@ def yandex_oauth_callback(request):
 
     try:
         token_data = exchange_code_for_token(
-            os.getenv("YANDEX_DISK_CLIENT_ID", ""),
-            os.getenv("YANDEX_DISK_CLIENT_SECRET", ""),
+            settings.YANDEX_DISK_CLIENT_ID,
+            settings.YANDEX_DISK_CLIENT_SECRET,
             code,
         )
     except Exception:
@@ -590,7 +737,7 @@ def yandex_disconnect(request):
 
 @login_required
 def yandex_file_picker(request):
-    connection = ExternalStorageConnection.objects.filter(user=request.user, provider="yandex_disk").first()
+    connection = get_yandex_connection(request.user, autocreate_from_social=True)
     if not connection:
         messages.error(request, "Сначала подключите Яндекс.Диск")
         return redirect("file_manager:file_list")
@@ -653,21 +800,61 @@ def yandex_file_picker(request):
 
 
 @login_required
+@require_http_methods(["POST"])
+def yandex_export_file(request, file_id):
+    file_obj = get_object_or_404(File, id=file_id)
+    if not file_obj.can_access(request.user):
+        raise PermissionDenied
+
+    connection = get_yandex_connection(request.user, autocreate_from_social=True)
+    if not connection:
+        messages.error(request, "Сначала подключите Яндекс.Диск")
+        return redirect("file_manager:file_detail", file_id=file_obj.id)
+
+    if not file_obj.file:
+        messages.error(request, "Нельзя экспортировать папку или пустой файл")
+        return redirect("file_manager:file_detail", file_id=file_obj.id)
+
+    yandex_path = f"disk:/{file_obj.title}"
+    try:
+        with open(file_obj.file.path, "rb") as fh:
+            upload_file_bytes(connection.access_token, yandex_path, fh.read(), overwrite=True)
+    except Exception:
+        messages.error(request, "Не удалось выгрузить файл на Яндекс.Диск")
+        return redirect("file_manager:file_detail", file_id=file_obj.id)
+
+    messages.success(request, "Файл выгружен на Яндекс.Диск")
+    return redirect("file_manager:file_detail", file_id=file_obj.id)
+
+
+@login_required
 def download_all_files_archive(request):
     files = File.objects.filter(uploaded_by=request.user, is_folder=False)
-    archive_buffer = io.BytesIO()
-    with zipfile.ZipFile(archive_buffer, "w", zipfile.ZIP_DEFLATED) as archive:
-        for file_obj in files:
-            try:
-                file_path = Path(file_obj.file.path)
-                if file_path.exists():
-                    archive.write(file_path, arcname=file_path.name)
-            except Exception:
-                continue
-    archive_buffer.seek(0)
-    response = HttpResponse(archive_buffer.getvalue(), content_type="application/zip")
-    response["Content-Disposition"] = 'attachment; filename="portfolio_files.zip"'
-    return response
+    if files.count() == 0:
+        messages.error(request, "Нет файлов для скачивания")
+        return redirect("file_manager:file_list")
+    else:
+        archive_buffer = io.BytesIO()
+        with zipfile.ZipFile(archive_buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+            for file_obj in files:
+                try:
+                    if file_obj.storage_provider == "yandex_disk" and file_obj.yandex_path:
+                        connection = get_yandex_connection(file_obj.uploaded_by, autocreate_from_social=True)
+                        if not connection:
+                            continue
+                        href = get_download_url(connection.access_token, file_obj.yandex_path)
+                        content = requests.get(href, timeout=60).content
+                        archive.writestr(file_obj.title, content)
+                    elif file_obj.file:
+                        file_path = Path(file_obj.file.path)
+                        if file_path.exists():
+                            archive.write(file_path, arcname=file_path.name)
+                except Exception:
+                    continue
+        archive_buffer.seek(0)
+        response = HttpResponse(archive_buffer.getvalue(), content_type="application/zip")
+        response["Content-Disposition"] = 'attachment; filename="portfolio_files.zip"'
+        return response
 
 
 @login_required

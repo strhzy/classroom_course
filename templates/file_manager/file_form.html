@@ -229,8 +229,37 @@
     }
     
     
-    select[multiple] {
-        min-height: 120px;
+   .students-checkbox-list {
+        background: var(--bg-input);
+        border: 1px solid var(--bg-overlay-30);
+        border-radius: 10px;
+        padding: 0.8rem;
+        max-height: 260px;
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+    }
+
+   .student-checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        color: var(--text-main);
+        padding: 0.35rem 0.4rem;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+   .student-checkbox-item:hover {
+        background: var(--bg-overlay-10);
+    }
+
+   .student-checkbox-item input[type="checkbox"] {
+        width: 1rem;
+        height: 1rem;
+        accent-color: var(--accent-primary);
+        cursor: pointer;
     }
     
     
@@ -352,18 +381,6 @@
         
         <div class="page-header">
             <h1 class="page-title">{{ title }}</h1>
-            <nav aria-label="breadcrumb" class="custom-breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="{% url 'file_manager:file_list' %}">
-                            <i class="bi bi-files me-1"></i>Файлы
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        {{ title }}
-                    </li>
-                </ol>
-            </nav>
         </div>
 
         <div class="row">
@@ -399,93 +416,43 @@
                                        placeholder="Введите название файла">
                             </div>
                             
-                            
-                            <div class="form-group">
-                                <label for="id_description" class="form-label">
-                                    <i class="bi bi-card-text"></i>
-                                    Описание
-                                </label>
-                                <textarea name="description" 
-                                          id="id_description" 
-                                          class="custom-input" 
-                                          rows="3"
-                                          placeholder="Краткое описание файла...">{{ form.description.value|default:'' }}</textarea>
-                            </div>
-                            
-                            
-                            <div class="form-group">
-                                <label for="id_file" class="form-label">
-                                    <i class="bi bi-file-earmark"></i>
-                                    Файл <span class="required">*</span>
-                                </label>
-                                <div class="file-input-container">
-                                    <input type="file" 
-                                           name="file" 
-                                           id="id_file" 
-                                           class="file-input" 
-                                           required
-                                           onchange="updateFileName(this)">
-                                    <div class="file-label">
-                                        <i class="bi bi-cloud-upload"></i>
-                                        <span>Выберите файл или перетащите его сюда</span>
-                                        <span id="file-name-display" class="file-name"></span>
-                                    </div>
-                                </div>
-                                <div class="form-text">
-                                    <i class="bi bi-info-circle"></i>
-                                    Поддерживаются: PDF, TXT, DOCX, XLSX, PPTX, JPG, PNG, MP4, MP3, ZIP
-                                </div>
-                            </div>
-                            
-                            
-                            <div class="form-group">
-                                <label for="id_course" class="form-label">
-                                    <i class="bi bi-book"></i>
-                                    Курс
-                                </label>
-                                <select name="course" id="id_course" class="custom-select">
-                                    <option value="">📚 Не выбрано</option>
-                                    {% for course in form.fields.course.queryset %}
-                                    <option value="{{ course.id }}" {% if form.course.value|add:"0" == course.id %}selected{% endif %}>
-                                        {{ course.title }}
-                                    </option>
-                                    {% endfor %}
-                                </select>
-                                <div class="form-text">
-                                    <i class="bi bi-info-circle"></i>
-                                    Опционально: привязать файл к курсу
-                                </div>
-                            </div>
-                            
-                            
                             <div class="form-group">
                                 <label for="id_visibility" class="form-label">
                                     <i class="bi bi-eye"></i>
-                                    Видимость <span class="required">*</span>
+                                    Настройка доступа <span class="required">*</span>
                                 </label>
                                 <select name="visibility" id="id_visibility" class="custom-select" required>
-                                    <option value="private" {% if form.visibility.value == 'private' %}selected{% endif %}>🔒 Приватный - Только я</option>
-                                    <option value="shared" {% if form.visibility.value == 'shared' %}selected{% endif %}>👥 Общий - С определенными пользователями</option>
-                                    <option value="public" {% if form.visibility.value == 'public' %}selected{% endif %}>🌐 Публичный - Все пользователи</option>
+                                    <option value="private" {% if form.visibility.value == 'private' %}selected{% endif %}>🔒 Личный</option>
+                                    <option value="shared" {% if form.visibility.value == 'shared' %}selected{% endif %}>👥 Общий с пользователями</option>
+                                    <option value="public" {% if form.visibility.value == 'public' %}selected{% endif %}>🌐 Публичный</option>
                                 </select>
                             </div>
                             
                             
-                            <div class="form-group">
+                            <div class="form-group" id="shared-with-group">
                                 <label for="id_shared_with" class="form-label">
                                     <i class="bi bi-people"></i>
-                                    Общий доступ
+                                    Пользователи с доступом
                                 </label>
-                                <select name="shared_with" id="id_shared_with" class="custom-select" multiple>
+                                <div class="students-checkbox-list" id="id_shared_with">
                                     {% for user in form.fields.shared_with.queryset %}
-                                    <option value="{{ user.id }}" {% if user.id in form.shared_with.value|default:"" %}selected{% endif %}>
-                                        {{ user.username }}
-                                    </option>
+                                    <label class="student-checkbox-item" for="shared_with_{{ user.id }}">
+                                        <input
+                                            type="checkbox"
+                                            id="shared_with_{{ user.id }}"
+                                            name="shared_with"
+                                            value="{{ user.id }}"
+                                            {% if user.id in form.shared_with.value|default:"" %}checked{% endif %}
+                                        >
+                                        <span>{{ user.get_full_name|default:user.username }}</span>
+                                    </label>
+                                    {% empty %}
+                                    <span class="empty-text">Нет доступных пользователей</span>
                                     {% endfor %}
-                                </select>
+                                </div>
                                 <div class="form-text">
                                     <i class="bi bi-info-circle"></i>
-                                    Выберите пользователей для общего доступа(можно выбрать несколько)
+                                    Отметьте студентов, которым будет открыт доступ
                                 </div>
                             </div>
                             
@@ -533,20 +500,31 @@
 </div>
 
 <script>
-    function updateFileName(input) {
-        const fileNameDisplay = document.getElementById('file-name-display');
-        const fileLabel = document.querySelector('.file-label');
-        
-        if(input.files && input.files.length > 0) {
-            const file = input.files[0];
-            fileNameDisplay.textContent = `📄 ${file.name}`;
-            fileNameDisplay.style.display = 'inline';
-            fileLabel.style.borderColor = 'var(--status-success)';
-        } else {
-            fileNameDisplay.textContent = '';
-            fileNameDisplay.style.display = 'none';
-            fileLabel.style.borderColor = '';
+    document.addEventListener('DOMContentLoaded', function() {
+        const visibilitySelect = document.getElementById('id_visibility');
+        const sharedWithGroup = document.getElementById('shared-with-group');
+        const sharedWithSelect = document.querySelectorAll('input[name="shared_with"]');
+
+        function toggleSharedWith() {
+            if (!visibilitySelect || !sharedWithGroup || !sharedWithSelect.length) return;
+            const isShared = visibilitySelect.value === 'shared';
+            sharedWithGroup.style.display = isShared ? '' : 'none';
+            if (!isShared) {
+                sharedWithSelect.forEach((checkbox) => {
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
+                });
+            } else {
+                sharedWithSelect.forEach((checkbox) => {
+                    checkbox.disabled = false;
+                });
+            }
         }
-    }
+
+        if (visibilitySelect) {
+            visibilitySelect.addEventListener('change', toggleSharedWith);
+            toggleSharedWith();
+        }
+    });
 </script>
 {% endblock %}

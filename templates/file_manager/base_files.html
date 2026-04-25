@@ -4,10 +4,10 @@
 <style>
     
    .file-nav {
-        background: linear-gradient(135deg, var(--bg-page-start) 0%, var(--bg-page-end) 100%);
-        border-bottom: 1px solid var(--bg-overlay-30);
-        box-shadow: 0 5px 20px var(--shadow-card);
-        padding: 0.8rem 1rem;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border-accent-light);
+        box-shadow: var(--shadow-item);
+        padding: 0.6rem 1rem;
     }
     
    .file-nav .navbar-nav {
@@ -19,13 +19,14 @@
     
    .file-nav .nav-link {
         color: var(--text-muted) !important;
-        padding: 0.6rem 1.2rem !important;
-        border-radius: 12px;
+        padding: 0.45rem 0.9rem !important;
+        border-radius: 10px;
         transition: background-color 0.2s ease, color 0.2s ease;
-        font-weight: 500;
+        font-weight: 600;
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        border: 1px solid transparent;
     }
     
    .file-nav .nav-link:hover {
@@ -34,9 +35,9 @@
     }
     
    .file-nav .nav-link.active {
-        background: linear-gradient(135deg, var(--bg-overlay-25), var(--status-info-bg));
+        background: var(--bg-overlay-15);
         color: var(--text-white) !important;
-        border: 1px solid var(--accent-glow-strong);
+        border: 1px solid var(--border-accent);
     }
     
    .file-nav .nav-link i {
@@ -51,13 +52,12 @@
     
    .storage-alert {
         background: var(--bg-card) !important;
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--bg-overlay-30) !important;
-        border-radius: 15px !important;
+        border: 1px solid var(--border-accent-light) !important;
+        border-radius: 12px !important;
         color: var(--text-white) !important;
-        margin: 1rem 1.5rem !important;
-        padding: 1rem 1.5rem !important;
-        box-shadow: 0 5px 15px var(--shadow-item);
+        margin: 0.8rem 1rem !important;
+        padding: 0.8rem 1rem !important;
+        box-shadow: var(--shadow-item);
     }
     
    .storage-alert.alert-success {
@@ -143,12 +143,11 @@
     }
     
    .file-content-container {
-        background: var(--border-accent);
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--bg-overlay-20);
-        border-radius: 20px;
-        padding: 1.5rem;
-        box-shadow: 0 10px 30px var(--shadow-item);
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+        box-shadow: none;
     }
     
     
@@ -213,20 +212,10 @@
                     <i class="bi bi-files"></i>
                     <span>Все файлы</span>
                 </a>
-                <a class="nav-link {% if request.resolver_match.url_name == 'file_upload' %}active{% endif %}" 
-                   href="{% url 'file_manager:file_upload' %}">
-                    <i class="bi bi-upload"></i>
-                    <span>Загрузить</span>
-                </a>
-                <a class="nav-link {% if request.resolver_match.url_name == 'folder_create' %}active{% endif %}" 
-                   href="{% url 'file_manager:folder_create' %}">
-                    <i class="bi bi-folder-plus"></i>
-                    <span>Папка</span>
-                </a>
                 <a class="nav-link {% if request.resolver_match.url_name == 'activity_log' %}active{% endif %}" 
                    href="{% url 'file_manager:activity_log' %}">
                     <i class="bi bi-clock-history"></i>
-                    <span>Активность</span>
+                    <span>История</span>
                 </a>
             </div>
         </div>

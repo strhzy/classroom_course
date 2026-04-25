@@ -468,27 +468,21 @@
         <div class="page-header">
             <div>
                 <h1 class="page-title">{{ file.title }}</h1>
-                <nav aria-label="breadcrumb" class="custom-breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="{% url 'file_manager:file_list' %}">
-                                <i class="bi bi-files me-1"></i>Файлы
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page">
-                            Детали
-                        </li>
-                    </ol>
-                </nav>
             </div>
             
             <div class="action-buttons">
                 <a href="{% url 'file_manager:file_download' file.id %}" class="action-btn btn-download">
                     <i class="bi bi-download"></i> Скачать
                 </a>
+                <form method="post" action="{% url 'file_manager:yandex_export_file' file.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="action-btn btn-edit">
+                        <i class="bi bi-cloud-arrow-up"></i> На Яндекс.Диск
+                    </button>
+                </form>
                 {% if can_edit %}
                 <a href="{% url 'file_manager:file_edit' file.id %}" class="action-btn btn-edit">
-                    <i class="bi bi-pencil"></i> Редактировать
+                    <i class="bi bi-shield-lock"></i> Настройки доступа
                 </a>
                 {% endif %}
                 {% if can_delete %}
@@ -588,6 +582,20 @@
                                         <i class="bi bi-tag"></i>
                                         {{ file.version }}
                                     </span>
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-share"></i> Доступ:
+                                </span>
+                                <span class="info-value">
+                                    {% if file.visibility == 'shared' or file.shared_with.count > 0 %}
+                                    <span class="badge-file"><i class="bi bi-share"></i> Общий c <span class="badge-file-count">{{ file.shared_with.count }} пользователями</span></span>
+                                    {% elif file.visibility == 'public' %}
+                                    <span class="badge-file"><i class="bi bi-globe"></i> Публичный</span>
+                                    {% else %}
+                                    <span class="badge-file"><i class="bi bi-lock"></i> Личный</span>
+                                    {% endif %}
                                 </span>
                             </div>
                             
