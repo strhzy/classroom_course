@@ -527,6 +527,14 @@
                     <i class="bi bi-plug"></i> Подключить Яндекс.Диск
                 </a>
                 {% endif %}
+                {% if can_manage_reference_data %}
+                <a href="{% url 'file_manager:category_list' %}" class="btn-folder">
+                    <i class="bi bi-diagram-3"></i> Категории
+                </a>
+                <a href="{% url 'file_manager:tag_list' %}" class="btn-folder">
+                    <i class="bi bi-tags"></i> Теги
+                </a>
+                {% endif %}
             </div>
         </div>
         <div id="drop-upload-zone" class="drop-upload-zone">
@@ -651,14 +659,22 @@
                                 <td data-label="Дата">{{ file.uploaded_at|date:"d.m.Y" }}</td>
                                 <td data-label="Действия" class="text-end">
                                     <a href="{% url 'file_manager:file_detail' file.id %}" class="btn-table-action" title="Подробнее">
-                                        <i class="bi bi-eye"></i>
+                                        <i class="bi bi-info-circle"></i>
                                     </a>
                                     <a href="{% url 'file_manager:file_download' file.id %}" class="btn-table-action" title="Скачать">
                                         <i class="bi bi-download"></i>
                                     </a>
+                                    <a href="{% url 'file_manager:file_viewer' file.id %}" class="btn-table-action" title="Просмотр" target="_blank">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
                                     {% if file.can_edit or file.can_delete %}
                                     <a href="{% url 'file_manager:file_edit' file.id %}" class="btn-table-action" title="Редактировать">
                                         <i class="bi bi-pencil"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if file.can_delete %}
+                                    <a href="{% url 'file_manager:file_delete' file.id %}" class="btn-table-action" title="Удалить">
+                                        <i class="bi bi-trash"></i>
                                     </a>
                                     {% endif %}
                                 </td>
@@ -737,7 +753,21 @@
             method: 'POST',
             body: fd,
             credentials: 'same-origin',
-        }).then(() => window.location.reload())
+            headers: {
+                'X-Upload-Json-Redirect': '1',
+                Accept: 'application/json',
+            },
+        })
+          .then(async (response) => {
+            const ct = response.headers.get('content-type') || '';
+            if (!response.ok || !ct.includes('application/json')) {
+              throw new Error('upload failed');
+            }
+            const data = await response.json();
+            if (data.redirect) {
+              window.location.href = data.redirect;
+            }
+          })
           .catch(() => alert('Ошибка загрузки файла'));
     };
 

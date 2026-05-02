@@ -471,6 +471,11 @@
             </div>
             
             <div class="action-buttons">
+                {% if not file.is_folder %}
+                <a href="{% url 'file_manager:file_viewer' file.id %}" class="action-btn btn-edit">
+                    <i class="bi bi-window-fullscreen"></i> Просмотр
+                </a>
+                {% endif %}
                 <a href="{% url 'file_manager:file_download' file.id %}" class="action-btn btn-download">
                     <i class="bi bi-download"></i> Скачать
                 </a>

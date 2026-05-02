@@ -94,7 +94,7 @@
 
 <div class="chatlist-page">
 <div class="container">
-<div class="chat-list">
+<div class="chat-list" id="chat-list">
 
 {% for room in rooms %}
 <a href="{% url 'chat:chat_room' room.id %}" class="chat-item">
@@ -122,4 +122,20 @@
 </div>
 </div>
 </div>
+<script>
+setInterval(() => {
+    fetch(window.location.href, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+        .then((response) => response.text())
+        .then((html) => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+            const newList = doc.querySelector("#chat-list");
+            const currentList = document.querySelector("#chat-list");
+            if (newList && currentList) {
+                currentList.innerHTML = newList.innerHTML;
+            }
+        })
+        .catch(() => {});
+}, 5000);
+</script>
 {% endblock %}

@@ -81,7 +81,9 @@ class Message(models.Model):
     )
     timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
-    
+    edited_at = models.DateTimeField(null=True, blank=True)
+    is_deleted = models.BooleanField(default=False)
+
     class Meta:
         ordering = ['timestamp']
         verbose_name = 'Сообщение'
@@ -126,5 +128,17 @@ class Message(models.Model):
                     return f"{size:.1f} {unit}"
                 size /= 1024.0
             return f"{size:.1f} TB"
-        except:
+        except Exception:
             return ''
+
+    def get_icon(self):
+        if not self.file_attachment:
+            return '📎'
+        ext = self.file_attachment.name.split('.')[-1].lower()
+        icons = {
+            'pdf': '📄', 'txt': '📝', 'doc': '📑', 'docx': '📑',
+            'xls': '📊', 'xlsx': '📊', 'ppt': '📽️', 'pptx': '📽️',
+            'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️', 'gif': '🖼️', 'webp': '🖼️',
+            'mp4': '🎬', 'mp3': '🎵', 'zip': '📁', 'rar': '📁',
+        }
+        return icons.get(ext, '📎')

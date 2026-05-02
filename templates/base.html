@@ -193,6 +193,77 @@
        .btn-close-custom:hover {
             color: var(--text-white);
         }
+
+        /* Toast-уведомления поверх интерфейса (левый верхний угол) */
+        .app-toast-stack {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            right: auto;
+            z-index: 10800;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            max-width: min(420px, calc(100vw - 2rem));
+            pointer-events: none;
+        }
+        .app-toast-stack .app-toast {
+            pointer-events: auto;
+        }
+        .app-toast {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.65rem;
+            padding: 0.85rem 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--bg-overlay-30);
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 12px 36px var(--shadow-card), 0 0 0 1px var(--bg-overlay-15);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            line-height: 1.45;
+            animation: appToastIn 0.35s ease-out;
+        }
+        @keyframes appToastIn {
+            from { opacity: 0; transform: translateX(-16px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .app-toast.app-toast--leaving {
+            animation: appToastOut 0.25s ease forwards;
+        }
+        @keyframes appToastOut {
+            to { opacity: 0; transform: translateX(-12px); }
+        }
+        .app-toast__icon {
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+            font-size: 1.15rem;
+        }
+        .app-toast--success { border-color: color-mix(in srgb, var(--status-success, #22c55e) 45%, transparent); }
+        .app-toast--success .app-toast__icon { color: var(--status-success, #22c55e); }
+        .app-toast--danger { border-color: color-mix(in srgb, var(--status-danger, #ef4444) 45%, transparent); }
+        .app-toast--danger .app-toast__icon { color: var(--status-danger-light, #f87171); }
+        .app-toast--warning { border-color: color-mix(in srgb, var(--status-warning, #eab308) 45%, transparent); }
+        .app-toast--warning .app-toast__icon { color: var(--status-warning, #eab308); }
+        .app-toast--info .app-toast__icon { color: var(--accent-primary); }
+        .app-toast__text { flex: 1; min-width: 0; word-break: break-word; }
+        .app-toast__close {
+            flex-shrink: 0;
+            background: none;
+            border: none;
+            color: var(--text-disabled);
+            font-size: 1.35rem;
+            line-height: 1;
+            padding: 0 0.15rem;
+            cursor: pointer;
+            opacity: 0.75;
+            transition: color 0.15s ease, opacity 0.15s ease;
+        }
+        .app-toast__close:hover {
+            color: var(--text-white);
+            opacity: 1;
+        }
         
         
         @media(max-width: 768px) {
@@ -274,18 +345,20 @@
                     </li>
                     
                     
-                    {% if user.is_authenticated and user.is_staff or user.is_superuser %}
+                    {% if user.is_authenticated %}
+                    {% if user.is_superuser or user.is_staff or user.profile.role == 'teacher' or user.profile.role == 'admin' or user.profile.role == 'staff' %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-shield"></i> Админка
+                            <i class="bi bi-shield"></i> Управление
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'classroom_core:custom_admin_dashboard' %}"><i class="bi bi-columns-gap"></i> Кастомная панель</a></li>
-                            <li><a class="dropdown-item" href="{% url 'admin:index' %}" target="_blank"><i class="bi bi-gear"></i> Админ панель</a></li>
-                            <li><a class="dropdown-item" href="{% url 'admin:file_manager_file_changelist' %}" target="_blank"><i class="bi bi-files"></i> Файлы</a></li>
-                            <li><a class="dropdown-item" href="{% url 'admin:classroom_core_course_changelist' %}" target="_blank"><i class="bi bi-book"></i> Курсы</a></li>
+                            <li><a class="dropdown-item" href="{% url 'classroom_core:custom_admin_dashboard' %}"><i class="bi bi-columns-gap"></i> Панель</a></li>
+                            <li><a class="dropdown-item" href="{% url 'classroom_core:custom_admin_courses' %}"><i class="bi bi-book"></i> Курсы</a></li>
+                            <li><a class="dropdown-item" href="{% url 'classroom_core:custom_admin_assignments' %}"><i class="bi bi-journal-check"></i> Задания</a></li>
+                            <li><a class="dropdown-item" href="{% url 'classroom_core:custom_admin_students' %}"><i class="bi bi-people"></i> Студенты</a></li>
                         </ul>
                     </li>
+                    {% endif %}
                     {% endif %}
                 </ul>
                 
@@ -325,10 +398,40 @@
         </div>
     </nav>
 
-    
+    <div id="app-toast-stack" class="app-toast-stack" aria-live="polite" aria-relevant="additions">
+        {% if messages %}
+            {% for message in messages %}
+                {% if 'error' in message.tags %}
+                    <div class="app-toast app-toast--danger" role="alert" data-app-toast>
+                        <span class="app-toast__icon"><i class="bi bi-x-octagon-fill"></i></span>
+                        <span class="app-toast__text">{{ message }}</span>
+                        <button type="button" class="app-toast__close" data-app-toast-dismiss aria-label="Закрыть">&times;</button>
+                    </div>
+                {% elif 'success' in message.tags %}
+                    <div class="app-toast app-toast--success" role="alert" data-app-toast>
+                        <span class="app-toast__icon"><i class="bi bi-check-circle-fill"></i></span>
+                        <span class="app-toast__text">{{ message }}</span>
+                        <button type="button" class="app-toast__close" data-app-toast-dismiss aria-label="Закрыть">&times;</button>
+                    </div>
+                {% elif 'warning' in message.tags %}
+                    <div class="app-toast app-toast--warning" role="alert" data-app-toast>
+                        <span class="app-toast__icon"><i class="bi bi-exclamation-triangle-fill"></i></span>
+                        <span class="app-toast__text">{{ message }}</span>
+                        <button type="button" class="app-toast__close" data-app-toast-dismiss aria-label="Закрыть">&times;</button>
+                    </div>
+                {% else %}
+                    <div class="app-toast app-toast--info" role="alert" data-app-toast>
+                        <span class="app-toast__icon"><i class="bi bi-info-circle-fill"></i></span>
+                        <span class="app-toast__text">{{ message }}</span>
+                        <button type="button" class="app-toast__close" data-app-toast-dismiss aria-label="Закрыть">&times;</button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+
     <div class="main-content">
         <div class="container-fluid">
-            
             {% block content %}{% endblock %}
         </div>
     </div>
@@ -368,12 +471,50 @@
                 });
             }
 
-            const alerts = document.querySelectorAll('.custom-alert');
-            alerts.forEach(alert => {
-                setTimeout(() => {
-                    alert.remove();
-                }, 5000);
-            });
+            function dismissToast(el) {
+                if (!el || !el.isConnected) return;
+                if (el._toastTimer) {
+                    clearTimeout(el._toastTimer);
+                    el._toastTimer = null;
+                }
+                el.classList.add('app-toast--leaving');
+                setTimeout(function() {
+                    if (el.isConnected) el.remove();
+                }, 250);
+            }
+
+            function armToastDismiss(el) {
+                var btn = el.querySelector('[data-app-toast-dismiss]');
+                if (btn) {
+                    btn.addEventListener('click', function() { dismissToast(el); });
+                }
+                el._toastTimer = setTimeout(function() { dismissToast(el); }, 6500);
+            }
+
+            function initAppToasts() {
+                document.querySelectorAll('[data-app-toast]').forEach(armToastDismiss);
+            }
+
+            initAppToasts();
+
+            window.showAppToast = function(text, level) {
+                level = level || 'info';
+                var map = { success: 'success', error: 'danger', danger: 'danger', warning: 'warning', info: 'info' };
+                var kind = map[level] || 'info';
+                var icons = { success: 'bi-check-circle-fill', danger: 'bi-x-octagon-fill', warning: 'bi-exclamation-triangle-fill', info: 'bi-info-circle-fill' };
+                var stack = document.getElementById('app-toast-stack');
+                if (!stack || text === undefined || text === null) return;
+                var el = document.createElement('div');
+                el.className = 'app-toast app-toast--' + kind;
+                el.setAttribute('role', 'alert');
+                el.setAttribute('data-app-toast', '');
+                el.innerHTML = '<span class="app-toast__icon"><i class="bi ' + (icons[kind] || icons.info) + '"></i></span>' +
+                    '<span class="app-toast__text"></span>' +
+                    '<button type="button" class="app-toast__close" data-app-toast-dismiss aria-label="Закрыть">&times;</button>';
+                el.querySelector('.app-toast__text').textContent = String(text);
+                stack.appendChild(el);
+                armToastDismiss(el);
+            };
 
             document.querySelectorAll('a.btn-delete, [data-confirm]').forEach(element => {
                 element.addEventListener('click', function(event) {

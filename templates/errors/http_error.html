@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Ошибка {{ status_code }}{% endblock %}
+
+{% block content %}
+<style>
+    .error-page {
+        background: var(--bg-page-gradient);
+        min-height: calc(100vh - 90px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+    }
+
+    .error-card {
+        width: 100%;
+        max-width: 760px;
+        background: var(--bg-card);
+        border: 1px solid var(--bg-overlay-30);
+        border-radius: 20px;
+        box-shadow: 0 12px 32px var(--shadow-card);
+        padding: 2.2rem;
+        text-align: center;
+    }
+
+    .error-code {
+        font-size: 4rem;
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--accent-primary), var(--status-danger-light));
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .error-title {
+        color: var(--text-white);
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+    }
+
+    .error-text {
+        color: var(--text-muted);
+        font-size: 1.05rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .error-actions {
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-error-main {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border: none;
+        color: var(--text-white);
+        border-radius: 10px;
+        padding: 0.65rem 1.3rem;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .btn-error-main:hover {
+        color: var(--text-white);
+        filter: brightness(1.06);
+    }
+
+    .btn-error-back {
+        background: var(--bg-overlay-15);
+        border: 1px solid var(--bg-overlay-30);
+        color: var(--text-muted);
+        border-radius: 10px;
+        padding: 0.65rem 1.3rem;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .btn-error-back:hover {
+        color: var(--text-white);
+        border-color: var(--accent-primary);
+        background: var(--bg-overlay-25);
+    }
+</style>
+
+<div class="error-page">
+    <div class="error-card">
+        <div class="error-code">{{ status_code }}</div>
+        <h1 class="error-title">{{ error_title }}</h1>
+        <p class="error-text">{{ error_message }}</p>
+        <div class="error-actions">
+            <a href="/" class="btn-error-main">
+                <i class="bi bi-house-door me-1"></i> На главную
+            </a>
+            <a href="javascript:history.back();" class="btn-error-back">
+                <i class="bi bi-arrow-left me-1"></i> Назад
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

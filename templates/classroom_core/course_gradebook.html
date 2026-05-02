@@ -26,6 +26,12 @@
     <div class="header-row">
         <h3 style="margin:0; color: var(--text-main);">Журнал занятий: {{ course.title }}</h3>
         <div class="d-flex gap-2">
+            <a href="{% url 'classroom_core:course_gradebook_export' course.id %}" class="btn-back">Экспорт Excel</a>
+            <form method="post" action="{% url 'classroom_core:course_gradebook_import' course.id %}" enctype="multipart/form-data" class="d-flex gap-2">
+                {% csrf_token %}
+                <input type="file" name="gradebook_file" class="grade-input" required>
+                <button type="submit" class="btn-back">Импорт Excel</button>
+            </form>
             <a href="{% url 'classroom_core:course_detail' course.id %}" class="btn-back">Назад к курсу</a>
         </div>
     </div>
@@ -40,7 +46,7 @@
         {% if grade_matrix and journal_columns %}
         <table class="gradebook-table">
             <thead>
-                <tr>
+                <tr id="lesson-row-{{ row.student.id }}">
                     <th>Студент</th>
                     {% for col in journal_columns %}
                     <th>
@@ -202,5 +208,18 @@ function updateLessonTopic(input) {
     .then(data => { if (!data.success) alert(data.error || 'Ошибка сохранения темы'); })
     .catch(() => alert('Ошибка сети'));
 }
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const params = new URLSearchParams(window.location.search);
+  const lessonId = params.get("scroll_to_lesson");
+  if (!lessonId) return;
+  const topicInput = document.querySelector(`[data-lesson-id="${lessonId}"]`);
+  if (topicInput) {
+    topicInput.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+    topicInput.style.borderColor = "var(--accent-primary)";
+    setTimeout(() => { topicInput.style.borderColor = ""; }, 2000);
+  }
+});
 </script>
 {% endblock %}

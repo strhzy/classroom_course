@@ -64,7 +64,10 @@
                                         {% endwith %}
                                     </td>
                                     <td>
-                                        <a href="{{ file.file.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary" download>
+                                        <a href="{% url 'file_manager:file_viewer' file.file.id %}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> Просмотр
+                                        </a>
+                                        <a href="{% url 'file_manager:file_download' file.file.id %}" class="btn btn-sm btn-outline-secondary">
                                             <i class="bi bi-download"></i> Скачать
                                         </a>
                                         <a href="{% url 'classroom_core:assignment_file_review_create' file.id %}" class="btn btn-sm btn-outline-success">

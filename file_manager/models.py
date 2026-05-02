@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.db import models 
 from django.contrib.auth.models import User 
 from django.utils import timezone 
@@ -190,6 +191,11 @@ class File(models.Model ):
         return self.subfiles.count()
 
     def can_access(self ,user ):
+        profile = getattr(user, "profile", None)
+        role = getattr(profile, "role", "")
+        if user.is_superuser or user.is_staff or role in {"admin", "staff"}:
+            return True
+
         if self.uploaded_by ==user :
             return True 
 
@@ -198,6 +204,15 @@ class File(models.Model ):
 
         if self.visibility =='shared'and user in self.shared_with.all():
             return True 
+
+        # Файл как вложение к решению задания — доступ у преподавателя/ассистента курса
+        try:
+            AssignmentFile = apps.get_model("classroom_core", "AssignmentFile")
+        except LookupError:
+            return False
+        for af in AssignmentFile.objects.filter(file=self).select_related("assignment"):
+            if af.assignment.can_grade(user):
+                return True
 
         return False 
 

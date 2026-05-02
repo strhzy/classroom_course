@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<style>
+    .mgmt-page { background: var(--bg-page-gradient); min-height: calc(100vh - 90px); padding: 1.5rem 0; }
+    .mgmt-title { color: var(--text-white); font-weight: 700; }
+    .btn-soft { background: var(--bg-overlay-15); border: 1px solid var(--bg-overlay-30); color: var(--text-muted); }
+    .btn-soft:hover { color: var(--text-white); border-color: var(--accent-primary); background: var(--bg-overlay-25); }
+    .form-card { background: var(--bg-card); border: 1px solid var(--bg-overlay-30); border-radius: 16px; box-shadow: 0 10px 24px var(--shadow-card); }
+    .form-card label { color: var(--text-muted); font-weight: 600; }
+    .form-card .form-control, .form-card .form-select {
+        background: var(--bg-input); border: 1px solid var(--bg-overlay-30); color: var(--text-white);
+    }
+    .btn-main { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border: none; color: var(--text-white); }
+</style>
+<div class="mgmt-page">
+<div class="container py-2">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0 mgmt-title">{{ title }}</h2>
+        <a class="btn btn-soft" href="{% url 'classroom_core:custom_admin_students' %}">Назад</a>
+    </div>
+    <form method="post" class="form-card p-3">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-main" type="submit">Сохранить</button>
+    </form>
+</div>
+</div>
+{% endblock %}

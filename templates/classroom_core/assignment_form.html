@@ -651,6 +651,40 @@
                             </div>
                             
                             <div class="form-group">
+                                <label for="id_assignment_type" class="form-label">
+                                    <i class="bi bi-list-check"></i>Тип задания <span class="required">*</span>
+                                </label>
+                                <select name="assignment_type" id="id_assignment_type" class="custom-select" required>
+                                    <option value="file_upload" {% if form.assignment_type.value == 'file_upload' %}selected{% endif %}>Прикрепление файла</option>
+                                    <option value="quiz" {% if form.assignment_type.value == 'quiz' %}selected{% endif %}>Тест с вариантами</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" id="quiz-mode-group">
+                                <label for="id_quiz_mode" class="form-label">
+                                    <i class="bi bi-ui-radios"></i>Режим теста
+                                </label>
+                                <select name="quiz_mode" id="id_quiz_mode" class="custom-select">
+                                    <option value="single" {% if form.quiz_mode.value == 'single' %}selected{% endif %}>Один правильный ответ</option>
+                                    <option value="multiple" {% if form.quiz_mode.value == 'multiple' %}selected{% endif %}>Несколько правильных ответов</option>
+                                </select>
+                                <div class="field-hint">
+                                    <i class="bi bi-lightning"></i>
+                                    Автопроверка показывает результат сразу после отправки.
+                                </div>
+                            </div>
+                            <div class="form-group" id="quiz-builder-group">
+                                <label class="form-label">
+                                    <i class="bi bi-list-ol"></i>Вопросы теста
+                                </label>
+                                <input type="hidden" name="quiz_payload" id="id_quiz_payload" value="[]">
+                                <div id="quiz-questions-container"></div>
+                                <button type="button" class="btn-cancel mt-2" id="add-question-btn">
+                                    <i class="bi bi-plus-circle"></i> Добавить вопрос
+                                </button>
+                            </div>
+
+                            <div class="form-group">
                                 <label for="id_due_date" class="form-label">
                                     <i class="bi bi-calendar-event"></i>Срок выполнения <span class="required">*</span>
                                 </label>
@@ -787,6 +821,116 @@
     
     // Drag & drop для файла
     document.addEventListener('DOMContentLoaded', function() {
+        const assignmentType = document.getElementById('id_assignment_type');
+        const quizModeGroup = document.getElementById('quiz-mode-group');
+        const quizBuilderGroup = document.getElementById('quiz-builder-group');
+        const quizContainer = document.getElementById('quiz-questions-container');
+        const quizPayloadInput = document.getElementById('id_quiz_payload');
+        const addQuestionBtn = document.getElementById('add-question-btn');
+        const initialQuizData = {{ quiz_initial_json|safe }};
+
+        function refreshPayloadFromUi() {
+            if (!quizContainer || !quizPayloadInput) return;
+            const questions = [];
+            quizContainer.querySelectorAll('.quiz-question-card').forEach((card) => {
+                const questionText = card.querySelector('.question-text-input')?.value?.trim() || '';
+                const options = [];
+                card.querySelectorAll('.quiz-option-row').forEach((row) => {
+                    const text = row.querySelector('.option-text-input')?.value?.trim() || '';
+                    const isCorrect = !!row.querySelector('.option-correct-input')?.checked;
+                    if (text) {
+                        options.push({ text, is_correct: isCorrect });
+                    }
+                });
+                if (questionText) {
+                    questions.push({ text: questionText, options });
+                }
+            });
+            quizPayloadInput.value = JSON.stringify(questions);
+        }
+
+        function createOptionRow(option = { text: '', is_correct: false }) {
+            const row = document.createElement('div');
+            row.className = 'd-flex gap-2 align-items-center mb-2 quiz-option-row';
+            row.innerHTML = `
+                <input type="text" class="custom-input option-text-input" placeholder="Вариант ответа" value="${option.text || ''}">
+                <label class="d-flex align-items-center gap-1" style="min-width: 130px;">
+                    <input type="checkbox" class="option-correct-input" ${option.is_correct ? 'checked' : ''}>
+                    Верный
+                </label>
+                <button type="button" class="btn-cancel remove-option-btn">Удалить</button>
+            `;
+            row.querySelector('.remove-option-btn').addEventListener('click', () => {
+                row.remove();
+                refreshPayloadFromUi();
+            });
+            row.querySelectorAll('input').forEach((input) => {
+                input.addEventListener('input', refreshPayloadFromUi);
+                input.addEventListener('change', refreshPayloadFromUi);
+            });
+            return row;
+        }
+
+        function createQuestionCard(question = { text: '', options: [] }) {
+            const card = document.createElement('div');
+            card.className = 'p-3 mb-3 quiz-question-card';
+            card.style.border = '1px solid var(--bg-overlay-30)';
+            card.style.borderRadius = '10px';
+            card.innerHTML = `
+                <div class="mb-2">
+                    <input type="text" class="custom-input question-text-input" placeholder="Текст вопроса" value="${question.text || ''}">
+                </div>
+                <div class="quiz-options-list"></div>
+                <div class="d-flex gap-2 mt-2">
+                    <button type="button" class="btn-save add-option-btn">Добавить вариант</button>
+                    <button type="button" class="btn-cancel remove-question-btn">Удалить вопрос</button>
+                </div>
+            `;
+            const optionsList = card.querySelector('.quiz-options-list');
+            const options = Array.isArray(question.options) && question.options.length > 0
+                ? question.options
+                : [{ text: '', is_correct: false }, { text: '', is_correct: false }];
+            options.forEach((opt) => optionsList.appendChild(createOptionRow(opt)));
+
+            card.querySelector('.add-option-btn').addEventListener('click', () => {
+                optionsList.appendChild(createOptionRow());
+                refreshPayloadFromUi();
+            });
+            card.querySelector('.remove-question-btn').addEventListener('click', () => {
+                card.remove();
+                refreshPayloadFromUi();
+            });
+            card.querySelector('.question-text-input').addEventListener('input', refreshPayloadFromUi);
+            return card;
+        }
+
+        function toggleQuizMode() {
+            if (!assignmentType || !quizModeGroup || !quizBuilderGroup) return;
+            const isQuiz = assignmentType.value === 'quiz';
+            quizModeGroup.style.display = isQuiz ? 'block' : 'none';
+            quizBuilderGroup.style.display = isQuiz ? 'block' : 'none';
+            refreshPayloadFromUi();
+        }
+
+        if (addQuestionBtn) {
+            addQuestionBtn.addEventListener('click', () => {
+                quizContainer.appendChild(createQuestionCard());
+                refreshPayloadFromUi();
+            });
+        }
+
+        if (quizContainer && Array.isArray(initialQuizData) && initialQuizData.length > 0) {
+            initialQuizData.forEach((question) => quizContainer.appendChild(createQuestionCard(question)));
+        } else if (quizContainer) {
+            quizContainer.appendChild(createQuestionCard());
+        }
+
+        if (assignmentType) {
+            assignmentType.addEventListener('change', toggleQuizMode);
+            toggleQuizMode();
+        }
+        refreshPayloadFromUi();
+
         const fileInput = document.getElementById('id_attachment');
         const fileLabel = document.querySelector('.file-label');
         

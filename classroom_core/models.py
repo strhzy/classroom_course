@@ -336,6 +336,14 @@ class Assignment(models.Model ):
    ('published','Опубликовано'),
    ('closed','Закрыто'),
     ]
+    ASSIGNMENT_TYPE_CHOICES = [
+        ("file_upload", "Прикрепление файла"),
+        ("quiz", "Тест"),
+    ]
+    QUIZ_MODE_CHOICES = [
+        ("single", "Один правильный ответ"),
+        ("multiple", "Несколько правильных ответов"),
+    ]
 
     course =models.ForeignKey(
     Course,
@@ -358,6 +366,16 @@ class Assignment(models.Model ):
     max_length =20 ,
     choices =STATUS_CHOICES ,
     default ='draft'
+    )
+    assignment_type = models.CharField(
+        max_length=20,
+        choices=ASSIGNMENT_TYPE_CHOICES,
+        default="file_upload",
+    )
+    quiz_mode = models.CharField(
+        max_length=20,
+        choices=QUIZ_MODE_CHOICES,
+        default="single",
     )
 
     due_date =models.DateTimeField(null =True ,blank =True )
@@ -490,6 +508,60 @@ class AssignmentSubmission(models.Model ):
         if not self.graded_at:
             return True
         return (now - self.graded_at).days < days_limit
+
+
+class AssignmentQuizQuestion(models.Model):
+    assignment = models.ForeignKey(
+        Assignment,
+        on_delete=models.CASCADE,
+        related_name="quiz_questions",
+    )
+    question_text = models.TextField()
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return f"{self.assignment.title}: {self.question_text[:40]}"
+
+
+class AssignmentQuizOption(models.Model):
+    question = models.ForeignKey(
+        AssignmentQuizQuestion,
+        on_delete=models.CASCADE,
+        related_name="options",
+    )
+    option_text = models.CharField(max_length=500)
+    is_correct = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.option_text
+
+
+class AssignmentQuizAttempt(models.Model):
+    assignment = models.ForeignKey(
+        Assignment,
+        on_delete=models.CASCADE,
+        related_name="quiz_attempts",
+    )
+    student = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="quiz_attempts",
+    )
+    total_questions = models.PositiveIntegerField(default=0)
+    correct_answers = models.PositiveIntegerField(default=0)
+    answers_payload = models.JSONField(default=list, blank=True)
+    is_correct = models.BooleanField(default=False)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-submitted_at"]
 
 
 class GradebookColumn(models.Model):

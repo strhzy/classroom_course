@@ -636,7 +636,7 @@
                 </div>
                 
                 
-                {% if submission.text_response or submission.file_submission %}
+                {% if submission.text_response or submission.file_submission or submission_assignment_files %}
                 <div class="custom-card">
                     <div class="card-header-gradient">
                         <h5>
@@ -660,7 +660,7 @@
                         <div class="file-attachment">
                             <i class="bi bi-file-earmark-arrow-down file-icon"></i>
                             <div class="file-info">
-                                <strong>Прикрепленный файл:</strong>
+                                <strong>Прикрепленный файл (загрузка в форму):</strong>
                                 <div class="small">{{ submission.file_submission.name }}</div>
                             </div>
                             <a href="{{ submission.file_submission.url }}" class="file-link" download>
@@ -668,6 +668,25 @@
                             </a>
                         </div>
                         {% endif %}
+
+                        {% for af in submission_assignment_files %}
+                        <div class="file-attachment{% if not forloop.first or submission.file_submission %} mt-3{% endif %}">
+                            <i class="bi bi-hdd file-icon"></i>
+                            <div class="file-info">
+                                <strong>Файл из хранилища:</strong>
+                                <div class="small">{{ af.file.title }}</div>
+                                {% if af.description %}
+                                <div class="small text-muted mt-1">{{ af.description|linebreaksbr }}</div>
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'file_manager:file_viewer' af.file.id %}" class="file-link" target="_blank" rel="noopener">
+                                <i class="bi bi-eye"></i> Открыть
+                            </a>
+                            <a href="{% url 'file_manager:file_download' af.file.id %}" class="file-link ms-2">
+                                <i class="bi bi-download"></i> Скачать
+                            </a>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
                 {% endif %}

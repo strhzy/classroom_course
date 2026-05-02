@@ -626,7 +626,7 @@
                                             <i class="bi bi-calendar-plus"></i>
                                             Дата начала
                                         </label>
-                                        <input type="datetime-local" 
+                                        <input type="date" 
                                                name="start_date" 
                                                id="id_start_date" 
                                                class="custom-input" 
@@ -639,7 +639,7 @@
                                             <i class="bi bi-calendar-check"></i>
                                             Дата окончания
                                         </label>
-                                        <input type="datetime-local" 
+                                        <input type="date" 
                                                name="end_date" 
                                                id="id_end_date" 
                                                class="custom-input" 
@@ -650,12 +650,28 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="id_class_days" class="form-label">
+                                        <span class="form-label d-block mb-2">
                                             <i class="bi bi-calendar-week"></i>
                                             Дни занятий
-                                        </label>
-                                        <input type="text" name="class_days" id="id_class_days" class="custom-input"
-                                               value="{{ form.class_days.value|default:'' }}" placeholder="Пн, Ср, Пт">
+                                        </span>
+                                        <div class="checkbox-group d-flex flex-wrap gap-2 align-items-center">
+                                            {% with sel=form.class_days_checkboxes.value %}
+                                            {% for value, label in form.fields.class_days_checkboxes.choices %}
+                                            <div class="custom-checkbox mb-0 py-1 px-2">
+                                                <input type="checkbox" name="class_days_checkboxes" value="{{ value }}"
+                                                       id="id_class_days_checkboxes_{{ forloop.counter0 }}"
+                                                       class="form-check-input"
+                                                       {% if sel and value in sel %}checked{% endif %}>
+                                                <div>
+                                                    <label for="id_class_days_checkboxes_{{ forloop.counter0 }}">{{ label }}</label>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                            {% endwith %}
+                                        </div>
+                                        {% if form.class_days_checkboxes.errors %}
+                                        <div class="form-text text-danger"><i class="bi bi-exclamation-circle"></i> {{ form.class_days_checkboxes.errors|striptags }}</div>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="col-md-6">

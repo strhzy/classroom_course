@@ -4,7 +4,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Заголовок */
+    
    .page-header {
         margin-bottom: 2rem;
     }
@@ -28,7 +28,7 @@
         font-size: 2.5rem;
     }
     
-    /* Карточка фильтров */
+    
    .filters-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
@@ -62,7 +62,7 @@
         padding: 1.5rem;
     }
     
-    /* Форма фильтров */
+    
    .filter-label {
         color: #a8b8ff;
         font-weight: 600;
@@ -125,7 +125,7 @@
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
     }
     
-    /* Карточка с логом */
+    
    .log-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
@@ -135,7 +135,7 @@
         overflow: hidden;
     }
     
-    /* Таблица */
+    
    .log-table {
         width: 100%;
         border-collapse: collapse;
@@ -169,7 +169,7 @@
         vertical-align: middle;
     }
     
-    /* Бейджи для типов активности */
+    
    .activity-badge {
         display: inline-flex;
         align-items: center;
@@ -217,7 +217,7 @@
         border: 1px solid #9c27b0;
     }
     
-    /* Ссылки на файлы */
+    
    .file-link {
         color: #a8b8ff;
         text-decoration: none;
@@ -248,7 +248,7 @@
         color: #ff6b81;
     }
     
-    /* IP адрес */
+    
    .ip-address {
         font-family: 'Courier New', monospace;
         color: #b0b0ff;
@@ -258,7 +258,7 @@
         font-size: 0.9rem;
     }
     
-    /* Пустое состояние */
+    
    .empty-state {
         text-align: center;
         padding: 4rem;
@@ -277,7 +277,7 @@
         margin: 0;
     }
     
-    /* Пагинация */
+    
    .custom-pagination {
         margin-top: 2rem;
     }
@@ -303,7 +303,7 @@
         color: white;
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-log {
             padding: 1rem 0.5rem;
@@ -400,7 +400,7 @@
         color: #fff;
     }
     
-    /* Индикатор хранилища */
+    
    .storage-alert {
         background: rgba(30, 30, 46, 0.95) !important;
         backdrop-filter: blur(10px);
@@ -479,7 +479,7 @@
         background: linear-gradient(90deg, #ff4757, #ff6b81) !important;
     }
     
-    /* Основной контент */
+    
    .file-main-content {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
         min-height: calc(100vh - 70px);
@@ -495,7 +495,7 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .file-nav .navbar-nav {
             flex-direction: column;
@@ -548,7 +548,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Заголовок */
+    
    .page-header {
         display: flex;
         justify-content: space-between;
@@ -577,7 +577,7 @@
         font-size: 2.5rem;
     }
     
-    /* Кнопка "Все файлы" */
+    
    .btn-all-files {
         background: rgba(106, 90, 205, 0.15);
         border: 1px solid rgba(106, 90, 205, 0.5);
@@ -602,7 +602,7 @@
         color: #6a5acd;
     }
     
-    /* Карточки курсов */
+    
    .course-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
@@ -627,7 +627,7 @@
         height: 100%;
     }
     
-    /* Заголовок карточки */
+    
    .course-header {
         display: flex;
         align-items: center;
@@ -683,7 +683,7 @@
         font-size: 0.9rem;
     }
     
-    /* Описание */
+    
    .course-description {
         color: #b0b0ff;
         font-size: 0.95rem;
@@ -696,7 +696,7 @@
         overflow: hidden;
     }
     
-    /* Футер карточки */
+    
    .course-footer {
         display: flex;
         justify-content: space-between;
@@ -738,7 +738,7 @@
         color: white;
     }
     
-    /* Пустое состояние */
+    
    .empty-state {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
@@ -769,7 +769,7 @@
         margin-bottom: 0;
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-courses {
             padding: 1rem 0.5rem;
@@ -1028,7 +1028,7 @@
         margin-right: 0.3rem;
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 576px) {
        .theme-delete-file {
             padding: 1rem 0.5rem;
@@ -1083,7 +1083,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Хлебные крошки */
+    
    .custom-breadcrumb {
         background: rgba(106, 90, 205, 0.1);
         padding: 0.8rem 1.2rem;
@@ -1119,7 +1119,7 @@
         font-size: 1.2rem;
     }
     
-    /* Заголовок */
+    
    .page-header {
         display: flex;
         justify-content: space-between;
@@ -1138,7 +1138,7 @@
         margin-bottom: 0.5rem;
     }
     
-    /* Кнопки действий */
+    
    .action-btn {
         border: none;
         border-radius: 10px;
@@ -1182,7 +1182,7 @@
         color: white;
     }
     
-    /* Карточки */
+    
    .detail-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
@@ -1217,7 +1217,7 @@
         padding: 1.5rem;
     }
     
-    /* Информация о файле */
+    
    .info-grid {
         display: flex;
         flex-direction: column;
@@ -1272,7 +1272,7 @@
         color: #6a5acd;
     }
     
-    /* Извлеченный текст */
+    
    .extracted-text {
         background: rgba(20, 20, 35, 0.8);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -1302,7 +1302,7 @@
         border-radius: 10px;
     }
     
-    /* Комментарии */
+    
    .comment-card {
         background: rgba(20, 20, 35, 0.8);
         border: 1px solid rgba(106, 90, 205, 0.2);
@@ -1365,7 +1365,7 @@
         color: #fff;
     }
     
-    /* Форма комментария */
+    
    .comment-form textarea {
         background: rgba(20, 20, 35, 0.8);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -1395,7 +1395,7 @@
         background: linear-gradient(135deg, #4a90e2, #6a5acd);
     }
     
-    /* Сайдбар */
+    
    .stats-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
@@ -1456,7 +1456,7 @@
         font-size: 0.8rem;
     }
     
-    /* Список пользователей */
+    
    .users-list {
         list-style: none;
         padding: 0;
@@ -1484,14 +1484,14 @@
         color: #fff;
     }
     
-    /* Пустое состояние */
+    
    .empty-text {
         color: #8080b0;
         text-align: center;
         padding: 1.5rem;
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-file-detail {
             padding: 1rem 0.5rem;
@@ -1540,7 +1540,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Хлебные крошки */
+    
    .custom-breadcrumb {
         background: rgba(106, 90, 205, 0.1);
         padding: 0.8rem 1.2rem;
@@ -1576,7 +1576,7 @@
         font-size: 1.2rem;
     }
     
-    /* Заголовок */
+    
    .page-header {
         animation: headerFade 0.5s ease-out;
         margin-bottom: 2rem;
@@ -1602,7 +1602,7 @@
         margin-bottom: 0.5rem;
     }
     
-    /* Карточка формы */
+    
    .form-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
@@ -1636,7 +1636,7 @@
         padding: 2rem;
     }
     
-    /* Поля формы */
+    
    .form-group {
         margin-bottom: 1.8rem;
     }
@@ -1660,7 +1660,7 @@
         margin-left: 0.3rem;
     }
     
-    /* Стили для полей ввода */
+    
    .custom-input {
         background: rgba(20, 20, 35, 0.8);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -1712,7 +1712,7 @@
         color: #fff;
     }
     
-    /* File input */
+    
    .file-input-container {
         position: relative;
     }
@@ -1758,12 +1758,12 @@
         margin-left: 0.5rem;
     }
     
-    /* Multiple select */
+    
     select[multiple] {
         min-height: 120px;
     }
     
-    /* Подсказки */
+    
    .form-text {
         color: #8080b0;
         font-size: 0.85rem;
@@ -1777,7 +1777,7 @@
         color: #6a5acd;
     }
     
-    /* Индикатор обязательных полей */
+    
    .required-note {
         color: #b0b0ff;
         font-size: 0.9rem;
@@ -1793,7 +1793,7 @@
         color: #ff6b81;
     }
     
-    /* Кнопки */
+    
    .button-group {
         display: flex;
         gap: 1rem;
@@ -1842,7 +1842,7 @@
         color: #fff;
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-file-form {
             padding: 1rem 0.5rem;
@@ -1882,7 +1882,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Заголовок */
+    
    .page-header {
         display: flex;
         justify-content: space-between;
@@ -1911,7 +1911,7 @@
         font-size: 2.5rem;
     }
     
-    /* Кнопки действий */
+    
    .action-buttons {
         display: flex;
         gap: 0.5rem;
@@ -1956,7 +1956,7 @@
         color: #fff;
     }
     
-    /* Фильтры */
+    
    .filters-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
@@ -2060,7 +2060,7 @@
         color: #fff;
     }
     
-    /* Папки */
+    
    .folders-section {
         margin-bottom: 2rem;
     }
@@ -2117,7 +2117,7 @@
         font-size: 0.85rem;
     }
     
-    /* Таблица */
+    
    .files-table {
         width: 100%;
         border-collapse: collapse;
@@ -2207,7 +2207,7 @@
         color: #fff;
     }
     
-    /* Пустое состояние */
+    
    .empty-state {
         text-align: center;
         padding: 3rem;
@@ -2225,7 +2225,7 @@
         margin: 0;
     }
     
-    /* Пагинация */
+    
    .custom-pagination {
         margin-top: 2rem;
     }
@@ -2251,7 +2251,7 @@
         color: white;
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-files {
             padding: 1rem 0.5rem;
@@ -2350,7 +2350,7 @@
         border: 1px solid rgba(106, 90, 205, 0.3);
     }
     
-    /* Карточка формы */
+    
    .form-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
@@ -2382,7 +2382,7 @@
         padding: 2rem;
     }
     
-    /* Поля формы */
+    
    .form-group {
         margin-bottom: 1.8rem;
     }
@@ -2400,7 +2400,7 @@
         color: #6a5acd;
     }
     
-    /* File input */
+    
    .file-input-container {
         position: relative;
     }
@@ -2447,7 +2447,7 @@
         margin-top: 0.5rem;
     }
     
-    /* Текстовое поле */
+    
    .custom-textarea {
         background: rgba(20, 20, 35, 0.8);
         border: 1px solid rgba(106, 90, 205, 0.3);
@@ -2464,7 +2464,7 @@
         border-color: #6a5acd;
     }
     
-    /* Подсказки */
+    
    .form-text {
         color: #8080b0;
         font-size: 0.85rem;
@@ -2478,7 +2478,7 @@
         color: #6a5acd;
     }
     
-    /* Информационный блок */
+    
    .info-alert {
         background: rgba(74, 144, 226, 0.15);
         border: 1px solid rgba(74, 144, 226, 0.3);
@@ -2504,7 +2504,7 @@
         margin-bottom: 0.3rem;
     }
     
-    /* Кнопки */
+    
    .button-group {
         display: flex;
         gap: 1rem;
@@ -2552,7 +2552,7 @@
         color: #fff;
     }
     
-    /* Карточка с информацией о файле */
+    
    .file-info-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
@@ -2637,7 +2637,7 @@
         color: #fff;
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-version {
             padding: 1rem 0.5rem;
@@ -2671,7 +2671,7 @@
         padding: 2rem 1rem;
     }
     
-    /* Заголовок */
+    
    .folder-title {
         margin-bottom: 2rem;
     }
@@ -2695,7 +2695,7 @@
         font-size: 2.2rem;
     }
     
-    /* Карточка формы */
+    
    .form-card {
         background: rgba(30, 30, 46, 0.95);
         backdrop-filter: blur(10px);
@@ -2728,7 +2728,7 @@
         padding: 2rem;
     }
     
-    /* Поля формы */
+    
    .form-group {
         margin-bottom: 1.8rem;
     }
@@ -2810,7 +2810,7 @@
         color: #fff;
     }
     
-    /* Подсказки */
+    
    .form-text {
         color: #8080b0;
         font-size: 0.85rem;
@@ -2824,7 +2824,7 @@
         color: #6a5acd;
     }
     
-    /* Индикатор обязательных полей */
+    
    .required-note {
         color: #b0b0ff;
         font-size: 0.9rem;
@@ -2840,7 +2840,7 @@
         color: #ff6b81;
     }
     
-    /* Кнопки */
+    
    .button-group {
         display: flex;
         gap: 1rem;
@@ -2888,7 +2888,7 @@
         color: #fff;
     }
     
-    /* Декоративные элементы */
+    
    .folder-icon-preview {
         width: 60px;
         height: 60px;
@@ -2902,7 +2902,7 @@
         margin: 0 auto 1.5rem;
     }
     
-    /* Адаптивность */
+    
     @media(max-width: 768px) {
        .theme-folder-create {
             padding: 1rem 0.5rem;

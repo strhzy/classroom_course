@@ -1,4 +1,5 @@
 from django.shortcuts import render ,redirect ,get_object_or_404 
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required 
 from django.contrib import messages 
 from django.core.exceptions import PermissionDenied 
@@ -10,12 +11,15 @@ from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 import io
 import csv
+import json
 from datetime import datetime, timedelta
 from openpyxl import Workbook, load_workbook
 from file_manager.models import File
+from file_manager.views import create_user_uploaded_file
 from . models import *
 from . forms import *
 from django.utils import timezone 
+from web_messages import flash_form_errors
 
 
 WEEKDAY_MAP = {
@@ -38,6 +42,45 @@ def _parse_class_days(class_days_raw):
     return selected
 
 
+def _serialize_assignment_quiz(assignment):
+    result = []
+    for question in assignment.quiz_questions.prefetch_related("options").all():
+        result.append(
+            {
+                "text": question.question_text,
+                "options": [
+                    {"text": option.option_text, "is_correct": option.is_correct}
+                    for option in question.options.all()
+                ],
+            }
+        )
+    return result
+
+
+def _save_assignment_quiz(assignment, quiz_payload):
+    assignment.quiz_questions.all().delete()
+    for question_idx, question_data in enumerate(quiz_payload):
+        question_text = (question_data.get("text") or "").strip()
+        if not question_text:
+            continue
+        question_obj = AssignmentQuizQuestion.objects.create(
+            assignment=assignment,
+            question_text=question_text,
+            order=question_idx,
+        )
+        options = question_data.get("options") or []
+        for option_idx, option_data in enumerate(options):
+            option_text = (option_data.get("text") or "").strip()
+            if not option_text:
+                continue
+            AssignmentQuizOption.objects.create(
+                question=question_obj,
+                option_text=option_text,
+                is_correct=bool(option_data.get("is_correct")),
+                order=option_idx,
+            )
+
+
 def _ensure_year_schedule(course):
     if not course.start_date:
         return
@@ -46,6 +89,9 @@ def _ensure_year_schedule(course):
         return
     start = course.start_date
     finish = course.end_date or (start + timedelta(days=365))
+    existing_lessons = CourseLesson.objects.filter(course=course)
+    existing_lessons.exclude(lesson_date__range=(start, finish)).delete()
+    existing_lessons.exclude(lesson_date__week_day__in=[((day + 1) % 7) + 1 for day in selected_weekdays]).delete()
     current = start
     while current <= finish:
         if current.weekday() in selected_weekdays:
@@ -292,6 +338,8 @@ def course_create(request):
             
             messages.success(request, 'Курс успешно создан. Чат курса автоматически создан для всех участников.')
             return redirect('classroom_core:course_detail', course_id=course.id)
+        else:
+            flash_form_errors(request, form)
     else:
         form = CourseForm()
     
@@ -316,6 +364,8 @@ def course_edit(request ,course_id ):
             _ensure_year_schedule(updated_course)
             messages.success(request ,'Курс успешно обновлен')
             return redirect('classroom_core:course_detail',course_id =course.id )
+        else:
+            flash_form_errors(request, form)
     else :
         form =CourseForm(instance =course )
 
@@ -362,6 +412,8 @@ def section_create(request ,course_id ):
             section.save()
             messages.success(request ,'Раздел успешно создан')
             return redirect('classroom_core:course_detail',course_id =course.id )
+        else:
+            flash_form_errors(request, form)
     else :
         form =CourseSectionForm()
 
@@ -387,6 +439,8 @@ def section_edit(request ,section_id ):
             form.save()
             messages.success(request ,'Раздел успешно обновлен')
             return redirect('classroom_core:course_detail',course_id =course.id )
+        else:
+            flash_form_errors(request, form)
     else :
         form =CourseSectionForm(instance =section )
 
@@ -437,6 +491,8 @@ def material_create(request ,section_id ):
             material.save()
             messages.success(request ,'Материал успешно создан')
             return redirect('classroom_core:course_detail',course_id =course.id )
+        else:
+            flash_form_errors(request, form)
     else :
         form =CourseMaterialForm()
 
@@ -464,6 +520,8 @@ def material_edit(request ,material_id ):
             form.save()
             messages.success(request ,'Материал успешно обновлен')
             return redirect('classroom_core:course_detail',course_id =course.id )
+        else:
+            flash_form_errors(request, form)
     else :
         form =CourseMaterialForm(instance =material )
 
@@ -585,24 +643,34 @@ def assignment_detail(request ,assignment_id ):
         assignment =assignment ,
         student =request.user
         ).first()
+
+    latest_quiz_attempt = None
+    if assignment.assignment_type == "quiz" and is_student:
+        latest_quiz_attempt = AssignmentQuizAttempt.objects.filter(
+            assignment=assignment,
+            student=request.user,
+        ).order_by("-submitted_at").first()
     
                                                    
     all_submissions = []
     if can_manage_course:
-        all_submissions = AssignmentSubmission.objects.filter(
+        all_submissions = list(AssignmentSubmission.objects.filter(
             assignment=assignment
-        ).select_related('student', 'graded_by').order_by('-submitted_at')
+        ).select_related('student', 'graded_by').order_by('-submitted_at'))
     
                            
     submissions_stats = {}
+    quiz_results_by_student = {}
     if can_manage_course:
-        total = all_submissions.count()
-        graded = all_submissions.filter(status='graded').count()
-        submitted = all_submissions.filter(status='submitted').count()
-        returned = all_submissions.filter(status='returned').count()
-        late = all_submissions.filter(
-            submitted_at__gt=assignment.due_date
-        ).count() if assignment.due_date else 0
+        total = len(all_submissions)
+        graded = sum(1 for sub in all_submissions if sub.status == "graded")
+        submitted = sum(1 for sub in all_submissions if sub.status == "submitted")
+        returned = sum(1 for sub in all_submissions if sub.status == "returned")
+        late = (
+            sum(1 for sub in all_submissions if sub.submitted_at and sub.submitted_at > assignment.due_date)
+            if assignment.due_date
+            else 0
+        )
         
         submissions_stats = {
             'total': total,
@@ -611,6 +679,16 @@ def assignment_detail(request ,assignment_id ):
             'returned': returned,
             'late': late,
         }
+        latest_attempts = {}
+        for attempt in AssignmentQuizAttempt.objects.filter(assignment=assignment).select_related("student").order_by("student_id", "-submitted_at"):
+            if attempt.student_id not in latest_attempts:
+                latest_attempts[attempt.student_id] = attempt
+        quiz_results_by_student = {
+            student_id: f"{attempt.correct_answers}/{attempt.total_questions}"
+            for student_id, attempt in latest_attempts.items()
+        }
+        for sub in all_submissions:
+            sub.quiz_correctness = quiz_results_by_student.get(sub.student_id, "0/0")
 
     context ={
     'assignment':assignment ,
@@ -623,6 +701,10 @@ def assignment_detail(request ,assignment_id ):
     'submission':submission ,
     'all_submissions': all_submissions,
     'submissions_stats': submissions_stats,
+    'student_files': AssignmentFile.objects.filter(assignment=assignment, student=request.user).order_by('-uploaded_at') if is_student else [],
+    'quiz_questions': assignment.quiz_questions.prefetch_related("options").all() if assignment.assignment_type == "quiz" else [],
+    "latest_quiz_attempt": latest_quiz_attempt,
+    "quiz_results_by_student": quiz_results_by_student,
     }
 
     return render(request ,'classroom_core/assignment_detail.html',context )
@@ -638,22 +720,31 @@ def assignment_create(request ,course_id ):
 
     if request.method =='POST':
         form = AssignmentForm(request.POST, request.FILES )
-        print(form.errors)
-        print(course.id)
-        print(course_id)
         if form.is_valid():
-            assignment = form.save(commit = True)
+            assignment = form.save(commit=False)
             assignment.course = course
             assignment.save()
+            if assignment.assignment_type == "quiz":
+                quiz_payload_raw = request.POST.get("quiz_payload", "[]")
+                try:
+                    quiz_payload = json.loads(quiz_payload_raw)
+                except (TypeError, ValueError):
+                    quiz_payload = []
+                _save_assignment_quiz(assignment, quiz_payload)
+            else:
+                assignment.quiz_questions.all().delete()
             messages.success(request ,'Задание успешно создано')
             return redirect('classroom_core:course_detail',course_id=course.id)
+        else:
+            flash_form_errors(request, form)
     else:
         form = AssignmentForm()
 
     return render(request ,'classroom_core/assignment_form.html',{
     'form':form ,
     'course':course ,
-    'title':'Создать задание'
+    'title':'Создать задание',
+    "quiz_initial_json": json.dumps([], ensure_ascii=False),
     })
 
 @login_required 
@@ -669,9 +760,20 @@ def assignment_edit(request ,assignment_id ):
     if request.method =='POST':
         form =AssignmentForm(request.POST ,request.FILES ,instance =assignment )
         if form.is_valid():
-            form.save()
+            updated_assignment = form.save()
+            if updated_assignment.assignment_type == "quiz":
+                quiz_payload_raw = request.POST.get("quiz_payload", "[]")
+                try:
+                    quiz_payload = json.loads(quiz_payload_raw)
+                except (TypeError, ValueError):
+                    quiz_payload = []
+                _save_assignment_quiz(updated_assignment, quiz_payload)
+            else:
+                updated_assignment.quiz_questions.all().delete()
             messages.success(request ,'Задание успешно обновлено')
             return redirect('classroom_core:assignment_detail',assignment_id =assignment.id )
+        else:
+            flash_form_errors(request, form)
     else :
         form =AssignmentForm(instance =assignment )
 
@@ -679,7 +781,8 @@ def assignment_edit(request ,assignment_id ):
     'form':form ,
     'course':course ,
     'assignment':assignment ,
-    'title':'Редактировать задание'
+    'title':'Редактировать задание',
+    "quiz_initial_json": json.dumps(_serialize_assignment_quiz(assignment), ensure_ascii=False),
     })
 
 @login_required 
@@ -704,45 +807,85 @@ def assignment_delete(request ,assignment_id ):
 
 @login_required 
 def assignment_submit(request ,assignment_id ):
-    """Отправка решения задания"""
-    assignment =get_object_or_404(Assignment ,id =assignment_id )
-    course =assignment.course 
+    """Отправка решения задания (текст + файл с устройства или из хранилища)."""
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    course = assignment.course
 
+    if assignment.assignment_type == "quiz":
+        messages.info(request, "Для этого задания ответы отправляются в форме на странице задания.")
+        return redirect("classroom_core:assignment_detail", assignment_id=assignment.id)
 
     if not course.can_access(request.user ):
         raise PermissionDenied 
 
-
     if not course.students.filter(id =request.user.id ).exists():
         raise PermissionDenied 
-
 
     if not assignment.can_submit():
         messages.error(request ,'Отправка решений для этого задания невозможна')
         return redirect('classroom_core:assignment_detail',assignment_id =assignment.id )
 
-
-    existing_submission =AssignmentSubmission.objects.filter(
-    assignment =assignment ,
-    student =request.user 
+    existing_submission = AssignmentSubmission.objects.filter(
+        assignment=assignment,
+        student=request.user,
     ).first()
 
     if existing_submission and existing_submission.status !='returned':
         messages.error(request ,'Вы уже отправили решение этого задания')
         return redirect('classroom_core:assignment_detail',assignment_id =assignment.id )
 
-    if request.method =='POST':
-        form =AssignmentSubmissionForm(request.POST ,request.FILES )
+    if request.method == 'POST':
+        form = AssignmentSubmitCombinedForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
-            submission =form.save(commit =False )
-            submission.assignment =assignment 
-            submission.student =request.user 
+            desc = form.cleaned_data.get('attachment_description') or ''
+            text = (form.cleaned_data.get('text_response') or '').strip()
+            upload = form.cleaned_data.get('upload_from_pc')
+            storage = form.cleaned_data.get('storage_file')
+
+            file_record = None
+            upload_scan = None
+            if upload:
+                file_record, err, upload_scan = create_user_uploaded_file(request.user, upload)
+                if err:
+                    messages.error(request, err)
+                    return render(request, 'classroom_core/assignment_submit.html', {
+                        'form': form,
+                        'assignment': assignment,
+                        'course': course,
+                    })
+            elif storage:
+                file_record = storage
+
+            if existing_submission:
+                submission = existing_submission
+            else:
+                submission = AssignmentSubmission(assignment=assignment, student=request.user)
+
+            submission.text_response = text
+            if existing_submission and existing_submission.status == "returned":
+                submission.status = "submitted"
             submission.save()
 
+            if file_record:
+                AssignmentFile.objects.create(
+                    assignment=assignment,
+                    student=request.user,
+                    file=file_record,
+                    description=desc,
+                )
+
             messages.success(request ,'Решение успешно отправлено')
+            if upload and upload_scan:
+                from file_manager.clamav import flash_scan_followup
+                flash_scan_followup(request, upload_scan)
             return redirect('classroom_core:assignment_detail',assignment_id =assignment.id )
+        else:
+            flash_form_errors(request, form)
     else :
-        form =AssignmentSubmissionForm()
+        initial = {}
+        if existing_submission:
+            initial['text_response'] = existing_submission.text_response or ''
+        form = AssignmentSubmitCombinedForm(initial=initial, user=request.user)
 
     return render(request ,'classroom_core/assignment_submit.html',{
     'form':form ,
@@ -771,14 +914,22 @@ def assignment_grade(request ,submission_id ):
 
             messages.success(request ,'Решение успешно оценено')
             return redirect('classroom_core:assignment_detail',assignment_id =assignment.id )
+        else:
+            flash_form_errors(request, form)
     else :
         form =AssignmentGradeForm(instance =submission )
+
+    submission_assignment_files = AssignmentFile.objects.filter(
+        assignment=assignment,
+        student=submission.student,
+    ).select_related("file").order_by("-uploaded_at")
 
     return render(request ,'classroom_core/assignment_grade.html',{
     'form':form ,
     'submission':submission ,
     'assignment':assignment ,
-    'course':course 
+    'course':course ,
+    'submission_assignment_files': submission_assignment_files,
     })
 
 
@@ -865,6 +1016,8 @@ def announcement_create(request ,course_id ):
             announcement.save()
             messages.success(request ,'Объявление успешно создано')
             return redirect('classroom_core:course_detail',course_id =course.id )
+        else:
+            flash_form_errors(request, form)
     else :
         form =AnnouncementForm()
 
@@ -888,6 +1041,8 @@ def announcement_edit(request ,announcement_id ):
             form.save()
             messages.success(request ,'Объявление успешно обновлено')
             return redirect('classroom_core:announcement_detail',announcement_id =announcement.id )
+        else:
+            flash_form_errors(request, form)
     else :
         form =AnnouncementForm(instance =announcement )
 
@@ -965,6 +1120,8 @@ def student_enroll(request ,course_id ):
             if students :
                 messages.success(request ,'Студенты успешно зачислены на курс')
             return redirect('classroom_core:student_list',course_id =course.id )
+        else:
+            flash_form_errors(request, form)
     else :
         form =StudentEnrollmentForm()
 
@@ -1014,6 +1171,8 @@ def profile_edit(request ):
             form.save()
             messages.success(request ,'Профиль успешно обновлен')
             return redirect('classroom_core:profile_view')
+        else:
+            flash_form_errors(request, form)
     else :
         form =UserProfileForm(instance =request.user.profile )
 
@@ -1193,6 +1352,8 @@ def group_create(request):
             group.save()
             messages.success(request, 'Группа успешно создана')
             return redirect('classroom_core:group_list')
+        else:
+            flash_form_errors(request, form)
     else:
         form = StudentGroupForm()
     
@@ -1215,6 +1376,8 @@ def group_edit(request, group_id):
             form.save()
             messages.success(request, 'Группа успешно обновлена')
             return redirect('classroom_core:group_list')
+        else:
+            flash_form_errors(request, form)
     else:
         form = StudentGroupForm(instance=group)
     
@@ -1334,6 +1497,8 @@ def course_enrollment_request_create(request, course_id):
 
             messages.success(request, 'Заявка на запись на курс успешно создана')
             return redirect('classroom_core:course_detail', course_id=course.id)
+        else:
+            flash_form_errors(request, form)
     else:
         form = CourseEnrollmentRequestForm()
 
@@ -1485,6 +1650,8 @@ def course_enrollment_request_review(request, request_id):
                 messages.info(request, f'Заявка отклонена. Статус: {enrollment_request.get_status_display()}')
 
             return redirect('classroom_core:course_enrollment_request_list', course_id=course.id)
+        else:
+            flash_form_errors(request, form)
     else:
         form = CourseEnrollmentReviewForm(instance=enrollment_request)
 
@@ -1504,36 +1671,8 @@ def course_enrollment_request_review(request, request_id):
 
 @login_required
 def assignment_file_create(request, assignment_id):
-    """Прикрепление файла к заданию"""
-    assignment = get_object_or_404(Assignment, id=assignment_id)
-    course = assignment.course
-
-                   
-    if not course.can_access(request.user):
-        raise PermissionDenied
-
-                                             
-    if not course.students.filter(id=request.user.id).exists():
-        raise PermissionDenied
-
-    if request.method == 'POST':
-        form = AssignmentFileForm(request.POST, user=request.user)
-        if form.is_valid():
-            file_obj = form.save(commit=False)
-            file_obj.assignment = assignment
-            file_obj.student = request.user
-            file_obj.save()
-
-            messages.success(request, 'Файл успешно прикреплен к заданию')
-            return redirect('classroom_core:assignment_detail', assignment_id=assignment.id)
-    else:
-        form = AssignmentFileForm(user=request.user)
-
-    return render(request, 'classroom_core/assignment_file_form.html', {
-        'form': form,
-        'assignment': assignment,
-        'course': course,
-    })
+    """Старая ссылка: единая форма отправки решения."""
+    return redirect("classroom_core:assignment_submit", assignment_id=assignment_id)
 
 
 @login_required
@@ -1626,6 +1765,8 @@ def assignment_file_review_create(request, file_id):
 
             messages.success(request, 'Проверка файла успешно создана')
             return redirect('classroom_core:assignment_file_list', assignment_id=assignment.id)
+        else:
+            flash_form_errors(request, form)
     else:
         form = AssignmentFileReviewForm()
 
@@ -1662,6 +1803,8 @@ def assignment_file_review_edit(request, review_id):
             form.save()
             messages.success(request, 'Проверка файла успешно обновлена')
             return redirect('classroom_core:assignment_file_list', assignment_id=assignment.id)
+        else:
+            flash_form_errors(request, form)
     else:
         form = AssignmentFileReviewForm(instance=review)
 
@@ -1842,14 +1985,14 @@ def course_gradebook_add_lesson(request, course_id):
         .first()
         or 0
     )
-    CourseLesson.objects.create(
+    lesson = CourseLesson.objects.create(
         course=course,
         lesson_date=lesson_date,
         lesson_number=max_number + 1,
         topic=topic,
     )
     messages.success(request, "Пара добавлена в журнал")
-    return redirect("classroom_core:course_gradebook", course_id=course.id)
+    return redirect(f"{reverse('classroom_core:course_gradebook', kwargs={'course_id': course.id})}?scroll_to_lesson={lesson.id}")
 
 
 @login_required
@@ -1976,7 +2119,7 @@ def course_gradebook_export(request, course_id):
     students = list(course.get_all_enrolled_students())
     wb = Workbook()
     ws = wb.active
-    ws.title = "Gradebook"
+    ws.title = "Assignments"
 
     header = ["student_id", "username", "full_name"] + [f"{a.id}:{a.title}" for a in assignments]
     ws.append(header)
@@ -1986,6 +2129,19 @@ def course_gradebook_export(request, course_id):
             submission = AssignmentSubmission.objects.filter(assignment=assignment, student=student).first()
             row.append(submission.score if submission and submission.score is not None else "")
         ws.append(row)
+
+    attendance_sheet = wb.create_sheet("Attendance")
+    attendance_header = ["student_id", "username", "full_name"]
+    lessons = list(course.lessons.order_by("lesson_date", "lesson_number"))
+    attendance_header.extend([f"lesson:{lesson.id}:{lesson.lesson_date}" for lesson in lessons])
+    attendance_sheet.append(attendance_header)
+    lesson_marks = LessonGrade.objects.filter(lesson__course=course)
+    marks_map = {(mark.student_id, mark.lesson_id): mark.mark for mark in lesson_marks}
+    for student in students:
+        row = [student.id, student.username, student.get_full_name()]
+        for lesson in lessons:
+            row.append(marks_map.get((student.id, lesson.id), ""))
+        attendance_sheet.append(row)
 
     output = io.BytesIO()
     wb.save(output)
@@ -2012,7 +2168,7 @@ def course_gradebook_import(request, course_id):
         return redirect("classroom_core:course_gradebook", course_id=course.id)
 
     workbook = load_workbook(upload)
-    sheet = workbook.active
+    sheet = workbook["Assignments"] if "Assignments" in workbook.sheetnames else workbook.active
     headers = [cell.value for cell in next(sheet.iter_rows(min_row=1, max_row=1))]
     assignment_map = {}
     for col_idx, header in enumerate(headers[3:], start=4):
@@ -2045,8 +2201,110 @@ def course_gradebook_import(request, course_id):
             submission.save()
             updated += 1
 
-    messages.success(request, f"Импорт завершен. Обновлено оценок: {updated}")
+    attendance_updated = 0
+    if "Attendance" in workbook.sheetnames:
+        attendance_sheet = workbook["Attendance"]
+        attendance_headers = [cell.value for cell in next(attendance_sheet.iter_rows(min_row=1, max_row=1))]
+        lesson_map = {}
+        for col_idx, header in enumerate(attendance_headers[3:], start=4):
+            raw = str(header or "")
+            if raw.startswith("lesson:"):
+                parts = raw.split(":")
+                if len(parts) >= 2 and parts[1].isdigit():
+                    lesson = CourseLesson.objects.filter(id=int(parts[1]), course=course).first()
+                    if lesson:
+                        lesson_map[col_idx] = lesson
+        for row in attendance_sheet.iter_rows(min_row=2):
+            student_id = row[0].value
+            if not student_id:
+                continue
+            student = User.objects.filter(id=int(student_id)).first()
+            if not student:
+                continue
+            for col_idx, lesson in lesson_map.items():
+                raw_mark = row[col_idx - 1].value
+                if raw_mark in (None, ""):
+                    continue
+                lesson_grade, _ = LessonGrade.objects.get_or_create(lesson=lesson, student=student)
+                lesson_grade.mark = str(raw_mark).strip()
+                lesson_grade.graded_by = request.user
+                lesson_grade.graded_at = timezone.now()
+                lesson_grade.save()
+                attendance_updated += 1
+
+    messages.success(request, f"Импорт завершен. Оценки: {updated}, посещаемость: {attendance_updated}")
     return redirect("classroom_core:course_gradebook", course_id=course.id)
+
+
+@login_required
+@require_http_methods(["POST"])
+def assignment_quiz_submit(request, assignment_id):
+    assignment = get_object_or_404(Assignment, id=assignment_id, assignment_type="quiz")
+    course = assignment.course
+    if not course.can_access(request.user) or not course.students.filter(id=request.user.id).exists():
+        raise PermissionDenied
+    if not assignment.can_submit():
+        messages.error(request, "Тест недоступен для отправки")
+        return redirect("classroom_core:assignment_detail", assignment_id=assignment.id)
+
+    questions = assignment.quiz_questions.prefetch_related("options").all()
+    all_correct = True
+    total_questions = questions.count()
+    correct_answers = 0
+    answers_payload = []
+    for question in questions:
+        selected = set(request.POST.getlist(f"question_{question.id}"))
+        question_options = list(question.options.all())
+        correct = {str(option.id) for option in question_options if option.is_correct}
+        question_correct = True
+        if assignment.quiz_mode == "single" and len(selected) != 1:
+            question_correct = False
+        if selected != correct:
+            question_correct = False
+        if question_correct:
+            correct_answers += 1
+        all_correct = all_correct and question_correct
+        answers_payload.append({
+            "question_id": question.id,
+            "question_text": question.question_text,
+            "selected_option_ids": list(selected),
+            "correct_option_ids": list(correct),
+            "is_correct": question_correct,
+            "options": [
+                {
+                    "id": option.id,
+                    "text": option.option_text,
+                    "is_correct": option.is_correct,
+                    "is_selected": str(option.id) in selected,
+                }
+                for option in question_options
+            ],
+        })
+
+    AssignmentQuizAttempt.objects.create(
+        assignment=assignment,
+        student=request.user,
+        total_questions=total_questions,
+        correct_answers=correct_answers,
+        answers_payload=answers_payload,
+        is_correct=all_correct,
+    )
+    score = 0
+    if total_questions > 0:
+        score = round((correct_answers / total_questions) * assignment.max_points)
+    submission, _ = AssignmentSubmission.objects.get_or_create(
+        assignment=assignment,
+        student=request.user,
+    )
+    submission.score = score
+    submission.status = "graded"
+    submission.feedback = f"Верных ответов: {correct_answers}/{total_questions}"
+    submission.graded_at = timezone.now()
+    submission.graded_by = None
+    submission.save()
+
+    messages.success(request, f"Тест проверен: {correct_answers}/{total_questions}, балл: {score}/{assignment.max_points}")
+    return redirect("classroom_core:assignment_detail", assignment_id=assignment.id)
 
 
 @login_required
@@ -2074,12 +2332,205 @@ def course_gradebook_column_create(request, course_id):
 
 @login_required
 def custom_admin_dashboard(request):
-    if not (request.user.is_superuser or request.user.profile.is_admin() or request.user.profile.is_staff()):
+    if not _can_access_management(request.user):
         raise PermissionDenied
     context = {
         "users_count": User.objects.count(),
         "courses_count": Course.objects.count(),
+        "assignments_count": Assignment.objects.count(),
         "files_count": File.objects.count(),
         "pending_enrollments": CourseEnrollmentRequest.objects.filter(status="pending").count(),
+        "is_super_management": _is_super_management(request.user),
     }
     return render(request, "classroom_core/admin_dashboard.html", context)
+
+
+def _can_access_management(user):
+    if not hasattr(user, "profile"):
+        return user.is_superuser
+    return user.is_superuser or user.profile.is_admin() or user.profile.is_staff() or user.profile.is_teacher()
+
+
+def _is_super_management(user):
+    if not hasattr(user, "profile"):
+        return user.is_superuser
+    return user.is_superuser or user.profile.is_admin() or user.profile.is_staff()
+
+
+@login_required
+def custom_admin_courses(request):
+    if not _can_access_management(request.user):
+        raise PermissionDenied
+    if _is_super_management(request.user):
+        courses = Course.objects.select_related("instructor").all().order_by("-created_at")
+    else:
+        courses = Course.objects.select_related("instructor").filter(
+            Q(instructor=request.user) | Q(teaching_assistants=request.user)
+        ).distinct().order_by("-created_at")
+    return render(request, "classroom_core/admin_courses.html", {"courses": courses, "is_super_management": _is_super_management(request.user)})
+
+
+@login_required
+def custom_admin_course_create(request):
+    if not _can_access_management(request.user):
+        raise PermissionDenied
+    form = ManagementCourseForm(request.POST or None)
+    if not _is_super_management(request.user):
+        form.fields["instructor"].queryset = User.objects.filter(id=request.user.id)
+        form.fields["instructor"].initial = request.user
+    if request.method == "POST":
+        if form.is_valid():
+            course = form.save()
+            _ensure_year_schedule(course)
+            messages.success(request, "Курс создан")
+            return redirect("classroom_core:custom_admin_courses")
+        flash_form_errors(request, form)
+    return render(request, "classroom_core/admin_course_form.html", {"form": form, "title": "Создать курс"})
+
+
+@login_required
+def custom_admin_course_edit(request, course_id):
+    if not _can_access_management(request.user):
+        raise PermissionDenied
+    course = get_object_or_404(Course, id=course_id)
+    if not (_is_super_management(request.user) or course.instructor_id == request.user.id or course.teaching_assistants.filter(id=request.user.id).exists()):
+        raise PermissionDenied
+    form = ManagementCourseForm(request.POST or None, instance=course)
+    if not _is_super_management(request.user):
+        form.fields["instructor"].queryset = User.objects.filter(id=request.user.id)
+    if request.method == "POST":
+        if form.is_valid():
+            updated_course = form.save()
+            _ensure_year_schedule(updated_course)
+            messages.success(request, "Курс обновлен")
+            return redirect("classroom_core:custom_admin_courses")
+        flash_form_errors(request, form)
+    return render(request, "classroom_core/admin_course_form.html", {"form": form, "title": "Редактировать курс"})
+
+
+@login_required
+@require_http_methods(["POST"])
+def custom_admin_course_delete(request, course_id):
+    if not _can_access_management(request.user):
+        raise PermissionDenied
+    course = get_object_or_404(Course, id=course_id)
+    if not (_is_super_management(request.user) or course.instructor_id == request.user.id):
+        raise PermissionDenied
+    course.delete()
+    messages.success(request, "Курс удален")
+    return redirect("classroom_core:custom_admin_courses")
+
+
+@login_required
+def custom_admin_assignments(request):
+    if not _can_access_management(request.user):
+        raise PermissionDenied
+    assignments = Assignment.objects.select_related("course").all().order_by("-created_at")
+    if not _is_super_management(request.user):
+        assignments = assignments.filter(
+            Q(course__instructor=request.user) | Q(course__teaching_assistants=request.user)
+        ).distinct()
+    return render(request, "classroom_core/admin_assignments.html", {"assignments": assignments, "is_super_management": _is_super_management(request.user)})
+
+
+@login_required
+def custom_admin_assignment_create(request):
+    if not _can_access_management(request.user):
+        raise PermissionDenied
+    form = ManagementAssignmentForm(request.POST or None)
+    if not _is_super_management(request.user):
+        form.fields["course"].queryset = Course.objects.filter(
+            Q(instructor=request.user) | Q(teaching_assistants=request.user)
+        ).distinct()
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Задание создано")
+            return redirect("classroom_core:custom_admin_assignments")
+        flash_form_errors(request, form)
+    return render(request, "classroom_core/admin_assignment_form.html", {"form": form, "title": "Создать задание"})
+
+
+@login_required
+def custom_admin_assignment_edit(request, assignment_id):
+    if not _can_access_management(request.user):
+        raise PermissionDenied
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    if not (_is_super_management(request.user) or assignment.course.instructor_id == request.user.id or assignment.course.teaching_assistants.filter(id=request.user.id).exists()):
+        raise PermissionDenied
+    form = ManagementAssignmentForm(request.POST or None, instance=assignment)
+    if not _is_super_management(request.user):
+        form.fields["course"].queryset = Course.objects.filter(
+            Q(instructor=request.user) | Q(teaching_assistants=request.user)
+        ).distinct()
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Задание обновлено")
+            return redirect("classroom_core:custom_admin_assignments")
+        flash_form_errors(request, form)
+    return render(request, "classroom_core/admin_assignment_form.html", {"form": form, "title": "Редактировать задание"})
+
+
+@login_required
+@require_http_methods(["POST"])
+def custom_admin_assignment_delete(request, assignment_id):
+    if not _can_access_management(request.user):
+        raise PermissionDenied
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    if not (_is_super_management(request.user) or assignment.course.instructor_id == request.user.id):
+        raise PermissionDenied
+    assignment.delete()
+    messages.success(request, "Задание удалено")
+    return redirect("classroom_core:custom_admin_assignments")
+
+
+@login_required
+def custom_admin_students(request):
+    if not _can_access_management(request.user):
+        raise PermissionDenied
+    users = User.objects.select_related("profile").filter(profile__role="student").order_by("username")
+    return render(request, "classroom_core/admin_students.html", {"users": users, "is_super_management": _is_super_management(request.user)})
+
+
+@login_required
+def custom_admin_student_create(request):
+    if not _is_super_management(request.user):
+        raise PermissionDenied
+    form = ManagementUserForm(request.POST or None)
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Пользователь создан")
+            return redirect("classroom_core:custom_admin_students")
+        flash_form_errors(request, form)
+    return render(request, "classroom_core/admin_student_form.html", {"form": form, "title": "Создать пользователя"})
+
+
+@login_required
+def custom_admin_student_edit(request, user_id):
+    if not _is_super_management(request.user):
+        raise PermissionDenied
+    user_obj = get_object_or_404(User, id=user_id)
+    form = ManagementUserForm(request.POST or None, instance=user_obj)
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Пользователь обновлен")
+            return redirect("classroom_core:custom_admin_students")
+        flash_form_errors(request, form)
+    return render(request, "classroom_core/admin_student_form.html", {"form": form, "title": "Редактировать пользователя"})
+
+
+@login_required
+@require_http_methods(["POST"])
+def custom_admin_student_delete(request, user_id):
+    if not _is_super_management(request.user):
+        raise PermissionDenied
+    user_obj = get_object_or_404(User, id=user_id)
+    if user_obj.id == request.user.id:
+        messages.error(request, "Нельзя удалить текущего пользователя")
+        return redirect("classroom_core:custom_admin_students")
+    user_obj.delete()
+    messages.success(request, "Пользователь удален")
+    return redirect("classroom_core:custom_admin_students")

@@ -1,7 +1,9 @@
 from django.shortcuts import render ,redirect ,get_object_or_404 
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required 
 from django.contrib import messages 
 from django.http import HttpResponse ,Http404 ,JsonResponse 
+from django.core.files.base import ContentFile
 from django.core.exceptions import PermissionDenied ,ValidationError 
 from django.db.models import Q 
 from django.core.paginator import Paginator 
@@ -9,13 +11,26 @@ from django.contrib.auth.models import User
 from . models import File ,FileCategory ,Tag ,FileComment ,FileVersion ,FileActivity ,UserStorageQuota 
 from . forms import FileUploadForm ,FileEditForm ,FileVersionForm ,FileCommentForm ,FileCategoryForm ,TagForm ,FileSearchForm 
 from . utils import extract_text_from_file ,generate_preview ,search_files ,get_user_storage_usage 
+from . office_pdf import (
+    EXTENSIONS_LIBREOFFICE_TO_PDF,
+    convert_office_file_to_pdf_bytes,
+    is_convertapi_configured,
+    is_libreoffice_available,
+    is_office_pdf_conversion_available,
+)
+from . clamav import flash_scan_followup ,scan_upload_bytes 
+import logging 
 import os 
 import requests
 from django.conf import settings
 from django.utils.crypto import get_random_string
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
+from web_messages import flash_form_errors
 from .models import ExternalStorageConnection
+from .wordfilter import find_banned_match
+
+logger = logging.getLogger(__name__)
 from .models import FavoriteCollection, FavoriteCollectionItem, SharedWorkspace
 from .yandex_disk import (
     get_authorize_url,
@@ -31,6 +46,7 @@ from .import_pipeline import import_yandex_file
 import zipfile
 import io
 import json
+import tempfile
 from pathlib import Path
 from pathlib import PurePosixPath
 
@@ -68,6 +84,32 @@ def get_yandex_connection(user, autocreate_from_social=False):
     return connection
 
 
+def _user_role(user):
+    profile = getattr(user, "profile", None)
+    return getattr(profile, "role", "")
+
+
+def is_admin_user(user):
+    role = _user_role(user)
+    return user.is_superuser or user.is_staff or role in {"admin", "staff"}
+
+
+def is_teacher_user(user):
+    return _user_role(user) == "teacher"
+
+
+def can_manage_reference_data(user):
+    return is_admin_user(user) or is_teacher_user(user)
+
+
+def can_edit_file_object(user, file_obj):
+    return file_obj.uploaded_by_id == user.id or is_admin_user(user)
+
+
+def can_delete_file_object(user, file_obj):
+    return file_obj.uploaded_by_id == user.id or is_admin_user(user)
+
+
 def build_unique_title(user, original_name):
     base_name = (original_name or "").strip() or "file"
     stem, ext = os.path.splitext(base_name)
@@ -97,21 +139,204 @@ def sync_deleted_yandex_files_for_user(user):
         if not exists:
             file_obj.delete()
 
+
+def extract_text_from_uploaded_content(file_name, content):
+    if not content:
+        return ""
+    suffix = Path(file_name).suffix or ".tmp"
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+            tmp.write(content)
+            tmp_path = tmp.name
+        return extract_text_from_file(tmp_path)
+    except Exception:
+        return ""
+    finally:
+        if tmp_path and os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
+
+
+def create_user_uploaded_file(user, uploaded_file):
+    """
+    Сохраняет загруженный файл так же, как страница загрузки в файловом менеджере
+    (Яндекс.Диск при успешном API, иначе локально на сервере).
+    Перед сохранением — проверка ClamAV (если включена) и словаря «запрещённых» слов
+    (static/file_manager/words.txt) по извлечённому тексту.
+
+    Returns:
+        (File, None, scan_info) при успехе,
+        (None, str, scan_info) при ошибке; scan_info — результат clamav.scan_upload_bytes.
+    """
+    storage_quota = get_user_storage_usage(user)
+    file_size = uploaded_file.size
+    file_name = PurePosixPath(uploaded_file.name).name
+    if not storage_quota.has_enough_space(file_size):
+        logger.warning(
+            "file upload rejected (quota) user_id=%s filename=%r size_bytes=%s",
+            user.id,
+            file_name,
+            file_size,
+        )
+        return None, (
+            f"Недостаточно места в хранилище. Доступно: {storage_quota.get_quota_display()}"
+        ), {"performed": False, "clean": None, "skipped": "quota"}
+    unique_title = build_unique_title(user, file_name)
+    uploaded_content = uploaded_file.read()
+    scan = scan_upload_bytes(
+        uploaded_content,
+        user_id=user.id,
+        filename=file_name,
+    )
+
+    if scan.get("performed") and scan.get("clean") is False:
+        threat = scan.get("threat") or "неизвестная угроза"
+        return None, (
+            f"Файл не загружен: антивирус ClamAV обнаружил угрозу «{threat}». "
+            "Выберите другой файл или проверьте данные на компьютере."
+        ), scan
+
+    if getattr(settings, "CLAMAV_ENABLED", False) and not scan.get("performed"):
+        if not getattr(settings, "CLAMAV_FAIL_OPEN", True):
+            err = scan.get("error") or "проверка не выполнена"
+            logger.warning(
+                "file upload rejected (clamav required, unavailable) user_id=%s filename=%r err=%s",
+                user.id,
+                file_name,
+                err,
+            )
+            return None, (
+                f"Загрузка запрещена политикой безопасности: требуется ClamAV, "
+                f"но антивирус недоступен ({err})."
+            ), scan
+
+    extracted_text = extract_text_from_uploaded_content(unique_title, uploaded_content)
+    banned_match = find_banned_match(extracted_text)
+    if banned_match:
+        logger.warning(
+            "file upload rejected (wordfilter) user_id=%s filename=%r matched=%r",
+            user.id,
+            file_name,
+            banned_match,
+        )
+        return None, (
+            "Файл не принят: в содержимом обнаружен запрещённый фрагмент по словарю модерации. "
+            "Загрузите другой файл."
+        ), scan
+
+    yandex_connection = get_yandex_connection(user, autocreate_from_social=True)
+    file_obj = None
+
+    if yandex_connection:
+        yandex_path = f"disk:/{unique_title}"
+        try:
+            upload_file_bytes(yandex_connection.access_token, yandex_path, uploaded_content, overwrite=True)
+            file_obj = File.objects.create(
+                title=unique_title,
+                description="",
+                uploaded_by=user,
+                visibility="private",
+                importance="main",
+                is_folder=False,
+                storage_provider="yandex_disk",
+                yandex_path=yandex_path,
+                file_size=file_size,
+                extracted_text=extracted_text,
+            )
+        except Exception:
+            file_obj = None
+
+    if not file_obj:
+        try:
+            file_obj = File(
+                title=unique_title,
+                description="",
+                uploaded_by=user,
+                visibility="private",
+                importance="main",
+                is_folder=False,
+                storage_provider="local",
+                yandex_path="",
+                file_size=file_size,
+                extracted_text=extracted_text,
+            )
+            file_obj.file.save(unique_title, ContentFile(uploaded_content), save=True)
+        except Exception as exc:
+            logger.error(
+                "file upload save failed user_id=%s title=%r",
+                user.id,
+                unique_title,
+                exc_info=exc,
+            )
+            return None, f"Не удалось сохранить файл: {exc}", scan
+
+    try:
+        FileActivity.log_activity(
+            file=file_obj,
+            user=user,
+            activity_type="upload",
+            description=f"File uploaded: {file_obj.title}",
+        )
+    except Exception:
+        pass
+
+    try:
+        storage_quota.update_usage()
+    except Exception:
+        pass
+
+    logger.info(
+        "file upload stored file_id=%s title=%r storage_provider=%s user_id=%s size_bytes=%s "
+        "clamav_performed=%s clamav_clean=%s clamav_skipped=%s",
+        file_obj.id,
+        file_obj.title,
+        file_obj.storage_provider,
+        user.id,
+        file_size,
+        scan.get("performed"),
+        scan.get("clean"),
+        scan.get("skipped"),
+    )
+
+    return file_obj, None, scan
+
+
 @login_required 
 def file_list(request ):
     sync_deleted_yandex_files_for_user(request.user)
     storage_quota =get_user_storage_usage(request.user )
     yandex_connection = get_yandex_connection(request.user, autocreate_from_social=True)
 
-    files =search_files(
-    query =request.GET.get('query'),
-    user =request.user ,
-    file_types =[request.GET.get('file_type')]if request.GET.get('file_type')else None ,
-    categories =[request.GET.get('category')]if request.GET.get('category')else None ,
-    tags =request.GET.getlist('tags'),
-    date_from =request.GET.get('date_from'),
-    date_to =request.GET.get('date_to')
-    )
+    if is_admin_user(request.user):
+        files = File.objects.filter(is_folder=False)
+        query = request.GET.get('query')
+        if query:
+            files = files.filter(
+                Q(title__icontains=query) |
+                Q(description__icontains=query) |
+                Q(extracted_text__icontains=query)
+            )
+        if request.GET.get('file_type'):
+            files = files.filter(file_type=request.GET.get('file_type'))
+        if request.GET.get('category'):
+            files = files.filter(category=request.GET.get('category'))
+        if request.GET.get('date_from'):
+            files = files.filter(uploaded_at__date__gte=request.GET.get('date_from'))
+        if request.GET.get('date_to'):
+            files = files.filter(uploaded_at__date__lte=request.GET.get('date_to'))
+    else:
+        files =search_files(
+        query =request.GET.get('query'),
+        user =request.user ,
+        file_types =[request.GET.get('file_type')]if request.GET.get('file_type')else None ,
+        categories =[request.GET.get('category')]if request.GET.get('category')else None ,
+        tags =request.GET.getlist('tags'),
+        date_from =request.GET.get('date_from'),
+        date_to =request.GET.get('date_to')
+        )
     if request.GET.get('favorites_only'):
         files = files.filter(favorite=request.user)
 
@@ -127,6 +352,9 @@ def file_list(request ):
     paginator =Paginator(files ,20 )
     page_number =request.GET.get('page')
     page_obj =paginator.get_page(page_number )
+    for file_obj in page_obj:
+        file_obj.can_edit = can_edit_file_object(request.user, file_obj)
+        file_obj.can_delete = can_delete_file_object(request.user, file_obj)
 
     total_files =files.count()
     total_size =sum(f.file_size for f in files )
@@ -141,109 +369,39 @@ def file_list(request ):
     'tags':Tag.objects.all(),
     'storage_quota':storage_quota ,
     'yandex_connected': bool(yandex_connection),
+    'can_manage_reference_data': can_manage_reference_data(request.user),
+    'is_admin_user': is_admin_user(request.user),
     }
 
     return render(request ,'file_manager/file_list.html',context )
 
 @login_required 
 def file_upload(request ):
-    print("[file_upload] start", {"method": request.method, "user_id": request.user.id, "username": request.user.username})
     if request.method != 'POST':
-        print("[file_upload] non-POST -> redirect file_list")
         return redirect('file_manager:file_list')
 
-    storage_quota = get_user_storage_usage(request.user)
-    print("[file_upload] quota", {
-        "used_bytes": storage_quota.used_bytes,
-        "total_quota_bytes": storage_quota.total_quota_bytes,
-    })
+    def respond_redirect(res):
+        if request.headers.get("X-Upload-Json-Redirect") != "1":
+            return res
+        return JsonResponse({"redirect": res.url})
+
     uploaded_file = request.FILES.get('file')
     if not uploaded_file:
-        print("[file_upload] no file in request.FILES", {"keys": list(request.FILES.keys())})
-        messages.error(request, 'Файл не выбран')
-        return redirect('file_manager:file_list')
+        messages.error(request, "Файл не выбран — выберите файл и попробуйте снова.")
+        return respond_redirect(redirect('file_manager:file_list'))
 
-    file_size = uploaded_file.size
-    print("[file_upload] incoming file", {
-        "name": uploaded_file.name,
-        "size": file_size,
-        "content_type": getattr(uploaded_file, "content_type", None),
-    })
-    if not storage_quota.has_enough_space(file_size):
-        print("[file_upload] quota check failed")
-        messages.error(request, f'Недостаточно места в хранилище. Доступно: {storage_quota.get_quota_display()}')
-        return redirect('file_manager:file_list')
+    file_obj, err, scan = create_user_uploaded_file(request.user, uploaded_file)
+    if err:
+        messages.error(request, err)
+        return respond_redirect(redirect('file_manager:file_list'))
 
-    file_name = PurePosixPath(uploaded_file.name).name
-    unique_title = build_unique_title(request.user, file_name)
-    yandex_connection = get_yandex_connection(request.user, autocreate_from_social=True)
-    file_obj = None
+    if file_obj.storage_provider == "yandex_disk":
+        messages.success(request, "Файл успешно загружен на Яндекс.Диск.")
+    else:
+        messages.success(request, "Файл успешно загружен в локальное хранилище.")
+    flash_scan_followup(request, scan)
 
-    if yandex_connection:
-        yandex_path = f"disk:/{unique_title}"
-        print("[file_upload] yandex storage target", {"file_name": unique_title, "yandex_path": yandex_path})
-        try:
-            upload_file_bytes(yandex_connection.access_token, yandex_path, uploaded_file.read(), overwrite=True)
-            file_obj = File.objects.create(
-                title=unique_title,
-                description="",
-                uploaded_by=request.user,
-                visibility="private",
-                importance="main",
-                is_folder=False,
-                storage_provider="yandex_disk",
-                yandex_path=yandex_path,
-                file_size=file_size,
-            )
-            messages.success(request, "Файл успешно загружен на Яндекс.Диск")
-            print("[file_upload] yandex save success", {"file_id": file_obj.id, "yandex_path": yandex_path})
-        except Exception as exc:
-            print("[file_upload] yandex save failed, fallback to local", {"error": repr(exc)})
-            messages.warning(request, f"Не удалось загрузить на Яндекс.Диск, сохранено локально: {exc}")
-
-    if not file_obj:
-        print("[file_upload] local storage target", {"file_name": unique_title})
-        try:
-            if hasattr(uploaded_file, "seek"):
-                uploaded_file.seek(0)
-            file_obj = File(
-                title=unique_title,
-                description="",
-                uploaded_by=request.user,
-                visibility="private",
-                importance="main",
-                is_folder=False,
-                storage_provider="local",
-                yandex_path="",
-                file_size=file_size,
-            )
-            file_obj.file.save(unique_title, uploaded_file, save=True)
-            print("[file_upload] local save success", {"file_id": file_obj.id, "path": file_obj.file.name})
-            messages.success(request, "Файл успешно загружен в локальное хранилище")
-        except Exception as exc:
-            print("[file_upload] local save failed", {"error": repr(exc)})
-            messages.error(request, f"Не удалось сохранить файл: {exc}")
-            return redirect('file_manager:file_list')
-
-    try:
-        FileActivity.log_activity(
-            file=file_obj,
-            user=request.user,
-            activity_type='upload',
-            description=f'File uploaded: {file_obj.title }'
-        )
-        print("[file_upload] activity logged", {"file_id": file_obj.id})
-    except Exception as exc:
-        print("[file_upload] activity log failed", {"error": repr(exc), "file_id": file_obj.id})
-
-    try:
-        storage_quota.update_usage()
-        print("[file_upload] quota updated")
-    except Exception as exc:
-        print("[file_upload] quota update failed", {"error": repr(exc)})
-
-    print("[file_upload] done", {"redirect_file_id": file_obj.id})
-    return redirect('file_manager:file_detail', file_id=file_obj.id)
+    return respond_redirect(redirect("file_manager:file_list"))
 
 @login_required 
 def file_detail(request ,file_id ):
@@ -268,8 +426,8 @@ def file_detail(request ,file_id ):
     'file':file_obj ,
     'comments':comments ,
     'comment_form':comment_form ,
-    'can_edit':file_obj.can_edit(request.user ),
-    'can_delete':file_obj.can_delete(request.user ),
+    'can_edit':can_edit_file_object(request.user, file_obj),
+    'can_delete':can_delete_file_object(request.user, file_obj),
     'is_favorite':file_obj.is_favorite(request.user ),
     'favorite_collections': FavoriteCollection.objects.filter(user=request.user),
     'shared_workspaces': SharedWorkspace.objects.filter(participants=request.user),
@@ -321,14 +479,30 @@ def file_preview(request ,file_id ):
 
     file_ext = (file_obj.get_extension() or "").lower()
     content_type = 'application/octet-stream'
-    if file_ext in ['txt']:
-        content_type ='text/plain'
+    if file_ext in ['txt', 'csv', 'log', 'md', 'json', 'xml', 'yaml', 'yml']:
+        content_type = 'text/plain; charset=utf-8'
     elif file_ext in ['pdf']:
         content_type ='application/pdf'
     elif file_ext in ['jpg','jpeg']:
         content_type ='image/jpeg'
     elif file_ext in ['png']:
         content_type ='image/png'
+    elif file_ext in ['gif']:
+        content_type = 'image/gif'
+    elif file_ext in ['webp']:
+        content_type = 'image/webp'
+    elif file_ext in ['svg']:
+        content_type = 'image/svg+xml'
+    elif file_ext in ['mp4']:
+        content_type = 'video/mp4'
+    elif file_ext in ['webm']:
+        content_type = 'video/webm'
+    elif file_ext in ['mp3']:
+        content_type = 'audio/mpeg'
+    elif file_ext in ['wav']:
+        content_type = 'audio/wav'
+    elif file_ext in ['ogg']:
+        content_type = 'audio/ogg'
 
     if file_obj.storage_provider == "yandex_disk" and file_obj.yandex_path:
         connection = get_yandex_connection(file_obj.uploaded_by, autocreate_from_social=True)
@@ -348,12 +522,222 @@ def file_preview(request ,file_id ):
             return response
     raise Http404
 
+
+@login_required
+def office_pdf_preview(request, file_id):
+    """Отдаёт PDF из Office: ConvertAPI (если есть ключ) и/или LibreOffice."""
+    file_obj = get_object_or_404(File, id=file_id)
+    if not file_obj.can_access(request.user):
+        raise PermissionDenied
+    ext = (file_obj.get_extension() or "").lower()
+    if ext not in EXTENSIONS_LIBREOFFICE_TO_PDF:
+        raise Http404
+    if not is_office_pdf_conversion_available():
+        return HttpResponse(
+            "Конвертация Office→PDF недоступна: задайте CONVERTAPI_SECRET (ConvertAPI) "
+            "или установите LibreOffice / LIBREOFFICE_PATH.",
+            status=503,
+            content_type="text/plain; charset=utf-8",
+        )
+    path, cleanup = _resolve_path_for_viewing(file_obj)
+    if not path:
+        raise Http404
+    try:
+        try:
+            pdf_bytes = convert_office_file_to_pdf_bytes(path)
+        except Exception as exc:
+            return HttpResponse(
+                f"Не удалось сконвертировать в PDF: {exc}",
+                status=502,
+                content_type="text/plain; charset=utf-8",
+            )
+        response = HttpResponse(pdf_bytes, content_type="application/pdf")
+        response["Content-Disposition"] = 'inline; filename="preview.pdf"'
+        return response
+    finally:
+        if cleanup:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+
+def _resolve_path_for_viewing(file_obj):
+    """
+    Возвращает (абсолютный_путь, удалить_после_использования).
+    Для Яндекс.Диска скачивает во временный файл.
+    """
+    if file_obj.is_folder:
+        return None, False
+    if file_obj.storage_provider == "yandex_disk" and file_obj.yandex_path:
+        connection = get_yandex_connection(file_obj.uploaded_by, autocreate_from_social=True)
+        if not connection:
+            return None, False
+        download_url = get_download_url(connection.access_token, file_obj.yandex_path)
+        try:
+            resp = requests.get(download_url, timeout=120)
+        except requests.RequestException:
+            return None, False
+        if resp.status_code != 200:
+            return None, False
+        ext = (file_obj.get_extension() or "bin").lower()
+        suffix = f".{ext}" if ext else ".bin"
+        fd, temp_path = tempfile.mkstemp(suffix=suffix)
+        os.close(fd)
+        with open(temp_path, "wb") as f:
+            f.write(resp.content)
+        return temp_path, True
+    if file_obj.file and file_obj.file.path and os.path.exists(file_obj.file.path):
+        return file_obj.file.path, False
+    return None, False
+
+
+_MAX_VIEWER_TEXT = 500_000
+
+
+@login_required
+def file_viewer(request, file_id):
+    """
+    Просмотр: Office как PDF через ConvertAPI и/или LibreOffice;
+    без конвертера — docx (docx-preview) и xlsx (SheetJS) в браузере, прочий Office — текст на сервере.
+    """
+    file_obj = get_object_or_404(File, id=file_id)
+    if not file_obj.can_access(request.user):
+        raise PermissionDenied
+    if file_obj.is_folder:
+        messages.error(request, "Папки нельзя открыть в просмотрщике.")
+        return redirect("file_manager:file_list")
+
+    ext = (file_obj.get_extension() or "").lower()
+    download_url = reverse("file_manager:file_download", args=[file_obj.id])
+    detail_url = reverse("file_manager:file_detail", args=[file_obj.id])
+    preview_path = reverse("file_manager:file_preview", args=[file_obj.id])
+    office_pdf_path = reverse("file_manager:office_pdf_preview", args=[file_obj.id])
+    pdf_conversion_ready = is_office_pdf_conversion_available()
+
+    if request.user != file_obj.uploaded_by:
+        FileActivity.log_activity(
+            file=file_obj,
+            user=request.user,
+            activity_type="view",
+            description=f"File opened in viewer: {file_obj.title}",
+        )
+
+    EMBED_IMAGE = {"jpg", "jpeg", "png", "gif", "webp", "bmp", "svg"}
+    EMBED_VIDEO = {"mp4", "webm", "ogv"}
+    EMBED_AUDIO = {"mp3", "wav", "ogg", "m4a", "flac", "opus"}
+    TEXT_EXTS = {
+        "txt", "csv", "tsv", "log", "md", "json", "xml", "yaml", "yml", "toml", "ini", "cfg", "env",
+        "py", "js", "mjs", "ts", "tsx", "jsx", "css", "scss", "sass", "less", "html", "htm", "vue", "svelte",
+        "sh", "bash", "zsh", "bat", "ps1", "sql", "r", "rb", "go", "rs", "java", "c", "h", "cpp", "hpp", "cc",
+        "cs", "php", "kt", "swift", "pl", "dockerfile", "gitignore", "lock", "gitattributes", "srt", "vtt",
+    }
+    OFFICE_TEXT_EXTRACT_EXTS = {"doc", "xls", "ppt", "pptx"}
+    ARCHIVE_EXTS = {"zip", "rar", "7z", "tar", "gz", "tgz", "bz2", "xz", "iso"}
+
+    context = {
+        "file": file_obj,
+        "viewer_mode": "fallback",
+        "download_url": download_url,
+        "detail_url": detail_url,
+        "text_content": "",
+        "text_truncated": False,
+        "viewer_note": "",
+        "viewer_config": None,
+        "viewer_hint": "",
+        "libreoffice_available": is_libreoffice_available(),
+        "convertapi_configured": is_convertapi_configured(),
+        "office_pdf_conversion_available": pdf_conversion_ready,
+    }
+
+    if ext == "pdf":
+        context["viewer_mode"] = "js_pdf"
+        context["viewer_config"] = {"previewUrl": preview_path, "ext": ext, "mode": "js_pdf"}
+    elif ext in EXTENSIONS_LIBREOFFICE_TO_PDF and pdf_conversion_ready:
+        context["viewer_mode"] = "js_pdf"
+        context["viewer_config"] = {
+            "previewUrl": office_pdf_path,
+            "ext": "pdf",
+            "mode": "js_pdf",
+        }
+        context["viewer_hint"] = (
+            "Вид как у PDF: конвертация на сервере (сначала ConvertAPI при наличии CONVERTAPI_SECRET, "
+            "иначе LibreOffice)."
+        )
+    elif ext == "docx":
+        context["viewer_mode"] = "js_docx"
+        context["viewer_config"] = {"previewUrl": preview_path, "ext": ext, "mode": "js_docx"}
+        context["viewer_hint"] = (
+            "Без ConvertAPI/LibreOffice — просмотр бинарного .docx в браузере (docx-preview: стили и вёрстка ближе к Word). "
+            "Для постраничного PDF как при печати задайте CONVERTAPI_SECRET или LibreOffice."
+        )
+    elif ext == "xlsx":
+        context["viewer_mode"] = "js_xlsx"
+        context["viewer_config"] = {"previewUrl": preview_path, "ext": ext, "mode": "js_xlsx"}
+        context["viewer_hint"] = (
+            "Без ConvertAPI/LibreOffice таблица показывается в браузере (SheetJS). "
+            "Для вида как PDF — CONVERTAPI_SECRET или LibreOffice."
+        )
+    elif ext in TEXT_EXTS:
+        context["viewer_mode"] = "js_text"
+        context["viewer_config"] = {"previewUrl": preview_path, "ext": ext, "mode": "js_text"}
+    elif ext in EMBED_IMAGE:
+        context["viewer_mode"] = "embed_image"
+    elif ext in EMBED_VIDEO:
+        context["viewer_mode"] = "embed_video"
+    elif ext in EMBED_AUDIO:
+        context["viewer_mode"] = "embed_audio"
+    elif ext in OFFICE_TEXT_EXTRACT_EXTS:
+        path, cleanup = _resolve_path_for_viewing(file_obj)
+        if not path:
+            messages.error(request, "Не удалось получить файл для просмотра.")
+            return redirect(detail_url)
+        try:
+            text = extract_text_from_file(path) or ""
+            if not text.strip():
+                context["viewer_note"] = (
+                    "Текст не извлечён (пустой файл или ограничение парсера). "
+                    "Скачайте файл или установите LibreOffice для просмотра как PDF."
+                )
+            if len(text) > _MAX_VIEWER_TEXT:
+                text = text[:_MAX_VIEWER_TEXT]
+                context["text_truncated"] = True
+            context["text_content"] = text
+            context["viewer_mode"] = "office"
+        finally:
+            if cleanup:
+                try:
+                    os.unlink(path)
+                except OSError:
+                    pass
+    elif ext in ARCHIVE_EXTS:
+        context["viewer_mode"] = "archive"
+    else:
+        context["viewer_mode"] = "fallback"
+        if ext in EXTENSIONS_LIBREOFFICE_TO_PDF:
+            context["viewer_note"] = (
+                "Для просмотра как PDF задайте CONVERTAPI_SECRET (ConvertAPI) "
+                "или установите LibreOffice / LIBREOFFICE_PATH."
+            )
+        else:
+            context["viewer_note"] = (
+                f"Встроенный просмотр для типа «.{ext or '?'}» не настроен. "
+                "Скачайте файл или откройте сырой поток (если браузер умеет)."
+            )
+
+    context["viewer_needs_office_pdf_hint"] = (not pdf_conversion_ready) and (
+        ext in EXTENSIONS_LIBREOFFICE_TO_PDF
+    )
+
+    return render(request, "file_manager/file_viewer.html", context)
+
+
 @login_required 
 def file_edit(request ,file_id ):
     """Редактирование файла"""
     file_obj =get_object_or_404(File ,id =file_id )
 
-    if not file_obj.can_edit(request.user ):
+    if not can_edit_file_object(request.user, file_obj):
         raise PermissionDenied 
 
     students_queryset = User.objects.filter(profile__role='student').exclude(
@@ -375,6 +759,8 @@ def file_edit(request ,file_id ):
 
             messages.success(request ,'Файл успешно обновлен')
             return redirect('file_manager:file_detail',file_id =file_obj.id )
+        else:
+            flash_form_errors(request, form)
     else :
         form =FileEditForm(instance =file_obj )
         form.fields ['shared_with'].queryset = students_queryset
@@ -389,7 +775,7 @@ def file_edit(request ,file_id ):
 def file_delete(request ,file_id ):
     file_obj =get_object_or_404(File ,id =file_id )
 
-    if not file_obj.can_delete(request.user ):
+    if not can_delete_file_object(request.user, file_obj):
         raise PermissionDenied 
 
     if request.method =='POST':
@@ -438,7 +824,7 @@ def file_version_create(request ,file_id ):
     file_obj =get_object_or_404(File ,id =file_id )
 
 
-    if not file_obj.can_edit(request.user ):
+    if not can_edit_file_object(request.user, file_obj):
         raise PermissionDenied 
 
     storage_quota =get_user_storage_usage(request.user )
@@ -483,6 +869,8 @@ def file_version_create(request ,file_id ):
 
             messages.success(request ,'Новая версия файла создана')
             return redirect('file_manager:file_detail',file_id =file_obj.id )
+        else:
+            flash_form_errors(request, form)
     else :
         form =FileVersionForm()
 
@@ -574,6 +962,8 @@ def file_comment_create(request ,file_id ):
             )
 
             messages.success(request ,'Комментарий добавлен')
+        else:
+            flash_form_errors(request, form)
 
         return redirect('file_manager:file_detail',file_id =file_id )
 
@@ -601,7 +991,10 @@ def file_comment_delete(request ,comment_id ):
 
 @login_required 
 def activity_log(request ):
-    activities =FileActivity.objects.filter(user =request.user ).select_related('file','user')
+    if is_admin_user(request.user):
+        activities = FileActivity.objects.all().select_related('file', 'user')
+    else:
+        activities =FileActivity.objects.filter(user =request.user ).select_related('file','user')
 
     activity_type =request.GET.get('activity_type')
     if activity_type :
@@ -621,17 +1014,23 @@ def activity_log(request ):
 
 @login_required 
 def category_list(request ):
+    if not can_manage_reference_data(request.user):
+        raise PermissionDenied
     categories =FileCategory.objects.all()
     return render(request ,'file_manager/category_list.html',{'categories':categories })
 
 @login_required 
 def category_create(request ):
+    if not can_manage_reference_data(request.user):
+        raise PermissionDenied
     if request.method =='POST':
         form =FileCategoryForm(request.POST )
         if form.is_valid():
             form.save()
             messages.success(request ,'Категория создана')
             return redirect('file_manager:category_list')
+        else:
+            flash_form_errors(request, form)
     else :
         form =FileCategoryForm()
 
@@ -639,17 +1038,23 @@ def category_create(request ):
 
 @login_required 
 def tag_list(request ):
+    if not can_manage_reference_data(request.user):
+        raise PermissionDenied
     tags =Tag.objects.all()
     return render(request ,'file_manager/tag_list.html',{'tags':tags })
 
 @login_required 
 def tag_create(request ):
+    if not can_manage_reference_data(request.user):
+        raise PermissionDenied
     if request.method =='POST':
         form =TagForm(request.POST )
         if form.is_valid():
             form.save()
             messages.success(request ,'Тег создан')
             return redirect('file_manager:tag_list')
+        else:
+            flash_form_errors(request, form)
     else :
         form =TagForm()
 
@@ -750,8 +1155,11 @@ def yandex_file_picker(request):
         return redirect("file_manager:file_list")
 
     if request.method == "POST":
-        selected_path = request.POST.get("path")
-        selected_name = request.POST.get("name")
+        selected_raw = request.POST.get("selected_file", "")
+        selected_path = ""
+        selected_name = ""
+        if "||" in selected_raw:
+            selected_path, selected_name = selected_raw.split("||", 1)
         assignment_id = request.POST.get("assignment_id") or request.GET.get("assignment_id")
         section_id = request.POST.get("section_id") or request.GET.get("section_id")
         if not selected_path or not selected_name:

@@ -183,3 +183,20 @@ SECURE_HSTS_SECONDS = 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = False
 SECURE_HSTS_PRELOAD = False
 
+# Полный путь к soffice / LibreOffice (опционально). Иначе ищется в PATH.
+LIBREOFFICE_PATH = os.getenv("LIBREOFFICE_PATH", "").strip()
+
+# ConvertAPI (https://www.convertapi.com/) — облачная конвертация Office→PDF (опционально).
+CONVERTAPI_SECRET = os.getenv("CONVERTAPI_SECRET", "").strip()
+
+# ClamAV (clamd): проверка загружаемых файлов. Нужен пакет clamd и работающий демон clamd.
+CLAMAV_ENABLED = env_bool("CLAMAV_ENABLED", False)
+CLAMAV_FAIL_OPEN = env_bool(
+    "CLAMAV_FAIL_OPEN",
+    True,
+)  # если демон недоступен — всё равно принять файл (с предупреждением)
+CLAMAV_SOCKET_PATH = os.getenv("CLAMAV_SOCKET_PATH", "/var/run/clamav/clamd.ctl").strip()
+CLAMAV_USE_TCP = env_bool("CLAMAV_USE_TCP", False)
+CLAMAV_TCP_HOST = os.getenv("CLAMAV_TCP_HOST", "127.0.0.1").strip()
+CLAMAV_TCP_PORT = env_int("CLAMAV_TCP_PORT", 3310)
+

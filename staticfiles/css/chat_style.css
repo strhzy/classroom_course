@@ -14,7 +14,7 @@
     gap:14px;
 }
 
-/* Чат */
+
 .chat-item{
     display:flex;
     align-items:center;
@@ -29,7 +29,7 @@
     overflow:hidden;
 }
 
-/* Glow эффект */
+
 .chat-item::before{
     content:"";
     position:absolute;
@@ -48,7 +48,7 @@
     box-shadow:0 0 20px rgba(106,90,205,.25);
 }
 
-/* Аватар */
+
 .avatar{
     width:50px;
     height:50px;
@@ -62,7 +62,7 @@
     font-size:18px;
 }
 
-/* Инфа */
+
 .chat-info{
     flex:1;
     min-width:0;
@@ -177,7 +177,7 @@ html, body{
     border-bottom-left-radius:6px;
 }
 
-/* ----------------- Галочка снизу ----------------- */
+
 .read-status{
     position:absolute;
     bottom:4px;
@@ -187,7 +187,7 @@ html, body{
     transition:all 0.3s ease;
 }
 
-/* ----------------- Ввод сообщения ----------------- */
+
 .chat-input{
     padding:14px;
     border-top:1px solid rgba(106,90,205,.2);
@@ -229,7 +229,7 @@ html, body{
     box-shadow:0 0 12px rgba(106,90,205,.6);
 }
 
-/* ----------------- Кнопка прикрепления файла ----------------- */
+
 .attach-btn{
     width:44px;
     height:44px;
@@ -250,12 +250,12 @@ html, body{
     transform:scale(1.08);
 }
 
-/* ----------------- Скрытый input для файла ----------------- */
+
 #file-input{
     display:none;
 }
 
-/* ----------------- Превью выбранного файла ----------------- */
+
 .file-preview{
     padding:10px 14px;
     border-top:1px solid rgba(106,90,205,.2);
@@ -310,7 +310,7 @@ html, body{
     transform:scale(1.1);
 }
 
-/* ----------------- Отображение файла в сообщении ----------------- */
+
 .message-file{
     margin-top:8px;
     border-radius:12px;
@@ -366,7 +366,7 @@ html, body{
     color:#9aa0ff;
 }
 
-/* ----------------- SIDEBAR ----------------- */
+
 .sidebar{
     background:rgba(20,23,51,.85);
     backdrop-filter:blur(10px);
@@ -434,7 +434,7 @@ html, body{
     border-radius:10px;
 }
 
-/* ----------------- Модальное окно для изображений ----------------- */
+
 .image-modal{
     display:none;
     position:fixed;

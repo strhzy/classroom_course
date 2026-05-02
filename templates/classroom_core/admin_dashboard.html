@@ -1,19 +1,24 @@
 {% extends "base.html" %}
 
-{% block title %}Кастомная админка{% endblock %}
+{% block title %}Управление курсами{% endblock %}
 
 {% block content %}
 <div class="container py-4">
-    <h2 class="mb-4">Кастомная админ-панель</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Панель управления курсами</h2>
+        <span class="badge text-bg-secondary">{% if is_super_management %}Администратор{% else %}Преподаватель{% endif %}</span>
+    </div>
     <div class="row g-3">
         <div class="col-md-3"><div class="card p-3"><strong>Пользователи</strong><div>{{ users_count }}</div></div></div>
         <div class="col-md-3"><div class="card p-3"><strong>Курсы</strong><div>{{ courses_count }}</div></div></div>
-        <div class="col-md-3"><div class="card p-3"><strong>Файлы</strong><div>{{ files_count }}</div></div></div>
-        <div class="col-md-3"><div class="card p-3"><strong>Заявки</strong><div>{{ pending_enrollments }}</div></div></div>
+        <div class="col-md-3"><div class="card p-3"><strong>Задания</strong><div>{{ assignments_count }}</div></div></div>
+        <div class="col-md-3"><div class="card p-3"><strong>Ожидают заявки</strong><div>{{ pending_enrollments }}</div></div></div>
     </div>
-    <div class="mt-4 d-flex gap-2">
-        <a class="btn btn-outline-primary" href="{% url 'classroom_core:course_list' %}">Курсы</a>
-        <a class="btn btn-outline-primary" href="{% url 'file_manager:file_list' %}">Файлы</a>
+    <div class="mt-4 d-flex gap-2 flex-wrap">
+        <a class="btn btn-primary" href="{% url 'classroom_core:custom_admin_courses' %}">CRUD курсов</a>
+        <a class="btn btn-primary" href="{% url 'classroom_core:custom_admin_assignments' %}">CRUD заданий</a>
+        <a class="btn btn-primary" href="{% url 'classroom_core:custom_admin_students' %}">CRUD студентов</a>
+        <a class="btn btn-outline-secondary" href="{% url 'classroom_core:course_list' %}">Курсы (обычный интерфейс)</a>
     </div>
 </div>
 {% endblock %}

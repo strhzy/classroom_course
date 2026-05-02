@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}CRUD курсов{% endblock %}
+
+{% block content %}
+<style>
+    .mgmt-page { background: var(--bg-page-gradient); min-height: calc(100vh - 90px); padding: 1.5rem 0; }
+    .mgmt-card { background: var(--bg-card); border: 1px solid var(--bg-overlay-30); border-radius: 16px; box-shadow: 0 10px 24px var(--shadow-card); }
+    .mgmt-title { color: var(--text-white); font-weight: 700; }
+    .btn-main { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border: none; color: var(--text-white); }
+    .btn-soft { background: var(--bg-overlay-15); border: 1px solid var(--bg-overlay-30); color: var(--text-muted); }
+    .btn-soft:hover { color: var(--text-white); border-color: var(--accent-primary); background: var(--bg-overlay-25); }
+    .mgmt-table th { color: var(--text-muted); border-color: var(--bg-overlay-30); }
+    .mgmt-table td { color: var(--text-main); border-color: var(--bg-overlay-20); background: transparent; }
+</style>
+<div class="mgmt-page">
+<div class="container py-2">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0 mgmt-title">Курсы</h2>
+        <div class="d-flex gap-2">
+            <a class="btn btn-soft" href="{% url 'classroom_core:custom_admin_dashboard' %}">Назад</a>
+            <a class="btn btn-main" href="{% url 'classroom_core:custom_admin_course_create' %}">Создать курс</a>
+        </div>
+    </div>
+    <div class="table-responsive mgmt-card p-3">
+        <table class="table mgmt-table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Преподаватель</th>
+                    <th>Статус</th>
+                    <th>Студенты</th>
+                    <th class="text-end">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses %}
+                <tr>
+                    <td>{{ course.title }}</td>
+                    <td>{{ course.instructor.username }}</td>
+                    <td>{{ course.get_status_display }}</td>
+                    <td>{{ course.students.count }}</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" href="{% url 'classroom_core:custom_admin_course_edit' course.id %}">Изменить</a>
+                        <form method="post" action="{% url 'classroom_core:custom_admin_course_delete' course.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Удалить курс?')">Удалить</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center text-muted">Курсы не найдены</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+{% endblock %}

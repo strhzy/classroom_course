@@ -16,14 +16,14 @@
   --bg-overlay-25: rgba(108, 92, 231, 0.25);
   --bg-overlay-30: rgba(108, 92, 231, 0.3);
 
-  --text-white: #000000;           /* Заголовки, важный текст */
-  --text-main: #212529;            /* Основной контент */
-  --text-secondary: #495057;       /* Описания, мета-информация */
-  --text-muted: #6c757d;           /* Ссылки, лейблы, неактивные элементы */
-  --text-disabled: #adb5bd;        /* Пустые состояния, отключённый текст */
+  --text-white: #000000;
+  --text-main: #212529;
+  --text-secondary: #495057;
+  --text-muted: #6c757d;
+  --text-disabled: #adb5bd;        
 
-  --accent-primary: #6c5ce7;       /* Фиолетовый - основной акцент */
-  --accent-secondary: #0984e3;     /* Синий - вторичный акцент */
+  --accent-primary: #6c5ce7;       
+  --accent-secondary: #0984e3;     
   --accent-gradient: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
 
   --accent-glow: rgba(108, 92, 231, 0.15);

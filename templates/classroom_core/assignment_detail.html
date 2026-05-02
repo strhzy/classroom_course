@@ -387,6 +387,21 @@
         display: block;
         margin-bottom: 0.5rem;
     }
+.quiz-answer-correct {
+    background: var(--status-success-bg);
+    color: var(--status-success);
+    border: 1px solid var(--status-success);
+    border-radius: 8px;
+    padding: 0.35rem 0.5rem;
+}
+
+.quiz-answer-wrong {
+    background: var(--status-danger-bg);
+    color: var(--status-danger);
+    border: 1px solid var(--status-danger);
+    border-radius: 8px;
+    padding: 0.35rem 0.5rem;
+}
     
    .score-badge {
         background: linear-gradient(135deg, var(--status-warning), var(--status-warning));
@@ -584,8 +599,8 @@
                                 <strong>Прикрепленный файл:</strong>
                                 <span class="ms-2">{{ assignment.attachment.name|truncatechars:40 }}</span>
                             </div>
-                            <a href="{{ assignment.attachment.url }}" class="attachment-link">
-                                <i class="bi bi-download"></i> Скачать
+                            <a href="{{ assignment.attachment.url }}" class="attachment-link" target="_blank">
+                                <i class="bi bi-eye"></i> Открыть
                             </a>
                         </div>
                         {% endif %}
@@ -622,10 +637,63 @@
                             </div>
                             {% endif %}
                             <div class="d-flex gap-2">
+                                {% if assignment.assignment_type == 'quiz' %}
+                                <form method="post" action="{% url 'classroom_core:assignment_quiz_submit' assignment.id %}" class="w-100">
+                                    {% csrf_token %}
+                                    {% for question in quiz_questions %}
+                                    <div class="mb-3 p-3" style="background:var(--bg-overlay-10); border-radius:10px;">
+                                        <div class="mb-2"><strong>{{ forloop.counter }}. {{ question.question_text }}</strong></div>
+                                        {% for option in question.options.all %}
+                                        <label class="d-block mb-1">
+                                            <input type="{% if assignment.quiz_mode == 'multiple' %}checkbox{% else %}radio{% endif %}" name="question_{{ question.id }}" value="{{ option.id }}">
+                                            {{ option.option_text }}
+                                        </label>
+                                        {% endfor %}
+                                    </div>
+                                    {% endfor %}
+                                    <button type="submit" class="btn-submit">
+                                        <i class="bi bi-check2-square"></i> Отправить тест
+                                    </button>
+                                </form>
+                                {% if latest_quiz_attempt %}
+                                <div class="mt-3 p-3" style="background:var(--bg-overlay-10); border-radius:10px;">
+                                    <div class="mb-2">
+                                        <strong>Результат:</strong> {{ latest_quiz_attempt.correct_answers }}/{{ latest_quiz_attempt.total_questions }}
+                                        ({{ submission.score|default:0 }}/{{ assignment.max_points }} баллов)
+                                    </div>
+                                    {% for question in latest_quiz_attempt.answers_payload %}
+                                    <div class="mb-3 p-2" style="background:var(--bg-overlay-10); border-radius:8px;">
+                                        <div><strong>{{ forloop.counter }}. {{ question.question_text }}</strong></div>
+                                        {% for option in question.options %}
+                                        {% if option.is_selected %}
+                                        <div class="mt-1 {% if option.is_correct %}quiz-answer-correct{% else %}quiz-answer-wrong{% endif %}">
+                                            {{ option.text }}
+                                        </div>
+                                        {% endif %}
+                                        {% if option.is_correct and not option.is_selected %}
+                                        <div class="mt-1 quiz-answer-correct">
+                                            {{ option.text }}
+                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% else %}
                                 <a href="{% url 'classroom_core:assignment_submit' assignment.id %}" class="btn-submit">
                                     <i class="bi bi-send"></i> Отправить решение
                                 </a>
+                                {% endif %}
                             </div>
+                            {% if student_files %}
+                            <div class="mt-3">
+                                <strong>Мои прикрепленные файлы:</strong>
+                                {% for uploaded_file in student_files %}
+                                <div><a href="{% url 'file_manager:file_viewer' uploaded_file.file.id %}" target="_blank">{{ uploaded_file.file.title }}</a></div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
                         {% endif %}
                     </div>
@@ -774,6 +842,11 @@
                                             <td style="padding: 1rem;">
                                                 {% if sub.score is not None %}
                                                     <span class="score-badge" style="background: linear-gradient(135deg, var(--status-warning), var(--status-warning)); color: var(--bg-page-start); padding: 0.3rem 0.8rem; border-radius: 50px; font-weight: 700; display: inline-block;">{{ sub.score }}/{{ assignment.max_points }}</span>
+                                                    {% if assignment.assignment_type == 'quiz' %}
+                                                    <div class="mt-1" style="font-size:0.8rem; color:var(--text-muted);">
+                                                        Верно: {{ sub.quiz_correctness }}
+                                                    </div>
+                                                    {% endif %}
                                                 {% else %}
                                                     <span style="color: var(--text-disabled);">—</span>
                                                 {% endif %}

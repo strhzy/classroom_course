@@ -1,44 +1,40 @@
-/* =========================================
-   🎨 ПЕРЕМЕННЫЕ ЦВЕТОВ (THEME VARIABLES)
-   ========================================= */
+
 :root {
-  /* --- Фоны --- */
-  --bg-main-start: #1a1a2e;       /* Основной фон (начало градиента) */
-  --bg-main-end: #16213e;         /* Основной фон (конец градиента) */
-  --bg-card: rgba(30, 30, 46, 0.95); /* Фон карточек */
-  --bg-input: rgba(20, 20, 35, 0.8); /* Фон полей ввода */
-  --bg-input-focus: rgba(30, 30, 50, 0.9); /* Фон полей ввода при фокусе */
-  --bg-nav: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); /* Фон навигации */
-
-  /* --- Акцентные цвета (Основные) --- */
-  --accent-primary: #6a5acd;      /* SlateBlue - основной акцент */
-  --accent-secondary: #4a90e2;    /* Blue - вторичный акцент */
-  --accent-glow: rgba(106, 90, 205, 0.3); /* Свечение основного акцента */
   
-  /* --- Текст --- */
-  --text-main: #e0e0ff;           /* Основной текст (светло-лавандовый) */
-  --text-muted: #b0b0ff;          /* Вторичный текст / подсказки */
-  --text-link: #a8b8ff;           /* Ссылки / неактивные элементы */
-  --text-white: #ffffff;          /* Чистый белый (заголовки) */
-  --text-placeholder: #8080b0;    /* Плейсхолдеры / отключенные элементы */
+  --bg-main-start: #1a1a2e;       
+  --bg-main-end: #16213e;         
+  --bg-card: rgba(30, 30, 46, 0.95); 
+  --bg-input: rgba(20, 20, 35, 0.8); 
+  --bg-input-focus: rgba(30, 30, 50, 0.9); 
+  --bg-nav: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); 
 
-  /* --- Статусы и алерты --- */
-  --status-warning: #ffa502;      /* Оранжевый (черновик/предупреждение) */
-  --status-success: #4caf50;      /* Зеленый (опубликовано/успех) */
-  --status-danger: #ff4757;       /* Красный (ошибка/удаление) */
-  --status-danger-light: #ff6b81; /* Светло-красный (градиент опасности) */
-  --status-neutral: #6c757d;      /* Серый (закрыто/неактивно) */
+  
+  --accent-primary: #6a5acd;      
+  --accent-secondary: #4a90e2;    
+  --accent-glow: rgba(106, 90, 205, 0.3); 
+  
+  
+  --text-main: #e0e0ff;           
+  --text-muted: #b0b0ff;          
+  --text-link: #a8b8ff;           
+  --text-white: #ffffff;          
+  --text-placeholder: #8080b0;    
 
-  /* --- Границы и разделители --- */
-  --border-accent: rgba(106, 90, 205, 0.3); /* Основная граница */
-  --border-accent-hover: rgba(106, 90, 205, 0.6); /* Граница при наведении */
-  --border-danger: rgba(255, 71, 87, 0.3); /* Граница опасности */
-  --border-input: rgba(106, 90, 205, 0.3); /* Граница инпута */
+  
+  --status-warning: #ffa502;      
+  --status-success: #4caf50;      
+  --status-danger: #ff4757;       
+  --status-danger-light: #ff6b81; 
+  --status-neutral: #6c757d;      
+
+  
+  --border-accent: rgba(106, 90, 205, 0.3); 
+  --border-accent-hover: rgba(106, 90, 205, 0.6); 
+  --border-danger: rgba(255, 71, 87, 0.3); 
+  --border-input: rgba(106, 90, 205, 0.3); 
 }
 
-/* =========================================
-   🌑 БАЗОВАЯ ТЁМНАЯ ТЕМА И ОБЁРТКИ
-   ========================================= */
+
 .theme, .theme-announcement, .theme-form, .theme-announcements,
 .theme-assignment, .theme-assignment-form, .theme-grade,
 .theme-assignments, .theme-submit, .theme-course-detail,
@@ -52,12 +48,10 @@
   background: linear-gradient(135deg, var(--bg-main-start) 0%, var(--bg-main-end) 50%, var(--bg-main-start) 100%);
   min-height: 100vh;
   padding: 2rem 1rem;
-  color: var(--text-main); /* Добавлен базовый цвет текста */
+  color: var(--text-main); 
 }
 
-/* =========================================
-   📦 КАРТОЧКИ И КОНТЕЙНЕРЫ
-   ========================================= */
+
 .custom-card, .form-card, .announcement-card, .course-card, .group-card,
 .profile-card, .enroll-card, .info-card, .table-card, .submit-card,
 .section-card, .students-table-wrapper {
@@ -80,13 +74,13 @@
   border-color: var(--border-accent-hover);
 }
 
-/* Акцентные рамки для типов контента */
+
 .section-card.announcements { border-left: 4px solid var(--status-warning); }
 .section-card.sections      { border-left: 4px solid var(--accent-secondary); }
 .section-card.assignments   { border-left: 4px solid var(--accent-primary); }
 .section-card.submissions   { border-left: 4px solid var(--status-success); }
 
-/* Карточки удаления (красная тема) */
+
 .delete-card {
   background: var(--bg-card);
   backdrop-filter: blur(10px);
@@ -134,9 +128,7 @@
 
 .card-body-custom { padding: 1.5rem; }
 
-/* =========================================
-   🔤 ТИПОГРАФИКА И ЗАГОЛОВКИ
-   ========================================= */
+
 .page-title {
   font-size: 2rem;
   font-weight: 700;
@@ -180,9 +172,7 @@
 }
 .warning-text i { color: var(--status-danger); margin-right: 0.5rem; }
 
-/* =========================================
-   🧭 ХЛЕБНЫЕ КРОШКИ И НАВИГАЦИЯ
-   ========================================= */
+
 .custom-breadcrumb {
   background: rgba(106, 90, 205, 0.1);
   padding: 0.8rem 1.2rem;
@@ -242,9 +232,7 @@
   border: 1px solid rgba(106, 90, 205, 0.5);
 }
 
-/* =========================================
-   🔘 КНОПКИ
-   ========================================= */
+
 .btn-cancel, .btn-delete, .btn-edit, .btn-save, .btn-submit, .btn-publish,
 .btn-create, .btn-filter, .btn-view, .btn-add, .btn-enroll, .btn-back,
 .btn-save-grades, .btn-primary-course, .btn-outline-course {
@@ -311,7 +299,7 @@
   transform: translateY(-2px);
 }
 
-/* Эффект ряби для кнопок */
+
 .btn-cancel::after, .btn-delete::after, .btn-edit::after, .btn-save::after,
 .btn-submit::after, .btn-publish::after, .btn-create::after, .btn-filter::after,
 .btn-view::after, .btn-add::after, .btn-enroll::after {
@@ -331,9 +319,7 @@
   width: 300px; height: 300px;
 }
 
-/* =========================================
-   📝 ФОРМЫ И ПОЛЯ ВВОДА
-   ========================================= */
+
 .form-group { margin-bottom: 1.5rem; }
 .form-label {
   color: var(--text-link);
@@ -376,7 +362,7 @@ textarea.custom-input, .custom-textarea {
 .custom-select {
   cursor: pointer;
   appearance: none;
-  /* SVG стрелка использует accent-primary (#6a5acd) */
+  
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236a5acd' viewBox='0 0 16 16'%3E%3Cpath d='M8 11.5l-5-5h10l-5 5z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 1rem center;
@@ -384,7 +370,7 @@ textarea.custom-input, .custom-textarea {
 }
 .custom-select option { background: var(--bg-main-start); color: var(--text-white); }
 
-/* Чекбоксы */
+
 .checkbox-group, .checkbox-wrapper {
   background: rgba(106, 90, 205, 0.1);
   border-radius: 15px;
@@ -416,7 +402,7 @@ textarea.custom-input, .custom-textarea {
 .custom-checkbox label { color: var(--text-main); font-size: 1rem; cursor: pointer; user-select: none; }
 .checkbox-description { color: var(--text-muted); font-size: 0.9rem; margin-left: 2.1rem; margin-top: 0.2rem; }
 
-/* Загрузка файлов */
+
 .file-input-container { position: relative; }
 .file-input { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; z-index: 2; }
 .file-label {
@@ -444,9 +430,7 @@ textarea.custom-input, .custom-textarea {
 .file-label:hover i { transform: scale(1.1) rotate(5deg); }
 .file-name { color: var(--accent-primary); font-weight: 600; margin-left: 0.5rem; }
 
-/* =========================================
-   📊 ТАБЛИЦЫ И СПИСКИ
-   ========================================= */
+
 .custom-table, .students-table, .gradebook-table {
   width: 100%;
   border-collapse: separate;
@@ -477,9 +461,7 @@ textarea.custom-input, .custom-textarea {
   vertical-align: middle;
 }
 
-/* =========================================
-   🏷️ БЕЙДЖИ, СТАТУСЫ, АЛЕРТЫ
-   ========================================= */
+
 .status-badge, .pinned-badge, .overdue-badge, .late-badge, .info-badge,
 .badge-custom, .badge-active, .badge-inactive, .enrollment-status {
   display: inline-flex;
@@ -517,12 +499,12 @@ textarea.custom-input, .custom-textarea {
   margin-bottom: 1rem;
 }
 
-/* Пустое состояние */
+
 .empty-state { text-align: center; padding: 3rem 1rem; }
 .empty-title { color: var(--text-white); font-size: 1.8rem; font-weight: 600; margin-bottom: 1rem; }
 .empty-text { color: var(--text-muted); font-size: 1.1rem; margin-bottom: 2rem; }
 
-/* Пагинация */
+
 .custom-pagination { margin-top: 2rem; }
 .pagination .page-link {
   background: var(--bg-card);
@@ -551,9 +533,7 @@ textarea.custom-input, .custom-textarea {
   color: var(--text-placeholder);
 }
 
-/* =========================================
-   🎬 АНИМАЦИИ (KEYFRAMES)
-   ========================================= */
+
 @keyframes cardAppear { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
 @keyframes headerFade { 0% { opacity: 0; transform: translateY(-20px); } 100% { opacity: 1; transform: translateY(0); } }
 @keyframes headerSlide { 0% { opacity: 0; transform: translateY(-20px); } 100% { opacity: 1; transform: translateY(0); } }
@@ -576,7 +556,7 @@ textarea.custom-input, .custom-textarea {
 @keyframes saveSuccess { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 @keyframes shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); } 20%, 40%, 60%, 80% { transform: translateX(5px); } }
 
-/* Применение анимаций к элементам */
+
 .custom-card, .form-card, .announcement-card, .course-card, .group-card,
 .profile-card, .enroll-card, .info-card, .table-card, .submit-card,
 .delete-card, .section-card { animation: cardAppear 0.6s ease-out both; }
@@ -595,7 +575,7 @@ textarea.custom-input, .custom-textarea {
 .warning-item:nth-child(1) { animation: slideIn 0.3s ease-out 0.2s both; }
 .warning-item:nth-child(2) { animation: slideIn 0.3s ease-out 0.3s both; }
 .warning-item:nth-child(3) { animation: slideIn 0.3s ease-out 0.4s both; }
-.assignment-alert, .warning-alert { animation: alertPulse 2s infinite; } /* Исправлено имя анимации на alertPulse */
+.assignment-alert, .warning-alert { animation: alertPulse 2s infinite; } 
 .btn-delete { animation: buttonPulse 2s infinite; }
 .glowing-text { animation: glowing 2s infinite; }
 .progress-fill::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: shimmer 2s infinite; }
@@ -604,10 +584,8 @@ textarea.custom-input, .custom-textarea {
 .save-success { animation: saveSuccess 0.3s ease; }
 .confirm-shake { animation: shake 0.5s ease-in-out; }
 
-/* =========================================
-   📱 АДАПТИВНОСТЬ (ОБЪЕДИНЁННАЯ)
-   ========================================= */
-/* Мобильные устройства (<= 576px) */
+
+
 @media (max-width: 576px) {
   .theme, .theme-announcement, .theme-form, .theme-announcements,
   .theme-assignment, .theme-assignment-form, .theme-grade,
@@ -654,7 +632,7 @@ textarea.custom-input, .custom-textarea {
   .empty-text { font-size: 1rem; }
 }
 
-/* Планшеты (577px - 992px) */
+
 @media (min-width: 577px) and (max-width: 992px) {
   .page-title { font-size: 1.8rem; }
   .delete-title { font-size: 2rem; }
@@ -664,7 +642,7 @@ textarea.custom-input, .custom-textarea {
   .info-label { min-width: 120px; }
 }
 
-/* Большие экраны (>= 1400px) */
+
 @media (min-width: 1400px) {
   .container { max-width: 1400px; }
   .delete-card, .form-card, .custom-card { max-width: 800px; margin: 0 auto; }

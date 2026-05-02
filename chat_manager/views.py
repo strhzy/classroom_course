@@ -53,7 +53,7 @@ def chat_room(request, room_id):
     
     return render(request, 'chat_manager/chat_room.html', {
         'room': room,
-        'messages': messages_list
+        'chat_messages': messages_list,
     })
 
 @login_required

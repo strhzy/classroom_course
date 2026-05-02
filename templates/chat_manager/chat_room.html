@@ -78,8 +78,14 @@ html, body{
     margin-bottom:4px;
 }
 
+.message-own .message-header{
+    color:rgba(255,255,255,.88);
+}
+
 .message-own{
     align-self:flex-end;
+    position:relative;
+    padding-top:26px;
     background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));
     color:var(--text-white);
     border-bottom-right-radius:6px;
@@ -92,6 +98,59 @@ html, body{
     color:var(--text-main);
     border:1px solid var(--bg-overlay-25);
     border-bottom-left-radius:6px;
+}
+
+.message-actions{
+    position:absolute;
+    top:6px;
+    right:8px;
+    display:flex;
+    gap:4px;
+    opacity:0;
+    transition:opacity .15s ease;
+}
+
+.message-own:hover .message-actions{
+    opacity:1;
+}
+
+@media (hover: none){
+    .message-actions{
+        opacity:0.85;
+    }
+}
+
+.msg-action{
+    background:rgba(0,0,0,.15);
+    border:none;
+    border-radius:8px;
+    padding:2px 8px;
+    cursor:pointer;
+    color:var(--text-white);
+    font-size:12px;
+    line-height:1.2;
+}
+
+.msg-action:hover{
+    background:rgba(0,0,0,.3);
+}
+
+.edited-label{
+    font-size:11px;
+    opacity:.85;
+    margin-left:6px;
+    font-style:italic;
+}
+
+.message-deleted-bubble{
+    align-self:center;
+    max-width:92%;
+    padding:8px 14px;
+    border-radius:12px;
+    font-size:13px;
+    color:var(--text-muted);
+    background:var(--bg-overlay-15);
+    border:1px dashed var(--bg-overlay-30);
 }
 
 
@@ -387,17 +446,25 @@ html, body{
                 <div class="chat-card">
 
                     <div class="chat-messages" id="chat-messages">
-                        {% for message in messages %}
-                        {% if message.user == request.user %}
-                        <div class="message message-own" data-message-id="{{ message.id }}">
-                            <div class="message-header">{{ message.user.username }} — {{ message.timestamp|date:"H:i" }}</div>
+                        {% for message in chat_messages %}
+                        {% if message.is_deleted %}
+                        <div class="message-deleted-bubble" data-message-id="{{ message.id }}">
+                            <span class="message-deleted-text">Сообщение удалено</span>
+                        </div>
+                        {% elif message.user_id == request.user.id %}
+                        <div class="message message-own" data-message-id="{{ message.id }}" data-has-file="{% if message.file_attachment %}1{% else %}0{% endif %}">
+                            <div class="message-actions" aria-label="Действия с сообщением">
+                                <button type="button" class="msg-action msg-edit" title="Изменить">✎</button>
+                                <button type="button" class="msg-action msg-del" title="Удалить">🗑</button>
+                            </div>
+                            <div class="message-header">{{ message.user.username }} — {{ message.timestamp|date:"H:i" }}{% if message.edited_at %}<span class="edited-label">(изм.)</span>{% endif %}</div>
                             {% if message.content %}
                             <div class="message-content">{{ message.content }}</div>
                             {% endif %}
                             {% if message.file_attachment %}
                             <div class="message-file">
                                 {% if message.is_image %}
-                                <img src="{{ message.file_attachment.url }}" alt="{{ message.file_attachment.name }}" onclick="openImageModal(this.src)">
+                                <img src="{{ message.file_attachment.url }}" alt="" onclick="openImageModal(this.src)">
                                 {% else %}
                                 <a href="{% url 'chat:download_file' message.id %}" class="file-attachment" download>
                                     <span class="file-icon">{{ message.get_icon }}</span>
@@ -412,15 +479,15 @@ html, body{
                             <span class="read-status">{% if message.is_read %}✓✓{% else %}✓{% endif %}</span>
                         </div>
                         {% else %}
-                        <div class="message message-other">
-                            <div class="message-header">{{ message.user.username }} — {{ message.timestamp|date:"H:i" }}</div>
+                        <div class="message message-other" data-message-id="{{ message.id }}" data-has-file="{% if message.file_attachment %}1{% else %}0{% endif %}">
+                            <div class="message-header">{{ message.user.username }} — {{ message.timestamp|date:"H:i" }}{% if message.edited_at %}<span class="edited-label">(изм.)</span>{% endif %}</div>
                             {% if message.content %}
                             <div class="message-content">{{ message.content }}</div>
                             {% endif %}
                             {% if message.file_attachment %}
                             <div class="message-file">
                                 {% if message.is_image %}
-                                <img src="{{ message.file_attachment.url }}" alt="{{ message.file_attachment.name }}" onclick="openImageModal(this.src)">
+                                <img src="{{ message.file_attachment.url }}" alt="" onclick="openImageModal(this.src)">
                                 {% else %}
                                 <a href="{% url 'chat:download_file' message.id %}" class="file-attachment" download>
                                     <span class="file-icon">{{ message.get_icon }}</span>
@@ -483,11 +550,13 @@ html, body{
     <img id="modal-image" src="" alt="Просмотр изображения">
 </div>
 
-<div id="chat-data" data-room-id="{{ room.id }}"></div>
+<div id="chat-data" data-room-id="{{ room.id }}" data-user-id="{{ request.user.id }}" data-username="{{ request.user.username|escapejs }}"></div>
 
 <script>
 document.addEventListener('DOMContentLoaded', ()=>{
-    const room_id = document.getElementById('chat-data').dataset.roomId
+    const chatData = document.getElementById('chat-data')
+    const room_id = chatData.dataset.roomId
+    const currentUserId = parseInt(chatData.dataset.userId, 10)
     const input = document.getElementById('message-input')
     const btn = document.getElementById('send-button')
     const attachBtn = document.getElementById('attach-btn')
@@ -497,96 +566,240 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const previewFileName = document.getElementById('preview-file-name')
     const previewFileSize = document.getElementById('preview-file-size')
     const box = document.getElementById('chat-messages')
-    const username = "{{ request.user.username|escapejs }}"
+    const username = chatData.dataset.username
 
     let selectedFile = null
+    let socket = null
 
-    const socket = new WebSocket((location.protocol==="https:"?"wss://":"ws://")+location.host+"/ws/chat/"+room_id+"/")
+    const isNearBottom = () => (box.scrollHeight - box.scrollTop - box.clientHeight) < 100
+
+    function scrollToBottom(){
+        requestAnimationFrame(() => {
+            box.scrollTop = box.scrollHeight
+        })
+    }
+
+    function scrollChatToEnd(){
+        scrollToBottom()
+        setTimeout(scrollToBottom, 50)
+        setTimeout(scrollToBottom, 200)
+        setTimeout(scrollToBottom, 500)
+        box.querySelectorAll('img').forEach(img => {
+            img.addEventListener('load', scrollToBottom, { once: true })
+        })
+    }
+
+    const formatTime = (isoValue) => {
+        if (!isoValue) return new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})
+        return new Date(isoValue).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})
+    }
+
+    function escapeHtml(s){
+        const d = document.createElement('div')
+        d.textContent = s
+        return d.innerHTML
+    }
+
+    const actionsHtml = `
+            <div class="message-actions" aria-label="Действия с сообщением">
+                <button type="button" class="msg-action msg-edit" title="Изменить">✎</button>
+                <button type="button" class="msg-action msg-del" title="Удалить">🗑</button>
+            </div>`
+
+    function applyMessageDeleted(messageId){
+        const el = box.querySelector(`[data-message-id="${messageId}"]`)
+        if(!el) return
+        const bubble = document.createElement('div')
+        bubble.className = 'message-deleted-bubble'
+        bubble.dataset.messageId = String(messageId)
+        bubble.innerHTML = '<span class="message-deleted-text">Сообщение удалено</span>'
+        el.replaceWith(bubble)
+    }
+
+    function applyMessageEdited(messageId, text, editedAtIso){
+        const el = box.querySelector(`.message[data-message-id="${messageId}"]`)
+        if(!el) return
+        let content = el.querySelector('.message-content')
+        const hasFile = el.getAttribute('data-has-file') === '1'
+        if(text){
+            if(!content){
+                content = document.createElement('div')
+                content.className = 'message-content'
+                const hdr = el.querySelector('.message-header')
+                if(hdr) hdr.after(content)
+            }
+            content.textContent = text
+        } else if(content && hasFile){
+            content.remove()
+        }
+        const header = el.querySelector('.message-header')
+        if(header && !header.querySelector('.edited-label')){
+            const span = document.createElement('span')
+            span.className = 'edited-label'
+            span.textContent = '(изм.)'
+            header.appendChild(span)
+        }
+    }
+
+    function startEdit(row){
+        if(row.querySelector('.message-edit-box')) return
+        const hasFile = row.getAttribute('data-has-file') === '1'
+        const contentEl = row.querySelector('.message-content')
+        const oldText = contentEl ? contentEl.textContent : ''
+        if(!hasFile && !oldText) return
+        const wrap = document.createElement('div')
+        wrap.className = 'message-edit-box'
+        wrap.style.marginTop = '8px'
+        const ta = document.createElement('textarea')
+        ta.value = oldText
+        ta.style.width = '100%'
+        ta.style.minHeight = '52px'
+        ta.style.boxSizing = 'border-box'
+        ta.style.borderRadius = '8px'
+        ta.style.padding = '6px'
+        const rowBtns = document.createElement('div')
+        rowBtns.style.display = 'flex'
+        rowBtns.style.gap = '8px'
+        rowBtns.style.marginTop = '6px'
+        const save = document.createElement('button')
+        save.type = 'button'
+        save.textContent = 'Сохранить'
+        save.className = 'msg-action'
+        const cancel = document.createElement('button')
+        cancel.type = 'button'
+        cancel.textContent = 'Отмена'
+        cancel.className = 'msg-action'
+        save.onclick = () => {
+            const v = ta.value
+            if(!hasFile && !v.trim()){
+                if(typeof window.showAppToast === 'function'){
+                    window.showAppToast('Текст не может быть пустым', 'warning')
+                }
+                return
+            }
+            if(socket && socket.readyState === WebSocket.OPEN){
+                socket.send(JSON.stringify({
+                    action: 'edit',
+                    message_id: parseInt(row.dataset.messageId, 10),
+                    message: v
+                }))
+            }
+            wrap.remove()
+        }
+        cancel.onclick = () => wrap.remove()
+        rowBtns.append(save, cancel)
+        wrap.append(ta, rowBtns)
+        row.appendChild(wrap)
+        ta.focus()
+    }
+
+    box.addEventListener('click', (e) => {
+        const delBtn = e.target.closest('.msg-del')
+        const editBtn = e.target.closest('.msg-edit')
+        const row = e.target.closest('.message-own[data-message-id]')
+        if(!row || !socket || socket.readyState !== WebSocket.OPEN) return
+        if(delBtn && row.contains(delBtn)){
+            socket.send(JSON.stringify({
+                action: 'delete',
+                message_id: parseInt(row.dataset.messageId, 10)
+            }))
+        }
+        if(editBtn && row.contains(editBtn)){
+            startEdit(row)
+        }
+    })
+
+    socket = new WebSocket((location.protocol==="https:"?"wss://":"ws://")+location.host+"/ws/chat/"+room_id+"/")
 
     socket.onmessage = e => {
         const data = JSON.parse(e.data)
 
-        if(data.type === "chat_message"){
-            const div = document.createElement("div")
-            div.className = "message " + (data.username === username ? "message-own" : "message-other")
-            if(data.username === username){
-                div.setAttribute("data-message-id", data.id)
-                div.innerHTML = `
-                    <div class="message-header">${data.username} — ${data.time}</div>
-                    <div class="message-content">${data.message}</div>
-                    <span class="read-status">${data.is_read ? "✓✓" : "✓"}</span>
-                `
-            } else {
-                div.innerHTML = `
-                    <div class="message-header">${data.username} — ${data.time}</div>
-                    <div class="message-content">${data.message}</div>
-                `
-            }
-            box.appendChild(div)
-            box.scrollTop = box.scrollHeight
+        if(data.type === 'message_deleted'){
+            applyMessageDeleted(data.message_id)
+            if(isNearBottom()) scrollToBottom()
+            return
         }
 
-        if(data.type === "file_message"){
-            const div = document.createElement("div")
-            div.className = "message " + (data.username === username ? "message-own" : "message-other")
-            
+        if(data.type === 'message_edited'){
+            applyMessageEdited(data.message_id, data.message, data.edited_at)
+            if(isNearBottom()) scrollToBottom()
+            return
+        }
+
+        if(data.type === 'chat_message'){
+            const shouldScroll = isNearBottom()
+            const isOwn = data.user_id === currentUserId
+            const div = document.createElement('div')
+            div.className = 'message ' + (isOwn ? 'message-own' : 'message-other')
+            div.dataset.messageId = String(data.message_id)
+            div.dataset.hasFile = '0'
+            const head = `${escapeHtml(data.username)} — ${formatTime(data.timestamp)}`
+            if(isOwn){
+                div.innerHTML = actionsHtml + `
+                    <div class="message-header">${head}</div>
+                    <div class="message-content">${escapeHtml(data.message)}</div>
+                    <span class="read-status">✓</span>`
+            } else {
+                div.innerHTML = `
+                    <div class="message-header">${head}</div>
+                    <div class="message-content">${escapeHtml(data.message)}</div>`
+            }
+            box.appendChild(div)
+            if(shouldScroll) scrollToBottom()
+            return
+        }
+
+        if(data.type === 'file_message'){
+            const shouldScroll = isNearBottom()
+            const isOwn = data.user_id === currentUserId
+            const div = document.createElement('div')
+            div.className = 'message ' + (isOwn ? 'message-own' : 'message-other')
+            div.dataset.messageId = String(data.message_id)
+            div.dataset.hasFile = '1'
             let fileHtml = ''
             if(data.is_image){
-                fileHtml = `<div class="message-file"><img src="${data.file_url}" alt="${data.file_name}" onclick="openImageModal(this.src)"></div>`
+                fileHtml = `<div class="message-file"><img src="${escapeHtml(data.file_url)}" alt="" onclick="openImageModal(this.src)"></div>`
             } else {
                 const icon = getFileIcon(data.file_extension)
                 fileHtml = `
                     <div class="message-file">
-                        <a href="${data.file_url}" class="file-attachment" download>
+                        <a href="${escapeHtml(data.file_url)}" class="file-attachment" download>
                             <span class="file-icon">${icon}</span>
                             <div class="file-details">
-                                <div class="file-name">${data.file_name}</div>
-                                <div class="file-size">${data.file_size}</div>
+                                <div class="file-name">${escapeHtml(data.file_name)}</div>
+                                <div class="file-size">${escapeHtml(data.file_size)}</div>
                             </div>
                         </a>
-                    </div>
-                `
+                    </div>`
             }
-            
-            const contentHtml = data.message ? `<div class="message-content">${data.message}</div>` : ''
-            
-            if(data.username === username){
-                div.innerHTML = `
-                    <div class="message-header">${data.username} — ${new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}</div>
+            const contentHtml = data.message ? `<div class="message-content">${escapeHtml(data.message)}</div>` : ''
+            const head = `${escapeHtml(data.username)} — ${formatTime(data.timestamp)}`
+            if(isOwn){
+                div.innerHTML = actionsHtml + `
+                    <div class="message-header">${head}</div>
                     ${contentHtml}
                     ${fileHtml}
-                    <span class="read-status">✓</span>
-                `
+                    <span class="read-status">✓</span>`
             } else {
                 div.innerHTML = `
-                    <div class="message-header">${data.username} — ${new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}</div>
+                    <div class="message-header">${head}</div>
                     ${contentHtml}
-                    ${fileHtml}
-                `
+                    ${fileHtml}`
             }
             box.appendChild(div)
-            box.scrollTop = box.scrollHeight
-        }
-
-        if(data.type === "message_read" && data.user === username){
-            const msgDiv = box.querySelector(`.message-own[data-message-id='${data.id}']`)
-            if(msgDiv){
-                const status = msgDiv.querySelector(".read-status")
-                status.innerText = "✓✓"
-            }
+            div.querySelectorAll('img').forEach(img => img.addEventListener('load', () => { if(shouldScroll) scrollToBottom() }, { once: true }))
+            if(shouldScroll) scrollToBottom()
         }
     }
 
     function send(){
         const msg = input.value.trim()
-        
+
         if(selectedFile){
-            // Отправляем файл через AJAX
             uploadFile(msg)
         } else if(msg){
-            // Отправляем текстовое сообщение
-            socket.send(JSON.stringify({message:msg}))
-            input.value=""
+            socket.send(JSON.stringify({message: msg}))
+            input.value = ''
         }
     }
 
@@ -605,26 +818,31 @@ document.addEventListener('DOMContentLoaded', ()=>{
         .then(response => response.json())
         .then(data => {
             if(data.error){
-                alert('Ошибка загрузки файла: ' + data.error)
+                if (typeof window.showAppToast === 'function') {
+                    window.showAppToast('Ошибка загрузки файла: ' + (typeof data.error === 'string' ? data.error : JSON.stringify(data.error)), 'danger')
+                } else {
+                    alert('Ошибка загрузки файла')
+                }
                 return
             }
-            
-            // Отправляем через WebSocket уведомление о файле
+
             socket.send(JSON.stringify({
-                message: data.content,
+                message_id: data.id,
+                message: data.content || '',
                 file_url: data.file_url,
                 file_name: data.file_name,
                 is_image: data.is_image,
                 file_size: data.file_size,
                 file_extension: data.file_extension
             }))
-            
-            // Очищаем выбор файла
+
             removeFile()
         })
         .catch(error => {
             console.error('Error:', error)
-            alert('Ошибка загрузки файла')
+            if (typeof window.showAppToast === 'function') {
+                window.showAppToast('Ошибка загрузки файла', 'danger')
+            }
         })
     }
 
@@ -644,6 +862,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
 
     function getFileIcon(ext){
+        if(!ext) return '📎'
         const icons = {
             'pdf': '📄',
             'txt': '📝',
@@ -665,9 +884,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
         return icons[ext.toLowerCase()] || '📎'
     }
 
-    // Выбор файла
     attachBtn.onclick = () => fileInput.click()
-    
+
     fileInput.onchange = (e) => {
         if(e.target.files.length > 0){
             selectedFile = e.target.files[0]
@@ -678,7 +896,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     function showFilePreview(file){
         filePreview.classList.add('active')
         previewFileName.textContent = file.name
-        
+
         const size = file.size
         let sizeText = ''
         if(size < 1024){
@@ -689,12 +907,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
             sizeText = (size / (1024 * 1024)).toFixed(1) + ' MB'
         }
         previewFileSize.textContent = sizeText
-        
-        // Если изображение, показываем превью
+
         if(file.type.startsWith('image/')){
             const reader = new FileReader()
-            reader.onload = (e) => {
-                previewContent.innerHTML = `<img src="${e.target.result}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">`
+            reader.onload = (ev) => {
+                previewContent.innerHTML = `<img src="${ev.target.result}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">`
             }
             reader.readAsDataURL(file)
         } else {
@@ -711,14 +928,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
 
     btn.onclick = send
-    input.addEventListener("keypress", e => { if(e.key==="Enter") send() })
+    input.addEventListener('keypress', e => { if(e.key === 'Enter') send() })
 
-    // 🔌 Обработка ошибок WebSocket
-    socket.onerror = (err) => console.warn("⚠️ WebSocket error:", err)
-    socket.onclose = () => console.log("🔌 WebSocket disconnected")
+    window.addEventListener('load', scrollChatToEnd)
+    scrollChatToEnd()
+
+    socket.onerror = (err) => console.warn('WebSocket error:', err)
+    socket.onclose = () => console.log('WebSocket disconnected')
 })
 
-// Модальное окно для просмотра изображений
 function openImageModal(src){
     const modal = document.getElementById('image-modal')
     const modalImage = document.getElementById('modal-image')
