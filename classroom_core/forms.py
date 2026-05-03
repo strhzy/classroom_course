@@ -218,7 +218,7 @@ class CourseForm(forms.ModelForm):
     teaching_assistants = forms.ModelMultipleChoiceField(
         queryset=User.objects.filter(profile__role='teacher'),
         required=False,
-        widget=forms.SelectMultiple(attrs={'class': 'form-select'}),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
         label='Помощники преподавателя'
     )
     class_days_checkboxes = forms.MultipleChoiceField(
@@ -257,12 +257,33 @@ class CourseForm(forms.ModelForm):
             'allow_self_enrollment': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, user=None, **kwargs):
+        self._course_form_user = user
         super().__init__(*args, **kwargs)
+        self.fields["teaching_assistants"].label_from_instance = (
+            lambda obj: obj.get_full_name() or obj.get_username()
+        )
+        ta_qs = self.fields["teaching_assistants"].queryset
+        if self.instance.pk and self.instance.instructor_id:
+            ta_qs = ta_qs.exclude(pk=self.instance.instructor_id)
+        if user is not None and not self.instance.pk:
+            ta_qs = ta_qs.exclude(pk=user.pk)
+        self.fields["teaching_assistants"].queryset = ta_qs
         if self.instance and self.instance.pk and self.instance.class_days:
             self.fields["class_days_checkboxes"].initial = _tokens_from_class_days_string(
                 self.instance.class_days
             )
+
+    def clean_teaching_assistants(self):
+        assistants = list(self.cleaned_data.get("teaching_assistants") or [])
+        drop = set()
+        if self.instance.pk and self.instance.instructor_id:
+            drop.add(self.instance.instructor_id)
+        if self._course_form_user is not None and not self.instance.pk:
+            drop.add(self._course_form_user.pk)
+        if drop:
+            assistants = [a for a in assistants if a.pk not in drop]
+        return assistants
 
     def clean(self):
         cleaned_data = super().clean()

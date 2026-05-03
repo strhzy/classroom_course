@@ -24,55 +24,7 @@
     }
     .classroom-hero h2 { margin: 0; font-size: 2rem; font-weight: 700; }
     .classroom-hero p { margin: .2rem 0 0 0; color: var(--text-white); opacity: .9; }
-    
-    .custom-breadcrumb {
-        background: var(--bg-overlay-10);
-        padding: 0.8rem 1.2rem;
-        border-radius: 50px;
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--bg-overlay-30);
-        display: inline-block;
-        animation: breadcrumbSlide 0.5s ease-out;
-    }
-    
-    @keyframes breadcrumbSlide {
-        0% {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-        100% {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-    
-    .custom-breadcrumb .breadcrumb {
-        margin: 0;
-        background: transparent;
-    }
-    
-    .custom-breadcrumb .breadcrumb-item a {
-        color: var(--text-muted);
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-    
-    .custom-breadcrumb .breadcrumb-item a:hover {
-        color: var(--accent-primary);
-        text-shadow: 0 0 8px var(--accent-glow-strong);
-    }
-    
-    .custom-breadcrumb .breadcrumb-item.active {
-        color: var(--text-white);
-        font-weight: 500;
-    }
-    
-    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
-        color: var(--accent-primary);
-        content: "›";
-        font-size: 1.2rem;
-    }
-    
+
     .course-header {
         animation: headerFade 0.5s ease-out;
     }
@@ -103,15 +55,20 @@
         background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
         border-radius: 12px;
-        padding: 0.6rem 1.5rem;
+        padding: 0.6rem 1.25rem;
         font-weight: 600;
         color: white;
         transition: all 0.3s ease;
         box-shadow: 0 5px 15px var(--bg-overlay-30);
         position: relative;
         overflow: hidden;
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        line-height: 1.2;
         text-decoration: none;
+        white-space: nowrap;
     }
     
     .btn-edit:hover {
@@ -125,12 +82,17 @@
         background: var(--bg-overlay-15);
         border: 1px solid var(--accent-glow-strong);
         border-radius: 12px;
-        padding: 0.6rem 1.5rem;
+        padding: 0.6rem 1.25rem;
         font-weight: 600;
         color: var(--text-muted);
         transition: all 0.3s ease;
         text-decoration: none;
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        line-height: 1.2;
+        white-space: nowrap;
     }
     
     .btn-students:hover {
@@ -160,8 +122,7 @@
         color: var(--text-white);
         transform: translateY(-2px);
     }
-    
-    
+
     .section-card {
         background: var(--bg-card);
         border: 1px solid var(--border-accent-light);
@@ -171,8 +132,7 @@
         margin-bottom: 1rem;
         overflow: hidden;
     }
-    
-    
+
     .section-card.announcements {
         border-left: 4px solid var(--status-warning);
         box-shadow: 0 10px 30px var(--status-warning-bg);
@@ -208,8 +168,7 @@
             transform: translateY(0);
         }
     }
-    
-    
+
     .card-header-custom {
         background: var(--bg-card);
         border-bottom: 1px solid var(--border-accent-light);
@@ -268,8 +227,7 @@
     .submissions .card-header-custom h5 i {
         color: var(--status-success);
     }
-    
-    
+
     .info-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -278,8 +236,7 @@
         margin-bottom: 1.5rem;
         animation: sidebarAppear 0.6s ease-out 0.2s both;
     }
-    
-    
+
     .info-card.course-info {
         border: 1px solid var(--bg-overlay-30);
         border-top: 3px solid var(--accent-primary);
@@ -462,8 +419,7 @@
         color: var(--text-muted);
         font-size: 0.9rem;
     }
-    
-    
+
     .separator {
         color: var(--accent-primary);
         font-weight: 300;
@@ -585,22 +541,22 @@
         .page-title {
             font-size: 1.6rem;
         }
-        
-        .custom-breadcrumb {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-        
-        .d-flex.justify-content-between {
+
+        .course-detail-top-bar {
             flex-direction: column;
-            align-items: flex-start !important;
+            align-items: stretch !important;
             gap: 1rem;
         }
         
-        .btn-edit,
-        .btn-students {
-            width: 100%;
-            text-align: center;
+        .course-detail-header-actions {
+            justify-content: center;
+        }
+        
+        .course-detail-header-actions .btn-edit,
+        .course-detail-header-actions .btn-students {
+            flex: 1 1 auto;
+            min-width: min(100%, 12rem);
+            justify-content: center;
         }
         
         .card-header-custom {
@@ -639,51 +595,42 @@
 
 <div class="theme-course-detail">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap course-detail-top-bar">
             <div class="course-header">
                 <h1 class="page-title">
                     <i class="bi bi-book-fill me-2"></i>
                     {{ course.title }}
                 </h1>
-                <nav aria-label="breadcrumb" class="custom-breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="{% url 'classroom_core:course_list' %}">
-                                <i class="bi bi-grid me-1"></i>Мои курсы
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page">
-                            {{ course.title|truncatechars:30 }}
-                        </li>
-                    </ol>
-                </nav>
             </div>
             
-            <div>
+            <div class="course-detail-header-actions d-flex flex-wrap align-items-center gap-2 justify-content-end">
                 {% if can_manage_course %}
-                <a href="{% url 'classroom_core:course_edit' course.id %}" class="btn-edit me-2">
-                    <i class="bi bi-pencil me-2"></i>Редактировать
+                <a href="{% url 'classroom_core:course_edit' course.id %}" class="btn-edit">
+                    <i class="bi bi-pencil"></i>Редактировать
                 </a>
-                <a href="{% url 'classroom_core:student_enroll' course.id %}" class="btn-students me-2">
-                    <i class="bi bi-person-plus me-2"></i>Добавить студентов
+                <a href="{% url 'classroom_core:student_enroll' course.id %}" class="btn-students">
+                    <i class="bi bi-person-plus"></i>Добавить студентов
                 </a>
-                <a href="{% url 'classroom_core:course_enrollment_request_list' course.id %}" class="btn-students me-2">
-                    <i class="bi bi-clipboard-data me-2"></i>Заявки
+                <a href="{% url 'classroom_core:course_enrollment_request_list' course.id %}" class="btn-students">
+                    <i class="bi bi-clipboard-data"></i>Заявки
                 </a>
                 {% elif not is_student and user_has_enrollment_request %}
                 <a href="{% url 'classroom_core:course_enrollment_request_detail' user_enrollment_request_id %}" class="btn-students">
-                    <i class="bi bi-clock-history me-2"></i>Моя заявка
+                    <i class="bi bi-clock-history"></i>Моя заявка
                 </a>
                 {% elif not is_student %}
                 <a href="{% url 'classroom_core:course_enrollment_request_create' course.id %}" class="btn-students">
-                    <i class="bi bi-pencil-square me-2"></i>Подать заявку
+                    <i class="bi bi-pencil-square"></i>Подать заявку
                 </a>
                 {% endif %}
                 {% if not is_student %}
                 <a href="{% url 'classroom_core:student_list' course.id %}" class="btn-students">
-                    <i class="bi bi-people me-2"></i>Студенты
+                    <i class="bi bi-people"></i>Студенты
                 </a>
                 {% endif %}
+                <a href="{% url 'classroom_core:announcement_list' %}?course_id={{ course.id }}" class="btn-students">
+                    <i class="bi bi-megaphone-fill"></i>Объявления
+                </a>
             </div>
         </div>
         <div class="classroom-hero" {% if course.cover_image %}style="background-image: linear-gradient(135deg, rgba(0, 25, 65, 0.88), rgba(0, 135, 210, 0.52)), url('{{ course.cover_image.url }}'); background-size: cover; background-position: center;"{% endif %}>
@@ -954,8 +901,7 @@
                     </div>
                 </div>
                 {% endif %}
-                
-                
+
                 {% if can_manage_course %}
                 <div class="info-card management">
                     <div class="info-title">

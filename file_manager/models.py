@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone 
 import os 
 from django.core.exceptions import ValidationError 
+from django.utils.html import format_html 
 
 def file_upload_path(instance ,filename ):
     ext =filename.split('.')[-1 ].lower()
@@ -22,6 +23,30 @@ class Tag(models.Model ):
 
     def __str__(self ):
         return self.name 
+
+    def _safe_hex_color(self ):
+        c =(self.color or '#3498db').strip()
+        if len(c )==7 and c[0 ]=='#'and all(ch in '0123456789abcdefABCDEF' for ch in c[1:]):
+            return c 
+        return '#3498db'
+
+    def _badge_attrs_html(self ,*,extra_classes ='',small_font =False ):
+        c =self._safe_hex_color()
+        classes ='badge rounded-pill'+(f' {extra_classes}'.rstrip() if extra_classes else '')
+        font_rule ='font-size:0.75rem;' if small_font else ''
+        return format_html(
+            'class="{}" style="background:{}22;color:{};border:1px solid {}55;{}"',
+            classes ,c ,c ,c ,font_rule ,
+        )
+
+    def badge_attrs_list(self ):
+        return self._badge_attrs_html(small_font =True )
+
+    def badge_attrs_detail(self ):
+        return self._badge_attrs_html(extra_classes ='me-1')
+
+    def filter_swatch_attrs(self ):
+        return format_html('style="background-color:{};"', self._safe_hex_color())
 
 class FileCategory(models.Model ):
     name =models.CharField(max_length =100 )

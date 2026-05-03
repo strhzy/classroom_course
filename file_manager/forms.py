@@ -1,39 +1,19 @@
 from django import forms 
-from . models import File ,FileCategory ,Tag ,FileComment ,FileVersion 
-
-class FileUploadForm(forms.ModelForm ):
-    """Форма загрузки файла"""
-    class Meta :
-        model =File 
-        fields =['title','description','file','category','tags','importance','visibility','shared_with','folder']
-        widgets ={
-        'title':forms.TextInput(attrs ={'class':'form-control'}),
-        'description':forms.Textarea(attrs ={'class':'form-control','rows':3 }),
-        'file':forms.ClearableFileInput(attrs ={'class':'form-control'}),
-        'category':forms.Select(attrs ={'class':'form-select'}),
-        'tags':forms.SelectMultiple(attrs ={'class':'form-select','size':5 }),
-        'importance': forms.Select(attrs={'class': 'form-select'}),
-        'visibility':forms.Select(attrs ={'class':'form-select'}),
-        'shared_with':forms.SelectMultiple(attrs ={'class':'form-select','size':5 }),
-        'folder':forms.Select(attrs ={'class':'form-select'}),
-        }
-
-    def clean(self):
-        cleaned_data = super().clean()
-        visibility = cleaned_data.get("visibility")
-        if visibility != "shared":
-            cleaned_data["shared_with"] = []
-        return cleaned_data
+from . models import File ,Tag ,FileComment ,FileVersion 
 
 class FileEditForm(forms.ModelForm ):
     """Форма редактирования файла(без загрузки нового файла)"""
     class Meta :
         model =File 
-        fields =['title','visibility','shared_with']
+        fields =['title','description','visibility','shared_with','tags']
         widgets ={
         'title':forms.TextInput(attrs ={'class':'form-control'}),
+        'description':forms.Textarea(attrs ={'class':'form-control','rows':3 }),
         'visibility':forms.Select(attrs ={'class':'form-select'}),
         'shared_with':forms.SelectMultiple(attrs ={'class':'form-select','size':5 }),
+        'tags': forms.CheckboxSelectMultiple(
+            attrs={'class': 'form-check-input flex-shrink-0'}
+        ),
         }
 
     def clean(self):
@@ -62,18 +42,6 @@ class FileCommentForm(forms.ModelForm ):
         'content':forms.Textarea(attrs ={'class':'form-control','rows':3 }),
         }
 
-class FileCategoryForm(forms.ModelForm ):
-    """Форма категории файлов"""
-    class Meta :
-        model =FileCategory 
-        fields =['name','description','icon','order']
-        widgets ={
-        'name':forms.TextInput(attrs ={'class':'form-control'}),
-        'description':forms.Textarea(attrs ={'class':'form-control','rows':2 }),
-        'icon':forms.TextInput(attrs ={'class':'form-control'}),
-        'order':forms.NumberInput(attrs ={'class':'form-control'}),
-        }
-
 class TagForm(forms.ModelForm ):
     """Форма тега"""
     class Meta :
@@ -95,16 +63,12 @@ class FileSearchForm(forms.Form ):
     required =False ,
     widget =forms.Select(attrs ={'class':'form-select'})
     )
-    category =forms.ModelChoiceField(
-    queryset =FileCategory.objects.all(),
-    required =False ,
-    empty_label ='Все категории',
-    widget =forms.Select(attrs ={'class':'form-select'})
-    )
-    tags =forms.ModelMultipleChoiceField(
-    queryset =Tag.objects.all(),
-    required =False ,
-    widget =forms.SelectMultiple(attrs ={'class':'form-select','size':5 })
+    tags = forms.ModelMultipleChoiceField(
+        queryset=Tag.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple(
+            attrs={'class': 'form-check-input flex-shrink-0'}
+        ),
     )
     favorites_only = forms.BooleanField(required=False)
     date_from =forms.DateField(

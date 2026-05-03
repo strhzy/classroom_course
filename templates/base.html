@@ -313,13 +313,10 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'file_manager:file_list' %}"><i class="bi bi-files"></i> Все файлы</a></li>
-                            <li><a class="dropdown-item" href="{% url 'file_manager:file_upload' %}"><i class="bi bi-upload"></i> Загрузить файл</a></li>
-                            <li><a class="dropdown-item" href="{% url 'file_manager:folder_create' %}"><i class="bi bi-folder-plus"></i> Создать папку</a></li>
-                            <li><a class="dropdown-item" href="{% url 'file_manager:category_list' %}"><i class="bi bi-tags"></i> Категории</a></li>
-                            <li><a class="dropdown-item" href="{% url 'file_manager:tag_list' %}"><i class="bi bi-tag"></i> Теги</a></li>
+                            <li><a class="dropdown-item" href="{% url 'file_manager:workspace_list' %}"><i class="bi bi-people"></i> Workspace</a></li>
+                            <li><a class="dropdown-item" href="{% url 'file_manager:tag_list' %}"><i class="bi bi-tags"></i> Теги</a></li>
                         </ul>
                     </li>
-                    
                     
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
@@ -346,7 +343,7 @@
                     
                     
                     {% if user.is_authenticated %}
-                    {% if user.is_superuser or user.is_staff or user.profile.role == 'teacher' or user.profile.role == 'admin' or user.profile.role == 'staff' %}
+                    {% if user.is_superuser or user.is_staff or user.profile.role == 'admin' %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-shield"></i> Управление

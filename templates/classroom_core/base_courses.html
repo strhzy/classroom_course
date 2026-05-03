@@ -108,11 +108,13 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <div class="navbar-nav">
+                {% if user.profile.role == 'student' %}
                 <a class="nav-link {% if request.resolver_match.url_name == 'for_enrollment_course_list' %}active{% endif %}" 
                    href="{% url 'classroom_core:for_enrollment_course_list' %}">
                     <i class="bi bi-journal-bookmark-fill"></i>
                     <span>Доступные курсы</span>
                 </a>
+                {% endif %}
 
                 <a class="nav-link {% if request.resolver_match.url_name == 'course_list' %}active{% endif %}" 
                    href="{% url 'classroom_core:course_list' %}">
@@ -133,20 +135,6 @@
                     <i class="bi bi-journal-text"></i>
                     <span>Задания</span>
                 </a>
-                
-                <a class="nav-link {% if request.resolver_match.url_name == 'announcement_list' %}active{% endif %}" 
-                   href="{% url 'classroom_core:announcement_list' %}">
-                    <i class="bi bi-megaphone-fill"></i>
-                    <span>Объявления</span>
-                </a>
-                
-                {% if user.profile.is_teacher or user.profile.is_staff or user.is_superuser %}
-                <a class="nav-link {% if request.resolver_match.url_name == 'student_list' %}active{% endif %}" 
-                   href="{% url 'classroom_core:student_list' 1 %}">
-                    <i class="bi bi-people-fill"></i>
-                    <span>Студенты</span>
-                </a>
-                {% endif %}
                 
                 <a class="nav-link {% if request.resolver_match.url_name == 'profile_view' %}active{% endif %}" 
                    href="{% url 'classroom_core:profile_view' %}">

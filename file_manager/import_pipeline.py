@@ -4,7 +4,7 @@ from .models import ExternalStorageConnection, File
 from .yandex_disk import upload_file_bytes
 
 
-def import_yandex_file(user, filename, content, folder=None):
+def import_yandex_file(user, filename, content):
     connection = ExternalStorageConnection.objects.filter(user=user, provider="yandex_disk").first()
     if not connection:
         raise RuntimeError("Yandex Disk is not connected")
@@ -16,7 +16,6 @@ def import_yandex_file(user, filename, content, folder=None):
         title=filename,
         uploaded_by=user,
         visibility="private",
-        folder=folder,
         is_folder=False,
         storage_provider="yandex_disk",
         yandex_path=remote_path,

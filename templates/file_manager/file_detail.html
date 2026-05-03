@@ -9,44 +9,7 @@
         min-height: 100vh;
         padding: 2rem 1rem;
     }
-    
-    
-   .custom-breadcrumb {
-        background: var(--bg-overlay-10);
-        padding: 0.8rem 1.2rem;
-        border-radius: 50px;
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--bg-overlay-30);
-        display: inline-block;
-    }
-    
-   .custom-breadcrumb.breadcrumb {
-        margin: 0;
-        background: transparent;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a {
-        color: var(--text-muted);
-        text-decoration: none;
-        transition: color 0.2s ease;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a:hover {
-        color: var(--accent-primary);
-    }
-    
-   .custom-breadcrumb.breadcrumb-item.active {
-        color: var(--text-white);
-        font-weight: 500;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
-        color: var(--accent-primary);
-        content: "›";
-        font-size: 1.2rem;
-    }
-    
-    
+
    .page-header {
         display: flex;
         justify-content: space-between;
@@ -64,8 +27,7 @@
         -webkit-text-fill-color: transparent;
         margin-bottom: 0.5rem;
     }
-    
-    
+
    .action-btn {
         border: none;
         border-radius: 10px;
@@ -108,8 +70,7 @@
         background: linear-gradient(135deg, var(--status-danger-light), var(--status-danger));
         color: white;
     }
-    
-    
+
    .detail-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -143,8 +104,7 @@
    .card-body-custom {
         padding: 1.5rem;
     }
-    
-    
+
    .info-grid {
         display: flex;
         flex-direction: column;
@@ -198,8 +158,7 @@
    .badge-file i {
         color: var(--accent-primary);
     }
-    
-    
+
    .extracted-text {
         background: var(--bg-input);
         border: 1px solid var(--bg-overlay-30);
@@ -228,8 +187,7 @@
         background: var(--bg-overlay-30);
         border-radius: 10px;
     }
-    
-    
+
    .comment-card {
         background: var(--bg-input);
         border: 1px solid var(--bg-overlay-20);
@@ -291,8 +249,7 @@
         border-color: var(--status-danger);
         color: var(--text-white);
     }
-    
-    
+
    .comment-form textarea {
         background: var(--bg-input);
         border: 1px solid var(--bg-overlay-30);
@@ -321,8 +278,7 @@
    .btn-submit:hover {
         background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
     }
-    
-    
+
    .stats-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -382,8 +338,7 @@
         color: var(--text-muted);
         font-size: 0.8rem;
     }
-    
-    
+
    .users-list {
         list-style: none;
         padding: 0;
@@ -410,15 +365,13 @@
    .user-name {
         color: var(--text-white);
     }
-    
-    
+
    .empty-text {
         color: var(--text-disabled);
         text-align: center;
         padding: 1.5rem;
     }
-    
-    
+
     @media(max-width: 768px) {
        .theme-file-detail {
             padding: 1rem 0.5rem;
@@ -427,12 +380,7 @@
        .page-title {
             font-size: 1.5rem;
         }
-        
-       .custom-breadcrumb {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-        
+
        .page-header {
             flex-direction: column;
             align-items: flex-start;
@@ -476,6 +424,11 @@
                     <i class="bi bi-window-fullscreen"></i> Просмотр
                 </a>
                 {% endif %}
+                {% if can_upload_version and file.storage_provider == 'local' and file.file %}
+                <a href="{% url 'file_manager:file_version_create' file.id %}" class="action-btn btn-edit">
+                    <i class="bi bi-arrow-repeat"></i> Новая версия
+                </a>
+                {% endif %}
                 <a href="{% url 'file_manager:file_download' file.id %}" class="action-btn btn-download">
                     <i class="bi bi-download"></i> Скачать
                 </a>
@@ -497,24 +450,28 @@
                 {% endif %}
             </div>
         </div>
-        <div class="mt-2 d-flex gap-2 flex-wrap">
-            <form method="post" action="{% url 'file_manager:favorite_collection_add_file' file.id %}" class="d-flex gap-2">
+        {% if can_edit and shared_workspaces %}
+        <div class="mt-2 detail-card p-3" style="border: 1px solid var(--bg-overlay-30); border-radius: 12px;">
+            <div class="small text-muted mb-2"><i class="bi bi-diagram-3"></i> Добавить файл в workspace (участникам будет выдан общий доступ)</div>
+            <form method="post" action="{% url 'file_manager:workspace_add_file' file.id %}" class="d-flex flex-wrap gap-2 align-items-center">
                 {% csrf_token %}
-                <select name="collection_id" class="form-select form-select-sm" required>
-                    <option value="">Категория избранного</option>
-                    {% for c in favorite_collections %}<option value="{{ c.id }}">{{ c.title }}</option>{% endfor %}
+                <select name="workspace_id" class="form-select form-select-sm" style="max-width: 280px;" required>
+                    {% for w in shared_workspaces %}
+                    <option value="{{ w.id }}">{{ w.title }}</option>
+                    {% endfor %}
                 </select>
-                <button class="btn btn-sm btn-outline-warning">Добавить</button>
-            </form>
-            <form method="post" action="{% url 'file_manager:workspace_add_file' file.id %}" class="d-flex gap-2">
-                {% csrf_token %}
-                <select name="workspace_id" class="form-select form-select-sm" required>
-                    <option value="">Общий workspace</option>
-                    {% for w in shared_workspaces %}<option value="{{ w.id }}">{{ w.title }}</option>{% endfor %}
-                </select>
-                <button class="btn btn-sm btn-outline-info">Поделиться</button>
+                <button type="submit" class="btn btn-sm btn-outline-info">Добавить в workspace</button>
             </form>
         </div>
+        {% endif %}
+        {% if file_workspaces %}
+        <div class="mt-2 small text-muted">
+            <i class="bi bi-people"></i> Вы участвуете в workspace с этим файлом:
+            {% for w in file_workspaces %}
+            <a href="{% url 'file_manager:workspace_detail' w.id %}" style="color: var(--accent-primary);">{{ w.title }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
 
         <div class="row">
             
@@ -541,6 +498,19 @@
                                     <i class="bi bi-card-text"></i> Описание:
                                 </span>
                                 <span class="info-value">{{ file.description|default:"<span class='empty-text'>Нет описания</span>" }}</span>
+                            </div>
+
+                            <div class="info-row">
+                                <span class="info-label">
+                                    <i class="bi bi-tags"></i> Теги:
+                                </span>
+                                <span class="info-value">
+                                    {% for t in file.tags.all %}
+                                    <span {{ t.badge_attrs_detail }}>{{ t.name }}</span>
+                                    {% empty %}
+                                    <span class="empty-text">Нет тегов</span>
+                                    {% endfor %}
+                                </span>
                             </div>
                             
                             <div class="info-row">
@@ -642,8 +612,7 @@
                     </div>
                 </div>
                 {% endif %}
-                
-                
+
                 <div class="detail-card">
                     <div class="card-header-custom">
                         <h6>

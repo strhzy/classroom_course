@@ -105,17 +105,15 @@ def _ensure_year_schedule(course):
 @login_required 
 def course_list(request ):
     """Список курсов"""
-    user_profile =request.user.profile 
+    user_profile = request.user.profile 
 
-    if user_profile.is_teacher()or user_profile.is_staff()or request.user.is_superuser :
-
-        courses =Course.objects.all()
+    if request.user.is_superuser :
+        courses = Course.objects.all()
     else :
-
-        courses =Course.objects.filter(
-        Q(instructor =request.user )|
-        Q(teaching_assistants =request.user )|
-        Q(students =request.user )
+        courses = Course.objects.filter(
+        Q(instructor = request.user )|
+        Q(teaching_assistants = request.user )|
+        Q(students = request.user )
         ).distinct()
 
 
@@ -326,7 +324,7 @@ def course_create(request):
         raise PermissionDenied
     
     if request.method == 'POST':
-        form = CourseForm(request.POST, request.FILES)
+        form = CourseForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             course = form.save(commit=False)
             course.instructor = request.user
@@ -341,7 +339,7 @@ def course_create(request):
         else:
             flash_form_errors(request, form)
     else:
-        form = CourseForm()
+        form = CourseForm(user=request.user)
     
     return render(request, 'classroom_core/course_form.html', {
         'form': form,

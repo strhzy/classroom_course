@@ -9,57 +9,7 @@
         min-height: 100vh;
         padding: 2rem 1rem;
     }
-    
-    
-   .custom-breadcrumb {
-        background: var(--bg-overlay-10);
-        padding: 0.8rem 1.2rem;
-        border-radius: 50px;
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--bg-overlay-30);
-        display: inline-block;
-        animation: breadcrumbSlide 0.5s ease-out;
-    }
-    
-    @keyframes breadcrumbSlide {
-        0% {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-        100% {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-    
-   .custom-breadcrumb.breadcrumb {
-        margin: 0;
-        background: transparent;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a {
-        color: var(--text-muted);
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a:hover {
-        color: var(--accent-primary);
-        text-shadow: 0 0 8px var(--accent-glow-strong);
-    }
-    
-   .custom-breadcrumb.breadcrumb-item.active {
-        color: var(--text-white);
-        font-weight: 500;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
-        color: var(--accent-primary);
-        content: "›";
-        font-size: 1.2rem;
-    }
-    
-    
+
    .page-header {
         animation: headerFade 0.5s ease-out;
     }
@@ -94,8 +44,7 @@
         -webkit-text-fill-color: transparent;
         font-size: 2rem;
     }
-    
-    
+
    .form-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -145,8 +94,7 @@
    .card-body-custom {
         padding: 2rem;
     }
-    
-    
+
    .form-group {
         margin-bottom: 1.8rem;
         animation: fieldAppear 0.5s ease-out;
@@ -191,8 +139,7 @@
         margin-left: 0.3rem;
         font-size: 1.2rem;
     }
-    
-    
+
    .custom-input {
         background: var(--bg-input);
         border: 2px solid var(--bg-overlay-30);
@@ -215,8 +162,7 @@
    .custom-input:hover {
         border-color: var(--border-accent-hover);
     }
-    
-    
+
    .custom-select {
         background: var(--bg-input);
         border: 2px solid var(--bg-overlay-30);
@@ -247,8 +193,7 @@
         background: var(--bg-page-start);
         color: var(--text-white);
     }
-    
-    
+
    .avatar-container {
         display: flex;
         align-items: center;
@@ -340,8 +285,7 @@
         font-weight: 600;
         margin-left: 0.5rem;
     }
-    
-    
+
    .form-text {
         color: var(--text-disabled);
         font-size: 0.85rem;
@@ -355,8 +299,7 @@
         color: var(--accent-primary);
         font-size: 0.9rem;
     }
-    
-    
+
    .required-note {
         color: var(--text-secondary);;
         font-size: 0.9rem;
@@ -371,8 +314,7 @@
    .required-note i {
         color: var(--status-danger-light);
     }
-    
-    
+
    .button-group {
         display: flex;
         gap: 1rem;
@@ -476,8 +418,7 @@
    .btn-cancel:hover i {
         transform: rotate(90deg);
     }
-    
-    
+
     @media(max-width: 768px) {
        .theme-profile-edit {
             padding: 1rem 0.5rem;
@@ -486,12 +427,7 @@
        .page-title {
             font-size: 1.6rem;
         }
-        
-       .custom-breadcrumb {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-        
+
        .card-body-custom {
             padding: 1.5rem;
         }
@@ -535,18 +471,6 @@
                 <i class="bi bi-person-circle"></i>
                 {{ title }}
             </h1>
-            <nav aria-label="breadcrumb" class="custom-breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="{% url 'classroom_core:profile_view' %}">
-                            <i class="bi bi-person me-1"></i>Профиль
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        {{ title }}
-                    </li>
-                </ol>
-            </nav>
         </div>
 
         <div class="row">
@@ -562,8 +486,7 @@
                     <div class="card-body-custom">
                         <form method="post" enctype="multipart/form-data">
                             {% csrf_token %}
-                            
-                            
+
                             <div class="form-group">
                                 <label for="id_role" class="form-label">
                                     <i class="bi bi-person-badge"></i>

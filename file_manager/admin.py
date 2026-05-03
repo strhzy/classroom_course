@@ -1,9 +1,24 @@
-from django.contrib import admin 
-from django.utils.html import format_html 
-from . models import(
-File ,FileCategory ,Tag ,FileComment ,
-FileVersion ,FileActivity ,UserStorageQuota 
+from django import forms
+from django.contrib import admin
+from django.utils.html import format_html
+from .models import (
+    File,
+    FileCategory,
+    Tag,
+    FileComment,
+    FileVersion,
+    FileActivity,
+    UserStorageQuota,
 )
+
+
+class FileAdminForm(forms.ModelForm):
+    class Meta:
+        model = File
+        fields = "__all__"
+        widgets = {
+            "tags": forms.CheckboxSelectMultiple(),
+        }
 
 @admin.register(FileCategory )
 class FileCategoryAdmin(admin.ModelAdmin ):
@@ -32,8 +47,9 @@ class TagAdmin(admin.ModelAdmin ):
         return obj.files.count()
     get_file_count.short_description ='Количество файлов'
 
-@admin.register(File )
-class FileAdmin(admin.ModelAdmin ):
+@admin.register(File)
+class FileAdmin(admin.ModelAdmin):
+    form = FileAdminForm
     list_display =[
     'title_display','file_type','uploaded_by',
     'uploaded_at','file_size_display','visibility',
@@ -41,7 +57,7 @@ class FileAdmin(admin.ModelAdmin ):
     ]
     list_filter =[
     'file_type','visibility','uploaded_at',
-    'category','tags','is_folder'
+    'tags',
     ]
     search_fields =[
     'title','description','extracted_text',
@@ -51,7 +67,7 @@ class FileAdmin(admin.ModelAdmin ):
     'file_size','extracted_text','download_count',
     'version','uploaded_at','updated_at'
     ]
-    filter_horizontal =['tags','shared_with','favorite']
+    filter_horizontal = ["shared_with", "favorite"]
     date_hierarchy ='uploaded_at'
 
     def title_display(self ,obj ):

@@ -1,0 +1,415 @@
+{% extends "file_manager/base_files.html" %}
+
+{% block title %}Рабочие области{% endblock %}
+
+{% block files_content %}
+<style>
+   .theme-ws {
+        background: var(--bg-page-gradient);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+   .page-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+   .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0 0 0.35rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+   .page-title i {
+        -webkit-text-fill-color: var(--accent-primary);
+        color: var(--accent-primary);
+    }
+   .page-lead {
+        color: var(--text-muted);
+        margin: 0;
+        max-width: 36rem;
+        font-size: 0.95rem;
+    }
+   .create-card {
+        background: var(--bg-card);
+        border: 1px solid var(--bg-overlay-30);
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        min-width: min(100%, 320px);
+        box-shadow: var(--shadow-item);
+    }
+   .create-card h3 {
+        color: var(--text-white);
+        font-size: 1rem;
+        margin: 0 0 1rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+   .create-card h3 i { color: var(--accent-primary); }
+   .ws-input {
+        width: 100%;
+        background: var(--bg-input);
+        border: 1px solid var(--bg-overlay-30);
+        border-radius: 8px;
+        padding: 0.55rem 0.75rem;
+        color: var(--text-white);
+        margin-bottom: 0.75rem;
+    }
+   .ws-input:focus {
+        outline: none;
+        border-color: var(--accent-primary);
+    }
+   .ws-textarea {
+        min-height: 4.5rem;
+        resize: vertical;
+    }
+   .btn-ws-primary {
+        width: 100%;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border: none;
+        border-radius: 8px;
+        padding: 0.6rem 1rem;
+        font-weight: 600;
+        color: white;
+        margin-top: 0.25rem;
+    }
+   .btn-ws-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-top: 1rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 600;
+    }
+   .btn-ws-secondary:hover { color: var(--accent-primary); }
+   .ws-table-card {
+        background: var(--bg-card);
+        border: 1px solid var(--bg-overlay-30);
+        border-radius: 16px;
+        overflow: visible;
+        box-shadow: 0 10px 30px var(--shadow-card);
+    }
+   .ws-table-card h2 {
+        margin: 0;
+        padding: 1rem 1.25rem;
+        font-size: 1.05rem;
+        color: var(--text-white);
+        border-bottom: 1px solid var(--bg-overlay-30);
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
+    }
+   /* Важно: без overflow:auto/hidden — иначе Bootstrap dropdown обрезается по границам таблицы */
+   .ws-table-scroll {
+        overflow: visible;
+    }
+
+   .ws-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: var(--text-white);
+    }
+
+   .ws-table th,
+   .ws-table td {
+        padding: 1.15rem 1.35rem;
+        text-align: left;
+        vertical-align: middle;
+        border-bottom: 1px solid var(--bg-overlay-30);
+    }
+
+   .ws-table tbody tr {
+        min-height: 3.65rem;
+        position: relative;
+    }
+
+   .ws-table tbody tr:has(.ws-actions-dropdown.show) {
+        z-index: 1060;
+    }
+
+   .ws-table th {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        padding-top: 1.25rem;
+        padding-bottom: 1.25rem;
+    }
+
+   .ws-table tbody tr:hover {
+        background: var(--bg-overlay-10);
+    }
+   .ws-link {
+        color: var(--accent-primary);
+        text-decoration: none;
+        font-weight: 600;
+    }
+   .ws-link:hover { text-decoration: underline; }
+   .badge-role {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 6px;
+        background: var(--bg-overlay-20);
+        color: var(--text-muted);
+    }
+   .empty-ws {
+        text-align: center;
+        padding: 2.5rem 1rem;
+        color: var(--text-disabled);
+    }
+
+   .ws-pick-search-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+   .ws-pick-search-row .ws-input {
+        flex: 1;
+        min-width: 180px;
+        margin-bottom: 0;
+    }
+
+   .ws-pick-search-row .btn-ws-primary {
+        width: auto;
+        margin: 0;
+        padding: 0.55rem 1rem;
+    }
+
+   .ws-pick-results {
+        max-height: 220px;
+        overflow-y: auto;
+        border: 1px solid var(--bg-overlay-30);
+        border-radius: 8px;
+        padding: 0.5rem 0.65rem;
+        background: var(--bg-input);
+    }
+
+   .ws-pick-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.25rem;
+        border-radius: 6px;
+        cursor: pointer;
+        color: var(--text-white);
+        font-size: 0.9rem;
+    }
+
+   .ws-pick-row:hover {
+        background: var(--bg-overlay-10);
+    }
+
+   .ws-pick-row input {
+        width: 1rem;
+        height: 1rem;
+        accent-color: var(--accent-primary);
+        flex-shrink: 0;
+    }
+
+   .ws-pick-selected {
+        min-height: 1.5rem;
+    }
+
+   .ws-actions-dropdown .dropdown-toggle {
+        background: var(--bg-overlay-15);
+        border: 1px solid var(--bg-overlay-30);
+        border-radius: 8px;
+        color: var(--text-muted);
+        padding: 0.55rem 0.75rem;
+        min-height: 2.5rem;
+        min-width: 2.5rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+
+   .ws-actions-dropdown .dropdown-toggle i {
+        font-size: 1.15rem;
+    }
+
+   .ws-actions-dropdown .dropdown-toggle:hover,
+   .ws-actions-dropdown .dropdown-toggle:focus,
+   .ws-actions-dropdown .dropdown-toggle.show {
+        background: var(--bg-overlay-25);
+        border-color: var(--accent-primary);
+        color: var(--text-white);
+    }
+
+   .ws-actions-dropdown .dropdown-menu {
+        background: var(--bg-card);
+        border: 1px solid var(--bg-overlay-30);
+        box-shadow: var(--shadow-card);
+        min-width: 15rem;
+        z-index: 1070;
+    }
+
+   .ws-actions-dropdown .dropdown-item {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+   .ws-actions-dropdown .dropdown-item:hover,
+   .ws-actions-dropdown .dropdown-item:focus {
+        background: var(--bg-overlay-15);
+        color: var(--text-white);
+    }
+
+   .ws-actions-dropdown .dropdown-item.text-danger {
+        color: var(--status-danger-light) !important;
+    }
+
+   .ws-actions-dropdown .dropdown-item.text-warning {
+        color: var(--status-warning) !important;
+    }
+
+   .ws-actions-dropdown .dropdown-divider {
+        border-color: var(--bg-overlay-30);
+    }
+
+   .ws-actions-dropdown form {
+        margin: 0;
+    }
+
+   .ws-table th.text-end,
+   .ws-table td.text-end {
+        text-align: right;
+        white-space: nowrap;
+        width: 1%;
+        overflow: visible;
+    }
+
+   .ws-table td.text-end .dropdown-menu {
+        text-align: left;
+        white-space: normal;
+    }
+</style>
+
+<div class="theme-ws">
+    <div class="container-fluid">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">
+                    <i class="bi bi-people"></i>
+                    Рабочие области
+                </h1>
+                <p class="page-lead">
+                    Общие workspace для совместной работы: участники выбираются через поиск (логин, имя или email).
+                    Файлы в workspace добавляет владелец файла; для локальных файлов участники могут загружать новые версии.
+                </p>
+                <a href="{% url 'file_manager:file_list' %}" class="btn-ws-secondary">
+                    <i class="bi bi-arrow-left"></i> К списку файлов
+                </a>
+            </div>
+            <div class="create-card">
+                <h3><i class="bi bi-plus-circle"></i> Новый workspace</h3>
+                <form method="post" action="{% url 'file_manager:workspace_create' %}">
+                    {% csrf_token %}
+                    <input class="ws-input" type="text" name="title" maxlength="120" required placeholder="Название">
+                    {% include "file_manager/includes/workspace_user_picker.html" with picker_prefix="wsCreate" %}
+                    <button type="submit" class="btn-ws-primary" style="margin-top: 0.75rem;">Создать</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="ws-table-card">
+            <h2><i class="bi bi-grid-3x3-gap"></i> Мои workspace</h2>
+            {% if workspaces %}
+            <div class="ws-table-scroll">
+                <table class="ws-table">
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Роль</th>
+                            <th>Файлов</th>
+                            <th>Создан</th>
+                            <th class="text-end">Управление</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for w in workspaces %}
+                        <tr>
+                            <td>
+                                <a class="ws-link" href="{% url 'file_manager:workspace_detail' w.id %}">{{ w.title }}</a>
+                            </td>
+                            <td>
+                                {% if w.owner_id == user.id %}
+                                <span class="badge-role">Владелец</span>
+                                {% else %}
+                                <span class="badge-role">Участник</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ w.file_count }}</td>
+                            <td>{{ w.created_at|date:"d.m.Y" }}</td>
+                            <td class="text-end">
+                                <div class="dropdown ws-actions-dropdown d-inline-block">
+                                    <button class="btn btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Действия">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'file_manager:workspace_detail' w.id %}">
+                                                <i class="bi bi-box-arrow-up-right me-1"></i> Карточка workspace
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'file_manager:workspace_detail' w.id %}#ws-participants">
+                                                <i class="bi bi-people me-1"></i> Участники…
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'file_manager:workspace_detail' w.id %}#ws-files">
+                                                <i class="bi bi-files me-1"></i> Файлы…
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        {% if w.owner_id == user.id %}
+                                        <li>
+                                            <form method="post" action="{% url 'file_manager:workspace_delete' w.id %}"
+                                                  onsubmit="return confirm('Удалить этот workspace? Сами файлы не удалятся.');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="dropdown-item text-danger">
+                                                    <i class="bi bi-trash me-1"></i> Удалить workspace
+                                                </button>
+                                            </form>
+                                        </li>
+                                        {% else %}
+                                        <li>
+                                            <form method="post" action="{% url 'file_manager:workspace_remove_participant' w.id %}"
+                                                  onsubmit="return confirm('Выйти из этого workspace?');">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                                <button type="submit" class="dropdown-item text-warning">
+                                                    <i class="bi bi-box-arrow-left me-1"></i> Выйти из workspace
+                                                </button>
+                                            </form>
+                                        </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-ws">
+                <p>Пока нет workspace. Создайте первый справа и добавьте в него файлы со страницы файла.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

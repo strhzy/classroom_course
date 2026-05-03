@@ -13,6 +13,38 @@
     
    .page-header {
         animation: headerSlide 0.5s ease-out;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+   .page-header-main {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+   .btn-back-course {
+        background: var(--bg-overlay-15);
+        border: 1px solid var(--accent-glow-strong);
+        border-radius: 12px;
+        padding: 0.55rem 1.1rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+
+   .btn-back-course:hover {
+        background: var(--bg-overlay-25);
+        border-color: var(--accent-primary);
+        color: var(--text-white);
     }
     
     @keyframes headerSlide {
@@ -447,6 +479,11 @@
        .page-title i {
             font-size: 2rem;
         }
+
+       .btn-back-course {
+            width: 100%;
+            justify-content: center;
+        }
         
        .filter-section.row {
             flex-direction: column;
@@ -478,10 +515,17 @@
     <div class="container">
         
         <div class="page-header mb-4">
-            <h1 class="page-title">
-                <i class="bi bi-megaphone-fill"></i>
-                Объявления
-            </h1>
+            <div class="page-header-main">
+                {% if course_id %}
+                <a href="{% url 'classroom_core:course_detail' course_id %}" class="btn-back-course">
+                    <i class="bi bi-arrow-left"></i> К курсу
+                </a>
+                {% endif %}
+                <h1 class="page-title">
+                    <i class="bi bi-megaphone-fill"></i>
+                    Объявления
+                </h1>
+            </div>
         </div>
 
         
@@ -550,10 +594,14 @@
                     <h2 class="empty-title">Нет объявлений</h2>
                     <p class="empty-text">Создайте первое объявление для курса</p>
                     {% if user.profile.is_teacher or user.profile.is_staff or user.is_superuser %}
-                    <a href="{% url 'classroom_core:announcement_create' %}" class="btn-create">
-                        <i class="bi bi-plus-circle"></i>
-                        Создать объявление
-                    </a>
+                        {% if course_id %}
+                        <a href="{% url 'classroom_core:announcement_create' course_id %}" class="btn-create">
+                            <i class="bi bi-plus-circle"></i>
+                            Создать объявление
+                        </a>
+                        {% else %}
+                        <p class="empty-text mb-0">Выберите курс в фильтре выше, чтобы добавить объявление.</p>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>

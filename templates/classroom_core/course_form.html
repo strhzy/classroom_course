@@ -9,57 +9,7 @@
         min-height: 100vh;
         padding: 2rem 1rem;
     }
-    
-    
-   .custom-breadcrumb {
-        background: var(--bg-overlay-10);
-        padding: 0.8rem 1.2rem;
-        border-radius: 50px;
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--bg-overlay-30);
-        display: inline-block;
-        animation: breadcrumbSlide 0.5s ease-out;
-    }
-    
-    @keyframes breadcrumbSlide {
-        0% {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-        100% {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-    
-   .custom-breadcrumb.breadcrumb {
-        margin: 0;
-        background: transparent;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a {
-        color: var(--text-muted);
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a:hover {
-        color: var(--accent-primary);
-        text-shadow: 0 0 8px var(--accent-glow-strong);
-    }
-    
-   .custom-breadcrumb.breadcrumb-item.active {
-        color: var(--text-white);
-        font-weight: 500;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
-        color: var(--accent-primary);
-        content: "›";
-        font-size: 1.2rem;
-    }
-    
-    
+
    .page-header {
         animation: headerFade 0.5s ease-out;
     }
@@ -84,8 +34,7 @@
         margin-bottom: 0.5rem;
         text-shadow: 0 0 20px var(--bg-overlay-30);
     }
-    
-    
+
    .form-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -135,8 +84,7 @@
    .card-body-custom {
         padding: 2rem;
     }
-    
-    
+
    .form-group {
         margin-bottom: 1.8rem;
         animation: fieldAppear 0.5s ease-out;
@@ -184,8 +132,7 @@
         margin-left: 0.3rem;
         font-size: 1.2rem;
     }
-    
-    
+
    .custom-input {
         background: var(--bg-input);
         border: 2px solid var(--bg-overlay-30);
@@ -214,8 +161,7 @@
         min-height: 100px;
         line-height: 1.6;
     }
-    
-    
+
    .checkbox-group {
         background: var(--bg-overlay-10);
         border-radius: 15px;
@@ -285,8 +231,7 @@
         margin-top: 0.2rem;
         line-height: 1.4;
     }
-    
-    
+
    .file-input-container {
         position: relative;
     }
@@ -349,8 +294,7 @@
         border-radius: 50px;
         display: inline-block;
     }
-    
-    
+
    .form-text {
         color: var(--text-disabled);
         font-size: 0.85rem;
@@ -364,8 +308,7 @@
         color: var(--accent-primary);
         font-size: 0.9rem;
     }
-    
-    
+
    .button-group {
         display: flex;
         gap: 1rem;
@@ -473,8 +416,7 @@
    .btn-cancel:hover i {
         transform: rotate(90deg);
     }
-    
-    
+
    .required-note {
         color: var(--text-secondary);;
         font-size: 0.9rem;
@@ -486,8 +428,7 @@
         color: var(--status-danger-light);
         margin-right: 0.2rem;
     }
-    
-    
+
     @media(max-width: 768px) {
        .theme-course-form {
             padding: 1rem 0.5rem;
@@ -496,12 +437,7 @@
        .page-title {
             font-size: 1.6rem;
         }
-        
-       .custom-breadcrumb {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-        
+
        .card-body-custom {
             padding: 1.5rem;
         }
@@ -558,8 +494,7 @@
                     <div class="card-body-custom">
                         <form method="post" enctype="multipart/form-data">
                             {% csrf_token %}
-                            
-                            
+
                             <div class="form-group">
                                 <label for="id_title" class="form-label">
                                     <i class="bi bi-type"></i>
@@ -687,17 +622,25 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="id_teaching_assistants" class="form-label">
+                                <span class="form-label d-block mb-2">
                                     <i class="bi bi-people-fill"></i>
                                     Помощники преподавателя
-                                </label>
-                                <select name="teaching_assistants" id="id_teaching_assistants" class="custom-input" multiple>
-                                    {% for assistant in form.fields.teaching_assistants.queryset %}
-                                    <option value="{{ assistant.id }}" {% if assistant in form.instance.teaching_assistants.all %}selected{% endif %}>
-                                        {{ assistant.get_full_name|default:assistant.username }}
-                                    </option>
+                                </span>
+                                <div class="checkbox-group d-flex flex-wrap gap-2 align-items-center">
+                                    {% for choice in form.teaching_assistants %}
+                                    <div class="custom-checkbox mb-0 py-1 px-2">
+                                        {{ choice.tag }}
+                                        <div>
+                                            <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                                        </div>
+                                    </div>
+                                    {% empty %}
+                                    <span class="text-muted small">Нет других преподавателей для выбора</span>
                                     {% endfor %}
-                                </select>
+                                </div>
+                                {% if form.teaching_assistants.errors %}
+                                <div class="form-text text-danger mt-1"><i class="bi bi-exclamation-circle"></i> {{ form.teaching_assistants.errors|striptags }}</div>
+                                {% endif %}
                             </div>
                             
                             

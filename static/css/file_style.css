@@ -1084,40 +1084,11 @@
     }
     
     
-   .custom-breadcrumb {
-        background: rgba(106, 90, 205, 0.1);
-        padding: 0.8rem 1.2rem;
-        border-radius: 50px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
-        display: inline-block;
-    }
     
-   .custom-breadcrumb.breadcrumb {
-        margin: 0;
-        background: transparent;
-    }
     
-   .custom-breadcrumb.breadcrumb-item a {
-        color: #a8b8ff;
-        text-decoration: none;
-        transition: color 0.2s ease;
-    }
     
-   .custom-breadcrumb.breadcrumb-item a:hover {
-        color: #6a5acd;
-    }
     
-   .custom-breadcrumb.breadcrumb-item.active {
-        color: #fff;
-        font-weight: 500;
-    }
     
-   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
-        color: #6a5acd;
-        content: "›";
-        font-size: 1.2rem;
-    }
     
     
    .page-header {
@@ -1501,10 +1472,6 @@
             font-size: 1.5rem;
         }
         
-       .custom-breadcrumb {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
         
        .page-header {
             flex-direction: column;
@@ -1541,40 +1508,11 @@
     }
     
     
-   .custom-breadcrumb {
-        background: rgba(106, 90, 205, 0.1);
-        padding: 0.8rem 1.2rem;
-        border-radius: 50px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(106, 90, 205, 0.3);
-        display: inline-block;
-    }
     
-   .custom-breadcrumb.breadcrumb {
-        margin: 0;
-        background: transparent;
-    }
     
-   .custom-breadcrumb.breadcrumb-item a {
-        color: #a8b8ff;
-        text-decoration: none;
-        transition: color 0.2s ease;
-    }
     
-   .custom-breadcrumb.breadcrumb-item a:hover {
-        color: #6a5acd;
-    }
     
-   .custom-breadcrumb.breadcrumb-item.active {
-        color: #fff;
-        font-weight: 500;
-    }
     
-   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
-        color: #6a5acd;
-        content: "›";
-        font-size: 1.2rem;
-    }
     
     
    .page-header {
@@ -1852,10 +1790,6 @@
             font-size: 1.6rem;
         }
         
-       .custom-breadcrumb {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
         
        .card-body-custom {
             padding: 1.5rem;

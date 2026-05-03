@@ -2,10 +2,6 @@
 
 {% block title %}🔄 Новая версия{% endblock %}
 {% block page_name %}Создать версию{% endblock %}
-{% block breadcrumb_extra %}
-<a class="breadcrumb-item" href="{% url 'file_manager:file_list' %}">Файлы</a>
-<a class="breadcrumb-item" href="{% url 'file_manager:file_detail' file.id %}">{{ file.title }}</a>
-{% endblock %}
 
 {% block files_content %}
 <style>
@@ -457,6 +453,8 @@
                                     <li>Старый файл будет удален с сервера</li>
                                     <li>Номер версии увеличится на 1</li>
                                     <li>Текст будет автоматически извлечен из нового файла</li>
+                                    <li>Место в хранилище проверяется по квоте владельца файла (<strong>{{ file.uploaded_by.username }}</strong>)</li>
+                                    <li>Новую версию может загрузить владелец, админ или участник workspace, куда этот файл добавлен</li>
                                 </ul>
                             </div>
                             

@@ -217,13 +217,6 @@
 
 <div class="file-viewer-page">
   <div class="container-fluid px-2">
-    <nav aria-label="breadcrumb" class="mb-3">
-      <ol class="breadcrumb mb-0" style="--bs-breadcrumb-divider: '›'; font-size: 0.9rem;">
-        <li class="breadcrumb-item"><a href="{% url 'file_manager:file_list' %}">Файлы</a></li>
-        <li class="breadcrumb-item"><a href="{{ detail_url }}">{{ file.title|truncatechars:40 }}</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Просмотр</li>
-      </ol>
-    </nav>
 
     <div class="file-viewer-toolbar">
       <h1 class="file-viewer-title">

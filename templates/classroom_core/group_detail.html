@@ -9,57 +9,7 @@
         min-height: 100vh;
         padding: 2rem 1rem;
     }
-    
-    
-   .custom-breadcrumb {
-        background: var(--bg-overlay-10);
-        padding: 0.8rem 1.2rem;
-        border-radius: 50px;
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--bg-overlay-30);
-        display: inline-block;
-        animation: breadcrumbSlide 0.5s ease-out;
-    }
-    
-    @keyframes breadcrumbSlide {
-        0% {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-        100% {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-    
-   .custom-breadcrumb.breadcrumb {
-        margin: 0;
-        background: transparent;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a {
-        color: var(--text-muted);
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a:hover {
-        color: var(--accent-primary);
-        text-shadow: 0 0 8px var(--accent-glow-strong);
-    }
-    
-   .custom-breadcrumb.breadcrumb-item.active {
-        color: var(--text-white);
-        font-weight: 500;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
-        color: var(--accent-primary);
-        content: "›";
-        font-size: 1.2rem;
-    }
-    
-    
+
    .page-header {
         animation: headerFade 0.5s ease-out;
         display: flex;
@@ -90,8 +40,7 @@
         margin-bottom: 0.5rem;
         text-shadow: 0 0 20px var(--bg-overlay-30);
     }
-    
-    
+
    .btn-edit {
         background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
@@ -156,8 +105,7 @@
         background: linear-gradient(135deg, var(--status-success), var(--status-success));
         color: white;
     }
-    
-    
+
    .info-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -209,8 +157,7 @@
    .card-body-custom {
         padding: 1.5rem;
     }
-    
-    
+
    .info-grid {
         display: flex;
         flex-direction: column;
@@ -258,8 +205,7 @@
         font-weight: 600;
         margin-left: 0.5rem;
     }
-    
-    
+
    .students-table {
         width: 100%;
         border-collapse: separate;
@@ -355,8 +301,7 @@
    .date-badge i {
         color: var(--accent-primary);
     }
-    
-    
+
    .empty-state {
         text-align: center;
         padding: 3rem;
@@ -384,8 +329,7 @@
         font-size: 1.1rem;
         margin: 0;
     }
-    
-    
+
    .custom-pagination {
         margin-top: 2rem;
         animation: paginationAppear 0.6s ease-out 0.3s both;
@@ -425,8 +369,7 @@
         color: white;
         box-shadow: 0 5px 15px var(--border-accent-hover);
     }
-    
-    
+
     @media(max-width: 768px) {
        .theme-group-detail {
             padding: 1rem 0.5rem;
@@ -453,12 +396,7 @@
             justify-content: center;
             margin-left: 0;
         }
-        
-       .custom-breadcrumb {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-        
+
        .info-row {
             flex-direction: column;
             gap: 0.3rem;
@@ -525,18 +463,6 @@
                     <i class="bi bi-people-fill me-2"></i>
                     {{ group.name }}
                 </h1>
-                <nav aria-label="breadcrumb" class="custom-breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="{% url 'classroom_core:group_list' %}">
-                                <i class="bi bi-people me-1"></i>Группы студентов
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page">
-                            {{ group.name|truncatechars:30 }}
-                        </li>
-                    </ol>
-                </nav>
             </div>
             
             <div class="header-buttons">

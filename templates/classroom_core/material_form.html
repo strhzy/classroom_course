@@ -9,57 +9,7 @@
         min-height: 100vh;
         padding: 2rem 1rem;
     }
-    
-    
-   .custom-breadcrumb {
-        background: var(--bg-overlay-10);
-        padding: 0.8rem 1.2rem;
-        border-radius: 50px;
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--bg-overlay-30);
-        display: inline-block;
-        animation: breadcrumbSlide 0.5s ease-out;
-    }
-    
-    @keyframes breadcrumbSlide {
-        0% {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-        100% {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-    
-   .custom-breadcrumb.breadcrumb {
-        margin: 0;
-        background: transparent;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a {
-        color: var(--text-muted);
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a:hover {
-        color: var(--accent-primary);
-        text-shadow: 0 0 8px var(--accent-glow-strong);
-    }
-    
-   .custom-breadcrumb.breadcrumb-item.active {
-        color: var(--text-white);
-        font-weight: 500;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
-        color: var(--accent-primary);
-        content: "›";
-        font-size: 1.2rem;
-    }
-    
-    
+
    .page-header {
         animation: headerFade 0.5s ease-out;
     }
@@ -84,8 +34,7 @@
         margin-bottom: 0.5rem;
         text-shadow: 0 0 20px var(--bg-overlay-30);
     }
-    
-    
+
    .form-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -135,8 +84,7 @@
    .card-body-custom {
         padding: 2rem;
     }
-    
-    
+
    .form-group {
         margin-bottom: 1.8rem;
         animation: fieldAppear 0.5s ease-out;
@@ -183,8 +131,7 @@
         margin-left: 0.3rem;
         font-size: 1.2rem;
     }
-    
-    
+
    .custom-input {
         background: var(--bg-input);
         border: 2px solid var(--bg-overlay-30);
@@ -213,8 +160,7 @@
         min-height: 100px;
         line-height: 1.6;
     }
-    
-    
+
    .custom-select {
         background: var(--bg-input);
         border: 2px solid var(--bg-overlay-30);
@@ -245,8 +191,7 @@
         background: var(--bg-page-start);
         color: var(--text-white);
     }
-    
-    
+
    .file-input-container {
         position: relative;
     }
@@ -297,8 +242,7 @@
         font-weight: 600;
         margin-left: 0.5rem;
     }
-    
-    
+
    .checkbox-group {
         background: var(--bg-overlay-10);
         border-radius: 15px;
@@ -365,8 +309,7 @@
         margin-left: 2.1rem;
         margin-top: 0.2rem;
     }
-    
-    
+
    .form-text {
         color: var(--text-disabled);
         font-size: 0.85rem;
@@ -380,8 +323,7 @@
         color: var(--accent-primary);
         font-size: 0.9rem;
     }
-    
-    
+
    .required-note {
         color: var(--text-secondary);;
         font-size: 0.9rem;
@@ -396,8 +338,7 @@
    .required-note i {
         color: var(--status-danger-light);
     }
-    
-    
+
    .button-group {
         display: flex;
         gap: 1rem;
@@ -501,8 +442,7 @@
    .btn-cancel:hover i {
         transform: rotate(90deg);
     }
-    
-    
+
     @media(max-width: 768px) {
        .theme-material-form {
             padding: 1rem 0.5rem;
@@ -511,12 +451,7 @@
        .page-title {
             font-size: 1.6rem;
         }
-        
-       .custom-breadcrumb {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-        
+
        .card-body-custom {
             padding: 1.5rem;
         }
@@ -558,28 +493,6 @@
                 <i class="bi bi-file-earmark-text me-2"></i>
                 {{ title }}
             </h1>
-            <nav aria-label="breadcrumb" class="custom-breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="{% url 'classroom_core:course_list' %}">
-                            <i class="bi bi-grid me-1"></i>Мои курсы
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item">
-                        <a href="{% url 'classroom_core:course_detail' course.id %}">
-                            {{ course.title|truncatechars:30 }}
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item">
-                        <a href="{% url 'classroom_core:section_edit' section.id %}">
-                            {{ section.title|truncatechars:20 }}
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        {{ title }}
-                    </li>
-                </ol>
-            </nav>
         </div>
 
         <div class="row">
@@ -595,8 +508,7 @@
                     <div class="card-body-custom">
                         <form method="post" enctype="multipart/form-data">
                             {% csrf_token %}
-                            
-                            
+
                             <div class="form-group">
                                 <label for="id_title" class="form-label">
                                     <i class="bi bi-type"></i>

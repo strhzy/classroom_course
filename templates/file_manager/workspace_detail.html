@@ -1,0 +1,231 @@
+{% extends "file_manager/base_files.html" %}
+
+{% block title %}{{ workspace.title }}{% endblock %}
+
+{% block files_content %}
+<style>
+   .theme-wsd {
+        background: var(--bg-page-gradient);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+   .wsd-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+   .wsd-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-white);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+   .wsd-meta { color: var(--text-muted); font-size: 0.9rem; margin: 0.35rem 0 0 0; }
+   .btn-bar { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+   .btn-ghost {
+        background: var(--bg-overlay-15);
+        border: 1px solid var(--accent-glow-strong);
+        border-radius: 8px;
+        padding: 0.45rem 0.9rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+   .btn-ghost:hover { color: var(--text-white); border-color: var(--accent-primary); }
+   .btn-danger-outline {
+        background: transparent;
+        border: 1px solid var(--status-danger);
+        color: var(--status-danger-light);
+        border-radius: 8px;
+        padding: 0.45rem 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+   .btn-danger-outline:hover { background: var(--status-danger-bg); }
+   .panel {
+        background: var(--bg-card);
+        border: 1px solid var(--bg-overlay-30);
+        border-radius: 14px;
+        margin-bottom: 1.25rem;
+        overflow: hidden;
+        box-shadow: var(--shadow-item);
+    }
+   .panel h3 {
+        margin: 0;
+        padding: 0.85rem 1.15rem;
+        font-size: 1rem;
+        color: var(--text-white);
+        border-bottom: 1px solid var(--bg-overlay-30);
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
+    }
+   .panel-body { padding: 1rem 1.15rem; color: var(--text-muted); }
+   .user-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--bg-overlay-20);
+    }
+   .user-row:last-child { border-bottom: none; }
+   .user-name { color: var(--text-white); font-weight: 600; }
+   .mini-form { display: inline; }
+   .ws-input {
+        background: var(--bg-input);
+        border: 1px solid var(--bg-overlay-30);
+        border-radius: 8px;
+        padding: 0.55rem 0.75rem;
+        color: var(--text-white);
+        width: 100%;
+    }
+   .ws-input:focus { outline: none; border-color: var(--accent-primary); }
+   .btn-ws-primary {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border: none;
+        border-radius: 8px;
+        padding: 0.55rem 1rem;
+        font-weight: 600;
+        color: white;
+        cursor: pointer;
+    }
+   .ws-pick-search-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+   .ws-pick-search-row .ws-input { flex: 1; min-width: 180px; margin-bottom: 0; }
+   .ws-pick-search-row .btn-ws-primary { width: auto; margin: 0; }
+   .ws-pick-results {
+        max-height: 220px;
+        overflow-y: auto;
+        border: 1px solid var(--bg-overlay-30);
+        border-radius: 8px;
+        padding: 0.5rem 0.65rem;
+        background: var(--bg-input);
+    }
+   .ws-pick-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.25rem;
+        border-radius: 6px;
+        cursor: pointer;
+        color: var(--text-white);
+        font-size: 0.9rem;
+    }
+   .ws-pick-row:hover { background: var(--bg-overlay-10); }
+   .ws-pick-row input { width: 1rem; height: 1rem; accent-color: var(--accent-primary); flex-shrink: 0; }
+   .ws-add-participants-form { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--bg-overlay-20); }
+   .ws-submit-add { margin-top: 0.75rem; }
+   .file-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.55rem 0;
+        border-bottom: 1px solid var(--bg-overlay-20);
+    }
+   .file-row:last-child { border-bottom: none; }
+   .file-row a { color: var(--accent-primary); text-decoration: none; font-weight: 600; }
+   .file-row a:hover { text-decoration: underline; }
+
+   #ws-participants, #ws-files {
+        scroll-margin-top: 5rem;
+    }
+</style>
+
+<div class="theme-wsd">
+    <div class="container-fluid">
+        <div class="wsd-head">
+            <div>
+                <h1 class="wsd-title"><i class="bi bi-diagram-3"></i> {{ workspace.title }}</h1>
+                <p class="wsd-meta">
+                    Владелец workspace: <strong style="color: var(--text-white);">{{ workspace.owner.username }}</strong>
+                    · создан {{ workspace.created_at|date:"d.m.Y H:i" }}
+                </p>
+            </div>
+            <div class="btn-bar">
+                <a class="btn-ghost" href="{% url 'file_manager:workspace_list' %}"><i class="bi bi-arrow-left"></i> Все workspace</a>
+                {% if not is_owner %}
+                <form class="mini-form" method="post" action="{% url 'file_manager:workspace_remove_participant' workspace.id %}"
+                      onsubmit="return confirm('Выйти из этого workspace?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <button type="submit" class="btn-danger-outline">Выйти</button>
+                </form>
+                {% else %}
+                <form class="mini-form" method="post" action="{% url 'file_manager:workspace_delete' workspace.id %}"
+                      onsubmit="return confirm('Удалить этот workspace? Сами файлы не удалятся.');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-danger-outline">Удалить workspace</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="panel" id="ws-participants">
+            <h3><i class="bi bi-people"></i> Участники</h3>
+            <div class="panel-body">
+                {% for p in workspace.participants.all %}
+                <div class="user-row">
+                    <span class="user-name">{{ p.get_full_name|default:p.username }}</span>
+                    <span>
+                        {% if p.id == workspace.owner_id %}
+                        <span class="text-muted small">владелец workspace</span>
+                        {% elif is_owner %}
+                        <form class="mini-form" method="post" action="{% url 'file_manager:workspace_remove_participant' workspace.id %}"
+                              onsubmit="return confirm('Исключить этого участника из workspace?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ p.id }}">
+                            <button type="submit" class="btn-danger-outline">Исключить</button>
+                        </form>
+                        {% endif %}
+                    </span>
+                </div>
+                {% endfor %}
+                {% if is_owner %}
+                <form method="post" action="{% url 'file_manager:workspace_add_participant' workspace.id %}" class="ws-add-participants-form">
+                    {% csrf_token %}
+                    {% include "file_manager/includes/workspace_user_picker.html" with picker_prefix="wsAdd" workspace_pk=workspace.id %}
+                    <button type="submit" class="btn-ws-primary ws-submit-add">Добавить выбранных</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="panel" id="ws-files">
+            <h3><i class="bi bi-files"></i> Файлы в workspace</h3>
+            <div class="panel-body">
+                {% for f in workspace_files %}
+                <div class="file-row">
+                    <div>
+                        <a href="{% url 'file_manager:file_detail' f.id %}">{{ f.title }}</a>
+                        <span class="text-muted small"> — {{ f.uploaded_by.username }}</span>
+                    </div>
+                    {% if is_owner or f.uploaded_by_id == user.id %}
+                    <form class="mini-form" method="post" action="{% url 'file_manager:workspace_remove_file' workspace.id %}"
+                          onsubmit="return confirm('Убрать файл из workspace? Сам файл останется.');">
+                        {% csrf_token %}
+                        <input type="hidden" name="file_id" value="{{ f.id }}">
+                        <button type="submit" class="btn-danger-outline">Убрать</button>
+                    </form>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <p class="mb-0">Пока нет файлов. Владелец файла добавляет их со страницы файла.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

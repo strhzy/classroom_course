@@ -113,7 +113,7 @@ def generate_preview(file_path ,output_dir ):
 
     return None 
 
-def search_files(query ,user =None ,file_types =None ,categories =None ,tags =None ,date_from =None ,date_to =None ):
+def search_files(query ,user =None ,file_types =None ,tags =None ,date_from =None ,date_to =None ):
     files =File.objects.filter(is_folder =False )
 
     if user :
@@ -132,9 +132,6 @@ def search_files(query ,user =None ,file_types =None ,categories =None ,tags =No
 
     if file_types :
         files =files.filter(file_type__in =file_types )
-
-    if categories :
-        files =files.filter(category__in =categories )
 
     if tags :
         for tag in tags :

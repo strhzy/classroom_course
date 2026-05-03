@@ -9,74 +9,7 @@
         min-height: 100vh;
         padding: 2rem 1rem;
     }
-    
-    
-   .custom-breadcrumb {
-        background: var(--bg-overlay-10);
-        padding: 0.8rem 1.2rem;
-        border-radius: 50px;
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--bg-overlay-30);
-        display: inline-block;
-        animation: breadcrumbAppear 0.5s ease-out;
-    }
-    
-    @keyframes breadcrumbAppear {
-        0% {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-        100% {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-    
-   .custom-breadcrumb.breadcrumb {
-        margin: 0;
-        background: transparent;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a {
-        color: var(--text-muted);
-        text-decoration: none;
-        transition: all 0.3s ease;
-        position: relative;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a:hover {
-        color: var(--accent-primary);
-        text-shadow: 0 0 8px var(--accent-glow-strong);
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-        transition: width 0.3s ease;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a:hover::after {
-        width: 100%;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item.active {
-        color: var(--text-white);
-        font-weight: 500;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
-        color: var(--accent-primary);
-        content: "›";
-        font-size: 1.2rem;
-        line-height: 1;
-    }
-    
-    
+
    .announcement-header {
         animation: headerAppear 0.5s ease-out 0.2s both;
     }
@@ -101,8 +34,7 @@
         margin-bottom: 0.5rem;
         text-shadow: 0 0 20px var(--bg-overlay-30);
     }
-    
-    
+
    .btn-edit {
         background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
         border: none;
@@ -155,8 +87,7 @@
         width: 300px;
         height: 300px;
     }
-    
-    
+
    .announcement-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -307,8 +238,7 @@
         margin-top: 1.5rem;
         margin-bottom: 1rem;
     }
-    
-    
+
    .content-decoration {
         position: relative;
     }
@@ -324,8 +254,7 @@
         border-radius: 50%;
         z-index: -1;
     }
-    
-    
+
     @media(max-width: 768px) {
        .theme-announcement {
             padding: 1rem 0.5rem;
@@ -338,12 +267,7 @@
        .announcement-title {
             font-size: 1.4rem;
         }
-        
-       .custom-breadcrumb {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-        
+
        .btn-edit {
             padding: 0.5rem 1.2rem;
             font-size: 0.9rem;
@@ -391,18 +315,6 @@
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
             <div class="announcement-header">
                 <h1 class="page-title">{{ announcement.title }}</h1>
-                <nav aria-label="breadcrumb" class="custom-breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="{% url 'classroom_core:announcement_list' %}">
-                                <i class="bi bi-megaphone me-1"></i>Объявления
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page">
-                            {{ announcement.title|truncatechars:30 }}
-                        </li>
-                    </ol>
-                </nav>
             </div>
             
             <div>

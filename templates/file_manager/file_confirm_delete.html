@@ -2,10 +2,6 @@
 
 {% block title %}🗑️ Удалить файл{% endblock %}
 {% block page_name %}Подтверждение удаления{% endblock %}
-{% block breadcrumb_extra %}
-<a class="breadcrumb-item" href="{% url 'file_manager:file_list' %}">Файлы</a>
-<a class="breadcrumb-item" href="{% url 'file_manager:file_detail' file.id %}">{{ file.title }}</a>
-{% endblock %}
 
 {% block files_content %}
 <style>

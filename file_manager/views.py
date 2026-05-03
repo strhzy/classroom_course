@@ -5,11 +5,11 @@ from django.contrib import messages
 from django.http import HttpResponse ,Http404 ,JsonResponse 
 from django.core.files.base import ContentFile
 from django.core.exceptions import PermissionDenied ,ValidationError 
-from django.db.models import Q 
+from django.db.models import Q, Count, Exists, OuterRef
 from django.core.paginator import Paginator 
 from django.contrib.auth.models import User
-from . models import File ,FileCategory ,Tag ,FileComment ,FileVersion ,FileActivity ,UserStorageQuota 
-from . forms import FileUploadForm ,FileEditForm ,FileVersionForm ,FileCommentForm ,FileCategoryForm ,TagForm ,FileSearchForm 
+from . models import File ,Tag ,FileComment ,FileVersion ,FileActivity ,UserStorageQuota 
+from . forms import FileEditForm ,FileVersionForm ,FileCommentForm ,TagForm ,FileSearchForm 
 from . utils import extract_text_from_file ,generate_preview ,search_files ,get_user_storage_usage 
 from . office_pdf import (
     EXTENSIONS_LIBREOFFICE_TO_PDF,
@@ -31,7 +31,7 @@ from .models import ExternalStorageConnection
 from .wordfilter import find_banned_match
 
 logger = logging.getLogger(__name__)
-from .models import FavoriteCollection, FavoriteCollectionItem, SharedWorkspace
+from .models import SharedWorkspace
 from .yandex_disk import (
     get_authorize_url,
     exchange_code_for_token,
@@ -103,7 +103,27 @@ def can_manage_reference_data(user):
 
 
 def can_edit_file_object(user, file_obj):
+    """Редактирование метаданных, доступа и тегов (владелец файла или админ)."""
     return file_obj.uploaded_by_id == user.id or is_admin_user(user)
+
+
+def is_file_workspace_collaborator(user, file_obj):
+    """Участник workspace, в котором состоит этот файл."""
+    if not getattr(user, "is_authenticated", False):
+        return False
+    return SharedWorkspace.objects.filter(participants=user, files=file_obj).exists()
+
+
+def can_upload_file_version(user, file_obj):
+    """
+    Загрузка новой версии (замена файла): владелец/админ или участник общего workspace с этим файлом.
+    Нужен доступ к просмотру файла.
+    """
+    if not file_obj.can_access(user):
+        return False
+    if can_edit_file_object(user, file_obj):
+        return True
+    return is_file_workspace_collaborator(user, file_obj)
 
 
 def can_delete_file_object(user, file_obj):
@@ -310,6 +330,15 @@ def file_list(request ):
     storage_quota =get_user_storage_usage(request.user )
     yandex_connection = get_yandex_connection(request.user, autocreate_from_social=True)
 
+    raw_tag_ids = request.GET.getlist("tags")
+    tag_ids = []
+    for x in raw_tag_ids:
+        try:
+            tag_ids.append(int(x))
+        except (TypeError, ValueError):
+            continue
+    tag_objects = list(Tag.objects.filter(id__in=tag_ids)) if tag_ids else None
+
     if is_admin_user(request.user):
         files = File.objects.filter(is_folder=False)
         query = request.GET.get('query')
@@ -321,33 +350,39 @@ def file_list(request ):
             )
         if request.GET.get('file_type'):
             files = files.filter(file_type=request.GET.get('file_type'))
-        if request.GET.get('category'):
-            files = files.filter(category=request.GET.get('category'))
         if request.GET.get('date_from'):
             files = files.filter(uploaded_at__date__gte=request.GET.get('date_from'))
         if request.GET.get('date_to'):
             files = files.filter(uploaded_at__date__lte=request.GET.get('date_to'))
+        if tag_objects:
+            for t in tag_objects:
+                files = files.filter(tags=t)
     else:
-        files =search_files(
-        query =request.GET.get('query'),
-        user =request.user ,
-        file_types =[request.GET.get('file_type')]if request.GET.get('file_type')else None ,
-        categories =[request.GET.get('category')]if request.GET.get('category')else None ,
-        tags =request.GET.getlist('tags'),
-        date_from =request.GET.get('date_from'),
-        date_to =request.GET.get('date_to')
+        files = search_files(
+            query=request.GET.get('query'),
+            user=request.user,
+            file_types=[request.GET.get('file_type')] if request.GET.get('file_type') else None,
+            tags=tag_objects,
+            date_from=request.GET.get('date_from'),
+            date_to=request.GET.get('date_to'),
         )
     if request.GET.get('favorites_only'):
         files = files.filter(favorite=request.user)
 
-    folders =File.objects.filter(
-    Q(uploaded_by =request.user )|
-    Q(visibility ='public')|
-    Q(shared_with =request.user )
-    ).distinct().filter(is_folder =True )
-
-    sort_by =request.GET.get('sort','-uploaded_at')
-    files =files.order_by(sort_by )
+    favorite_through = File.favorite.through
+    files = (
+        files.annotate(
+            is_favorite_for_user=Exists(
+                favorite_through.objects.filter(
+                    file_id=OuterRef("pk"),
+                    user_id=request.user.id,
+                )
+            )
+        )
+        .prefetch_related("tags")
+    )
+    sort_by = request.GET.get("sort", "-uploaded_at")
+    files = files.order_by(sort_by)
 
     paginator =Paginator(files ,20 )
     page_number =request.GET.get('page')
@@ -359,14 +394,19 @@ def file_list(request ):
     total_files =files.count()
     total_size =sum(f.file_size for f in files )
 
+    filter_params = request.GET.copy()
+    if 'page' in filter_params:
+        del filter_params['page']
+    filter_querystring = filter_params.urlencode()
+
     context ={
     'page_obj':page_obj ,
-    'folders':folders ,
     'search_form':FileSearchForm(request.GET ),
     'total_files':total_files ,
     'total_size':total_size ,
-    'categories':FileCategory.objects.all(),
     'tags':Tag.objects.all(),
+    'selected_tag_ids': tag_ids,
+    'filter_querystring': filter_querystring,
     'storage_quota':storage_quota ,
     'yandex_connected': bool(yandex_connection),
     'can_manage_reference_data': can_manage_reference_data(request.user),
@@ -403,9 +443,12 @@ def file_upload(request ):
 
     return respond_redirect(redirect("file_manager:file_list"))
 
-@login_required 
+@login_required
 def file_detail(request ,file_id ):
-    file_obj =get_object_or_404(File ,id =file_id )
+    file_obj = get_object_or_404(
+        File.objects.prefetch_related("tags"),
+        id=file_id,
+    )
 
     if not file_obj.can_access(request.user ):
         raise PermissionDenied 
@@ -428,9 +471,10 @@ def file_detail(request ,file_id ):
     'comment_form':comment_form ,
     'can_edit':can_edit_file_object(request.user, file_obj),
     'can_delete':can_delete_file_object(request.user, file_obj),
+    'can_upload_version': can_upload_file_version(request.user, file_obj),
     'is_favorite':file_obj.is_favorite(request.user ),
-    'favorite_collections': FavoriteCollection.objects.filter(user=request.user),
-    'shared_workspaces': SharedWorkspace.objects.filter(participants=request.user),
+    'shared_workspaces': SharedWorkspace.objects.filter(participants=request.user).order_by("title"),
+    'file_workspaces': SharedWorkspace.objects.filter(files=file_obj, participants=request.user).order_by("title"),
     }
 
     return render(request ,'file_manager/file_detail.html',context )
@@ -740,13 +784,16 @@ def file_edit(request ,file_id ):
     if not can_edit_file_object(request.user, file_obj):
         raise PermissionDenied 
 
-    students_queryset = User.objects.filter(profile__role='student').exclude(
-        id=request.user.id
-    ).order_by("username")
+    share_users_queryset = (
+        User.objects.filter(is_active=True)
+        .exclude(pk=file_obj.uploaded_by_id)
+        .order_by("username")
+        .select_related("profile")
+    )
 
     if request.method =='POST':
         form =FileEditForm(request.POST ,instance =file_obj )
-        form.fields ['shared_with'].queryset = students_queryset
+        form.fields["shared_with"].queryset = share_users_queryset
         if form.is_valid():
             form.save()
 
@@ -763,7 +810,7 @@ def file_edit(request ,file_id ):
             flash_form_errors(request, form)
     else :
         form =FileEditForm(instance =file_obj )
-        form.fields ['shared_with'].queryset = students_queryset
+        form.fields["shared_with"].queryset = share_users_queryset
 
     return render(request ,'file_manager/file_form.html',{
     'form':form ,
@@ -823,18 +870,28 @@ def file_delete(request ,file_id ):
 def file_version_create(request ,file_id ):
     file_obj =get_object_or_404(File ,id =file_id )
 
+    if not can_upload_file_version(request.user, file_obj):
+        raise PermissionDenied
 
-    if not can_edit_file_object(request.user, file_obj):
-        raise PermissionDenied 
+    if file_obj.storage_provider != "local" or not file_obj.file:
+        messages.error(
+            request,
+            "Замена содержимого новой версией поддерживается только для файлов в локальном хранилище.",
+        )
+        return redirect("file_manager:file_detail", file_id=file_obj.id)
 
-    storage_quota =get_user_storage_usage(request.user )
+    owner = file_obj.uploaded_by
+    storage_quota = get_user_storage_usage(owner)
 
     if request.method =='POST':
         form =FileVersionForm(request.POST ,request.FILES )
         if form.is_valid():
             file_size =request.FILES ['version_file'].size 
             if not storage_quota.has_enough_space(file_size ):
-                messages.error(request ,f'Недостаточно места в хранилище для новой версии. Доступно: {storage_quota.get_quota_display()}')
+                messages.error(
+                    request,
+                    f"Недостаточно места в хранилище владельца файла для новой версии. Доступно: {storage_quota.get_quota_display()}",
+                )
                 return redirect('file_manager:file_version_create',file_id =file_id )
 
             version =form.save(commit =False )
@@ -843,7 +900,7 @@ def file_version_create(request ,file_id ):
             version.version_number =file_obj.version +1 
             version.save()
 
-            old_file_path =file_obj.file.path 
+            old_file_path = file_obj.file.path if file_obj.file else None
             file_obj.file =version.version_file 
             file_obj.version +=1 
             file_obj.save()
@@ -855,7 +912,7 @@ def file_version_create(request ,file_id ):
             except Exception as e :
                 messages.warning(request ,f'Текст не извлечен: {e }')
 
-            if os.path.exists(old_file_path ):
+            if old_file_path and os.path.exists(old_file_path ):
                 os.remove(old_file_path )
 
             FileActivity.log_activity(
@@ -879,40 +936,6 @@ def file_version_create(request ,file_id ):
     'file':file_obj ,
     'storage_quota':storage_quota ,
     })
-
-@login_required 
-def folder_create(request ):
-    if request.method =='POST':
-        title =request.POST.get('title')
-        description =request.POST.get('description','')
-        parent_folder_id =request.POST.get('parent_folder')
-
-        folder =File.objects.create(
-        title =title ,
-        description =description ,
-        uploaded_by =request.user ,
-        is_folder =True ,
-        visibility ='private'
-        )
-
-        if parent_folder_id :
-            parent_folder =get_object_or_404(File ,id =parent_folder_id ,is_folder =True )
-            if parent_folder.can_edit(request.user ):
-                folder.folder =parent_folder 
-                folder.save()
-
-        FileActivity.log_activity(
-        file =folder ,
-        user =request.user ,
-        activity_type ='upload',
-        description =f'Folder created: {folder.title }'
-        )
-
-        messages.success(request ,'Папка успешно создана')
-        return redirect('file_manager:file_list')
-
-    folders =File.objects.filter(uploaded_by =request.user ,is_folder =True )
-    return render(request ,'file_manager/folder_form.html',{'folders':folders })
 
 @login_required 
 def favorite_toggle(request ,file_id ):
@@ -1013,35 +1036,16 @@ def activity_log(request ):
     return render(request ,'file_manager/activity_log.html',context )
 
 @login_required 
-def category_list(request ):
-    if not can_manage_reference_data(request.user):
-        raise PermissionDenied
-    categories =FileCategory.objects.all()
-    return render(request ,'file_manager/category_list.html',{'categories':categories })
-
-@login_required 
-def category_create(request ):
-    if not can_manage_reference_data(request.user):
-        raise PermissionDenied
-    if request.method =='POST':
-        form =FileCategoryForm(request.POST )
-        if form.is_valid():
-            form.save()
-            messages.success(request ,'Категория создана')
-            return redirect('file_manager:category_list')
-        else:
-            flash_form_errors(request, form)
-    else :
-        form =FileCategoryForm()
-
-    return render(request ,'file_manager/category_form.html',{'form':form })
-
-@login_required 
 def tag_list(request ):
     if not can_manage_reference_data(request.user):
         raise PermissionDenied
-    tags =Tag.objects.all()
-    return render(request ,'file_manager/tag_list.html',{'tags':tags })
+    tags = (
+        Tag.objects.annotate(
+            file_count=Count("files", filter=Q(files__is_folder=False))
+        )
+        .order_by("name")
+    )
+    return render(request, "file_manager/tag_list.html", {"tags": tags})
 
 @login_required 
 def tag_create(request ):
@@ -1059,6 +1063,22 @@ def tag_create(request ):
         form =TagForm()
 
     return render(request ,'file_manager/tag_form.html',{'form':form })
+
+
+@login_required
+@require_http_methods(["POST"])
+def tag_delete(request, tag_id):
+    if not can_manage_reference_data(request.user):
+        raise PermissionDenied
+    tag = get_object_or_404(Tag, pk=tag_id)
+    name = tag.name
+    tag.delete()
+    messages.success(
+        request,
+        f'Тег «{name}» удалён. С файлов он снят, сами файлы не изменены.',
+    )
+    return redirect("file_manager:tag_list")
+
 
 @login_required 
 def get_storage_quota(request ):
@@ -1266,55 +1286,267 @@ def download_all_files_archive(request):
 
 
 @login_required
-@require_http_methods(["POST"])
-def favorite_collection_create(request):
-    title = (request.POST.get("title") or "").strip()
-    if not title:
-        messages.error(request, "Название категории избранного обязательно")
-    else:
-        FavoriteCollection.objects.get_or_create(user=request.user, title=title)
-        messages.success(request, "Категория избранного создана")
-    return redirect(request.META.get("HTTP_REFERER", "file_manager:file_list"))
+def workspace_user_search(request):
+    """JSON: поиск пользователей для добавления в workspace (логин, имя, email)."""
+    q = (request.GET.get("q") or "").strip()
+    workspace_raw = (request.GET.get("workspace") or "").strip()
+    exclude_ids = {request.user.pk}
+    if workspace_raw:
+        try:
+            ws = SharedWorkspace.objects.filter(
+                participants=request.user, pk=int(workspace_raw)
+            ).first()
+            if ws:
+                exclude_ids |= set(ws.participants.values_list("pk", flat=True))
+        except (ValueError, TypeError):
+            pass
+    if len(q) < 2:
+        return JsonResponse({"users": []})
+    qs = (
+        User.objects.filter(is_active=True)
+        .exclude(pk__in=exclude_ids)
+        .filter(
+            Q(username__icontains=q)
+            | Q(first_name__icontains=q)
+            | Q(last_name__icontains=q)
+            | Q(email__icontains=q)
+        )
+        .distinct()
+        .order_by("username")[:40]
+    )
+    users = [
+        {
+            "id": u.pk,
+            "username": u.username,
+            "label": (u.get_full_name() or "").strip() or u.username,
+        }
+        for u in qs
+    ]
+    return JsonResponse({"users": users})
 
 
 @login_required
-@require_http_methods(["POST"])
-def favorite_collection_add_file(request, file_id):
-    file_obj = get_object_or_404(File, id=file_id)
-    collection_id = request.POST.get("collection_id")
-    collection = get_object_or_404(FavoriteCollection, id=collection_id, user=request.user)
-    FavoriteCollectionItem.objects.get_or_create(collection=collection, file=file_obj)
-    messages.success(request, "Файл добавлен в категорию избранного")
-    return redirect("file_manager:file_detail", file_id=file_id)
+def workspace_list(request):
+    # Сначала id без annotate: иначе JOIN по participants + Count(files) даёт неверные
+    # агрегаты (часто совпадающие с числом участников из‑за размножения строк в SQL).
+    workspace_ids = (
+        SharedWorkspace.objects.filter(
+            Q(owner=request.user) | Q(participants=request.user)
+        )
+        .values_list("pk", flat=True)
+        .distinct()
+    )
+    workspaces = (
+        SharedWorkspace.objects.filter(pk__in=workspace_ids)
+        .annotate(
+            file_count=Count(
+                "files",
+                filter=Q(files__is_folder=False),
+                distinct=True,
+            )
+        )
+        .select_related("owner")
+        .prefetch_related("participants")
+        .order_by("-created_at")
+    )
+    return render(request, "file_manager/workspace_list.html", {"workspaces": workspaces})
 
 
 @login_required
 @require_http_methods(["POST"])
 def workspace_create(request):
     title = (request.POST.get("title") or "").strip()
-    participant_username = (request.POST.get("participant") or "").strip()
-    participant = User.objects.filter(username=participant_username).first()
-    if not title or not participant:
-        messages.error(request, "Укажите название и существующего пользователя")
-        return redirect("file_manager:file_list")
+    raw_ids = request.POST.getlist("participant_ids")
+    user_ids = []
+    for x in raw_ids:
+        try:
+            user_ids.append(int(x))
+        except (TypeError, ValueError):
+            continue
+    user_ids = list(dict.fromkeys(user_ids))
+    if not title:
+        messages.error(request, "Укажите название workspace")
+        return redirect("file_manager:workspace_list")
+    if not user_ids:
+        messages.error(request, "Выберите хотя бы одного участника в списке после поиска")
+        return redirect("file_manager:workspace_list")
+    users = list(
+        User.objects.filter(pk__in=user_ids, is_active=True).exclude(pk=request.user.pk)
+    )
+    if len(users) != len(user_ids):
+        messages.warning(request, "Часть выбранных пользователей недоступна или не найдена")
+    if not users:
+        messages.error(request, "Не удалось добавить участников — выберите пользователей из поиска")
+        return redirect("file_manager:workspace_list")
     workspace = SharedWorkspace.objects.create(title=title, owner=request.user)
-    workspace.participants.add(request.user, participant)
-    messages.success(request, "Общий workspace создан")
-    return redirect("file_manager:file_list")
+    workspace.participants.add(request.user, *users)
+    messages.success(
+        request,
+        "Workspace создан. Добавьте к нему файлы со страницы файла (владелец файла выбирает workspace).",
+    )
+    return redirect("file_manager:workspace_detail", workspace_id=workspace.id)
+
+
+@login_required
+def workspace_detail(request, workspace_id):
+    ws = get_object_or_404(
+        SharedWorkspace.objects.filter(participants=request.user)
+        .select_related("owner")
+        .prefetch_related("participants", "files__uploaded_by", "files__tags"),
+        pk=workspace_id,
+    )
+    is_owner = ws.owner_id == request.user.id
+    workspace_files = ws.files.filter(is_folder=False).order_by("title")
+    return render(
+        request,
+        "file_manager/workspace_detail.html",
+        {
+            "workspace": ws,
+            "is_owner": is_owner,
+            "workspace_files": workspace_files,
+        },
+    )
+
+
+@login_required
+@require_http_methods(["POST"])
+def workspace_add_participant(request, workspace_id):
+    ws = get_object_or_404(
+        SharedWorkspace.objects.filter(participants=request.user), pk=workspace_id
+    )
+    if ws.owner_id != request.user.id:
+        raise PermissionDenied
+    raw_ids = request.POST.getlist("participant_ids")
+    user_ids = []
+    for x in raw_ids:
+        try:
+            user_ids.append(int(x))
+        except (TypeError, ValueError):
+            continue
+    user_ids = list(dict.fromkeys(user_ids))
+    if not user_ids:
+        messages.error(request, "Отметьте пользователей в результатах поиска")
+        return redirect("file_manager:workspace_detail", workspace_id=ws.pk)
+    added = 0
+    skipped = 0
+    for uid in user_ids:
+        user = User.objects.filter(pk=uid, is_active=True).exclude(pk=request.user.pk).first()
+        if not user:
+            continue
+        if ws.participants.filter(pk=user.pk).exists():
+            skipped += 1
+            continue
+        ws.participants.add(user)
+        added += 1
+    if added:
+        messages.success(request, f"Добавлено участников: {added}")
+    if skipped:
+        messages.info(request, f"Уже в workspace (пропущено): {skipped}")
+    if not added and not skipped:
+        messages.error(request, "Не удалось добавить выбранных пользователей")
+    return redirect("file_manager:workspace_detail", workspace_id=ws.pk)
+
+
+@login_required
+@require_http_methods(["POST"])
+def workspace_remove_participant(request, workspace_id):
+    ws = get_object_or_404(
+        SharedWorkspace.objects.filter(participants=request.user), pk=workspace_id
+    )
+    try:
+        user_id = int(request.POST.get("user_id", 0))
+    except ValueError:
+        user_id = 0
+    if not user_id:
+        messages.error(request, "Не указан пользователь")
+        return redirect("file_manager:workspace_detail", workspace_id=ws.pk)
+    target = get_object_or_404(User, pk=user_id)
+    is_owner = ws.owner_id == request.user.id
+    if user_id == request.user.id:
+        if is_owner:
+            messages.error(
+                request,
+                "Владелец не может покинуть workspace без удаления. Удалите workspace целиком, если он больше не нужен.",
+            )
+            return redirect("file_manager:workspace_detail", workspace_id=ws.pk)
+        ws.participants.remove(request.user)
+        messages.success(request, "Вы вышли из workspace")
+        return redirect("file_manager:workspace_list")
+    if not is_owner:
+        raise PermissionDenied
+    if user_id == ws.owner_id:
+        messages.error(request, "Нельзя исключить владельца")
+        return redirect("file_manager:workspace_detail", workspace_id=ws.pk)
+    ws.participants.remove(target)
+    messages.success(request, "Участник исключён")
+    return redirect("file_manager:workspace_detail", workspace_id=ws.pk)
+
+
+@login_required
+@require_http_methods(["POST"])
+def workspace_remove_file(request, workspace_id):
+    ws = get_object_or_404(
+        SharedWorkspace.objects.filter(participants=request.user), pk=workspace_id
+    )
+    try:
+        fid = int(request.POST.get("file_id", 0))
+    except ValueError:
+        fid = 0
+    file_obj = get_object_or_404(File, pk=fid, is_folder=False)
+    if not ws.files.filter(pk=file_obj.pk).exists():
+        messages.error(request, "Этого файла нет в этом workspace")
+        return redirect("file_manager:workspace_detail", workspace_id=ws.pk)
+    if not (ws.owner_id == request.user.id or file_obj.uploaded_by_id == request.user.id):
+        raise PermissionDenied
+    ws.files.remove(file_obj)
+    messages.success(request, "Файл убран из workspace (сам файл не удалён)")
+    return redirect("file_manager:workspace_detail", workspace_id=ws.pk)
+
+
+@login_required
+@require_http_methods(["POST"])
+def workspace_delete(request, workspace_id):
+    ws = get_object_or_404(
+        SharedWorkspace.objects.filter(participants=request.user), pk=workspace_id
+    )
+    if ws.owner_id != request.user.id:
+        raise PermissionDenied
+    title = ws.title
+    ws.delete()
+    messages.success(request, f"Workspace «{title}» удалён")
+    return redirect("file_manager:workspace_list")
 
 
 @login_required
 @require_http_methods(["POST"])
 def workspace_add_file(request, file_id):
-    file_obj = get_object_or_404(File, id=file_id)
-    workspace_id = request.POST.get("workspace_id")
-    workspace = get_object_or_404(SharedWorkspace, id=workspace_id, participants=request.user)
+    file_obj = get_object_or_404(File, id=file_id, is_folder=False)
+    if not file_obj.can_access(request.user):
+        raise PermissionDenied
+    if not can_edit_file_object(request.user, file_obj):
+        messages.error(
+            request,
+            "Добавлять файл в workspace может только владелец файла или администратор.",
+        )
+        return redirect("file_manager:file_detail", file_id=file_id)
+    workspace_id = (request.POST.get("workspace_id") or "").strip()
+    if not workspace_id:
+        messages.error(request, "Выберите workspace из списка")
+        return redirect("file_manager:file_detail", file_id=file_id)
+    workspace = get_object_or_404(
+        SharedWorkspace.objects.filter(participants=request.user), pk=workspace_id
+    )
     workspace.files.add(file_obj)
-    if workspace.participants.exclude(id=request.user.id).exists():
-        file_obj.shared_with.add(*workspace.participants.exclude(id=request.user.id))
-        file_obj.visibility = "shared"
-        file_obj.save(update_fields=["visibility"])
-    messages.success(request, "Файл добавлен в общий workspace")
+    others = list(workspace.participants.exclude(pk=request.user.pk))
+    if others:
+        file_obj.shared_with.add(*others)
+        if file_obj.visibility != "shared":
+            file_obj.visibility = "shared"
+            file_obj.save(update_fields=["visibility"])
+    messages.success(
+        request,
+        f'Файл добавлен в workspace «{workspace.title}». Участникам выдан доступ «Общий».',
+    )
     return redirect("file_manager:file_detail", file_id=file_id)
 
 

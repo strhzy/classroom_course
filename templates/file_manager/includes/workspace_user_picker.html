@@ -1,0 +1,98 @@
+{# picker_prefix: unique id prefix; workspace_pk: "" or id string for excluding current members #}
+<div class="ws-user-picker" data-picker="{{ picker_prefix }}">
+    <label class="small text-muted d-block mb-1">Поиск пользователей</label>
+    <div class="ws-pick-search-row">
+        <input type="search" id="{{ picker_prefix }}-q" class="ws-input ws-pick-q" placeholder="Логин, имя или email…" autocomplete="off">
+        <button type="button" class="btn-ws-primary ws-pick-btn" id="{{ picker_prefix }}-search-btn">Найти</button>
+    </div>
+    <div id="{{ picker_prefix }}-results" class="ws-pick-results" aria-live="polite"></div>
+    <div id="{{ picker_prefix }}-selected" class="ws-pick-selected mt-2"></div>
+</div>
+<script>
+(function () {
+    var prefix = "{{ picker_prefix|escapejs }}";
+    var workspacePk = {% if workspace_pk %}"{{ workspace_pk|stringformat:"s"|escapejs }}"{% else %}""{% endif %};
+    var searchUrl = "{% url 'file_manager:workspace_user_search' %}";
+    var q = document.getElementById(prefix + "-q");
+    var btn = document.getElementById(prefix + "-search-btn");
+    var results = document.getElementById(prefix + "-results");
+    var selectedBox = document.getElementById(prefix + "-selected");
+    if (!q || !btn || !results || !selectedBox) return;
+
+    var selected = new Map();
+
+    function syncHiddenInputs() {
+        selectedBox.innerHTML = "";
+        var p = document.createElement("p");
+        p.className = "small text-muted mb-1";
+        p.textContent = selected.size
+            ? "Выбрано пользователей: " + selected.size
+            : "Выберите пользователей через поиск и отметьте чекбоксы";
+        selectedBox.appendChild(p);
+        selected.forEach(function (_info, id) {
+            var hid = document.createElement("input");
+            hid.type = "hidden";
+            hid.name = "participant_ids";
+            hid.value = String(id);
+            selectedBox.appendChild(hid);
+        });
+    }
+
+    function renderUsers(users) {
+        results.innerHTML = "";
+        if (!users.length) {
+            results.innerHTML = "<span class=\"text-muted small\">Никого не найдено</span>";
+            return;
+        }
+        users.forEach(function (u) {
+            var id = Number(u.id);
+            var row = document.createElement("label");
+            row.className = "ws-pick-row";
+            var cb = document.createElement("input");
+            cb.type = "checkbox";
+            cb.checked = selected.has(id);
+            cb.addEventListener("change", function () {
+                if (cb.checked) {
+                    selected.set(id, { username: u.username, label: u.label });
+                } else {
+                    selected.delete(id);
+                }
+                syncHiddenInputs();
+            });
+            var span = document.createElement("span");
+            span.textContent = u.label + " (" + u.username + ")";
+            row.appendChild(cb);
+            row.appendChild(span);
+            results.appendChild(row);
+        });
+    }
+
+    function runSearch() {
+        var term = (q.value || "").trim();
+        if (term.length < 2) {
+            results.innerHTML = "<span class=\"text-muted small\">Минимум 2 символа для поиска</span>";
+            return;
+        }
+        var url = searchUrl + "?q=" + encodeURIComponent(term);
+        if (workspacePk) {
+            url += "&workspace=" + encodeURIComponent(workspacePk);
+        }
+        results.innerHTML = "<span class=\"text-muted small\">Поиск…</span>";
+        fetch(url, { headers: { Accept: "application/json" }, credentials: "same-origin" })
+            .then(function (r) { return r.json(); })
+            .then(function (data) { renderUsers(data.users || []); })
+            .catch(function () {
+                results.innerHTML = "<span class=\"text-danger small\">Ошибка поиска</span>";
+            });
+    }
+
+    btn.addEventListener("click", runSearch);
+    q.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            runSearch();
+        }
+    });
+    syncHiddenInputs();
+})();
+</script>

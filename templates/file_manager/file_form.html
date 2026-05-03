@@ -9,44 +9,7 @@
         min-height: 100vh;
         padding: 2rem 1rem;
     }
-    
-    
-   .custom-breadcrumb {
-        background: var(--bg-overlay-10);
-        padding: 0.8rem 1.2rem;
-        border-radius: 50px;
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--bg-overlay-30);
-        display: inline-block;
-    }
-    
-   .custom-breadcrumb.breadcrumb {
-        margin: 0;
-        background: transparent;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a {
-        color: var(--text-muted);
-        text-decoration: none;
-        transition: color 0.2s ease;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a:hover {
-        color: var(--accent-primary);
-    }
-    
-   .custom-breadcrumb.breadcrumb-item.active {
-        color: var(--text-white);
-        font-weight: 500;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
-        color: var(--accent-primary);
-        content: "›";
-        font-size: 1.2rem;
-    }
-    
-    
+
    .page-header {
         animation: headerFade 0.5s ease-out;
         margin-bottom: 2rem;
@@ -71,8 +34,7 @@
         -webkit-text-fill-color: transparent;
         margin-bottom: 0.5rem;
     }
-    
-    
+
    .form-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -105,8 +67,7 @@
    .card-body-custom {
         padding: 2rem;
     }
-    
-    
+
    .form-group {
         margin-bottom: 1.8rem;
     }
@@ -129,8 +90,7 @@
         color: var(--status-danger-light);
         margin-left: 0.3rem;
     }
-    
-    
+
    .custom-input {
         background: var(--bg-input);
         border: 1px solid var(--bg-overlay-30);
@@ -181,8 +141,7 @@
         background: var(--bg-page-start);
         color: var(--text-white);
     }
-    
-    
+
    .file-input-container {
         position: relative;
     }
@@ -227,8 +186,7 @@
         font-weight: 600;
         margin-left: 0.5rem;
     }
-    
-    
+
    .students-checkbox-list {
         background: var(--bg-input);
         border: 1px solid var(--bg-overlay-30);
@@ -261,8 +219,15 @@
         accent-color: var(--accent-primary);
         cursor: pointer;
     }
-    
-    
+
+   .tag-color-dot {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 50%;
+        flex-shrink: 0;
+        border: 1px solid var(--bg-overlay-30);
+    }
+
    .form-text {
         color: var(--text-disabled);
         font-size: 0.85rem;
@@ -275,8 +240,7 @@
    .form-text i {
         color: var(--accent-primary);
     }
-    
-    
+
    .required-note {
         color: var(--text-secondary);;
         font-size: 0.9rem;
@@ -291,8 +255,7 @@
    .required-note i {
         color: var(--status-danger-light);
     }
-    
-    
+
    .button-group {
         display: flex;
         gap: 1rem;
@@ -340,8 +303,7 @@
         border-color: var(--accent-primary);
         color: var(--text-white);
     }
-    
-    
+
     @media(max-width: 768px) {
        .theme-file-form {
             padding: 1rem 0.5rem;
@@ -350,12 +312,7 @@
        .page-title {
             font-size: 1.6rem;
         }
-        
-       .custom-breadcrumb {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-        
+
        .card-body-custom {
             padding: 1.5rem;
         }
@@ -400,8 +357,7 @@
                             {% if file %}
                             <input type="hidden" name="file_id" value="{{ file.id }}">
                             {% endif %}
-                            
-                            
+
                             <div class="form-group">
                                 <label for="id_title" class="form-label">
                                     <i class="bi bi-tag"></i>
@@ -416,6 +372,48 @@
                                        placeholder="Введите название файла">
                             </div>
                             
+                            <div class="form-group">
+                                <label for="id_description" class="form-label">
+                                    <i class="bi bi-text-paragraph"></i>
+                                    Описание
+                                </label>
+                                <textarea name="description" id="id_description" class="custom-input" rows="3"
+                                          placeholder="Краткое описание файла">{{ form.description.value|default:'' }}</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="form-label">
+                                    <i class="bi bi-tags"></i>
+                                    Теги
+                                </div>
+                                <div class="students-checkbox-list" id="id_tags">
+                                    {% for tag in form.fields.tags.queryset %}
+                                    <label class="student-checkbox-item" for="id_tags_{{ tag.id }}">
+                                        <input
+                                            type="checkbox"
+                                            name="tags"
+                                            id="id_tags_{{ tag.id }}"
+                                            value="{{ tag.id }}"
+                                            {% if form.is_bound %}
+                                                {% if form.tags.value %}
+                                                    {% with sid=tag.id|stringformat:"d" %}
+                                                        {% if sid in form.tags.value %}checked{% endif %}
+                                                    {% endwith %}
+                                                {% endif %}
+                                            {% elif file %}
+                                                {% if tag in file.tags.all %}checked{% endif %}
+                                            {% endif %}
+                                        >
+                                        <span class="tag-color-dot" style="background-color: {{ tag.color }};"></span>
+                                        <span>{{ tag.name }}</span>
+                                    </label>
+                                    {% empty %}
+                                    <span class="empty-text">Нет тегов — создайте их в разделе «Управление тегами»</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-text text-muted small">Отметьте один или несколько тегов</div>
+                            </div>
+
                             <div class="form-group">
                                 <label for="id_visibility" class="form-label">
                                     <i class="bi bi-eye"></i>
@@ -452,29 +450,9 @@
                                 </div>
                                 <div class="form-text">
                                     <i class="bi bi-info-circle"></i>
-                                    Отметьте студентов, которым будет открыт доступ
+                                    Отметьте пользователей, которым будет открыт доступ (владелец файла в списке не показывается)
                                 </div>
                             </div>
-                            
-                            
-                            {% if form.folder %}
-                            <div class="form-group">
-                                <label for="id_folder" class="form-label">
-                                    <i class="bi bi-folder"></i>
-                                    Папка
-                                </label>
-                                <select name="folder" id="id_folder" class="custom-select">
-                                    <option value="">📁 Нет(корневая папка)</option>
-                                    {% for folder in form.fields.folder.queryset %}
-                                    <option value="{{ folder.id }}" {% if form.folder.value|add:"0" == folder.id %}selected{% endif %}>
-                                        {{ folder.title }}
-                                    </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            {% endif %}
-                            
-                            
                             <div class="required-note">
                                 <i class="bi bi-asterisk"></i>
                                 Поля, отмеченные звездочкой, обязательны для заполнения

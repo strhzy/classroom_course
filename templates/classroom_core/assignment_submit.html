@@ -9,74 +9,7 @@
         min-height: 100vh;
         padding: 2rem 1rem;
     }
-    
-    
-   .custom-breadcrumb {
-        background: var(--bg-overlay-10);
-        padding: 0.8rem 1.2rem;
-        border-radius: 50px;
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--bg-overlay-30);
-        display: inline-block;
-        animation: breadcrumbSlide 0.5s ease-out;
-    }
-    
-    @keyframes breadcrumbSlide {
-        0% {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-        100% {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-    
-   .custom-breadcrumb.breadcrumb {
-        margin: 0;
-        background: transparent;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a {
-        color: var(--text-muted);
-        text-decoration: none;
-        transition: all 0.3s ease;
-        position: relative;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a:hover {
-        color: var(--accent-primary);
-        text-shadow: 0 0 8px var(--accent-glow-strong);
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-        transition: width 0.3s ease;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a:hover::after {
-        width: 100%;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item.active {
-        color: var(--text-white);
-        font-weight: 500;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
-        color: var(--accent-primary);
-        content: "›";
-        font-size: 1.2rem;
-        line-height: 1;
-    }
-    
-    
+
    .page-header {
         animation: headerFade 0.5s ease-out;
     }
@@ -101,8 +34,7 @@
         margin-bottom: 0.5rem;
         text-shadow: 0 0 20px var(--bg-overlay-30);
     }
-    
-    
+
    .submit-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -152,8 +84,7 @@
    .card-body-custom {
         padding: 2rem;
     }
-    
-    
+
    .assignment-title {
         color: var(--text-white);
         font-size: 1.4rem;
@@ -163,8 +94,7 @@
         border-bottom: 2px solid var(--bg-overlay-30);
         word-break: break-word;
     }
-    
-    
+
    .deadline-info {
         background: var(--bg-overlay-15);
         border: 1px solid var(--border-accent-hover);
@@ -228,8 +158,7 @@
             transform: scale(1.05);
         }
     }
-    
-    
+
    .form-group {
         margin-bottom: 2rem;
         animation: fieldAppear 0.5s ease-out;
@@ -290,8 +219,7 @@
    .custom-textarea:hover {
         border-color: var(--border-accent-hover);
     }
-    
-    
+
    .file-input-container {
         position: relative;
     }
@@ -360,8 +288,7 @@
         border-radius: 50px;
         display: inline-block;
     }
-    
-    
+
    .supported-formats {
         display: flex;
         flex-wrap: wrap;
@@ -385,8 +312,7 @@
         border-color: var(--accent-primary);
         transform: translateY(-2px);
     }
-    
-    
+
    .warning-alert {
         background: var(--status-warning-bg);
         border: 1px solid var(--status-warning-border);
@@ -430,8 +356,7 @@
         margin: 0;
         line-height: 1.6;
     }
-    
-    
+
    .button-group {
         display: flex;
         gap: 1rem;
@@ -525,8 +450,7 @@
    .btn-cancel:active {
         transform: translateY(0);
     }
-    
-    
+
     @media(max-width: 768px) {
        .theme-submit {
             padding: 1rem 0.5rem;
@@ -535,12 +459,7 @@
        .page-title {
             font-size: 1.6rem;
         }
-        
-       .custom-breadcrumb {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-        
+
        .card-body-custom {
             padding: 1.5rem;
         }
@@ -596,23 +515,6 @@
                 <i class="bi bi-cloud-upload me-2"></i>
                 Отправить решение
             </h1>
-            <nav aria-label="breadcrumb" class="custom-breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="{% url 'classroom_core:assignment_list' %}">
-                            <i class="bi bi-list-task me-1"></i>Задания
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item">
-                        <a href="{% url 'classroom_core:assignment_detail' assignment.id %}">
-                            {{ assignment.title|truncatechars:30 }}
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Отправить решение
-                    </li>
-                </ol>
-            </nav>
         </div>
 
         <div class="row">

@@ -217,6 +217,11 @@
                     <i class="bi bi-clock-history"></i>
                     <span>История</span>
                 </a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'workspace_list' or request.resolver_match.url_name == 'workspace_detail' %}active{% endif %}" 
+                   href="{% url 'file_manager:workspace_list' %}">
+                    <i class="bi bi-people"></i>
+                    <span>Workspace</span>
+                </a>
             </div>
         </div>
     </div>

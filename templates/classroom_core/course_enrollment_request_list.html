@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 style="color: aliceblue;">Заявки на запись на курс: {{ course.title }}</h2>
+                <h2 style="color: var(--text-primary);">Заявки на запись на курс: {{ course.title }}</h2>
                 <a href="{% url 'classroom_core:course_detail' course.id %}" class="btn btn-secondary">
                     Назад к курсу
                 </a>

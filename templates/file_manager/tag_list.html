@@ -1,0 +1,301 @@
+{% extends "file_manager/base_files.html" %}
+
+{% block title %}Теги файлов{% endblock %}
+
+{% block files_content %}
+<style>
+   .theme-tags {
+        background: var(--bg-page-gradient);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+
+   .page-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+   .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+   .page-title i {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 2.2rem;
+    }
+
+   .header-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+   .btn-tag {
+        background: var(--bg-overlay-15);
+        border: 1px solid var(--accent-glow-strong);
+        border-radius: 10px;
+        padding: 0.65rem 1.25rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+   .btn-tag:hover {
+        border-color: var(--accent-primary);
+        color: var(--text-white);
+        background: var(--bg-overlay-25);
+    }
+
+   .btn-tag-primary {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border: none;
+        color: white;
+    }
+
+   .btn-tag-primary:hover {
+        color: white;
+        filter: brightness(1.05);
+    }
+
+   .tags-card {
+        background: var(--bg-card);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--bg-overlay-30);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px var(--shadow-card);
+        overflow: hidden;
+    }
+
+   .tags-card-header {
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
+        border-bottom: 1px solid var(--bg-overlay-30);
+        padding: 1.2rem 1.5rem;
+    }
+
+   .tags-card-header h2 {
+        color: var(--text-white);
+        font-size: 1.15rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+   .tags-card-header i {
+        color: var(--accent-primary);
+    }
+
+   .tags-table-wrap {
+        overflow-x: auto;
+    }
+
+   .tags-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: var(--text-white);
+    }
+
+   .tags-table th,
+   .tags-table td {
+        padding: 1rem 1.25rem;
+        text-align: left;
+        border-bottom: 1px solid var(--bg-overlay-30);
+    }
+
+   .tags-table th {
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+   .tags-table tbody tr:hover {
+        background: var(--bg-overlay-10);
+    }
+
+   .color-swatch {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 10px;
+        border: 2px solid var(--bg-overlay-30);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+
+   .tag-name-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 50px;
+        font-weight: 600;
+        border: 1px solid transparent;
+    }
+
+   .tag-count {
+        color: var(--text-muted);
+        font-variant-numeric: tabular-nums;
+    }
+
+   .tag-delete-form {
+        margin: 0;
+        display: inline-block;
+    }
+
+   .btn-delete-tag {
+        background: var(--status-danger-bg);
+        border: 1px solid var(--status-danger-border);
+        border-radius: 8px;
+        padding: 0.4rem 0.75rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--status-danger-light);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        transition: all 0.2s ease;
+    }
+
+   .btn-delete-tag:hover {
+        border-color: var(--status-danger);
+        color: white;
+        background: var(--status-danger);
+    }
+
+   .empty-state {
+        text-align: center;
+        padding: 3.5rem 1.5rem;
+        color: var(--text-disabled);
+    }
+
+   .empty-state i {
+        font-size: 3.5rem;
+        color: var(--accent-primary);
+        opacity: 0.45;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+   .empty-state p {
+        margin: 0;
+        font-size: 1.05rem;
+    }
+
+    @media (max-width: 768px) {
+       .theme-tags {
+            padding: 1rem 0.5rem;
+        }
+
+       .page-title {
+            font-size: 1.65rem;
+        }
+
+       .tags-table th,
+       .tags-table td {
+            padding: 0.85rem 1rem;
+        }
+    }
+</style>
+
+<div class="theme-tags">
+    <div class="container-fluid">
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-tags"></i>
+                Теги файлов
+            </h1>
+            <div class="header-actions">
+                <a href="{% url 'file_manager:file_list' %}" class="btn-tag">
+                    <i class="bi bi-arrow-left"></i>
+                    К списку файлов
+                </a>
+                <a href="{% url 'file_manager:tag_create' %}" class="btn-tag btn-tag-primary">
+                    <i class="bi bi-plus-lg"></i>
+                    Новый тег
+                </a>
+            </div>
+        </div>
+
+        <div class="tags-card">
+            <div class="tags-card-header">
+                <h2>
+                    <i class="bi bi-list-ul"></i>
+                    Все теги
+                </h2>
+            </div>
+
+            {% if tags %}
+            <div class="tags-table-wrap">
+                <table class="tags-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5rem;">Цвет</th>
+                            <th>Название</th>
+                            <th style="width: 8rem;">Файлов</th>
+                            <th style="width: 9rem; text-align: right;">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tag in tags %}
+                        <tr>
+                            <td>
+                                <span class="color-swatch" style="background-color: {{ tag.color }};" title="{{ tag.color }}"></span>
+                            </td>
+                            <td>
+                                <span class="tag-name-badge" style="background: {{ tag.color }}18; color: {{ tag.color }}; border-color: {{ tag.color }}44;">
+                                    {{ tag.name }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="tag-count">{{ tag.file_count }}</span>
+                            </td>
+                            <td style="text-align: right;">
+                                <form class="tag-delete-form" method="post" action="{% url 'file_manager:tag_delete' tag.id %}"
+                                      onsubmit="return confirm('Удалить этот тег? У файлов он будет снят, сами файлы не удалятся.');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-delete-tag" title="Удалить тег">
+                                        <i class="bi bi-trash"></i>
+                                        Удалить
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="bi bi-tags"></i>
+                <p>Тегов пока нет. Создайте первый тег для классификации файлов.</p>
+                <p style="margin-top: 1rem;">
+                    <a href="{% url 'file_manager:tag_create' %}" class="btn-tag btn-tag-primary">
+                        <i class="bi bi-plus-lg"></i>
+                        Создать тег
+                    </a>
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

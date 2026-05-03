@@ -9,74 +9,7 @@
         min-height: 100vh;
         padding: 2rem 1rem;
     }
-    
-    
-   .custom-breadcrumb {
-        background: var(--bg-overlay-10);
-        padding: 0.8rem 1.2rem;
-        border-radius: 50px;
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--bg-overlay-30);
-        display: inline-block;
-        animation: breadcrumbSlide 0.5s ease-out;
-    }
-    
-    @keyframes breadcrumbSlide {
-        0% {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-        100% {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-    
-   .custom-breadcrumb.breadcrumb {
-        margin: 0;
-        background: transparent;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a {
-        color: var(--text-muted);
-        text-decoration: none;
-        transition: all 0.3s ease;
-        position: relative;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a:hover {
-        color: var(--accent-primary);
-        text-shadow: 0 0 8px var(--accent-glow-strong);
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-        transition: width 0.3s ease;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item a:hover::after {
-        width: 100%;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item.active {
-        color: var(--text-white);
-        font-weight: 500;
-    }
-    
-   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
-        color: var(--accent-primary);
-        content: "›";
-        font-size: 1.2rem;
-        line-height: 1;
-    }
-    
-    
+
    .form-header {
         animation: headerFade 0.5s ease-out 0.2s both;
     }
@@ -101,8 +34,7 @@
         margin-bottom: 0.5rem;
         text-shadow: 0 0 20px var(--bg-overlay-30);
     }
-    
-    
+
    .form-card {
         background: var(--bg-card);
         backdrop-filter: blur(10px);
@@ -148,8 +80,7 @@
         margin-right: 0.8rem;
         font-size: 1.5rem;
     }
-    
-    
+
    .form-group {
         margin-bottom: 1.8rem;
         animation: fieldAppear 0.5s ease-out;
@@ -188,8 +119,7 @@
         color: var(--status-danger-light);
         margin-left: 0.2rem;
     }
-    
-    
+
    .custom-input {
         background: var(--bg-input);
         border: 2px solid var(--bg-overlay-30);
@@ -218,8 +148,7 @@
         min-height: 200px;
         line-height: 1.6;
     }
-    
-    
+
    .checkbox-group {
         background: var(--bg-overlay-10);
         border-radius: 15px;
@@ -274,8 +203,7 @@
         margin-left: 2.1rem;
         margin-top: 0.2rem;
     }
-    
-    
+
    .button-group {
         display: flex;
         gap: 1rem;
@@ -362,8 +290,7 @@
    .btn-cancel:active {
         transform: translateY(0);
     }
-    
-    
+
    .required-note {
         color: var(--text-secondary);;
         font-size: 0.9rem;
@@ -375,8 +302,7 @@
         color: var(--status-danger-light);
         margin-right: 0.2rem;
     }
-    
-    
+
     @media(max-width: 768px) {
        .theme-form {
             padding: 1rem 0.5rem;
@@ -385,12 +311,7 @@
        .page-title {
             font-size: 1.6rem;
         }
-        
-       .custom-breadcrumb {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-        
+
        .form-card {
             margin: 0 0.5rem;
         }
@@ -418,8 +339,7 @@
             gap: 0.8rem;
         }
     }
-    
-    
+
    .bi-pencil,.bi-send,.bi-x-circle {
         transition: transform 0.3s ease;
     }
@@ -438,23 +358,6 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="form-header">
                 <h1 class="page-title">{{ title }}</h1>
-                <nav aria-label="breadcrumb" class="custom-breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="{% url 'classroom_core:course_list' %}">
-                                <i class="bi bi-grid me-1"></i>Мои курсы
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item">
-                            <a href="{% url 'classroom_core:course_detail' course.id %}">
-                                <i class="bi bi-book me-1"></i>{{ course.title|truncatechars:30 }}
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page">
-                            <i class="bi bi-megaphone me-1"></i>{{ title }}
-                        </li>
-                    </ol>
-                </nav>
             </div>
         </div>
 

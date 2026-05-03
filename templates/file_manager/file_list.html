@@ -67,21 +67,6 @@
    .hidden-file-input {
         display: none;
     }
-   .drop-upload-zone {
-        margin-top: 0.8rem;
-        border: 2px dashed var(--border-accent-hover);
-        border-radius: 10px;
-        padding: 0.8rem;
-        color: var(--text-muted);
-        background: var(--bg-overlay-10);
-        text-align: center;
-        transition: all 0.2s ease;
-    }
-   .drop-upload-zone.active {
-        border-color: var(--accent-primary);
-        background: var(--bg-overlay-20);
-        color: var(--text-white);
-    }
    .global-drop-overlay {
         position: fixed;
         inset: 0;
@@ -196,6 +181,48 @@
         accent-color: var(--accent-primary);
         width: 1.1rem;
         height: 1.1rem;
+    }
+
+   .tags-checkbox-list {
+        background: var(--bg-input);
+        border: 1px solid var(--bg-overlay-30);
+        border-radius: 8px;
+        padding: 0.55rem 0.65rem;
+        max-height: 220px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+   .tag-filter-item {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        cursor: pointer;
+        padding: 0.25rem 0.15rem;
+        border-radius: 6px;
+    }
+
+   .tag-filter-item:hover {
+        background: var(--bg-overlay-10);
+    }
+
+   .tag-filter-item input {
+        accent-color: var(--accent-primary);
+        width: 1rem;
+        height: 1rem;
+        flex-shrink: 0;
+    }
+
+   .tag-filter-swatch {
+        width: 0.65rem;
+        height: 0.65rem;
+        border-radius: 50%;
+        flex-shrink: 0;
+        border: 1px solid var(--bg-overlay-30);
     }
     
    .btn-apply {
@@ -390,7 +417,19 @@
         border-color: var(--accent-primary);
         color: var(--text-white);
     }
-    
+
+   .btn-table-action.btn-favorite-row.is-on {
+        color: var(--status-danger-light);
+        border-color: var(--status-danger);
+        background: var(--status-danger-bg);
+    }
+
+   .btn-table-action.btn-favorite-row.is-on:hover {
+        color: white;
+        border-color: var(--status-danger);
+        background: linear-gradient(135deg, var(--status-danger), var(--status-danger-light));
+    }
+
     
    .empty-state {
         text-align: center;
@@ -512,9 +551,6 @@
                         <i class="bi bi-upload"></i> Загрузить
                     </button>
                 </form>
-                <a href="{% url 'file_manager:folder_create' %}" class="btn-folder">
-                    <i class="bi bi-folder-plus"></i> Папка
-                </a>
                 <a href="{% url 'file_manager:download_all_files_archive' %}" class="btn-folder">
                     <i class="bi bi-file-earmark-zip"></i> Скачать все архивом
                 </a>
@@ -528,17 +564,11 @@
                 </a>
                 {% endif %}
                 {% if can_manage_reference_data %}
-                <a href="{% url 'file_manager:category_list' %}" class="btn-folder">
-                    <i class="bi bi-diagram-3"></i> Категории
-                </a>
                 <a href="{% url 'file_manager:tag_list' %}" class="btn-folder">
-                    <i class="bi bi-tags"></i> Теги
+                    <i class="bi bi-tags"></i> Управление тегами
                 </a>
                 {% endif %}
             </div>
-        </div>
-        <div id="drop-upload-zone" class="drop-upload-zone">
-            Перетащите файл сюда для быстрой загрузки
         </div>
         <div class="row">
             
@@ -568,14 +598,24 @@
                         </div>
                         
                         <div class="mb-3">
-                            <select name="course" class="filter-select">
-                                <option value="">Все курсы</option>
-                                {% for course in courses %}
-                                <option value="{{ course.id }}" {% if search_form.course.value|add:"0" == course.id %}selected{% endif %}>
-                                    {{ course.title }}
-                                </option>
+                            <div class="filters-title mb-2" style="margin-bottom:0.4rem;"><i class="bi bi-tags"></i> Теги</div>
+                            <div class="tags-checkbox-list">
+                                {% for tag in tags %}
+                                <label class="tag-filter-item" for="filter_tag_{{ tag.id }}">
+                                    <input
+                                        type="checkbox"
+                                        name="tags"
+                                        id="filter_tag_{{ tag.id }}"
+                                        value="{{ tag.id }}"
+                                        {% if tag.id in selected_tag_ids %}checked{% endif %}
+                                    >
+                                    <span class="tag-filter-swatch" {{ tag.filter_swatch_attrs }}></span>
+                                    <span>{{ tag.name }}</span>
+                                </label>
+                                {% empty %}
+                                <span class="text-muted small">Нет тегов — создайте в «Управление тегами»</span>
                                 {% endfor %}
-                            </select>
+                            </div>
                         </div>
                         
                         <div class="filter-checkbox mb-3">
@@ -592,32 +632,6 @@
             
             
             <div class="col-lg-9">
-                {% if folders %}
-                <div class="folders-section">
-                    <div class="section-title">
-                        <i class="bi bi-folders"></i>
-                        Папки
-                    </div>
-                    <div class="row g-3">
-                        {% for folder in folders %}
-                        <div class="col-md-4">
-                            <div class="folder-card">
-                                <div class="d-flex align-items-center">
-                                    <div class="folder-icon">
-                                        <i class="bi bi-folder2"></i>
-                                    </div>
-                                    <div>
-                                        <div class="folder-title">{{ folder.title }}</div>
-                                        <div class="folder-stats">{{ folder.get_file_count }} файлов</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
-                
                 <div class="section-title">
                     <i class="bi bi-files"></i>
                     Файлы
@@ -649,6 +663,13 @@
                                             <span class="shared-badge"><i class="bi bi-share"></i> Общий</span>
                                             {% endif %}
                                             <div class="file-desc">{{ file.description|truncatechars:50 }}</div>
+                                            {% if file.tags.all %}
+                                            <div class="mt-1 d-flex flex-wrap gap-1">
+                                                {% for t in file.tags.all %}
+                                                <span {{ t.badge_attrs_list }}>{{ t.name }}</span>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </td>
@@ -658,6 +679,11 @@
                                 <td data-label="Размер">{{ file.get_file_size_display }}</td>
                                 <td data-label="Дата">{{ file.uploaded_at|date:"d.m.Y" }}</td>
                                 <td data-label="Действия" class="text-end">
+                                    <a href="{% url 'file_manager:favorite_toggle' file.id %}"
+                                       class="btn-table-action btn-favorite-row{% if file.is_favorite_for_user %} is-on{% endif %}"
+                                       title="{% if file.is_favorite_for_user %}Убрать из избранного{% else %}В избранное{% endif %}">
+                                        <i class="bi {% if file.is_favorite_for_user %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+                                    </a>
                                     <a href="{% url 'file_manager:file_detail' file.id %}" class="btn-table-action" title="Подробнее">
                                         <i class="bi bi-info-circle"></i>
                                     </a>
@@ -698,7 +724,7 @@
                     <ul class="pagination justify-content-center">
                         {% if page_obj.has_previous %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&query={{ request.GET.query }}">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if filter_querystring %}&{{ filter_querystring }}{% endif %}">
                                 <i class="bi bi-chevron-left"></i>
                             </a>
                         </li>
@@ -711,14 +737,14 @@
                         </li>
                         {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ num }}&query={{ request.GET.query }}">{{ num }}</a>
+                            <a class="page-link" href="?page={{ num }}{% if filter_querystring %}&{{ filter_querystring }}{% endif %}">{{ num }}</a>
                         </li>
                         {% endif %}
                         {% endfor %}
                         
                         {% if page_obj.has_next %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.next_page_number }}&query={{ request.GET.query }}">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if filter_querystring %}&{{ filter_querystring }}{% endif %}">
                                 <i class="bi bi-chevron-right"></i>
                             </a>
                         </li>
@@ -736,9 +762,8 @@
     const form = document.getElementById('quick-upload-form');
     const input = document.getElementById('quick-upload-input');
     const button = document.getElementById('quick-upload-button');
-    const dropZone = document.getElementById('drop-upload-zone');
     const overlay = document.getElementById('global-drop-overlay');
-    if (!form || !input || !button || !dropZone || !overlay) return;
+    if (!form || !input || !button || !overlay) return;
 
     const csrfInput = form.querySelector('input[name="csrfmiddlewaretoken"]');
     const csrfToken = csrfInput ? csrfInput.value : '';
@@ -774,24 +799,6 @@
     button.addEventListener('click', () => input.click());
     input.addEventListener('change', () => {
         if (input.files && input.files.length > 0) uploadSingleFile(input.files[0]);
-    });
-
-    const activate = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropZone.classList.add('active');
-    };
-    const deactivate = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropZone.classList.remove('active');
-    };
-    ['dragenter', 'dragover'].forEach(evt => dropZone.addEventListener(evt, activate));
-    ['dragleave', 'drop'].forEach(evt => dropZone.addEventListener(evt, deactivate));
-
-    dropZone.addEventListener('drop', (e) => {
-        if (!e.dataTransfer || !e.dataTransfer.files || e.dataTransfer.files.length === 0) return;
-        uploadSingleFile(e.dataTransfer.files[0]);
     });
 
     let dragCounter = 0;
