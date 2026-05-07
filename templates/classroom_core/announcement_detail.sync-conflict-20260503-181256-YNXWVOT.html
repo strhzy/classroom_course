@@ -1,0 +1,448 @@
+{% extends "classroom_core/base_courses.html" %}
+
+{% block title %}📢 {{ announcement.title }}{% endblock %}
+
+{% block courses_content %}
+<style>
+   .theme-announcement {
+        background: var(--bg-page-gradient);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+    
+    
+   .custom-breadcrumb {
+        background: var(--bg-overlay-10);
+        padding: 0.8rem 1.2rem;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--bg-overlay-30);
+        display: inline-block;
+        animation: breadcrumbAppear 0.5s ease-out;
+    }
+    
+    @keyframes breadcrumbAppear {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+   .custom-breadcrumb.breadcrumb {
+        margin: 0;
+        background: transparent;
+    }
+    
+   .custom-breadcrumb.breadcrumb-item a {
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+   .custom-breadcrumb.breadcrumb-item a:hover {
+        color: var(--accent-primary);
+        text-shadow: 0 0 8px var(--accent-glow-strong);
+    }
+    
+   .custom-breadcrumb.breadcrumb-item a::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+        transition: width 0.3s ease;
+    }
+    
+   .custom-breadcrumb.breadcrumb-item a:hover::after {
+        width: 100%;
+    }
+    
+   .custom-breadcrumb.breadcrumb-item.active {
+        color: var(--text-white);
+        font-weight: 500;
+    }
+    
+   .custom-breadcrumb.breadcrumb-item +.breadcrumb-item::before {
+        color: var(--accent-primary);
+        content: "›";
+        font-size: 1.2rem;
+        line-height: 1;
+    }
+    
+    
+   .announcement-header {
+        animation: headerAppear 0.5s ease-out 0.2s both;
+    }
+    
+    @keyframes headerAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+   .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 20px var(--bg-overlay-30);
+    }
+    
+    
+   .btn-edit {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border: none;
+        border-radius: 12px;
+        padding: 0.6rem 1.8rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px var(--bg-overlay-30);
+        position: relative;
+        overflow: hidden;
+        animation: buttonAppear 0.5s ease-out 0.3s both;
+    }
+    
+    @keyframes buttonAppear {
+        0% {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+   .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px var(--accent-glow-strong);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+    }
+    
+   .btn-edit:active {
+        transform: translateY(0);
+    }
+    
+   .btn-edit::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: var(--shimmer-overlay);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+   .btn-edit:hover::after {
+        width: 300px;
+        height: 300px;
+    }
+    
+    
+   .announcement-card {
+        background: var(--bg-card);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--bg-overlay-30);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px var(--shadow-card), 0 0 20px var(--bg-overlay-20);
+        transition: all 0.3s ease;
+        animation: cardAppear 0.6s ease-out 0.4s both;
+        overflow: hidden;
+    }
+    
+    @keyframes cardAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+   .announcement-card:hover {
+        box-shadow: 0 15px 40px var(--shadow-card-hover), 0 0 30px var(--border-accent-hover);
+        transform: translateY(-5px);
+    }
+    
+   .card-header-gradient {
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
+        border-bottom: 1px solid var(--bg-overlay-30);
+        padding: 1.2rem 1.5rem;
+    }
+    
+   .announcement-title {
+        color: var(--text-white);
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin: 0;
+        word-break: break-word;
+    }
+    
+   .author-info {
+        color: var(--text-secondary);;
+        font-size: 0.95rem;
+    }
+    
+   .author-info i {
+        color: var(--accent-primary);
+        margin-right: 0.3rem;
+    }
+    
+   .pinned-badge {
+        background: linear-gradient(135deg, var(--status-danger), var(--status-danger-light));
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        color: white;
+        box-shadow: 0 3px 10px var(--status-danger-border);
+        animation: pulsePinned 2s infinite;
+    }
+    
+    @keyframes pulsePinned {
+        0%, 100% {
+            box-shadow: 0 3px 10px var(--status-danger-border);
+        }
+        50% {
+            box-shadow: 0 5px 20px var(--text-glow-danger);
+        }
+    }
+    
+   .announcement-content {
+        color: var(--text-main);;
+        line-height: 1.8;
+        font-size: 1.1rem;
+        padding: 1.5rem;
+    }
+    
+   .announcement-content p {
+        margin-bottom: 1.2rem;
+    }
+    
+   .announcement-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        border: 2px solid var(--bg-overlay-30);
+        margin: 1rem 0;
+    }
+    
+   .announcement-content a {
+        color: var(--accent-primary);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+   .announcement-content a:hover {
+        color: var(--accent-secondary);
+        text-shadow: 0 0 8px var(--text-glow);
+    }
+    
+   .announcement-content blockquote {
+        border-left: 4px solid var(--accent-primary);
+        padding-left: 1.2rem;
+        margin: 1.2rem 0;
+        color: var(--text-secondary);;
+        font-style: italic;
+    }
+    
+   .announcement-content code {
+        background: var(--bg-overlay-20);
+        color: var(--status-danger-light);
+        padding: 0.2rem 0.4rem;
+        border-radius: 6px;
+        font-family: 'Courier New', monospace;
+    }
+    
+   .announcement-content pre {
+        background: var(--shadow-item);
+        border: 1px solid var(--bg-overlay-30);
+        border-radius: 10px;
+        padding: 1rem;
+        overflow-x: auto;
+    }
+    
+   .announcement-content pre code {
+        background: transparent;
+        color: var(--text-muted);
+    }
+    
+   .announcement-content ul, 
+   .announcement-content ol {
+        padding-left: 1.5rem;
+        margin-bottom: 1.2rem;
+    }
+    
+   .announcement-content li {
+        margin-bottom: 0.3rem;
+    }
+    
+   .announcement-content h1,
+   .announcement-content h2,
+   .announcement-content h3,
+   .announcement-content h4,
+   .announcement-content h5,
+   .announcement-content h6 {
+        color: var(--text-white);
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    
+   .content-decoration {
+        position: relative;
+    }
+    
+   .content-decoration::before {
+        content: '';
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        width: 50px;
+        height: 50px;
+        background: radial-gradient(circle, var(--bg-overlay-20) 0%, transparent 70%);
+        border-radius: 50%;
+        z-index: -1;
+    }
+    
+    
+    @media(max-width: 768px) {
+       .theme-announcement {
+            padding: 1rem 0.5rem;
+        }
+        
+       .page-title {
+            font-size: 1.6rem;
+        }
+        
+       .announcement-title {
+            font-size: 1.4rem;
+        }
+        
+       .custom-breadcrumb {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+       .btn-edit {
+            padding: 0.5rem 1.2rem;
+            font-size: 0.9rem;
+        }
+        
+       .announcement-content {
+            font-size: 1rem;
+            padding: 1rem;
+        }
+        
+       .d-flex.justify-content-between {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 1rem;
+        }
+        
+       .d-flex.justify-content-between > div:last-child {
+            width: 100%;
+        }
+        
+       .btn-edit {
+            width: 100%;
+        }
+    }
+    
+    @media(min-width: 769px) and(max-width: 992px) {
+       .page-title {
+            font-size: 1.8rem;
+        }
+        
+       .announcement-title {
+            font-size: 1.6rem;
+        }
+    }
+    
+    @media(min-width: 1600px) {
+       .container {
+            max-width: 1400px;
+        }
+    }
+</style>
+
+<div class="theme-announcement">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+            <div class="announcement-header">
+                <h1 class="page-title">{{ announcement.title }}</h1>
+                <nav aria-label="breadcrumb" class="custom-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'classroom_core:announcement_list' %}">
+                                <i class="bi bi-megaphone me-1"></i>Объявления
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            {{ announcement.title|truncatechars:30 }}
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            
+            <div>
+                {% if announcement.can_edit %}
+                <a href="{% url 'classroom_core:announcement_edit' announcement.id %}" class="btn-edit">
+                    <i class="bi bi-pencil me-2"></i>Редактировать
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-10 col-xl-8 mx-auto">
+                <div class="announcement-card">
+                    <div class="card-header-gradient d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h5 class="announcement-title">{{ announcement.title }}</h5>
+                            <div class="author-info">
+                                <i class="bi bi-person-circle"></i> {{ announcement.author.username }}
+                                <i class="bi bi-calendar3 ms-3"></i> {{ announcement.created_at|date:"d.m.Y H:i" }}
+                            </div>
+                        </div>
+                        {% if announcement.is_pinned %}
+                        <span class="pinned-badge ms-3">
+                            <i class="bi bi-pin-fill me-1"></i>Закреплено
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="announcement-content content-decoration">
+                        {{ announcement.content|safe }}
+                    </div>
+                    
+                    
+                    <div class="card-footer bg-transparent border-0 text-center pb-3">
+                        <div style="height: 2px; background: linear-gradient(90deg, transparent, var(--accent-primary), var(--accent-secondary), var(--accent-primary), transparent); width: 80%; margin: 0 auto;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

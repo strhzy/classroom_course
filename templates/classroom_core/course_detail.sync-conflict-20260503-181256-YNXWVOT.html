@@ -1,0 +1,1028 @@
+{% extends "classroom_core/base_courses.html" %}
+
+{% block title %}📚 {{ course.title }}{% endblock %}
+
+{% block courses_content %}
+<style>
+    .theme-course-detail {
+        background: var(--bg-page-gradient);
+        min-height: 100vh;
+        padding: 1.2rem 0.6rem;
+    }
+    .classroom-hero {
+        border-radius: 16px;
+        min-height: 180px;
+        margin: 0 0 1rem 0;
+        padding: 1.4rem;
+        background: linear-gradient(135deg, rgba(0, 25, 65, 0.9), rgba(0, 135, 210, 0.6)), var(--bg-card);
+        border: 1px solid var(--border-accent);
+        color: var(--text-white);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        box-shadow: var(--shadow-card);
+    }
+    .classroom-hero h2 { margin: 0; font-size: 2rem; font-weight: 700; }
+    .classroom-hero p { margin: .2rem 0 0 0; color: var(--text-white); opacity: .9; }
+    
+    .custom-breadcrumb {
+        background: var(--bg-overlay-10);
+        padding: 0.8rem 1.2rem;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--bg-overlay-30);
+        display: inline-block;
+        animation: breadcrumbSlide 0.5s ease-out;
+    }
+    
+    @keyframes breadcrumbSlide {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .custom-breadcrumb .breadcrumb {
+        margin: 0;
+        background: transparent;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a {
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item a:hover {
+        color: var(--accent-primary);
+        text-shadow: 0 0 8px var(--accent-glow-strong);
+    }
+    
+    .custom-breadcrumb .breadcrumb-item.active {
+        color: var(--text-white);
+        font-weight: 500;
+    }
+    
+    .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+        color: var(--accent-primary);
+        content: "›";
+        font-size: 1.2rem;
+    }
+    
+    .course-header {
+        animation: headerFade 0.5s ease-out;
+    }
+    
+    @keyframes headerFade {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 20px var(--bg-overlay-30);
+    }
+    
+    .btn-edit {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border: none;
+        border-radius: 12px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px var(--bg-overlay-30);
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        text-decoration: none;
+    }
+    
+    .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px var(--accent-glow-strong);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+        color: white;
+    }
+    
+    .btn-students {
+        background: var(--bg-overlay-15);
+        border: 1px solid var(--accent-glow-strong);
+        border-radius: 12px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-students:hover {
+        background: var(--bg-overlay-25);
+        border-color: var(--accent-primary);
+        color: var(--text-white);
+        transform: translateY(-2px);
+    }
+    
+    .btn-add {
+        background: var(--bg-overlay-20);
+        border: 1px solid var(--accent-glow-strong);
+        border-radius: 8px;
+        padding: 0.4rem 1rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-add:hover {
+        background: var(--bg-overlay-30);
+        border-color: var(--accent-primary);
+        color: var(--text-white);
+        transform: translateY(-2px);
+    }
+    
+    
+    .section-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-accent-light);
+        border-radius: 12px;
+        box-shadow: var(--shadow-item);
+        transition: all 0.25s ease;
+        margin-bottom: 1rem;
+        overflow: hidden;
+    }
+    
+    
+    .section-card.announcements {
+        border-left: 4px solid var(--status-warning);
+        box-shadow: 0 10px 30px var(--status-warning-bg);
+    }
+    
+    .section-card.sections {
+        border-left: 4px solid var(--accent-secondary);
+        box-shadow: 0 10px 30px var(--status-info-bg-light);
+    }
+    
+    .section-card.assignments {
+        border-left: 4px solid var(--accent-primary);
+        box-shadow: 0 10px 30px var(--bg-overlay-10);
+    }
+    
+    .section-card.submissions {
+        border-left: 4px solid var(--status-success);
+        box-shadow: 0 10px 30px var(--status-success-bg);
+    }
+    
+    .section-card:hover {
+        box-shadow: 0 15px 40px var(--shadow-card-hover);
+        transform: translateY(-2px);
+    }
+    
+    @keyframes cardAppear {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    
+    .card-header-custom {
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border-accent-light);
+        padding: .85rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .announcements .card-header-custom {
+        background: linear-gradient(135deg, var(--status-warning-bg), var(--status-warning-bg-light));
+        border-bottom-color: var(--status-warning-border);
+    }
+    
+    .sections .card-header-custom {
+        background: linear-gradient(135deg, var(--status-info-bg), var(--status-info-bg-light));
+        border-bottom-color: var(--status-info-border);
+    }
+    
+    .assignments .card-header-custom {
+        background: linear-gradient(135deg, var(--bg-overlay-15), var(--status-assignment-bg-light));
+        border-bottom-color: var(--bg-overlay-30);
+    }
+    
+    .submissions .card-header-custom {
+        background: linear-gradient(135deg, var(--status-success-bg), var(--status-success-bg-light));
+        border-bottom-color: var(--status-success-border);
+    }
+    
+    .card-header-custom h5 {
+        color: var(--text-white);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .card-header-custom h5 i {
+        font-size: 1.3rem;
+    }
+    
+    .announcements .card-header-custom h5 i {
+        color: var(--status-warning);
+    }
+    
+    .sections .card-header-custom h5 i {
+        color: var(--accent-secondary);
+    }
+    
+    .assignments .card-header-custom h5 i {
+        color: var(--accent-primary);
+    }
+    
+    .submissions .card-header-custom h5 i {
+        color: var(--status-success);
+    }
+    
+    
+    .info-card {
+        background: var(--bg-card);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        animation: sidebarAppear 0.6s ease-out 0.2s both;
+    }
+    
+    
+    .info-card.course-info {
+        border: 1px solid var(--bg-overlay-30);
+        border-top: 3px solid var(--accent-primary);
+    }
+    
+    .info-card.students-info {
+        border: 1px solid var(--status-info-border);
+        border-top: 3px solid var(--accent-secondary);
+    }
+    
+    .info-card.progress-info {
+        border: 1px solid var(--status-success-border);
+        border-top: 3px solid var(--status-success);
+    }
+    
+    .info-card.my-assignments {
+        border: 1px solid var(--status-warning-border);
+        border-top: 3px solid var(--status-warning);
+    }
+    
+    .info-card.management {
+        border: 1px solid var(--status-danger-border);
+        border-top: 3px solid var(--status-danger);
+    }
+    
+    @keyframes sidebarAppear {
+        0% {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .info-title {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 1px solid var(--bg-overlay-30);
+        padding-bottom: 0.8rem;
+    }
+    
+    .course-info .info-title {
+        color: var(--accent-primary);
+    }
+    
+    .students-info .info-title {
+        color: var(--accent-secondary);
+    }
+    
+    .progress-info .info-title {
+        color: var(--status-success);
+    }
+    
+    .my-assignments .info-title {
+        color: var(--status-warning);
+    }
+    
+    .management .info-title {
+        color: var(--status-danger);
+    }
+    
+    .info-title i {
+        color: inherit;
+    }
+    
+    .info-content {
+        color: var(--text-main);;
+    }
+    
+    .info-label {
+        color: var(--text-muted);
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+    }
+    
+    .info-text {
+        color: var(--text-white);
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+    
+    .student-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .student-item {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--bg-overlay-20);
+        transition: all 0.3s ease;
+    }
+    
+    .student-item:hover {
+        background: var(--bg-overlay-10);
+        transform: translateX(5px);
+    }
+    
+    .student-avatar {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        margin-right: 0.8rem;
+    }
+    
+    .student-name {
+        flex: 1;
+        color: var(--text-white);
+    }
+    
+    .student-badge {
+        background: var(--bg-overlay-20);
+        color: var(--text-muted);
+        padding: 0.2rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+    }
+    
+    .progress-container {
+        background: var(--bg-item);
+        border-radius: 15px;
+        padding: 1.2rem;
+    }
+    
+    .progress-bar-custom {
+        height: 10px;
+        background: var(--bg-overlay-20);
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 0.8rem 0;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+        border-radius: 10px;
+        transition: width 1s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .progress-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent, var(--shimmer-overlay), transparent);
+        animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% {
+            transform: translateX(-100%);
+        }
+        100% {
+            transform: translateX(100%);
+        }
+    }
+    
+    .progress-stats {
+        display: flex;
+        justify-content: space-between;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+    
+    
+    .separator {
+        color: var(--accent-primary);
+        font-weight: 300;
+        margin: 0 0.5rem;
+        opacity: 0.5;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-disabled);
+    }
+    
+    .empty-state i {
+        font-size: 2.5rem;
+        color: var(--accent-primary);
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .item-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-accent-light);
+        border-radius: 10px;
+        margin-bottom: .8rem;
+        transition: all 0.2s ease;
+    }
+    
+    .item-card:hover {
+        border-color: var(--border-accent-hover);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-item);
+    }
+    
+    @keyframes itemAppear {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .item-content { padding: .9rem 1rem; }
+    
+    .item-title { color: var(--text-main); font-size: 1.02rem; font-weight: 600; margin-bottom: .35rem; }
+    
+    .item-description { color: var(--text-secondary); font-size: .93rem; line-height: 1.45; margin-bottom: .45rem; }
+    .assistant-form { background: var(--bg-item); border: 1px solid var(--border-accent-light); border-radius: 10px; padding: .75rem; }
+    
+    .item-meta {
+        color: var(--text-disabled);
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .item-meta i {
+        color: var(--accent-primary);
+        margin-right: 0.3rem;
+    }
+    
+    .badge-custom {
+        background: var(--bg-overlay-20);
+        color: var(--text-muted);
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        border: 1px solid var(--bg-overlay-30);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .badge-active {
+        background: var(--status-success-bg);
+        color: var(--status-success);
+        border: 1px solid var(--status-success);
+    }
+    
+    .badge-inactive {
+        background: var(--status-warning-bg);
+        color: var(--status-warning);
+        border: 1px solid var(--status-warning);
+    }
+    
+    .overdue-badge {
+        background: var(--status-danger-bg);
+        color: var(--status-danger-light);
+        padding: 0.2rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        border: 1px solid var(--status-danger);
+        animation: pulse 2s infinite;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.7;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .theme-course-detail {
+            padding: 1rem 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.6rem;
+        }
+        
+        .custom-breadcrumb {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .d-flex.justify-content-between {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 1rem;
+        }
+        
+        .btn-edit,
+        .btn-students {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .card-header-custom {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .btn-add {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .item-meta {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.3rem;
+        }
+        
+        .progress-stats {
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .separator {
+            display: none;
+        }
+    }
+    
+    @media (min-width: 769px) and (max-width: 992px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+
+<div class="theme-course-detail">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+            <div class="course-header">
+                <h1 class="page-title">
+                    <i class="bi bi-book-fill me-2"></i>
+                    {{ course.title }}
+                </h1>
+                <nav aria-label="breadcrumb" class="custom-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'classroom_core:course_list' %}">
+                                <i class="bi bi-grid me-1"></i>Мои курсы
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            {{ course.title|truncatechars:30 }}
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            
+            <div>
+                {% if can_manage_course %}
+                <a href="{% url 'classroom_core:course_edit' course.id %}" class="btn-edit me-2">
+                    <i class="bi bi-pencil me-2"></i>Редактировать
+                </a>
+                <a href="{% url 'classroom_core:student_enroll' course.id %}" class="btn-students me-2">
+                    <i class="bi bi-person-plus me-2"></i>Добавить студентов
+                </a>
+                <a href="{% url 'classroom_core:course_enrollment_request_list' course.id %}" class="btn-students me-2">
+                    <i class="bi bi-clipboard-data me-2"></i>Заявки
+                </a>
+                {% elif not is_student and user_has_enrollment_request %}
+                <a href="{% url 'classroom_core:course_enrollment_request_detail' user_enrollment_request_id %}" class="btn-students">
+                    <i class="bi bi-clock-history me-2"></i>Моя заявка
+                </a>
+                {% elif not is_student %}
+                <a href="{% url 'classroom_core:course_enrollment_request_create' course.id %}" class="btn-students">
+                    <i class="bi bi-pencil-square me-2"></i>Подать заявку
+                </a>
+                {% endif %}
+                {% if not is_student %}
+                <a href="{% url 'classroom_core:student_list' course.id %}" class="btn-students">
+                    <i class="bi bi-people me-2"></i>Студенты
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="classroom-hero" {% if course.cover_image %}style="background-image: linear-gradient(135deg, rgba(0, 25, 65, 0.88), rgba(0, 135, 210, 0.52)), url('{{ course.cover_image.url }}'); background-size: cover; background-position: center;"{% endif %}>
+            <h2>{{ course.title }}</h2>
+            <p>{{ course.short_description|default:course.code }}</p>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                
+                <div class="section-card assignments">
+                    <div class="card-header-custom">
+                        <h5>
+                            <i class="bi bi-view-stacked"></i>
+                            Лента курса
+                        </h5>
+                        {% if can_manage_course %}
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'classroom_core:announcement_create' course.id %}" class="btn-add">
+                                <i class="bi bi-plus-lg"></i> Объявление
+                            </a>
+                            <a href="{% url 'classroom_core:section_create' course.id %}" class="btn-add">
+                                <i class="bi bi-plus-lg"></i> Новый раздел
+                            </a>
+                            <a href="{% url 'classroom_core:assignment_create' course.id %}" class="btn-add">
+                                <i class="bi bi-plus-lg"></i> Новое задание
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="p-3">
+                        {% for item in stream_items %}
+                        <div class="item-card">
+                            <div class="item-content">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div style="flex: 1;">
+                                        <div class="item-title">{{ item.title }}</div>
+                                        <div class="item-description">{{ item.description|striptags|truncatechars:150 }}</div>
+                                        <div class="item-meta">
+                                            <span>
+                                                <i class="bi bi-calendar-check"></i>
+                                                {{ item.date|date:"d.m.Y H:i" }}
+                                            </span>
+                                            {% if item.type == 'material' %}
+                                            <span class="badge-custom">
+                                                <i class="bi bi-easel2"></i> Лекция
+                                            </span>
+                                            {% if item.section_title %}
+                                            <span><i class="bi bi-folder2-open"></i> {{ item.section_title }}</span>
+                                            {% endif %}
+                                            {% elif item.type == 'assignment' %}
+                                            <span class="badge-custom">
+                                                <i class="bi bi-journal-text"></i> Задание
+                                            </span>
+                                            {% else %}
+                                            <span class="badge-custom">
+                                                <i class="bi bi-megaphone"></i> Объявление
+                                            </span>
+                                            {% if item.is_pinned %}
+                                            <span class="badge-custom">
+                                                <i class="bi bi-pin-angle-fill"></i> Закреплено
+                                            </span>
+                                            {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <span class="badge-custom">{{ item.meta }}</span>
+                                </div>
+                                
+                                {% if can_manage_course %}
+                                <div class="mt-2 d-flex gap-2">
+                                    {% if item.type == 'assignment' %}
+                                    <a href="{% url 'classroom_core:assignment_detail' item.assignment_id %}" class="btn-add" style="padding: 0.3rem 1rem;">
+                                        <i class="bi bi-eye"></i> Просмотр
+                                    </a>
+                                    <a href="{% url 'classroom_core:assignment_edit' item.assignment_id %}" class="btn-add" style="padding: 0.3rem 1rem;">
+                                        <i class="bi bi-pencil"></i> Редактировать
+                                    </a>
+                                    {% elif item.type == 'announcement' %}
+                                    <a href="{% url 'classroom_core:announcement_detail' item.announcement_id %}" class="btn-add" style="padding: 0.3rem 1rem;">
+                                        <i class="bi bi-eye"></i> Просмотр
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                {% elif is_student %}
+                                <div class="mt-2 d-flex gap-2">
+                                    {% if item.type == 'assignment' %}
+                                    <a href="{% url 'classroom_core:assignment_detail' item.assignment_id %}" class="btn-add" style="padding: 0.3rem 1rem;">
+                                        <i class="bi bi-eye"></i> Просмотр
+                                    </a>
+                                    <a href="{% url 'classroom_core:assignment_submit' item.assignment_id %}" class="btn-add" style="padding: 0.3rem 1rem;">
+                                        <i class="bi bi-send"></i> Отправить
+                                    </a>
+                                    {% elif item.type == 'announcement' %}
+                                    <a href="{% url 'classroom_core:announcement_detail' item.announcement_id %}" class="btn-add" style="padding: 0.3rem 1rem;">
+                                        <i class="bi bi-eye"></i> Просмотр
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="empty-state">
+                            <i class="bi bi-journal-text"></i>
+                            <p>Пока нет активности в ленте</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                
+                <div class="info-card course-info">
+                    <div class="info-title">
+                        <i class="bi bi-info-circle"></i>
+                        Информация о курсе
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Описание:</div>
+                        <div class="info-text">{{ course.description }}</div>
+                        {% with chat_room=course.chat_rooms.first %}
+                        {% if chat_room %}
+                            <a href="{% url 'chat:chat_room' chat_room.id %}" class="btn btn-outline-info">
+                            <i class="bi bi-chat-dots"></i> Чат курса
+                            </a>
+                        {% endif %}
+                        {% endwith %}
+                        <div class="info-label">Статус:</div>
+                        <div class="info-text">
+                            {% if course.status == 'active' %}
+                            <span class="badge-custom badge-active">
+                                <i class="bi bi-check-circle"></i>
+                                {{ course.get_status_display }}
+                            </span>
+                            {% else %}
+                            <span class="badge-custom badge-inactive">
+                                <i class="bi bi-clock"></i>
+                                {{ course.get_status_display }}
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="info-label">Студенты:</div>
+                        <div class="info-text d-flex align-items-center gap-2">
+                            <div class="student-avatar" style="width: 40px; height: 40px;">
+                                {{ course.get_student_count }}
+                            </div>
+                            <span>{{ course.get_student_count }} {{ course.get_student_count|pluralize:"человек,человека,человек" }}</span>
+                        </div>
+                        
+                        <div class="info-label">Даты:</div>
+                        <div class="info-text">
+                            <i class="bi bi-calendar-plus"></i> {{ course.start_date|date:"d.m.Y" }}<br>
+                            <i class="bi bi-calendar-check"></i> {{ course.end_date|date:"d.m.Y" }}
+                        </div>
+                        <div class="info-label">Расписание:</div>
+                        <div class="info-text">
+                            <i class="bi bi-calendar-week"></i> {{ course.class_days|default:"Не указано" }}<br>
+                            <i class="bi bi-clock"></i> {{ course.class_time|default:"Не указано" }}
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <div class="info-card students-info">
+                    <div class="info-title">
+                        <i class="bi bi-people-fill"></i>
+                        Студенты ({{ students|length }})
+                    </div>
+                    <div class="info-content">
+                        <ul class="student-list">
+                            {% for student in students|slice:":5" %}
+                            <li class="student-item">
+                                <div class="student-avatar">
+                                    {{ student.username|first|upper }}
+                                </div>
+                                <span class="student-name">{{ student.username }}</span>
+                                <span class="student-badge">Студент</span>
+                            </li>
+                            {% empty %}
+                            <li class="empty-state">
+                                <i class="bi bi-people"></i>
+                                <p>Нет студентов</p>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% if students|length > 5 %}
+                        <div class="text-center mt-2">
+                            <a href="{% url 'classroom_core:student_list' course.id %}" class="btn-add" style="display: inline-block;">
+                                Показать всех ({{ students|length }})
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                
+                <div class="info-card progress-info">
+                    <div class="info-title">
+                        <i class="bi bi-graph-up"></i>
+                        Прогресс курса
+                    </div>
+                    <div class="progress-container">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span style="color: var(--text-muted);">Выполнено</span>
+                            <span style="color: var(--accent-primary); font-weight: 600;">{{ course.get_progress }}%</span>
+                        </div>
+                        <div class="progress-bar-custom">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <div class="progress-stats mt-2">
+                            <span><i class="bi bi-check-circle"></i> {{ course.get_completed_items }} заданий</span>
+                            <span class="separator">|</span>
+                            <span><i class="bi bi-clock"></i> {{ course.get_remaining_days }} дней осталось</span>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                {% if is_student %}
+                <div class="info-card my-assignments">
+                    <div class="info-title">
+                        <i class="bi bi-journal-text"></i>
+                        Все задания курса
+                    </div>
+                    <div class="info-content">
+                        {% if assignments %}
+                            <ul class="student-list">
+                                {% for assignment in assignments|slice:":8" %}
+                                <li class="student-item">
+                                    <div class="student-avatar">
+                                        <i class="bi bi-journal-check"></i>
+                                    </div>
+                                    <span class="student-name">{{ assignment.title|truncatechars:32 }}</span>
+                                    <span class="student-badge">
+                                        {% if assignment.due_date %}
+                                            до {{ assignment.due_date|date:"d.m.Y H:i" }}
+                                        {% else %}
+                                            без дедлайна
+                                        {% endif %}
+                                    </span>
+                                    <a href="{% url 'classroom_core:assignment_detail' assignment.id %}" class="btn-add" style="padding:0.2rem 0.6rem;">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                    </a>
+                                </li>
+                                {% if assignment.is_overdue %}
+                                <li class="student-item" style="border:none; padding-top:0;">
+                                    <span class="overdue-badge"><i class="bi bi-exclamation-triangle"></i> Просрочено</span>
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+                            </ul>
+                            {% if assignments.count > 8 %}
+                            <div class="text-center mt-2">
+                                <a href="{% url 'classroom_core:assignment_list' %}?course_id={{ course.id }}" class="btn-add" style="display: inline-block;">
+                                    Показать все ({{ assignments.count }})
+                                </a>
+                            </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="bi bi-journal-x"></i>
+                                <p>Нет заданий в курсе</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                
+                {% if can_manage_course %}
+                <div class="info-card management">
+                    <div class="info-title">
+                        <i class="bi bi-tools"></i>
+                        Управление
+                    </div>
+                    <div class="d-flex flex-column gap-2">
+                        <details class="assistant-form">
+                            <summary style="cursor:pointer; color:var(--text-main); font-weight:600;">Teaching assistants</summary>
+                            <form method="post" action="{% url 'classroom_core:course_manage_teaching_assistants' course.id %}" class="mt-2 d-flex gap-2">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="add">
+                                <select name="teacher_id" class="form-select form-select-sm" required>
+                                    <option value="">Выберите преподавателя</option>
+                                    {% for teacher in available_teachers %}
+                                    <option value="{{ teacher.id }}">{{ teacher.get_full_name|default:teacher.username }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button class="btn-add" type="submit"><i class="bi bi-plus"></i> Добавить</button>
+                            </form>
+                            <div class="mt-2">
+                                {% for ta in current_assistants %}
+                                <form method="post" action="{% url 'classroom_core:course_manage_teaching_assistants' course.id %}" class="d-flex justify-content-between align-items-center mb-1">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="remove">
+                                    <input type="hidden" name="teacher_id" value="{{ ta.id }}">
+                                    <span style="color:var(--text-main);">{{ ta.get_full_name|default:ta.username }}</span>
+                                    <button class="btn-add" type="submit" style="padding:.2rem .6rem;"><i class="bi bi-x"></i></button>
+                                </form>
+                                {% empty %}
+                                <small style="color:var(--text-muted);">Пока нет ассистентов.</small>
+                                {% endfor %}
+                            </div>
+                        </details>
+                        <a href="{% url 'classroom_core:course_edit' course.id %}" class="btn-add w-100 justify-content-center">
+                            <i class="bi bi-pencil"></i> Редактировать курс
+                        </a>
+                        <a href="{% url 'classroom_core:course_gradebook' course.id %}" class="btn-add w-100 justify-content-center" style="border-color: var(--status-success); color: var(--status-success);">
+                            <i class="bi bi-table"></i> Таблица оценок
+                        </a>
+                        <a href="{% url 'classroom_core:course_submissions' course.id %}" class="btn-add w-100 justify-content-center" style="border-color: var(--status-info); color: var(--status-info);">
+                            <i class="bi bi-clipboard-check"></i> Сданные задания
+                        </a>
+                        <a href="{% url 'classroom_core:course_delete' course.id %}" class="btn-add w-100 justify-content-center" style="border-color: var(--status-danger); color: var(--status-danger-light);">
+                            <i class="bi bi-trash"></i> Удалить курс
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const items = document.querySelectorAll('.item-card');
+        items.forEach((item, index) => {
+            item.style.animationDelay = `${0.1 + (index * 0.05)}s`;
+        });
+        
+        const progressBar = document.querySelector('.progress-fill');
+        if(progressBar) {
+            setTimeout(() => {
+                progressBar.style.width = progressBar.style.width;
+            }, 500);
+        }
+    });
+</script>
+{% endblock %}
