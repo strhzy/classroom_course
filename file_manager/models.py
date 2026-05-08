@@ -353,6 +353,14 @@ class FileVersion(models.Model ):
     snapshot_size = models.BigIntegerField(default=0)
     snapshot_storage_provider = models.CharField(max_length=20, blank=True, default="")
     snapshot_storage_path = models.CharField(max_length=1024, blank=True, default="")
+    has_blob = models.BooleanField(default=False)
+    blob_storage_provider = models.CharField(max_length=20, blank=True, default="")
+    blob_storage_path = models.CharField(max_length=1024, blank=True, default="")
+    blob_size = models.BigIntegerField(default=0)
+    blob_sha256 = models.CharField(max_length=64, blank=True, default="")
+    extracted_text_snapshot = models.TextField(blank=True, default="")
+    structured_snapshot = models.JSONField(blank=True, null=True)
+    structured_schema_version = models.CharField(max_length=32, blank=True, default="v1")
     created_at =models.DateTimeField(auto_now_add =True )
 
     class Meta :

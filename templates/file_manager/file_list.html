@@ -411,6 +411,14 @@
         text-decoration: none;
         margin: 0 2px;
     }
+
+   .table-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+    }
     
    .btn-table-action:hover {
         background: var(--bg-overlay-25);
@@ -475,7 +483,7 @@
     }
     
     
-    @media(max-width: 768px) {
+    @media(max-width: 1100px) {
        .theme-files {
             padding: 1rem 0.5rem;
         }
@@ -499,8 +507,10 @@
             justify-content: center;
         }
         
-       .files-table thead {
-            display: none;
+       .files-table thead,
+       .files-table thead tr,
+       .files-table thead th {
+            display: none !important;
         }
         
        .files-table tbody tr {
@@ -514,9 +524,11 @@
        .files-table tbody td {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             padding: 0.5rem 0;
             border: none;
+            gap: 0.75rem;
+            text-align: right;
         }
         
        .files-table tbody td::before {
@@ -524,10 +536,54 @@
             font-weight: 600;
             color: var(--text-muted);
             margin-right: 1rem;
+            text-align: left;
         }
         
        .file-info {
             width: 100%;
+            align-items: flex-start;
+        }
+
+       .file-details {
+            min-width: 0;
+        }
+
+       .file-name {
+            word-break: break-word;
+        }
+
+       .files-table tbody td[data-label="Файл"] {
+            display: block;
+            text-align: left;
+        }
+
+       .files-table tbody td[data-label="Файл"]::before {
+            display: block;
+            margin-bottom: 0.45rem;
+        }
+
+       .files-table tbody td[data-label="Действия"] {
+            display: block;
+            text-align: left;
+        }
+
+       .files-table tbody td[data-label="Действия"]::before {
+            display: block;
+            margin-bottom: 0.45rem;
+        }
+
+       .table-actions {
+            justify-content: flex-start;
+        }
+
+       .btn-table-action {
+            width: 2.2rem;
+            height: 2.2rem;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
         }
     }
 </style>
@@ -682,30 +738,32 @@
                                 <td data-label="Размер">{{ file.get_file_size_display }}</td>
                                 <td data-label="Дата">{{ file.uploaded_at|date:"d.m.Y" }}</td>
                                 <td data-label="Действия" class="text-end">
-                                    <a href="{% url 'file_manager:favorite_toggle' file.id %}"
-                                       class="btn-table-action btn-favorite-row{% if file.is_favorite_for_user %} is-on{% endif %}"
-                                       title="{% if file.is_favorite_for_user %}Убрать из избранного{% else %}В избранное{% endif %}">
-                                        <i class="bi {% if file.is_favorite_for_user %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
-                                    </a>
-                                    <a href="{% url 'file_manager:file_detail' file.id %}" class="btn-table-action" title="Подробнее">
-                                        <i class="bi bi-info-circle"></i>
-                                    </a>
-                                    <a href="{% url 'file_manager:file_download' file.id %}" class="btn-table-action" title="Скачать">
-                                        <i class="bi bi-download"></i>
-                                    </a>
-                                    <a href="{% url 'file_manager:file_viewer' file.id %}" class="btn-table-action" title="Просмотр" target="_blank">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    {% if file.can_edit or file.can_delete %}
-                                    <a href="{% url 'file_manager:file_edit' file.id %}" class="btn-table-action" title="Редактировать">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    {% endif %}
-                                    {% if file.can_delete %}
-                                    <a href="{% url 'file_manager:file_delete' file.id %}" class="btn-table-action" title="Удалить">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
-                                    {% endif %}
+                                    <div class="table-actions">
+                                        <a href="{% url 'file_manager:favorite_toggle' file.id %}"
+                                           class="btn-table-action btn-favorite-row{% if file.is_favorite_for_user %} is-on{% endif %}"
+                                           title="{% if file.is_favorite_for_user %}Убрать из избранного{% else %}В избранное{% endif %}">
+                                            <i class="bi {% if file.is_favorite_for_user %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+                                        </a>
+                                        <a href="{% url 'file_manager:file_detail' file.id %}" class="btn-table-action" title="Подробнее">
+                                            <i class="bi bi-info-circle"></i>
+                                        </a>
+                                        <a href="{% url 'file_manager:file_download' file.id %}" class="btn-table-action" title="Скачать">
+                                            <i class="bi bi-download"></i>
+                                        </a>
+                                        <a href="{% url 'file_manager:file_viewer' file.id %}" class="btn-table-action" title="Просмотр" target="_blank">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        {% if file.can_edit or file.can_delete %}
+                                        <a href="{% url 'file_manager:file_edit' file.id %}" class="btn-table-action" title="Редактировать">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        {% endif %}
+                                        {% if file.can_delete %}
+                                        <a href="{% url 'file_manager:file_delete' file.id %}" class="btn-table-action" title="Удалить">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
                                 </td>
                             </tr>
                             {% empty %}

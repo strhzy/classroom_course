@@ -23,6 +23,7 @@ import logging
 import os 
 import requests
 from django.conf import settings
+from django.core.files.storage import default_storage
 from django.utils.crypto import get_random_string
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
@@ -47,6 +48,10 @@ import zipfile
 import io
 import json
 import tempfile
+import hashlib
+import difflib
+import mimetypes
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from pathlib import PurePosixPath
 
@@ -193,6 +198,141 @@ def extract_text_from_uploaded_content(file_name, content):
                 pass
 
 
+def build_structured_snapshot(file_name, content):
+    ext = (Path(file_name).suffix or "").lower().lstrip(".")
+    snapshot = {
+        "schema_version": "v1",
+        "ext": ext,
+        "size_bytes": len(content or b""),
+    }
+    if not content:
+        snapshot["kind"] = "empty"
+        return snapshot
+
+    text_like = {"txt", "md", "csv", "json", "xml", "yml", "yaml", "log"}
+    if ext in text_like:
+        text = (content[:500_000]).decode("utf-8", errors="replace")
+        lines = text.splitlines()
+        snapshot.update(
+            {
+                "kind": "text_lines",
+                "line_count": len(lines),
+                "preview_lines": lines[:500],
+                "truncated": len(content) > 500_000 or len(lines) > 500,
+            }
+        )
+        return snapshot
+
+    if ext == "docx":
+        try:
+            with zipfile.ZipFile(io.BytesIO(content)) as zf:
+                xml_bytes = zf.read("word/document.xml")
+            root = ET.fromstring(xml_bytes)
+            paragraphs = []
+            ns = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
+            for p in root.findall(".//w:p", ns):
+                texts = [t.text or "" for t in p.findall(".//w:t", ns)]
+                text = "".join(texts).strip()
+                if text:
+                    paragraphs.append({"text": text})
+                if len(paragraphs) >= 500:
+                    break
+            snapshot.update(
+                {
+                    "kind": "docx_paragraphs",
+                    "paragraph_count": len(paragraphs),
+                    "paragraphs": paragraphs,
+                }
+            )
+            return snapshot
+        except Exception as exc:
+            snapshot.update({"kind": "docx_parse_error", "error": str(exc)})
+            return snapshot
+
+    if ext == "xlsx":
+        try:
+            with zipfile.ZipFile(io.BytesIO(content)) as zf:
+                sheet_files = sorted(
+                    [name for name in zf.namelist() if name.startswith("xl/worksheets/sheet")]
+                )
+                sheets = []
+                ns = {"x": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+                for sheet_file in sheet_files[:20]:
+                    xml_bytes = zf.read(sheet_file)
+                    root = ET.fromstring(xml_bytes)
+                    rows = root.findall(".//x:row", ns)
+                    cells = root.findall(".//x:c", ns)
+                    sheets.append(
+                        {
+                            "sheet_file": sheet_file,
+                            "row_count": len(rows),
+                            "cell_count": len(cells),
+                        }
+                    )
+            snapshot.update({"kind": "xlsx_sheets", "sheets": sheets, "sheet_count": len(sheets)})
+            return snapshot
+        except Exception as exc:
+            snapshot.update({"kind": "xlsx_parse_error", "error": str(exc)})
+            return snapshot
+
+    mime_type = mimetypes.guess_type(file_name)[0] or "application/octet-stream"
+    snapshot.update({"kind": "binary", "mime_type": mime_type})
+    return snapshot
+
+
+def _store_revision_blob(file_obj, uploaded_by, content, original_name, version_number):
+    sha256 = hashlib.sha256(content).hexdigest()
+    safe_name = PurePosixPath(original_name).name or f"v{version_number}.bin"
+    revision_file_name = f"v{version_number}_{sha256[:10]}_{safe_name}"
+
+    if file_obj.storage_provider == "yandex_disk":
+        connection = get_yandex_connection(file_obj.uploaded_by, autocreate_from_social=True)
+        if not connection:
+            raise ValidationError("Не найдено подключение Яндекс.Диска владельца файла")
+        yandex_path = f"disk:/revisions/{file_obj.id}/{revision_file_name}"
+        upload_file_bytes(connection.access_token, yandex_path, content, overwrite=False)
+        return {
+            "has_blob": True,
+            "blob_storage_provider": "yandex_disk",
+            "blob_storage_path": yandex_path,
+            "blob_size": len(content),
+            "blob_sha256": sha256,
+            "version_file_name": "",
+        }
+
+    storage_name = default_storage.save(
+        f"file_versions/{file_obj.id}/{revision_file_name}",
+        ContentFile(content),
+    )
+    return {
+        "has_blob": True,
+        "blob_storage_provider": "local",
+        "blob_storage_path": storage_name,
+        "blob_size": len(content),
+        "blob_sha256": sha256,
+        "version_file_name": storage_name,
+    }
+
+
+def _read_revision_blob_bytes(version_obj):
+    if version_obj.blob_storage_provider == "yandex_disk" and version_obj.blob_storage_path:
+        connection = get_yandex_connection(version_obj.file.uploaded_by, autocreate_from_social=True)
+        if not connection:
+            raise ValidationError("Нет подключения Яндекс.Диска владельца файла")
+        download_url = get_download_url(connection.access_token, version_obj.blob_storage_path)
+        response = requests.get(download_url, timeout=120)
+        response.raise_for_status()
+        return response.content
+    if version_obj.blob_storage_provider == "local" and version_obj.blob_storage_path:
+        if default_storage.exists(version_obj.blob_storage_path):
+            with default_storage.open(version_obj.blob_storage_path, "rb") as fh:
+                return fh.read()
+    if version_obj.version_file and default_storage.exists(version_obj.version_file.name):
+        with default_storage.open(version_obj.version_file.name, "rb") as fh:
+            return fh.read()
+    raise ValidationError("Для этой версии нет сохранённого blob")
+
+
 def create_user_uploaded_file(user, uploaded_file):
     """
     Сохраняет загруженный файл так же, как страница загрузки в файловом менеджере
@@ -315,6 +455,39 @@ def create_user_uploaded_file(user, uploaded_file):
         )
     except Exception:
         pass
+
+    # Автосоздание первой ревизии (v1) сразу при загрузке файла.
+    try:
+        if not FileVersion.objects.filter(file=file_obj, version_number=1).exists():
+            structured_snapshot = build_structured_snapshot(unique_title, uploaded_content)
+            blob_info = _store_revision_blob(
+                file_obj=file_obj,
+                uploaded_by=user,
+                content=uploaded_content,
+                original_name=unique_title,
+                version_number=1,
+            )
+            FileVersion.objects.create(
+                file=file_obj,
+                changed_by=user,
+                version_number=1,
+                change_description="Initial upload",
+                snapshot_title=file_obj.title,
+                snapshot_size=file_obj.file_size,
+                snapshot_storage_provider=file_obj.storage_provider,
+                snapshot_storage_path=file_obj.yandex_path if file_obj.storage_provider == "yandex_disk" else (file_obj.file.name if file_obj.file else ""),
+                has_blob=blob_info["has_blob"],
+                blob_storage_provider=blob_info["blob_storage_provider"],
+                blob_storage_path=blob_info["blob_storage_path"],
+                blob_size=blob_info["blob_size"],
+                blob_sha256=blob_info["blob_sha256"],
+                extracted_text_snapshot=extracted_text or "",
+                structured_snapshot=structured_snapshot,
+                structured_schema_version=structured_snapshot.get("schema_version", "v1"),
+                version_file=blob_info["version_file_name"] or None,
+            )
+    except Exception:
+        logger.exception("failed to create initial file version file_id=%s", getattr(file_obj, "id", None))
 
     try:
         storage_quota.update_usage()
@@ -467,6 +640,7 @@ def file_detail(request ,file_id ):
         raise PermissionDenied 
 
     comments =file_obj.comments.filter(parent =None )
+    versions = file_obj.versions.select_related("changed_by").order_by("-version_number")
 
     comment_form =FileCommentForm()
 
@@ -488,6 +662,7 @@ def file_detail(request ,file_id ):
     'is_favorite':file_obj.is_favorite(request.user ),
     'shared_workspaces': SharedWorkspace.objects.filter(participants=request.user).order_by("title"),
     'file_workspaces': SharedWorkspace.objects.filter(files=file_obj, participants=request.user).order_by("title"),
+    'versions': versions,
     }
 
     return render(request ,'file_manager/file_detail.html',context )
@@ -928,7 +1103,8 @@ def file_version_create(request ,file_id ):
         form =FileVersionForm(request.POST ,request.FILES )
         if form.is_valid():
             uploaded_file = request.FILES["version_file"]
-            file_size = uploaded_file.size
+            uploaded_content = uploaded_file.read()
+            file_size = len(uploaded_content)
             old_size = file_obj.file_size or 0
             extra_required = max(0, file_size - old_size)
             if file_obj.storage_provider == "local" and not storage_quota.has_enough_space(extra_required):
@@ -938,7 +1114,6 @@ def file_version_create(request ,file_id ):
                 )
                 return redirect('file_manager:file_version_create',file_id =file_id )
 
-            uploaded_content = uploaded_file.read()
             scan = scan_upload_bytes(
                 uploaded_content,
                 user_id=request.user.id,
@@ -962,16 +1137,39 @@ def file_version_create(request ,file_id ):
                 )
                 return redirect('file_manager:file_version_create', file_id=file_id)
 
+            version_number = file_obj.version + 1
             snapshot_path = file_obj.yandex_path if file_obj.storage_provider == "yandex_disk" else (file_obj.file.name if file_obj.file else "")
+            structured_snapshot = build_structured_snapshot(uploaded_file.name, uploaded_content)
+            try:
+                blob_info = _store_revision_blob(
+                    file_obj=file_obj,
+                    uploaded_by=request.user,
+                    content=uploaded_content,
+                    original_name=uploaded_file.name,
+                    version_number=version_number,
+                )
+            except Exception as exc:
+                messages.error(request, f"Не удалось сохранить blob ревизии: {exc}")
+                return redirect('file_manager:file_version_create', file_id=file_id)
+
             FileVersion.objects.create(
                 file=file_obj,
                 changed_by=request.user,
-                version_number=file_obj.version + 1,
+                version_number=version_number,
                 change_description=form.cleaned_data.get("change_description", ""),
                 snapshot_title=file_obj.title,
                 snapshot_size=file_obj.file_size,
                 snapshot_storage_provider=file_obj.storage_provider,
                 snapshot_storage_path=snapshot_path,
+                has_blob=blob_info["has_blob"],
+                blob_storage_provider=blob_info["blob_storage_provider"],
+                blob_storage_path=blob_info["blob_storage_path"],
+                blob_size=blob_info["blob_size"],
+                blob_sha256=blob_info["blob_sha256"],
+                extracted_text_snapshot=extracted_text,
+                structured_snapshot=structured_snapshot,
+                structured_schema_version=structured_snapshot.get("schema_version", "v1"),
+                version_file=blob_info["version_file_name"] or None,
             )
 
             old_file_path = file_obj.file.path if (file_obj.storage_provider == "local" and file_obj.file) else None
@@ -993,7 +1191,7 @@ def file_version_create(request ,file_id ):
 
             file_obj.file_size = file_size
             file_obj.extracted_text = extracted_text
-            file_obj.version +=1 
+            file_obj.version = version_number
             file_obj.save()
 
             FileActivity.log_activity(
@@ -1017,6 +1215,146 @@ def file_version_create(request ,file_id ):
     'file':file_obj ,
     'storage_quota':storage_quota ,
     })
+
+
+@login_required
+def file_version_compare(request, file_id):
+    file_obj = get_object_or_404(File, id=file_id)
+    if not file_obj.can_access(request.user):
+        raise PermissionDenied
+
+    versions = list(file_obj.versions.select_related("changed_by").order_by("-version_number"))
+    from_version_id = request.GET.get("from")
+    to_version_id = request.GET.get("to")
+    selected_from = None
+    selected_to = None
+    text_diff = []
+    structured_diff = []
+
+    if from_version_id and to_version_id:
+        selected_from = get_object_or_404(FileVersion, file=file_obj, id=from_version_id)
+        selected_to = get_object_or_404(FileVersion, file=file_obj, id=to_version_id)
+        from_text = selected_from.extracted_text_snapshot or ""
+        to_text = selected_to.extracted_text_snapshot or ""
+        if from_text or to_text:
+            text_diff = list(
+                difflib.unified_diff(
+                    from_text.splitlines(),
+                    to_text.splitlines(),
+                    fromfile=f"v{selected_from.version_number}",
+                    tofile=f"v{selected_to.version_number}",
+                    lineterm="",
+                )
+            )
+        from_structured = selected_from.structured_snapshot or {}
+        to_structured = selected_to.structured_snapshot or {}
+        if from_structured or to_structured:
+            structured_diff = list(
+                difflib.unified_diff(
+                    json.dumps(from_structured, ensure_ascii=False, indent=2).splitlines(),
+                    json.dumps(to_structured, ensure_ascii=False, indent=2).splitlines(),
+                    fromfile=f"structured-v{selected_from.version_number}",
+                    tofile=f"structured-v{selected_to.version_number}",
+                    lineterm="",
+                )
+            )
+
+    return render(
+        request,
+        "file_manager/file_version_compare.html",
+        {
+            "file": file_obj,
+            "versions": versions,
+            "selected_from": selected_from,
+            "selected_to": selected_to,
+            "text_diff": text_diff,
+            "structured_diff": structured_diff,
+        },
+    )
+
+
+@login_required
+@require_http_methods(["POST"])
+def file_version_restore(request, file_id, version_id):
+    file_obj = get_object_or_404(File, id=file_id)
+    if not can_upload_file_version(request.user, file_obj):
+        raise PermissionDenied
+    target_version = get_object_or_404(FileVersion, file=file_obj, id=version_id)
+    if not target_version.has_blob and not target_version.version_file:
+        messages.error(request, "Эта версия legacy и не содержит blob для восстановления.")
+        return redirect("file_manager:file_detail", file_id=file_id)
+
+    try:
+        restored_content = _read_revision_blob_bytes(target_version)
+    except Exception as exc:
+        messages.error(request, f"Не удалось прочитать blob версии: {exc}")
+        return redirect("file_manager:file_detail", file_id=file_id)
+
+    restored_text = target_version.extracted_text_snapshot or ""
+    owner = file_obj.uploaded_by
+    old_file_path = file_obj.file.path if (file_obj.storage_provider == "local" and file_obj.file) else None
+    if file_obj.storage_provider == "yandex_disk":
+        connection = get_yandex_connection(owner, autocreate_from_social=True)
+        if not connection:
+            messages.error(request, "Не найдено подключение Яндекс.Диска владельца файла")
+            return redirect("file_manager:file_detail", file_id=file_id)
+        target_yandex_path = file_obj.yandex_path or f"disk:/{file_obj.title}"
+        upload_file_bytes(connection.access_token, target_yandex_path, restored_content, overwrite=True)
+        file_obj.yandex_path = target_yandex_path
+    else:
+        file_obj.file.save(file_obj.title, ContentFile(restored_content), save=False)
+        if old_file_path and os.path.exists(old_file_path):
+            try:
+                os.remove(old_file_path)
+            except OSError:
+                pass
+
+    new_version_number = file_obj.version + 1
+    try:
+        blob_info = _store_revision_blob(
+            file_obj=file_obj,
+            uploaded_by=request.user,
+            content=restored_content,
+            original_name=file_obj.title,
+            version_number=new_version_number,
+        )
+    except Exception as exc:
+        messages.error(request, f"Текущий файл восстановлен, но commit версии не записан: {exc}")
+        return redirect("file_manager:file_detail", file_id=file_id)
+
+    FileVersion.objects.create(
+        file=file_obj,
+        changed_by=request.user,
+        version_number=new_version_number,
+        change_description=f"Restore from version {target_version.version_number}",
+        snapshot_title=file_obj.title,
+        snapshot_size=file_obj.file_size,
+        snapshot_storage_provider=file_obj.storage_provider,
+        snapshot_storage_path=file_obj.yandex_path if file_obj.storage_provider == "yandex_disk" else (file_obj.file.name if file_obj.file else ""),
+        has_blob=blob_info["has_blob"],
+        blob_storage_provider=blob_info["blob_storage_provider"],
+        blob_storage_path=blob_info["blob_storage_path"],
+        blob_size=blob_info["blob_size"],
+        blob_sha256=blob_info["blob_sha256"],
+        extracted_text_snapshot=restored_text,
+        structured_snapshot=target_version.structured_snapshot,
+        structured_schema_version=target_version.structured_schema_version or "v1",
+        version_file=blob_info["version_file_name"] or None,
+    )
+
+    file_obj.file_size = len(restored_content)
+    file_obj.extracted_text = restored_text
+    file_obj.version = new_version_number
+    file_obj.save()
+
+    FileActivity.log_activity(
+        file=file_obj,
+        user=request.user,
+        activity_type="version_create",
+        description=f"Restored from version {target_version.version_number} to new version {new_version_number}",
+    )
+    messages.success(request, f"Файл восстановлен из версии {target_version.version_number}.")
+    return redirect("file_manager:file_detail", file_id=file_id)
 
 @login_required 
 def favorite_toggle(request ,file_id ):

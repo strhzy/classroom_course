@@ -1,0 +1,119 @@
+{% extends "file_manager/base_files.html" %}
+
+{% block title %}Сравнение версий{% endblock %}
+{% block files_content %}
+<style>
+    .diff-block {
+        background: var(--bg-input);
+        border: 1px solid var(--bg-overlay-30);
+        border-radius: 10px;
+        overflow: hidden;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 0.85rem;
+        line-height: 1.45;
+    }
+    .diff-line {
+        white-space: pre-wrap;
+        padding: 0.1rem 0.6rem;
+        border-bottom: 1px solid var(--bg-overlay-10);
+    }
+    .diff-line:last-child {
+        border-bottom: none;
+    }
+    .diff-line-add {
+        background: rgba(34, 197, 94, 0.16);
+        color: #86efac;
+    }
+    .diff-line-del {
+        background: rgba(239, 68, 68, 0.16);
+        color: #fca5a5;
+    }
+    .diff-line-meta {
+        background: rgba(59, 130, 246, 0.15);
+        color: #93c5fd;
+    }
+    .diff-line-hunk {
+        background: rgba(148, 163, 184, 0.12);
+        color: var(--text-muted);
+    }
+</style>
+<div class="container py-4">
+    <h3 class="mb-3">Сравнение версий: {{ file.title }}</h3>
+
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-md-5">
+            <label class="form-label">Из версии</label>
+            <select name="from" class="form-select" required>
+                <option value="">Выберите версию</option>
+                {% for v in versions %}
+                <option value="{{ v.id }}" {% if selected_from and selected_from.id == v.id %}selected{% endif %}>v{{ v.version_number }} — {{ v.created_at|date:"d.m.Y H:i" }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-5">
+            <label class="form-label">В версию</label>
+            <select name="to" class="form-select" required>
+                <option value="">Выберите версию</option>
+                {% for v in versions %}
+                <option value="{{ v.id }}" {% if selected_to and selected_to.id == v.id %}selected{% endif %}>v{{ v.version_number }} — {{ v.created_at|date:"d.m.Y H:i" }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-primary w-100" type="submit">Сравнить</button>
+        </div>
+    </form>
+
+    {% if selected_from and selected_to %}
+    <div class="card mb-3">
+        <div class="card-header">Text diff</div>
+        <div class="card-body">
+            {% if text_diff %}
+            <div class="diff-block">
+                {% for line in text_diff %}
+                    {% if line|slice:":3" == "+++" or line|slice:":3" == "---" %}
+                    <div class="diff-line diff-line-meta">{{ line }}</div>
+                    {% elif line|slice:":2" == "@@" %}
+                    <div class="diff-line diff-line-hunk">{{ line }}</div>
+                    {% elif line|slice:":1" == "+" %}
+                    <div class="diff-line diff-line-add">{{ line }}</div>
+                    {% elif line|slice:":1" == "-" %}
+                    <div class="diff-line diff-line-del">{{ line }}</div>
+                    {% else %}
+                    <div class="diff-line">{{ line }}</div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-muted">Текстовых изменений нет или текст не извлечён.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">Structured snapshot diff (JSON)</div>
+        <div class="card-body">
+            {% if structured_diff %}
+            <div class="diff-block">
+                {% for line in structured_diff %}
+                    {% if line|slice:":3" == "+++" or line|slice:":3" == "---" %}
+                    <div class="diff-line diff-line-meta">{{ line }}</div>
+                    {% elif line|slice:":2" == "@@" %}
+                    <div class="diff-line diff-line-hunk">{{ line }}</div>
+                    {% elif line|slice:":1" == "+" %}
+                    <div class="diff-line diff-line-add">{{ line }}</div>
+                    {% elif line|slice:":1" == "-" %}
+                    <div class="diff-line diff-line-del">{{ line }}</div>
+                    {% else %}
+                    <div class="diff-line">{{ line }}</div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-muted">Структурных изменений нет или structured snapshot отсутствует.</div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
