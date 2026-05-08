@@ -1,5 +1,6 @@
 from django import forms 
-from . models import File ,Tag ,FileComment ,FileVersion 
+from django.contrib.auth.models import User
+from . models import File ,Tag ,FileComment 
 
 class FileEditForm(forms.ModelForm ):
     """Форма редактирования файла(без загрузки нового файла)"""
@@ -23,15 +24,50 @@ class FileEditForm(forms.ModelForm ):
             cleaned_data["shared_with"] = []
         return cleaned_data
 
-class FileVersionForm(forms.ModelForm ):
-    """Форма для новой версии файла"""
-    class Meta :
-        model =FileVersion 
-        fields =['version_file','change_description']
-        widgets ={
-        'version_file':forms.ClearableFileInput(attrs ={'class':'form-control'}),
-        'change_description':forms.Textarea(attrs ={'class':'form-control','rows':3 }),
-        }
+class FileVersionForm(forms.Form):
+    """Форма для обновления содержимого текущего файла"""
+    version_file = forms.FileField(
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        label='Новый файл',
+    )
+    change_description = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        label='Описание изменений',
+    )
+
+
+class BulkPermissionForm(forms.Form):
+    files = forms.ModelMultipleChoiceField(
+        queryset=File.objects.none(),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+        label='Файлы',
+    )
+    visibility = forms.ChoiceField(
+        choices=File.VISIBILITY_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        label='Режим доступа',
+    )
+    shared_with = forms.ModelMultipleChoiceField(
+        queryset=User.objects.none(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+        label='Пользователи для общего доступа',
+    )
+
+    def __init__(self, *args, **kwargs):
+        editable_files_qs = kwargs.pop("editable_files_qs", File.objects.none())
+        share_users_qs = kwargs.pop("share_users_qs", User.objects.none())
+        super().__init__(*args, **kwargs)
+        self.fields["files"].queryset = editable_files_qs
+        self.fields["shared_with"].queryset = share_users_qs
+
+    def clean(self):
+        cleaned_data = super().clean()
+        visibility = cleaned_data.get("visibility")
+        if visibility != "shared":
+            cleaned_data["shared_with"] = []
+        return cleaned_data
 
 class FileCommentForm(forms.ModelForm ):
     """Форма комментария к файлу"""

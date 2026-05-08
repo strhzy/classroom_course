@@ -164,8 +164,8 @@ class File(models.Model ):
         return self.title 
 
     def save(self ,*args ,**kwargs ):
-        if self.file and not self.is_folder :
-            ext =self.file.name.split('.')[-1 ].lower()
+        if not self.is_folder:
+            ext = self._detect_extension_for_metadata()
             file_type_mapping ={
             'pdf':'pdf',
             'txt':'txt',
@@ -178,14 +178,29 @@ class File(models.Model ):
             'mp3':'mp3',
             'zip':'zip','rar':'zip','7z':'zip',
             }
-            self.file_type =file_type_mapping.get(ext ,'other')
+            if ext:
+                self.file_type =file_type_mapping.get(ext ,'other')
 
-            try :
-                self.file_size =self.file.size 
-            except :
-                pass 
+            if self.file:
+                try :
+                    self.file_size =self.file.size 
+                except :
+                    pass 
 
         super().save(*args ,**kwargs )
+
+    def _detect_extension_for_metadata(self):
+        candidates = []
+        if self.file and getattr(self.file, "name", ""):
+            candidates.append(self.file.name)
+        if self.title:
+            candidates.append(self.title)
+        if self.yandex_path:
+            candidates.append(self.yandex_path.split("/")[-1])
+        for value in candidates:
+            if "." in value:
+                return value.rsplit(".", 1)[-1].lower()
+        return ""
 
     def get_file_size_display(self ):
         if self.is_folder :
@@ -280,9 +295,8 @@ class File(models.Model ):
         return icon_mapping.get(self.file_type ,'📎')
 
     def get_extension(self ):
-        if not self.file :
-            return ''
-        return self.file.name.split('.')[-1 ].upper()
+        ext = self._detect_extension_for_metadata()
+        return ext.upper() if ext else ''
 
 class FileComment(models.Model ):
     file =models.ForeignKey(
@@ -326,7 +340,7 @@ class FileVersion(models.Model ):
     on_delete =models.CASCADE ,
     related_name ='versions'
     )
-    version_file =models.FileField(upload_to ='file_versions/')
+    version_file =models.FileField(upload_to ='file_versions/', null=True, blank=True)
     version_number =models.IntegerField()
     changed_by =models.ForeignKey(
     User ,
@@ -335,6 +349,10 @@ class FileVersion(models.Model ):
     related_name ='file_versions'
     )
     change_description =models.TextField(blank =True )
+    snapshot_title = models.CharField(max_length=255, blank=True, default="")
+    snapshot_size = models.BigIntegerField(default=0)
+    snapshot_storage_provider = models.CharField(max_length=20, blank=True, default="")
+    snapshot_storage_path = models.CharField(max_length=1024, blank=True, default="")
     created_at =models.DateTimeField(auto_now_add =True )
 
     class Meta :

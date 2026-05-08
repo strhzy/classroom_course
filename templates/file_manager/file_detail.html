@@ -424,7 +424,7 @@
                     <i class="bi bi-window-fullscreen"></i> Просмотр
                 </a>
                 {% endif %}
-                {% if can_upload_version and file.storage_provider == 'local' and file.file %}
+                {% if can_upload_version %}
                 <a href="{% url 'file_manager:file_version_create' file.id %}" class="action-btn btn-edit">
                     <i class="bi bi-arrow-repeat"></i> Новая версия
                 </a>

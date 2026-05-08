@@ -9,7 +9,7 @@ from django.db.models import Q, Count, Exists, OuterRef
 from django.core.paginator import Paginator 
 from django.contrib.auth.models import User
 from . models import File ,Tag ,FileComment ,FileVersion ,FileActivity ,UserStorageQuota 
-from . forms import FileEditForm ,FileVersionForm ,FileCommentForm ,TagForm ,FileSearchForm 
+from . forms import FileEditForm ,FileVersionForm ,FileCommentForm ,TagForm ,FileSearchForm, BulkPermissionForm 
 from . utils import extract_text_from_file ,generate_preview ,search_files ,get_user_storage_usage 
 from . office_pdf import (
     EXTENSIONS_LIBREOFFICE_TO_PDF,
@@ -128,6 +128,19 @@ def can_upload_file_version(user, file_obj):
 
 def can_delete_file_object(user, file_obj):
     return file_obj.uploaded_by_id == user.id or is_admin_user(user)
+
+
+def get_share_users_queryset(exclude_user_id=None):
+    qs = User.objects.filter(is_active=True).order_by("username").select_related("profile")
+    if exclude_user_id:
+        qs = qs.exclude(pk=exclude_user_id)
+    return qs
+
+
+def get_editable_files_queryset(user):
+    if is_admin_user(user):
+        return File.objects.filter(is_folder=False).order_by("-uploaded_at")
+    return File.objects.filter(uploaded_by=user, is_folder=False).order_by("-uploaded_at")
 
 
 def build_unique_title(user, original_name):
@@ -784,12 +797,7 @@ def file_edit(request ,file_id ):
     if not can_edit_file_object(request.user, file_obj):
         raise PermissionDenied 
 
-    share_users_queryset = (
-        User.objects.filter(is_active=True)
-        .exclude(pk=file_obj.uploaded_by_id)
-        .order_by("username")
-        .select_related("profile")
-    )
+    share_users_queryset = get_share_users_queryset(exclude_user_id=file_obj.uploaded_by_id)
 
     if request.method =='POST':
         form =FileEditForm(request.POST ,instance =file_obj )
@@ -817,6 +825,46 @@ def file_edit(request ,file_id ):
     'title':'Редактировать файл',
     'file':file_obj 
     })
+
+
+@login_required
+def files_bulk_permissions(request):
+    editable_files_qs = get_editable_files_queryset(request.user)
+    share_users_qs = get_share_users_queryset(exclude_user_id=request.user.id)
+    if request.method == "POST":
+        form = BulkPermissionForm(
+            request.POST,
+            editable_files_qs=editable_files_qs,
+            share_users_qs=share_users_qs,
+        )
+        if form.is_valid():
+            files = form.cleaned_data["files"]
+            visibility = form.cleaned_data["visibility"]
+            shared_with = form.cleaned_data["shared_with"]
+            updated = 0
+            for file_obj in files:
+                file_obj.visibility = visibility
+                file_obj.save(update_fields=["visibility", "updated_at"])
+                if visibility == "shared":
+                    file_obj.shared_with.set(shared_with)
+                else:
+                    file_obj.shared_with.clear()
+                FileActivity.log_activity(
+                    file=file_obj,
+                    user=request.user,
+                    activity_type="share",
+                    description=f"Bulk permissions update: visibility={visibility}",
+                )
+                updated += 1
+            messages.success(request, f"Права обновлены для {updated} файлов")
+            return redirect("file_manager:file_list")
+        flash_form_errors(request, form)
+    else:
+        form = BulkPermissionForm(
+            editable_files_qs=editable_files_qs,
+            share_users_qs=share_users_qs,
+        )
+    return render(request, "file_manager/files_bulk_permissions.html", {"form": form})
 
 @login_required 
 def file_delete(request ,file_id ):
@@ -873,53 +921,86 @@ def file_version_create(request ,file_id ):
     if not can_upload_file_version(request.user, file_obj):
         raise PermissionDenied
 
-    if file_obj.storage_provider != "local" or not file_obj.file:
-        messages.error(
-            request,
-            "Замена содержимого новой версией поддерживается только для файлов в локальном хранилище.",
-        )
-        return redirect("file_manager:file_detail", file_id=file_obj.id)
-
     owner = file_obj.uploaded_by
     storage_quota = get_user_storage_usage(owner)
 
     if request.method =='POST':
         form =FileVersionForm(request.POST ,request.FILES )
         if form.is_valid():
-            file_size =request.FILES ['version_file'].size 
-            if not storage_quota.has_enough_space(file_size ):
+            uploaded_file = request.FILES["version_file"]
+            file_size = uploaded_file.size
+            old_size = file_obj.file_size or 0
+            extra_required = max(0, file_size - old_size)
+            if file_obj.storage_provider == "local" and not storage_quota.has_enough_space(extra_required):
                 messages.error(
                     request,
                     f"Недостаточно места в хранилище владельца файла для новой версии. Доступно: {storage_quota.get_quota_display()}",
                 )
                 return redirect('file_manager:file_version_create',file_id =file_id )
 
-            version =form.save(commit =False )
-            version.file =file_obj 
-            version.changed_by =request.user 
-            version.version_number =file_obj.version +1 
-            version.save()
+            uploaded_content = uploaded_file.read()
+            scan = scan_upload_bytes(
+                uploaded_content,
+                user_id=request.user.id,
+                filename=uploaded_file.name,
+            )
+            if scan.get("performed") and scan.get("clean") is False:
+                threat = scan.get("threat") or "неизвестная угроза"
+                messages.error(request, f"Новая версия не загружена: ClamAV обнаружил угрозу «{threat}».")
+                return redirect('file_manager:file_version_create', file_id=file_id)
+            if getattr(settings, "CLAMAV_ENABLED", False) and not scan.get("performed") and not getattr(settings, "CLAMAV_FAIL_OPEN", True):
+                err = scan.get("error") or "проверка не выполнена"
+                messages.error(request, f"Новая версия отклонена: ClamAV недоступен ({err}).")
+                return redirect('file_manager:file_version_create', file_id=file_id)
 
-            old_file_path = file_obj.file.path if file_obj.file else None
-            file_obj.file =version.version_file 
+            extracted_text = extract_text_from_uploaded_content(uploaded_file.name, uploaded_content)
+            banned_match = find_banned_match(extracted_text)
+            if banned_match:
+                messages.error(
+                    request,
+                    "Новая версия отклонена: в содержимом обнаружен запрещённый фрагмент по словарю модерации.",
+                )
+                return redirect('file_manager:file_version_create', file_id=file_id)
+
+            snapshot_path = file_obj.yandex_path if file_obj.storage_provider == "yandex_disk" else (file_obj.file.name if file_obj.file else "")
+            FileVersion.objects.create(
+                file=file_obj,
+                changed_by=request.user,
+                version_number=file_obj.version + 1,
+                change_description=form.cleaned_data.get("change_description", ""),
+                snapshot_title=file_obj.title,
+                snapshot_size=file_obj.file_size,
+                snapshot_storage_provider=file_obj.storage_provider,
+                snapshot_storage_path=snapshot_path,
+            )
+
+            old_file_path = file_obj.file.path if (file_obj.storage_provider == "local" and file_obj.file) else None
+            if file_obj.storage_provider == "yandex_disk":
+                connection = get_yandex_connection(owner, autocreate_from_social=True)
+                if not connection:
+                    messages.error(request, "Не найдено подключение Яндекс.Диска владельца файла")
+                    return redirect('file_manager:file_version_create', file_id=file_id)
+                target_yandex_path = file_obj.yandex_path or f"disk:/{file_obj.title}"
+                upload_file_bytes(connection.access_token, target_yandex_path, uploaded_content, overwrite=True)
+                file_obj.yandex_path = target_yandex_path
+            else:
+                file_obj.file.save(file_obj.title, ContentFile(uploaded_content), save=False)
+                if old_file_path and os.path.exists(old_file_path):
+                    try:
+                        os.remove(old_file_path)
+                    except OSError:
+                        pass
+
+            file_obj.file_size = file_size
+            file_obj.extracted_text = extracted_text
             file_obj.version +=1 
             file_obj.save()
-
-            try :
-                extracted_text =extract_text_from_file(file_obj.file.path )
-                file_obj.extracted_text =extracted_text 
-                file_obj.save()
-            except Exception as e :
-                messages.warning(request ,f'Текст не извлечен: {e }')
-
-            if old_file_path and os.path.exists(old_file_path ):
-                os.remove(old_file_path )
 
             FileActivity.log_activity(
             file =file_obj ,
             user =request.user ,
             activity_type ='version_create',
-            description =f'New version {version.version_number } created: {form.cleaned_data.get("change_description","")}'
+            description =f'New version {file_obj.version } created: {form.cleaned_data.get("change_description","")}'
             )
 
             storage_quota.update_usage()

@@ -1,0 +1,71 @@
+{% extends "file_manager/base_files.html" %}
+
+{% block title %}Права для нескольких файлов{% endblock %}
+
+{% block files_content %}
+<style>
+    .bulk-wrap { max-width: 980px; margin: 0 auto; }
+    .bulk-card { background: var(--bg-card); border: 1px solid var(--bg-overlay-30); border-radius: 14px; box-shadow: 0 10px 24px var(--shadow-card); }
+    .bulk-title { color: var(--text-white); font-weight: 700; margin-bottom: 1rem; }
+    .bulk-card label { color: var(--text-muted); font-weight: 600; }
+    .bulk-card .form-select { background: var(--bg-input); color: var(--text-white); border: 1px solid var(--bg-overlay-30); }
+    .bulk-list { max-height: 260px; overflow: auto; background: var(--bg-input); border: 1px solid var(--bg-overlay-30); border-radius: 10px; padding: 0.75rem; }
+    .bulk-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.25rem; color: var(--text-main); }
+    .bulk-row:hover { background: var(--bg-overlay-10); border-radius: 8px; }
+    .btn-main { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border: none; color: #fff; }
+    .btn-soft { background: var(--bg-overlay-15); border: 1px solid var(--bg-overlay-30); color: var(--text-muted); }
+</style>
+
+<div class="bulk-wrap">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="bulk-title mb-0">Массовая настройка прав</h3>
+        <a href="{% url 'file_manager:file_list' %}" class="btn btn-soft">Назад</a>
+    </div>
+    <form method="post" class="bulk-card p-3">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="{{ form.visibility.id_for_label }}" class="form-label">{{ form.visibility.label }}</label>
+            {{ form.visibility }}
+        </div>
+        <div class="mb-3" id="shared-users-block">
+            <label class="form-label">{{ form.shared_with.label }}</label>
+            <div class="bulk-list">
+                {% for field in form.shared_with %}
+                <label class="bulk-row">{{ field.tag }} <span>{{ field.choice_label }}</span></label>
+                {% empty %}
+                <div class="text-muted">Нет доступных пользователей</div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">{{ form.files.label }}</label>
+            <div class="bulk-list">
+                {% for field in form.files %}
+                <label class="bulk-row">{{ field.tag }} <span>{{ field.choice_label }}</span></label>
+                {% empty %}
+                <div class="text-muted">Нет файлов для изменения</div>
+                {% endfor %}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-main">Применить права</button>
+    </form>
+</div>
+
+<script>
+(() => {
+    const visibility = document.getElementById('{{ form.visibility.id_for_label }}');
+    const sharedBlock = document.getElementById('shared-users-block');
+    if (!visibility || !sharedBlock) return;
+    const toggle = () => {
+        const show = visibility.value === 'shared';
+        sharedBlock.style.display = show ? '' : 'none';
+        sharedBlock.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+            if (!show) cb.checked = false;
+            cb.disabled = !show;
+        });
+    };
+    visibility.addEventListener('change', toggle);
+    toggle();
+})();
+</script>
+{% endblock %}

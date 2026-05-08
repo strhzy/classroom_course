@@ -554,6 +554,9 @@
                 <a href="{% url 'file_manager:download_all_files_archive' %}" class="btn-folder">
                     <i class="bi bi-file-earmark-zip"></i> Скачать все архивом
                 </a>
+                <a href="{% url 'file_manager:files_bulk_permissions' %}" class="btn-folder">
+                    <i class="bi bi-sliders"></i> Права на несколько файлов
+                </a>
                 {% if yandex_connected %}
                 <a href="{% url 'file_manager:yandex_picker' %}" class="btn-folder">
                     <i class="bi bi-cloud-arrow-down"></i> Импорт с Яндекс.Диска
