@@ -213,6 +213,52 @@
   .file-viewer-js-error {
     padding: 2rem !important;
   }
+  .compare-toggle-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--bg-overlay-30);
+    border-radius: 12px;
+    padding: 0.8rem;
+    margin-bottom: 0.9rem;
+  }
+  .compare-controls {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: end;
+  }
+  .compare-controls .field {
+    min-width: 220px;
+    flex: 1;
+  }
+  .compare-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+  .compare-panel {
+    border: 1px solid var(--bg-overlay-30);
+    border-radius: 10px;
+    overflow: hidden;
+    min-height: 320px;
+    background: var(--bg-input);
+  }
+  .compare-panel-frame {
+    width: 100%;
+    height: calc(100vh - 330px);
+    border: 0;
+    background: #1a1a1f;
+  }
+  .compare-panel-head {
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid var(--bg-overlay-30);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+  @media (max-width: 980px) {
+    .compare-panels { grid-template-columns: 1fr; }
+    .compare-panel-frame { height: 65vh; }
+  }
 </style>
 
 <div class="file-viewer-page">
@@ -229,14 +275,6 @@
       </div>
     </div>
 
-    <!-- {% if viewer_needs_office_pdf_hint %}
-    <div class="small mb-2 px-1 py-2 rounded-3" style="background: var(--bg-overlay-15); border: 1px solid var(--bg-overlay-30); color: var(--text-secondary);">
-      <i class="bi bi-pc-display-horizontal"></i>
-      <strong>Нет конвертации Office→PDF на сервере</strong> (ни ConvertAPI, ни LibreOffice).
-      Файлы <strong>.docx</strong> и <strong>.xlsx</strong> ниже откроются в браузере; старые форматы — упрощённый текст.
-      Чтобы был постраничный вид как PDF: задайте <code>CONVERTAPI_SECRET</code> или установите LibreOffice (<code>LIBREOFFICE_PATH</code>).
-    </div>
-    {% endif %} -->
     {% if viewer_hint %}
     <p class="small mb-2 px-1" style="color: var(--text-muted);">
       <i class="bi bi-info-circle"></i> {{ viewer_hint }}
@@ -248,6 +286,41 @@
     </p>
     {% endif %}
 
+    <form method="get" class="compare-toggle-wrap">
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" id="compareModeToggle" name="compare" value="1" {% if compare_enabled %}checked{% endif %}>
+        <label class="form-check-label" for="compareModeToggle">
+          Режим сравнения версий
+        </label>
+      </div>
+      <div class="compare-controls" id="compareControls" {% if not compare_enabled %}style="display:none;"{% endif %}>
+        <div class="field">
+          <label class="form-label mb-1">Из версии</label>
+          <select class="form-select" name="from_version">
+            <option value="">Выберите версию</option>
+            {% for v in versions %}
+            <option value="{{ v.id }}" {% if selected_from_version and selected_from_version.id == v.id %}selected{% endif %}>v{{ v.version_number }} — {{ v.created_at|date:"d.m.Y H:i" }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label class="form-label mb-1">В версию</label>
+          <select class="form-select" name="to_version">
+            <option value="">Выберите версию</option>
+            {% for v in versions %}
+            <option value="{{ v.id }}" {% if selected_to_version and selected_to_version.id == v.id %}selected{% endif %}>v{{ v.version_number }} — {{ v.created_at|date:"d.m.Y H:i" }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="fv-btn fv-btn-primary"><i class="bi bi-arrow-left-right"></i> Сравнить</button>
+        {% if compare_enabled %}
+        <a class="fv-btn" href="{% url 'file_manager:file_viewer' file.id %}">
+          <i class="bi bi-x-circle"></i> Выйти из сравнения
+        </a>
+        {% endif %}
+      </div>
+    </form>
+
     {% if text_truncated and viewer_mode == 'office' %}
     <div class="file-viewer-banner mb-0 rounded-top">
       <i class="bi bi-scissors"></i> Показан фрагмент файла (лимит просмотрщика по размеру текста).
@@ -255,6 +328,30 @@
     {% endif %}
 
     <div class="file-viewer-surface">
+      {% if compare_enabled %}
+      <div class="compare-panels">
+        <section class="compare-panel">
+          <div class="compare-panel-head">
+            {% if selected_from_version %}Версия v{{ selected_from_version.version_number }}{% else %}Версия A{% endif %}
+          </div>
+          {% if compare_left_iframe_url %}
+          <iframe class="compare-panel-frame" src="{{ compare_left_iframe_url }}" title="Версия A"></iframe>
+          {% else %}
+          <div class="p-3 text-muted">Выберите две версии для сравнения.</div>
+          {% endif %}
+        </section>
+        <section class="compare-panel">
+          <div class="compare-panel-head">
+            {% if selected_to_version %}Версия v{{ selected_to_version.version_number }}{% else %}Версия B{% endif %}
+          </div>
+          {% if compare_right_iframe_url %}
+          <iframe class="compare-panel-frame" src="{{ compare_right_iframe_url }}" title="Версия B"></iframe>
+          {% else %}
+          <div class="p-3 text-muted">Выберите две версии для сравнения.</div>
+          {% endif %}
+        </section>
+      </div>
+      {% else %}
 
       {% if viewer_config %}
       {{ viewer_config|json_script:"file-viewer-config" }}
@@ -326,7 +423,18 @@
         <a href="{{ download_url }}" class="fv-btn fv-btn-primary mt-2"><i class="bi bi-download"></i> Скачать файл</a>
       </div>
       {% endif %}
+      {% endif %}
     </div>
   </div>
 </div>
+<script>
+  (function () {
+    var toggle = document.getElementById("compareModeToggle");
+    var controls = document.getElementById("compareControls");
+    if (!toggle || !controls) return;
+    toggle.addEventListener("change", function () {
+      controls.style.display = toggle.checked ? "flex" : "none";
+    });
+  })();
+</script>
 {% endblock %}

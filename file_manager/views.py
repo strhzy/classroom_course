@@ -27,6 +27,7 @@ from django.core.files.storage import default_storage
 from django.utils.crypto import get_random_string
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 from web_messages import flash_form_errors
 from .models import ExternalStorageConnection
 from .wordfilter import find_banned_match
@@ -108,22 +109,16 @@ def can_manage_reference_data(user):
 
 
 def can_edit_file_object(user, file_obj):
-    """Редактирование метаданных, доступа и тегов (владелец файла или админ)."""
     return file_obj.uploaded_by_id == user.id or is_admin_user(user)
 
 
 def is_file_workspace_collaborator(user, file_obj):
-    """Участник workspace, в котором состоит этот файл."""
     if not getattr(user, "is_authenticated", False):
         return False
     return SharedWorkspace.objects.filter(participants=user, files=file_obj).exists()
 
 
 def can_upload_file_version(user, file_obj):
-    """
-    Загрузка новой версии (замена файла): владелец/админ или участник общего workspace с этим файлом.
-    Нужен доступ к просмотру файла.
-    """
     if not file_obj.can_access(user):
         return False
     if can_edit_file_object(user, file_obj):
@@ -333,17 +328,89 @@ def _read_revision_blob_bytes(version_obj):
     raise ValidationError("Для этой версии нет сохранённого blob")
 
 
-def create_user_uploaded_file(user, uploaded_file):
-    """
-    Сохраняет загруженный файл так же, как страница загрузки в файловом менеджере
-    (Яндекс.Диск при успешном API, иначе локально на сервере).
-    Перед сохранением — проверка ClamAV (если включена) и словаря «запрещённых» слов
-    (static/file_manager/words.txt) по извлечённому тексту.
+def _build_side_by_side_diff(from_text, to_text):
+    from_lines = (from_text or "").splitlines()
+    to_lines = (to_text or "").splitlines()
+    matcher = difflib.SequenceMatcher(None, from_lines, to_lines)
+    left_rows = []
+    right_rows = []
+    left_no = 0
+    right_no = 0
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        if tag == "equal":
+            for idx in range(i2 - i1):
+                left_no += 1
+                right_no += 1
+                left_rows.append({"line_no": left_no, "text": from_lines[i1 + idx], "kind": "ctx"})
+                right_rows.append({"line_no": right_no, "text": to_lines[j1 + idx], "kind": "ctx"})
+        elif tag == "delete":
+            for idx in range(i2 - i1):
+                left_no += 1
+                left_rows.append({"line_no": left_no, "text": from_lines[i1 + idx], "kind": "del"})
+                right_rows.append({"line_no": "", "text": "", "kind": "empty"})
+        elif tag == "insert":
+            for idx in range(j2 - j1):
+                right_no += 1
+                left_rows.append({"line_no": "", "text": "", "kind": "empty"})
+                right_rows.append({"line_no": right_no, "text": to_lines[j1 + idx], "kind": "add"})
+        elif tag == "replace":
+            block = max(i2 - i1, j2 - j1)
+            for idx in range(block):
+                if i1 + idx < i2:
+                    left_no += 1
+                    left_rows.append({"line_no": left_no, "text": from_lines[i1 + idx], "kind": "del"})
+                else:
+                    left_rows.append({"line_no": "", "text": "", "kind": "empty"})
+                if j1 + idx < j2:
+                    right_no += 1
+                    right_rows.append({"line_no": right_no, "text": to_lines[j1 + idx], "kind": "add"})
+                else:
+                    right_rows.append({"line_no": "", "text": "", "kind": "empty"})
+    return left_rows, right_rows
 
-    Returns:
-        (File, None, scan_info) при успехе,
-        (None, str, scan_info) при ошибке; scan_info — результат clamav.scan_upload_bytes.
-    """
+
+def _version_ext(version_obj):
+    candidates = [
+        version_obj.snapshot_title or "",
+        version_obj.blob_storage_path or "",
+        version_obj.snapshot_storage_path or "",
+    ]
+    for value in candidates:
+        if "." in value:
+            return value.rsplit(".", 1)[-1].lower()
+    return ""
+
+
+def _preview_content_type_by_ext(ext):
+    ext = (ext or "").lower()
+    if ext in ['txt', 'csv', 'log', 'md', 'json', 'xml', 'yaml', 'yml']:
+        return 'text/plain; charset=utf-8'
+    if ext in ['pdf']:
+        return 'application/pdf'
+    if ext in ['jpg', 'jpeg']:
+        return 'image/jpeg'
+    if ext in ['png']:
+        return 'image/png'
+    if ext in ['gif']:
+        return 'image/gif'
+    if ext in ['webp']:
+        return 'image/webp'
+    if ext in ['svg']:
+        return 'image/svg+xml'
+    if ext in ['mp4']:
+        return 'video/mp4'
+    if ext in ['webm']:
+        return 'video/webm'
+    if ext in ['mp3']:
+        return 'audio/mpeg'
+    if ext in ['wav']:
+        return 'audio/wav'
+    if ext in ['ogg']:
+        return 'audio/ogg'
+    return 'application/octet-stream'
+
+
+def create_user_uploaded_file(user, uploaded_file):
     storage_quota = get_user_storage_usage(user)
     file_size = uploaded_file.size
     file_name = PurePosixPath(uploaded_file.name).name
@@ -456,7 +523,6 @@ def create_user_uploaded_file(user, uploaded_file):
     except Exception:
         pass
 
-    # Автосоздание первой ревизии (v1) сразу при загрузке файла.
     try:
         if not FileVersion.objects.filter(file=file_obj, version_number=1).exists():
             structured_snapshot = build_structured_snapshot(unique_title, uploaded_content)
@@ -757,7 +823,6 @@ def file_preview(request ,file_id ):
 
 @login_required
 def office_pdf_preview(request, file_id):
-    """Отдаёт PDF из Office: ConvertAPI (если есть ключ) и/или LibreOffice."""
     file_obj = get_object_or_404(File, id=file_id)
     if not file_obj.can_access(request.user):
         raise PermissionDenied
@@ -794,11 +859,127 @@ def office_pdf_preview(request, file_id):
                 pass
 
 
+@login_required
+def file_version_preview(request, file_id, version_id):
+    file_obj = get_object_or_404(File, id=file_id)
+    if not file_obj.can_access(request.user):
+        raise PermissionDenied
+    version_obj = get_object_or_404(FileVersion, file=file_obj, id=version_id)
+    content = _read_revision_blob_bytes(version_obj)
+    ext = _version_ext(version_obj)
+    response = HttpResponse(content, content_type=_preview_content_type_by_ext(ext))
+    response['Content-Disposition'] = f'inline; filename="{version_obj.snapshot_title or file_obj.title}"'
+    return response
+
+
+@login_required
+def file_version_office_pdf_preview(request, file_id, version_id):
+    file_obj = get_object_or_404(File, id=file_id)
+    if not file_obj.can_access(request.user):
+        raise PermissionDenied
+    version_obj = get_object_or_404(FileVersion, file=file_obj, id=version_id)
+    ext = _version_ext(version_obj)
+    if ext not in EXTENSIONS_LIBREOFFICE_TO_PDF:
+        raise Http404
+    if not is_office_pdf_conversion_available():
+        return HttpResponse(
+            "Конвертация Office→PDF недоступна",
+            status=503,
+            content_type="text/plain; charset=utf-8",
+        )
+    content = _read_revision_blob_bytes(version_obj)
+    fd, temp_path = tempfile.mkstemp(suffix=f".{ext or 'bin'}")
+    os.close(fd)
+    try:
+        with open(temp_path, "wb") as f:
+            f.write(content)
+        pdf_bytes = convert_office_file_to_pdf_bytes(temp_path)
+        response = HttpResponse(pdf_bytes, content_type="application/pdf")
+        response["Content-Disposition"] = 'inline; filename="version-preview.pdf"'
+        return response
+    finally:
+        try:
+            os.unlink(temp_path)
+        except OSError:
+            pass
+
+
+@login_required
+@xframe_options_sameorigin
+def file_version_inline_viewer(request, file_id, version_id):
+    file_obj = get_object_or_404(File, id=file_id)
+    if not file_obj.can_access(request.user):
+        raise PermissionDenied
+    version_obj = get_object_or_404(FileVersion, file=file_obj, id=version_id)
+    compare_with_id = request.GET.get("compare_with")
+    compare_side = request.GET.get("side", "left")
+    ext = _version_ext(version_obj)
+    preview_url = reverse("file_manager:file_version_preview", args=[file_obj.id, version_obj.id])
+    office_pdf_url = reverse("file_manager:file_version_office_pdf_preview", args=[file_obj.id, version_obj.id])
+    pdf_conversion_ready = is_office_pdf_conversion_available()
+
+    viewer_mode = "fallback"
+    viewer_config = None
+    if ext == "pdf":
+        viewer_mode = "js_pdf"
+        viewer_config = {"previewUrl": preview_url, "ext": ext, "mode": "js_pdf"}
+    elif ext in EXTENSIONS_LIBREOFFICE_TO_PDF and pdf_conversion_ready:
+        viewer_mode = "js_pdf"
+        viewer_config = {"previewUrl": office_pdf_url, "ext": "pdf", "mode": "js_pdf"}
+    elif ext == "docx":
+        viewer_mode = "js_docx"
+        viewer_config = {"previewUrl": preview_url, "ext": ext, "mode": "js_docx"}
+    elif ext == "xlsx":
+        viewer_mode = "js_xlsx"
+        viewer_config = {"previewUrl": preview_url, "ext": ext, "mode": "js_xlsx"}
+    elif ext in {
+        "txt", "csv", "tsv", "log", "md", "json", "xml", "yaml", "yml", "toml",
+        "ini", "cfg", "env", "py", "js", "mjs", "ts", "tsx", "jsx", "css", "scss",
+        "sass", "less", "html", "htm", "vue", "svelte", "sh", "bash", "zsh", "bat",
+        "ps1", "sql", "r", "rb", "go", "rs", "java", "c", "h", "cpp", "hpp", "cc",
+        "cs", "php", "kt", "swift", "pl", "dockerfile", "gitignore", "lock",
+        "gitattributes", "srt", "vtt",
+    }:
+        viewer_mode = "js_text"
+        viewer_config = {"previewUrl": preview_url, "ext": ext, "mode": "js_text"}
+    elif ext in {"jpg", "jpeg", "png", "gif", "webp", "bmp", "svg"}:
+        viewer_mode = "embed_image"
+    elif ext in {"mp4", "webm", "ogv"}:
+        viewer_mode = "embed_video"
+    elif ext in {"mp3", "wav", "ogg", "m4a", "flac", "opus"}:
+        viewer_mode = "embed_audio"
+
+    diff_rows = []
+    diff_mode = False
+    if compare_with_id:
+        other_version = FileVersion.objects.filter(file=file_obj, id=compare_with_id).first()
+        if other_version:
+            left_rows, right_rows = _build_side_by_side_diff(
+                version_obj.extracted_text_snapshot if compare_side == "left" else other_version.extracted_text_snapshot,
+                other_version.extracted_text_snapshot if compare_side == "left" else version_obj.extracted_text_snapshot,
+            )
+            diff_rows = left_rows if compare_side == "left" else right_rows
+            diff_mode = True
+
+    return render(
+        request,
+        "file_manager/file_version_inline_viewer.html",
+        {
+            "file": file_obj,
+            "version": version_obj,
+            "viewer_mode": viewer_mode,
+            "viewer_config": viewer_config,
+            "preview_url": preview_url,
+            "download_url": reverse("file_manager:file_download", args=[file_obj.id]),
+            "office_pdf_conversion_available": pdf_conversion_ready,
+            "diff_rows": diff_rows,
+            "diff_mode": diff_mode,
+            "compare_side": compare_side,
+        },
+    )
+
+
 def _resolve_path_for_viewing(file_obj):
-    """
-    Возвращает (абсолютный_путь, удалить_после_использования).
-    Для Яндекс.Диска скачивает во временный файл.
-    """
     if file_obj.is_folder:
         return None, False
     if file_obj.storage_provider == "yandex_disk" and file_obj.yandex_path:
@@ -829,10 +1010,6 @@ _MAX_VIEWER_TEXT = 500_000
 
 @login_required
 def file_viewer(request, file_id):
-    """
-    Просмотр: Office как PDF через ConvertAPI и/или LibreOffice;
-    без конвертера — docx (docx-preview) и xlsx (SheetJS) в браузере, прочий Office — текст на сервере.
-    """
     file_obj = get_object_or_404(File, id=file_id)
     if not file_obj.can_access(request.user):
         raise PermissionDenied
@@ -841,6 +1018,14 @@ def file_viewer(request, file_id):
         return redirect("file_manager:file_list")
 
     ext = (file_obj.get_extension() or "").lower()
+    versions = list(file_obj.versions.select_related("changed_by").order_by("-version_number"))
+    compare_enabled = request.GET.get("compare") == "1"
+    from_version_id = request.GET.get("from_version")
+    to_version_id = request.GET.get("to_version")
+    selected_from_version = None
+    selected_to_version = None
+    compare_left_iframe_url = ""
+    compare_right_iframe_url = ""
     download_url = reverse("file_manager:file_download", args=[file_obj.id])
     detail_url = reverse("file_manager:file_detail", args=[file_obj.id])
     preview_path = reverse("file_manager:file_preview", args=[file_obj.id])
@@ -869,6 +1054,12 @@ def file_viewer(request, file_id):
 
     context = {
         "file": file_obj,
+        "versions": versions,
+        "compare_enabled": compare_enabled,
+        "selected_from_version": None,
+        "selected_to_version": None,
+        "compare_left_iframe_url": compare_left_iframe_url,
+        "compare_right_iframe_url": compare_right_iframe_url,
         "viewer_mode": "fallback",
         "download_url": download_url,
         "detail_url": detail_url,
@@ -881,6 +1072,25 @@ def file_viewer(request, file_id):
         "convertapi_configured": is_convertapi_configured(),
         "office_pdf_conversion_available": pdf_conversion_ready,
     }
+
+    if compare_enabled and from_version_id and to_version_id:
+        selected_from_version = FileVersion.objects.filter(file=file_obj, id=from_version_id).first()
+        selected_to_version = FileVersion.objects.filter(file=file_obj, id=to_version_id).first()
+        if selected_from_version and selected_to_version:
+            context.update(
+                {
+                    "selected_from_version": selected_from_version,
+                    "selected_to_version": selected_to_version,
+                    "compare_left_iframe_url": reverse(
+                        "file_manager:file_version_inline_viewer",
+                        args=[file_obj.id, selected_from_version.id],
+                    ) + f"?compare_with={selected_to_version.id}&side=left",
+                    "compare_right_iframe_url": reverse(
+                        "file_manager:file_version_inline_viewer",
+                        args=[file_obj.id, selected_to_version.id],
+                    ) + f"?compare_with={selected_from_version.id}&side=right",
+                }
+            )
 
     if ext == "pdf":
         context["viewer_mode"] = "js_pdf"
@@ -966,7 +1176,6 @@ def file_viewer(request, file_id):
 
 @login_required 
 def file_edit(request ,file_id ):
-    """Редактирование файла"""
     file_obj =get_object_or_404(File ,id =file_id )
 
     if not can_edit_file_object(request.user, file_obj):
@@ -1100,7 +1309,7 @@ def file_version_create(request ,file_id ):
     storage_quota = get_user_storage_usage(owner)
 
     if request.method =='POST':
-        form =FileVersionForm(request.POST ,request.FILES )
+        form =FileVersionForm(request.POST ,request.FILES, current_file=file_obj)
         if form.is_valid():
             uploaded_file = request.FILES["version_file"]
             uploaded_content = uploaded_file.read()
@@ -1208,7 +1417,7 @@ def file_version_create(request ,file_id ):
         else:
             flash_form_errors(request, form)
     else :
-        form =FileVersionForm()
+        form =FileVersionForm(current_file=file_obj)
 
     return render(request ,'file_manager/file_version_form.html',{
     'form':form ,
@@ -1706,7 +1915,6 @@ def download_all_files_archive(request):
 
 @login_required
 def workspace_user_search(request):
-    """JSON: поиск пользователей для добавления в workspace (логин, имя, email)."""
     q = (request.GET.get("q") or "").strip()
     workspace_raw = (request.GET.get("workspace") or "").strip()
     exclude_ids = {request.user.pk}
@@ -1746,8 +1954,6 @@ def workspace_user_search(request):
 
 @login_required
 def workspace_list(request):
-    # Сначала id без annotate: иначе JOIN по participants + Count(files) даёт неверные
-    # агрегаты (часто совпадающие с числом участников из‑за размножения строк в SQL).
     workspace_ids = (
         SharedWorkspace.objects.filter(
             Q(owner=request.user) | Q(participants=request.user)

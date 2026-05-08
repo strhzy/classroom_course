@@ -1,0 +1,66 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Version preview</title>
+  <style>
+    html, body { margin: 0; padding: 0; background: #1f1f26; color: #e8e8ef; height: 100%; }
+    #file-viewer-mount { min-height: 100vh; }
+    .file-viewer-loading { padding: 1rem; font-family: sans-serif; color: #b7b7c8; }
+    .file-viewer-fallback { padding: 1rem; font-family: sans-serif; color: #b7b7c8; }
+    .file-viewer-image { max-width: 100%; max-height: 100vh; display: block; margin: 0 auto; object-fit: contain; }
+    .file-viewer-media { width: 100%; max-height: 100vh; background: #000; }
+    .file-viewer-text {
+      margin: 0;
+      padding: 1rem;
+      font-family: "JetBrains Mono", "Consolas", monospace;
+      font-size: 0.82rem;
+      white-space: pre-wrap;
+      color: #d7d7e5;
+      max-height: 100vh;
+      overflow: auto;
+    }
+    .file-viewer-paper { background: #2b2b34; padding: 0.8rem; max-height: 100vh; overflow: auto; }
+    .file-viewer-paper-inner { background: #f7f7f5; color: #202024; border-radius: 2px; }
+    .file-viewer-docx-preview-root .docx-wrapper > section.docx { padding: 1.25rem; box-sizing: border-box; }
+    .file-viewer-pdf-pages { padding: 0.5rem; text-align: center; background: #25252d; max-height: 100vh; overflow: auto; }
+    .file-viewer-pdf-pages canvas { display: block; margin: 0 auto 0.5rem; max-width: 100%; height: auto; }
+    .file-viewer-xlsx-sheet-title {
+      margin: 0; padding: 0.6rem 0.8rem; font-size: 0.75rem; text-transform: uppercase; color: #666;
+      border-bottom: 1px solid #ddd;
+    }
+    .file-viewer-xlsx-scroll { padding: 0.6rem 0.8rem; max-height: 80vh; overflow: auto; background: #fff; }
+    .file-viewer-sheet-table { font-size: 0.8rem; border-collapse: collapse; width: 100%; }
+    .file-viewer-sheet-table td { border: 1px solid #d0d0d0; padding: 0.2rem 0.35rem; }
+  </style>
+</head>
+<body>
+  {% if viewer_config %}
+  {{ viewer_config|json_script:"file-viewer-config" }}
+  <div id="file-viewer-loading" class="file-viewer-loading">Загрузка версии…</div>
+  <div id="file-viewer-mount"></div>
+  {% if viewer_mode == 'js_pdf' %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin="anonymous"></script>
+  {% elif viewer_mode == 'js_text' %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous"></script>
+  {% elif viewer_mode == 'js_docx' %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/docx-preview@0.3.2/dist/docx-preview.js" crossorigin="anonymous"></script>
+  {% elif viewer_mode == 'js_xlsx' %}
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js" crossorigin="anonymous"></script>
+  {% endif %}
+  <script src="{% static 'file_manager/js/file_viewer.js' %}"></script>
+  {% elif viewer_mode == 'embed_image' %}
+  <img class="file-viewer-image" src="{{ preview_url }}" alt="{{ version.snapshot_title|default:file.title }}">
+  {% elif viewer_mode == 'embed_video' %}
+  <video class="file-viewer-media" controls playsinline preload="metadata"><source src="{{ preview_url }}"></video>
+  {% elif viewer_mode == 'embed_audio' %}
+  <audio class="file-viewer-media" controls preload="metadata"><source src="{{ preview_url }}"></audio>
+  {% else %}
+  <div class="file-viewer-fallback">Эта версия не поддерживает встроенный предпросмотр.</div>
+  {% endif %}
+</body>
+</html>
