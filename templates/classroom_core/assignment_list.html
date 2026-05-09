@@ -1,4 +1,5 @@
 {% extends "classroom_core/base_courses.html" %}
+{% load classroom_tags %}
 
 {% block title %}📝 Задания{% endblock %}
 
@@ -391,6 +392,17 @@
    .btn-view:hover i {
         transform: translateX(3px);
     }
+
+   .btn-view.btn-view-danger {
+        border-color: var(--status-danger-border);
+        color: var(--status-danger-light);
+    }
+
+   .btn-view.btn-view-danger:hover {
+        background: var(--status-danger-bg);
+        border-color: var(--status-danger);
+        color: var(--text-white);
+    }
     
     
    .empty-state {
@@ -650,10 +662,22 @@
                                 {% endif %}
                             </td>
                             <td data-label="Действия">
-                                <a href="{% url 'classroom_core:assignment_detail' assignment.id %}" class="btn-view">
-                                    <i class="bi bi-eye"></i>
-                                    Просмотреть
-                                </a>
+                                <div class="d-flex flex-wrap gap-2 align-items-center">
+                                    <a href="{% url 'classroom_core:assignment_detail' assignment.id %}" class="btn-view">
+                                        <i class="bi bi-eye"></i>
+                                        Просмотреть
+                                    </a>
+                                    {% if assignment.course|allows_edit:request.user %}
+                                    <a href="{% url 'classroom_core:assignment_edit' assignment.id %}" class="btn-view">
+                                        <i class="bi bi-pencil"></i>
+                                        Редактировать
+                                    </a>
+                                    <a href="{% url 'classroom_core:assignment_delete' assignment.id %}" class="btn-view btn-view-danger">
+                                        <i class="bi bi-trash"></i>
+                                        Удалить
+                                    </a>
+                                    {% endif %}
+                                </div>
                             </td>
                         </tr>
                         {% empty %}

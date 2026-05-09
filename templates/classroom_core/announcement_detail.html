@@ -1,4 +1,5 @@
 {% extends "classroom_core/base_courses.html" %}
+{% load classroom_tags %}
 
 {% block title %}📢 {{ announcement.title }}{% endblock %}
 
@@ -318,7 +319,7 @@
             </div>
             
             <div>
-                {% if announcement.can_edit %}
+                {% if announcement|allows_edit:request.user %}
                 <a href="{% url 'classroom_core:announcement_edit' announcement.id %}" class="btn-edit">
                     <i class="bi bi-pencil me-2"></i>Редактировать
                 </a>

@@ -1,6 +1,8 @@
 from django.urls import path
+from django.urls import reverse_lazy
 from django.contrib.auth import views as auth_views
 from . import views
+from .core_admin import views as core_admin_views
 
 app_name = 'classroom_core'
 
@@ -9,11 +11,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='classroom_core:login'), name='logout'),
     path(
         'password-reset/',
-        auth_views.PasswordResetView.as_view(
-            template_name='classroom_core/password_reset_form.html',
-            email_template_name='classroom_core/password_reset_email.txt',
-            subject_template_name='classroom_core/password_reset_subject.txt',
-        ),
+        views.PasswordResetRequestView.as_view(),
         name='password_reset'
     ),
     path(
@@ -23,7 +21,10 @@ urlpatterns = [
     ),
     path(
         'reset/<uidb64>/<token>/',
-        auth_views.PasswordResetConfirmView.as_view(template_name='classroom_core/password_reset_confirm.html'),
+        auth_views.PasswordResetConfirmView.as_view(
+            template_name='classroom_core/password_reset_confirm.html',
+            success_url=reverse_lazy('classroom_core:password_reset_complete'),
+        ),
         name='password_reset_confirm'
     ),
     path(
@@ -114,4 +115,33 @@ urlpatterns = [
     path('management/students/create/', views.custom_admin_student_create, name='custom_admin_student_create'),
     path('management/students/<int:user_id>/edit/', views.custom_admin_student_edit, name='custom_admin_student_edit'),
     path('management/students/<int:user_id>/delete/', views.custom_admin_student_delete, name='custom_admin_student_delete'),
+
+    path('management/core-admin/', core_admin_views.core_admin_index, name='core_admin_index'),
+    path(
+        'management/core-admin/backup/json/',
+        core_admin_views.core_admin_backup_download,
+        name='core_admin_backup_json',
+    ),
+    path(
+        'management/core-admin/backup/sqlite/',
+        core_admin_views.core_admin_backup_sqlite_download,
+        name='core_admin_backup_sqlite',
+    ),
+    path('management/core-admin/<str:model_name>/', core_admin_views.core_admin_changelist, name='core_admin_changelist'),
+    path('management/core-admin/<str:model_name>/add/', core_admin_views.core_admin_add, name='core_admin_add'),
+    path(
+        'management/core-admin/<str:model_name>/<int:object_id>/change/',
+        core_admin_views.core_admin_change,
+        name='core_admin_change',
+    ),
+    path(
+        'management/core-admin/<str:model_name>/<int:object_id>/delete/',
+        core_admin_views.core_admin_delete,
+        name='core_admin_delete',
+    ),
+    path(
+        'management/core-admin/<str:model_name>/bulk-delete/',
+        core_admin_views.core_admin_bulk_delete,
+        name='core_admin_bulk_delete',
+    ),
 ]

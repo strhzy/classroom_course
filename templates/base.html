@@ -289,6 +289,7 @@
             }
         }
     </style>
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar">
@@ -349,10 +350,7 @@
                             <i class="bi bi-shield"></i> Управление
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'classroom_core:custom_admin_dashboard' %}"><i class="bi bi-columns-gap"></i> Панель</a></li>
-                            <li><a class="dropdown-item" href="{% url 'classroom_core:custom_admin_courses' %}"><i class="bi bi-book"></i> Курсы</a></li>
-                            <li><a class="dropdown-item" href="{% url 'classroom_core:custom_admin_assignments' %}"><i class="bi bi-journal-check"></i> Задания</a></li>
-                            <li><a class="dropdown-item" href="{% url 'classroom_core:custom_admin_students' %}"><i class="bi bi-people"></i> Студенты</a></li>
+                            <li><a class="dropdown-item" href="{% url 'classroom_core:core_admin_index' %}"><i class="bi bi-columns-gap"></i> Панель управления курсами</a></li>
                         </ul>
                     </li>
                     {% endif %}

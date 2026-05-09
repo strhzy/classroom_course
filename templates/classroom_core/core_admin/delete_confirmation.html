@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Удалить {{ verbose_name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/core_admin.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 core-admin core-admin-delete">
+    <nav aria-label="breadcrumb" class="core-admin__breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'classroom_core:core_admin_index' %}">Панель управления курсами</a></li>
+            <li class="breadcrumb-item"><a href="{{ changelist_url }}">{{ model_verbose_name_plural }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Удаление</li>
+        </ol>
+    </nav>
+
+    <div class="core-admin-delete__panel mt-4 mx-auto">
+        <div class="text-center mb-3">
+            <div class="core-admin-delete__icon-wrap mb-3">
+                <i class="bi bi-exclamation-triangle-fill fs-4" aria-hidden="true"></i>
+            </div>
+            <h2 class="h4 mb-2">Удалить {{ verbose_name }}?</h2>
+            <p class="text-muted mb-0">Это действие нельзя отменить.</p>
+        </div>
+        <p class="text-center mb-4 px-md-3">
+            Будет удалена запись:<br>
+            <strong class="text-break">{{ object }}</strong>
+        </p>
+
+        <form method="post" class="d-flex flex-wrap justify-content-center gap-2">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger px-4">Да, удалить</button>
+            <a href="{{ changelist_url }}" class="btn btn-ca-outline">Отмена</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ verbose_name_plural }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/core_admin.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 core-admin px-lg-4">
+    <nav aria-label="breadcrumb" class="core-admin__breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'classroom_core:core_admin_index' %}">Панель управления курсами</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ verbose_name_plural }}</li>
+        </ol>
+    </nav>
+
+    <header class="core-admin__hero py-3 px-3 px-md-4">
+        <div class="core-admin__hero-inner align-items-center">
+            <div class="core-admin__title-block">
+                <h1 class="h3 mb-0">{{ verbose_name_plural }}</h1>
+            </div>
+            <div class="core-admin__actions">
+                <a class="btn btn-ca-success" href="{{ add_url }}"><i class="bi bi-plus-lg"></i> Добавить запись</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="core-admin__card mb-3 core-admin__card--flush">
+        <form method="get" class="core-admin__toolbar">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Поиск</label>
+                    <input type="search" name="q" value="{{ q }}" class="form-control" placeholder="Текст для поиска…" autocomplete="off">
+                </div>
+                {% for fl in filter_choices %}
+                <div class="col-md-3">
+                    <label class="form-label">{{ fl.label }}</label>
+                    <select name="{{ fl.param }}" class="form-select" onchange="this.form.submit()">
+                        <option value="">Все</option>
+                        {% for c in fl.choices %}
+                        <option value="{{ c.value }}" {% if fl.current == c.value %}selected{% endif %}>{{ c.label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endfor %}
+                <div class="col-md-auto d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-ca-primary">Применить</button>
+                    <a href="{% url 'classroom_core:core_admin_changelist' model_name=model_name %}" class="btn btn-ca-outline">Сбросить</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <form method="post" action="{% url 'classroom_core:core_admin_bulk_delete' model_name=model_name %}">
+        {% csrf_token %}
+        <div class="core-admin__card core-admin__card--flush">
+            <div class="core-admin__bulk">
+                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Удалить выбранные записи?');">
+                    <i class="bi bi-trash"></i> Удалить выбранные
+                </button>
+                <span class="small text-muted">Отметьте строки в таблице и подтвердите удаление.</span>
+            </div>
+            <div class="core-admin__table-wrap">
+                <table class="table core-admin__table mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="width: 2.5rem;">
+                                <input type="checkbox" class="form-check-input" aria-label="Выбрать все" onclick="document.querySelectorAll('.row-select').forEach(cb => { cb.checked = this.checked; });">
+                            </th>
+                            {% for col in list_display %}
+                            <th scope="col">{{ col }}</th>
+                            {% endfor %}
+                            <th scope="col" class="text-end" style="width: 7rem;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                        <tr>
+                            <td>
+                                <input class="form-check-input row-select" type="checkbox" name="_selected_action" value="{{ row.obj.pk }}" aria-label="Выбрать запись {{ row.obj.pk }}">
+                            </td>
+                            {% for cell in row.cells %}
+                            <td class="cell-muted small">{{ cell }}</td>
+                            {% endfor %}
+                            <td class="text-end ca-actions">
+                                <a class="btn btn-ca-outline btn-ca-sm" href="{% url 'classroom_core:core_admin_change' model_name=model_name object_id=row.obj.pk %}">Изменить</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="{{ list_display|length|add:2 }}" class="text-muted py-5 text-center">Записей пока нет.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if page_obj.paginator.num_pages > 1 %}
+            <div class="core-admin__pagination">
+                <nav aria-label="Страницы списка">
+                    <ul class="pagination justify-content-center mb-0 flex-wrap">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ q|urlencode }}{% for fl in filter_choices %}{% if fl.current %}&{{ fl.param }}={{ fl.current|urlencode }}{% endif %}{% endfor %}">Назад</a>
+                        </li>
+                        {% endif %}
+                        <li class="page-item disabled">
+                            <span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ q|urlencode }}{% for fl in filter_choices %}{% if fl.current %}&{{ fl.param }}={{ fl.current|urlencode }}{% endif %}{% endfor %}">Вперёд</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -18,7 +18,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="mb-0 mgmt-title">Студенты</h2>
         <div class="d-flex gap-2">
-            <a class="btn btn-soft" href="{% url 'classroom_core:custom_admin_dashboard' %}">Назад</a>
+            <a class="btn btn-soft" href="{% url 'classroom_core:core_admin_index' %}">Назад</a>
             {% if is_super_management %}
             <a class="btn btn-main" href="{% url 'classroom_core:custom_admin_student_create' %}">Создать пользователя</a>
             {% endif %}

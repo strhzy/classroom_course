@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Панель управления курсами{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/core_admin.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-4 core-admin">
+    <nav aria-label="breadcrumb" class="core-admin__breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item active" aria-current="page">Панель управления курсами</li>
+        </ol>
+    </nav>
+
+    <header class="core-admin__hero">
+        <div class="core-admin__hero-inner">
+            <div class="core-admin__title-block">
+                <h1 class="h2 mb-0">Панель управления курсами</h1>
+                <p class="core-admin__lead mt-2">Справочники и данные курсов: выберите раздел для просмотра и редактирования записей.</p>
+            </div>
+            <div class="core-admin__actions">
+                <a class="btn btn-ca-outline" href="{% url 'classroom_core:core_admin_backup_json' %}">
+                    <i class="bi bi-file-earmark-arrow-down"></i> Резервная копия (JSON)
+                </a>
+                {% if is_sqlite %}
+                <a class="btn btn-ca-outline" href="{% url 'classroom_core:core_admin_backup_sqlite' %}">
+                    <i class="bi bi-database-down"></i> Копия базы (SQLite)
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <div class="core-admin__notice">
+        <strong>JSON</strong> — переносимая выгрузка данных (все приложения проекта, кроме сессий). Удобно для архива или переноса на другой сервер.
+        {% if is_sqlite %}<br><strong>Файл SQLite</strong> — полная копия файла базы. Перед снимком на продакшене при необходимости ограничьте активную запись.{% endif %}
+    </div>
+
+    <div class="core-admin__card core-admin__card--flush">
+        <div class="core-admin__table-wrap">
+            <table class="table core-admin__table mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">Раздел</th>
+                        <th scope="col" class="text-end">Записей</th>
+                        <th scope="col" class="text-end" style="width: 8rem;">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in apps_models %}
+                    <tr>
+                        <td class="cell-muted">{{ row.verbose_name }}</td>
+                        <td class="text-end"><span class="core-admin-count">{{ row.count }}</span></td>
+                        <td class="text-end ca-actions">
+                            <a class="btn btn-ca-primary btn-ca-sm" href="{{ row.changelist_url }}">Открыть</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3" class="text-muted py-4 text-center">Нет зарегистрированных разделов.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

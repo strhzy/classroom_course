@@ -2174,7 +2174,6 @@ def workspace_add_file(request, file_id):
     )
     return redirect("file_manager:file_detail", file_id=file_id)
 
-
 @login_required
 def backup_compare(request):
     backups_dir = Path(settings.BASE_DIR) / "backups"

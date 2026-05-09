@@ -1,10 +1,9 @@
-from django.db import models 
-from django.contrib.auth.models import User ,AbstractUser 
+from django.db import models
+from django.contrib.auth.models import User
 from django.utils import timezone 
 from django.core.validators import FileExtensionValidator
 
 class StudentGroup(models.Model):
-    """Модель группы студентов"""
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     created_by = models.ForeignKey(
@@ -17,8 +16,8 @@ class StudentGroup(models.Model):
     
     class Meta:
         ordering = ['name']
-        verbose_name = 'Группа студентов'
-        verbose_name_plural = 'Группы студентов'
+        verbose_name = 'Учебная группа'
+        verbose_name_plural = 'Учебные группы'
     
     def __str__(self):
         return self.name
@@ -27,7 +26,6 @@ class StudentGroup(models.Model):
         return self.students.count()
 
 class UserProfile(models.Model):
-    """Профиль пользователя с ролями"""
     
     ROLE_CHOICES = [
        ('student', 'Студент'),
@@ -59,8 +57,8 @@ class UserProfile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        verbose_name = 'Профиль пользователя'
-        verbose_name_plural = 'Профили пользователей'
+        verbose_name = 'Профиль участника'
+        verbose_name_plural = 'Профили участников'
     
     def __str__(self):
         return f"{self.user.username} - {self.get_role_display()}"
@@ -78,13 +76,12 @@ class UserProfile(models.Model):
         return self.role == 'admin' or self.user.is_superuser
 
 class Course(models.Model):
-    """Модель курса"""
     
     STATUS_CHOICES = [
        ('draft', 'Черновик'),
        ('active', 'Активный'),
        ('archived', 'Архивирован'),
-       ('completed', 'Завершен'),
+       ('completed', 'Завершён'),
     ]
     
     title = models.CharField(max_length=255)
@@ -195,7 +192,13 @@ class Course(models.Model):
         )
     
     def can_delete(self, user):
-        return user == self.instructor or user.is_superuser or user.profile.is_staff()
+        """Удаление курса — лектор, ассистенты курса или администраторы."""
+        return (
+            user == self.instructor
+            or user in self.teaching_assistants.all()
+            or user.is_superuser
+            or user.profile.is_staff()
+        )
     
     def add_student(self, user):
         if self.max_students and self.get_student_count() >= self.max_students:
@@ -266,8 +269,8 @@ class CourseSection(models.Model ):
 
     class Meta :
         ordering =['course','order']
-        verbose_name ='Раздел курса'
-        verbose_name_plural ='Разделы курса'
+        verbose_name ='Тема или модуль курса'
+        verbose_name_plural ='Темы и модули курса'
 
     def __str__(self ):
         return f"{self.course.title } - {self.title }"
@@ -278,7 +281,6 @@ class CourseMaterial(models.Model ):
    ('published', 'Опубликовано'),
     ]
 
-    """Учебные материалы курса"""
 
     MATERIAL_TYPE_CHOICES =[
    ('file','Файл'),
@@ -322,14 +324,13 @@ class CourseMaterial(models.Model ):
 
     class Meta :
         ordering =['section','order']
-        verbose_name ='Учебный материал'
-        verbose_name_plural ='Учебные материалы'
+        verbose_name ='Материал занятия'
+        verbose_name_plural ='Материалы занятий'
 
     def __str__(self ):
         return f"{self.section.title } - {self.title }"
 
 class Assignment(models.Model ):
-    """Задание курса"""
 
     STATUS_CHOICES =[
    ('draft','Черновик'),
@@ -400,8 +401,8 @@ class Assignment(models.Model ):
 
     class Meta :
         ordering =['-due_date','-created_at']
-        verbose_name ='Задание'
-        verbose_name_plural ='Задания'
+        verbose_name ='Задание курса'
+        verbose_name_plural ='Задания курса'
 
     def __str__(self ):
         return self.title 
@@ -423,7 +424,6 @@ class Assignment(models.Model ):
         return user ==self.course.instructor or user in self.course.teaching_assistants.all()or user.is_superuser or user.profile.is_staff()
 
 class AssignmentSubmission(models.Model ):
-    """Решение задания от студента"""
 
     STATUS_CHOICES =[
    ('submitted','Отправлено'),
@@ -477,8 +477,8 @@ class AssignmentSubmission(models.Model ):
 
     class Meta :
         ordering =['-submitted_at']
-        verbose_name ='Решение задания'
-        verbose_name_plural ='Решения заданий'
+        verbose_name ='Ответ на задание'
+        verbose_name_plural ='Ответы на задания'
         unique_together =['assignment','student']
 
     def __str__(self ):
@@ -516,11 +516,13 @@ class AssignmentQuizQuestion(models.Model):
         on_delete=models.CASCADE,
         related_name="quiz_questions",
     )
-    question_text = models.TextField()
-    order = models.PositiveIntegerField(default=0)
+    question_text = models.TextField(verbose_name="Текст вопроса")
+    order = models.PositiveIntegerField(default=0, verbose_name="Порядок")
 
     class Meta:
         ordering = ["order", "id"]
+        verbose_name = "Вопрос теста в задании"
+        verbose_name_plural = "Вопросы тестов в заданиях"
 
     def __str__(self):
         return f"{self.assignment.title}: {self.question_text[:40]}"
@@ -532,12 +534,14 @@ class AssignmentQuizOption(models.Model):
         on_delete=models.CASCADE,
         related_name="options",
     )
-    option_text = models.CharField(max_length=500)
-    is_correct = models.BooleanField(default=False)
-    order = models.PositiveIntegerField(default=0)
+    option_text = models.CharField(max_length=500, verbose_name="Текст варианта")
+    is_correct = models.BooleanField(default=False, verbose_name="Верный ответ")
+    order = models.PositiveIntegerField(default=0, verbose_name="Порядок")
 
     class Meta:
         ordering = ["order", "id"]
+        verbose_name = "Вариант ответа теста"
+        verbose_name_plural = "Варианты ответов теста"
 
     def __str__(self):
         return self.option_text
@@ -554,14 +558,16 @@ class AssignmentQuizAttempt(models.Model):
         on_delete=models.CASCADE,
         related_name="quiz_attempts",
     )
-    total_questions = models.PositiveIntegerField(default=0)
-    correct_answers = models.PositiveIntegerField(default=0)
-    answers_payload = models.JSONField(default=list, blank=True)
-    is_correct = models.BooleanField(default=False)
-    submitted_at = models.DateTimeField(auto_now_add=True)
+    total_questions = models.PositiveIntegerField(default=0, verbose_name="Всего вопросов")
+    correct_answers = models.PositiveIntegerField(default=0, verbose_name="Верных ответов")
+    answers_payload = models.JSONField(default=list, blank=True, verbose_name="Ответы")
+    is_correct = models.BooleanField(default=False, verbose_name="Все ответы верны")
+    submitted_at = models.DateTimeField(auto_now_add=True, verbose_name="Отправлено")
 
     class Meta:
         ordering = ["-submitted_at"]
+        verbose_name = "Попытка прохождения теста"
+        verbose_name_plural = "Попытки прохождения тестов"
 
 
 class GradebookColumn(models.Model):
@@ -569,7 +575,7 @@ class GradebookColumn(models.Model):
         ("lecture", "Лекция"),
         ("attendance", "Посещаемость"),
         ("exam", "Экзамен"),
-        ("custom", "Кастом"),
+        ("custom", "Дополнительно"),
     ]
 
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="gradebook_columns")
@@ -581,6 +587,8 @@ class GradebookColumn(models.Model):
 
     class Meta:
         ordering = ["order", "id"]
+        verbose_name = "Колонка журнала оценок"
+        verbose_name_plural = "Колонки журнала оценок"
 
     def __str__(self):
         return f"{self.course.title}: {self.title}"
@@ -598,6 +606,8 @@ class GradebookRecord(models.Model):
 
     class Meta:
         unique_together = ["column", "student"]
+        verbose_name = "Оценка в колонке журнала"
+        verbose_name_plural = "Оценки в журнале"
 
     def __str__(self):
         return f"{self.student.username}: {self.column.title}"
@@ -613,6 +623,8 @@ class CourseLesson(models.Model):
     class Meta:
         unique_together = ["course", "lesson_date", "lesson_number"]
         ordering = ["lesson_date", "lesson_number", "id"]
+        verbose_name = "Занятие в расписании курса"
+        verbose_name_plural = "Занятия в расписании курса"
 
     def __str__(self):
         return f"{self.course.title} {self.lesson_date} #{self.lesson_number}"
@@ -629,12 +641,13 @@ class LessonGrade(models.Model):
 
     class Meta:
         unique_together = ["lesson", "student"]
+        verbose_name = "Отметка за занятие"
+        verbose_name_plural = "Отметки за занятия"
 
     def __str__(self):
         return f"{self.student.username}: {self.lesson.lesson_date} #{self.lesson.lesson_number} = {self.mark}"
 
 class Announcement(models.Model ):
-    """Объявление в курсе"""
 
     course =models.ForeignKey(
     Course ,
@@ -660,8 +673,8 @@ class Announcement(models.Model ):
 
     class Meta :
         ordering =['-is_pinned','-created_at']
-        verbose_name ='Объявление'
-        verbose_name_plural ='Объявления'
+        verbose_name ='Объявление на курсе'
+        verbose_name_plural ='Объявления на курсах'
 
     def __str__(self ):
         return self.title 
@@ -672,11 +685,13 @@ class Announcement(models.Model ):
         super().save(*args ,**kwargs )
 
     def can_edit(self ,user ):
-        """Проверка, может ли пользователь редактировать объявление"""
-        return user ==self.author or user ==self.course.instructor or user.is_superuser or user.profile.is_staff()
+        """Редактирование и удаление: лектор, ассистенты курса, автор или администраторы."""
+        return (
+            self.course.can_edit(user)
+            or user == self.author
+        )
 
 class CourseDiscussion(models.Model ):
-    """Обсуждение в курсе"""
 
     course =models.ForeignKey(
     Course ,
@@ -701,8 +716,8 @@ class CourseDiscussion(models.Model ):
 
     class Meta :
         ordering =['-is_pinned','-created_at']
-        verbose_name ='Обсуждение'
-        verbose_name_plural ='Обсуждения'
+        verbose_name ='Тема обсуждения на курсе'
+        verbose_name_plural ='Темы обсуждений на курсах'
 
     def __str__(self ):
         return self.title 
@@ -711,11 +726,13 @@ class CourseDiscussion(models.Model ):
         return self.replies.count()
 
     def can_edit(self ,user ):
-        """Проверка, может ли пользователь редактировать обсуждение"""
-        return user ==self.author or user ==self.course.instructor or user.is_superuser or user.profile.is_staff()
+        """Редактирование и удаление темы: лектор, ассистенты, автор или администраторы."""
+        return (
+            self.course.can_edit(user)
+            or user == self.author
+        )
 
 class DiscussionReply(models.Model ):
-    """Ответ на обсуждение"""
 
     discussion =models.ForeignKey(
     CourseDiscussion ,
@@ -743,18 +760,20 @@ class DiscussionReply(models.Model ):
 
     class Meta :
         ordering =['created_at']
-        verbose_name ='Ответ на обсуждение'
-        verbose_name_plural ='Ответы на обсуждения'
+        verbose_name ='Комментарий в обсуждении'
+        verbose_name_plural ='Комментарии в обсуждениях'
 
     def __str__(self ):
-        return f"Reply by {self.author.username }"
+        return f"Ответ от {self.author.username}"
 
     def can_edit(self ,user ):
-        """Проверка, может ли пользователь редактировать ответ"""
-        return user ==self.author or user ==self.discussion.course.instructor or user.is_superuser or user.profile.is_staff()
+        """Редактирование и удаление ответа: лектор, ассистенты, автор или администраторы."""
+        return (
+            self.discussion.course.can_edit(user)
+            or user == self.author
+        )
 
 class CourseGrade(models.Model ):
-    """Оценка студента по курсу"""
 
     course =models.ForeignKey(
     Course ,
@@ -789,8 +808,8 @@ class CourseGrade(models.Model ):
 
     class Meta :
         unique_together =['course','student']
-        verbose_name ='Оценка курса'
-        verbose_name_plural ='Оценки курса'
+        verbose_name ='Итоговая оценка по курсу'
+        verbose_name_plural ='Итоговые оценки по курсам'
 
     def __str__(self ):
         return f"{self.student.username } - {self.course.title }: {self.grade }"
@@ -812,7 +831,6 @@ class CourseGrade(models.Model ):
             return 'F'
 
 class CourseNotification(models.Model ):
-    """Уведомления курса"""
 
     NOTIFICATION_TYPE_CHOICES =[
    ('announcement','Объявление'),
@@ -849,8 +867,8 @@ class CourseNotification(models.Model ):
 
     class Meta :
         ordering =['-created_at']
-        verbose_name ='Уведомление курса'
-        verbose_name_plural ='Уведомления курса'
+        verbose_name ='Уведомление участникам курса'
+        verbose_name_plural ='Уведомления участникам курсов'
 
     def __str__(self ):
         return self.title
@@ -860,7 +878,6 @@ class CourseNotification(models.Model ):
 
 
 class CourseEnrollmentRequest(models.Model ):
-    """Заявка студента на запись на курс"""
 
     STATUS_CHOICES =[
    ('pending','На рассмотрении'),
@@ -908,20 +925,19 @@ class CourseEnrollmentRequest(models.Model ):
 
     class Meta :
         ordering =['-created_at']
-        verbose_name ='Заявка на запись на курс'
-        verbose_name_plural ='Заявки на запись на курсы'
+        verbose_name ='Заявка на зачисление на курс'
+        verbose_name_plural ='Заявки на зачисление на курсы'
         unique_together =['course','student']
 
     def __str__(self ):
         return f"{self.student.username } - {self.course.title }({self.get_status_display()})"
 
     def can_review(self ,user ):
-        """Проверка, может ли пользователь рассмотреть заявку"""
-        return user ==self.course.instructor or user.is_superuser or user.profile.is_staff()
+        """Рассмотрение заявки: тот же состав, что и для управления курсом."""
+        return self.course.can_edit(user)
 
 
 class AssignmentFile(models.Model ):
-    """Файл, прикрепленный к заданию студентом"""
 
     assignment =models.ForeignKey(
     Assignment ,
@@ -951,8 +967,8 @@ class AssignmentFile(models.Model ):
 
     class Meta :
         ordering =['-uploaded_at']
-        verbose_name ='Файл задания'
-        verbose_name_plural ='Файлы заданий'
+        verbose_name ='Прикреплённый файл к ответу'
+        verbose_name_plural ='Прикреплённые файлы к ответам'
 
     def __str__(self ):
         return f"{self.file.title } - {self.student.username }({self.assignment.title })"
@@ -963,7 +979,6 @@ class AssignmentFile(models.Model ):
 
 
 class AssignmentFileReview(models.Model ):
-    """Проверка файла задания преподавателем"""
 
     STATUS_CHOICES =[
    ('pending','На проверке'),
@@ -1005,8 +1020,8 @@ class AssignmentFileReview(models.Model ):
 
     class Meta :
         ordering =['-reviewed_at']
-        verbose_name ='Проверка файла'
-        verbose_name_plural ='Проверки файлов'
+        verbose_name ='Рецензия на прикреплённый файл'
+        verbose_name_plural ='Рецензии на прикреплённые файлы'
         unique_together =['file','reviewer']
 
     def __str__(self ):

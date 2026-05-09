@@ -123,6 +123,17 @@
         transform: translateY(-2px);
     }
 
+    .btn-add.btn-add-danger {
+        border-color: var(--status-danger-border);
+        color: var(--status-danger-light);
+    }
+
+    .btn-add.btn-add-danger:hover {
+        background: var(--status-danger-bg);
+        border-color: var(--status-danger);
+        color: var(--text-white);
+    }
+
     .section-card {
         background: var(--bg-card);
         border: 1px solid var(--border-accent-light);
@@ -706,12 +717,21 @@
                                     <a href="{% url 'classroom_core:assignment_detail' item.assignment_id %}" class="btn-add" style="padding: 0.3rem 1rem;">
                                         <i class="bi bi-eye"></i> Просмотр
                                     </a>
+                                    <a href="{% url 'classroom_core:assignment_delete' item.assignment_id %}" class="btn-add btn-add-danger" style="padding: 0.3rem 1rem;">
+                                        <i class="bi bi-trash"></i> Удалить
+                                    </a>
                                     <a href="{% url 'classroom_core:assignment_edit' item.assignment_id %}" class="btn-add" style="padding: 0.3rem 1rem;">
                                         <i class="bi bi-pencil"></i> Редактировать
                                     </a>
                                     {% elif item.type == 'announcement' %}
                                     <a href="{% url 'classroom_core:announcement_detail' item.announcement_id %}" class="btn-add" style="padding: 0.3rem 1rem;">
                                         <i class="bi bi-eye"></i> Просмотр
+                                    </a>
+                                    <a href="{% url 'classroom_core:announcement_delete' item.announcement_id %}" class="btn-add btn-add-danger" style="padding: 0.3rem 1rem;">
+                                        <i class="bi bi-trash"></i> Удалить
+                                    </a>
+                                    <a href="{% url 'classroom_core:announcement_edit' item.announcement_id %}" class="btn-add" style="padding: 0.3rem 1rem;">
+                                        <i class="bi bi-pencil"></i> Редактировать
                                     </a>
                                     {% endif %}
                                 </div>
@@ -910,7 +930,7 @@
                     </div>
                     <div class="d-flex flex-column gap-2">
                         <details class="assistant-form">
-                            <summary style="cursor:pointer; color:var(--text-main); font-weight:600;">Teaching assistants</summary>
+                            <summary style="cursor:pointer; color:var(--text-main); font-weight:600;">Учителя ассистенты</summary>
                             <form method="post" action="{% url 'classroom_core:course_manage_teaching_assistants' course.id %}" class="mt-2 d-flex gap-2">
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="add">

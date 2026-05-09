@@ -14,11 +14,9 @@
         <div class="col-md-3"><div class="card p-3"><strong>Задания</strong><div>{{ assignments_count }}</div></div></div>
         <div class="col-md-3"><div class="card p-3"><strong>Ожидают заявки</strong><div>{{ pending_enrollments }}</div></div></div>
     </div>
-    <div class="mt-4 d-flex gap-2 flex-wrap">
-        <a class="btn btn-primary" href="{% url 'classroom_core:custom_admin_courses' %}">CRUD курсов</a>
-        <a class="btn btn-primary" href="{% url 'classroom_core:custom_admin_assignments' %}">CRUD заданий</a>
-        <a class="btn btn-primary" href="{% url 'classroom_core:custom_admin_students' %}">CRUD студентов</a>
-        <a class="btn btn-outline-secondary" href="{% url 'classroom_core:course_list' %}">Курсы (обычный интерфейс)</a>
+    <div class="mt-4">
+        <a class="btn btn-primary" href="{% url 'classroom_core:core_admin_index' %}">Справочники и данные</a>
+        <a class="btn btn-outline-secondary" href="{% url 'classroom_core:course_list' %}">Мои курсы</a>
     </div>
 </div>
 {% endblock %}

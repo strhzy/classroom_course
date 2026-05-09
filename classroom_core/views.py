@@ -1,25 +1,126 @@
 from django.shortcuts import render ,redirect ,get_object_or_404 
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required 
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.forms import PasswordResetForm
 from django.contrib import messages 
 from django.core.exceptions import PermissionDenied 
+from django.core.mail import EmailMultiAlternatives, get_connection
 from django.db.models import Q 
 from django.core.paginator import Paginator 
 from django.contrib.auth.models import User 
 from django.http import JsonResponse
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.views.decorators.http import require_http_methods
+import logging
+import time
 import io
 import csv
 import json
 from datetime import datetime, timedelta
 from openpyxl import Workbook, load_workbook
+from django.template import loader
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from file_manager.models import File
 from file_manager.views import create_user_uploaded_file
 from . models import *
 from . forms import *
 from django.utils import timezone 
 from web_messages import flash_form_errors
+from django.conf import settings
+
+logger = logging.getLogger(__name__)
+
+
+class PasswordResetRequestView(auth_views.PasswordResetView):
+    template_name = "classroom_core/password_reset_form.html"
+    email_template_name = "classroom_core/password_reset_email.txt"
+    subject_template_name = "classroom_core/password_reset_subject.txt"
+    success_url = reverse_lazy("classroom_core:password_reset_done")
+    form_class = PasswordResetForm
+
+    def send_password_reset_email(self, form):
+        started = time.monotonic()
+        email = form.cleaned_data.get("email", "")
+        users = list(form.get_users(email))
+        logger.info(
+            "password_reset_email_send_start email=%s users_count=%s host=%s port=%s tls=%s ssl=%s",
+            email,
+            len(users),
+            getattr(settings, "EMAIL_HOST", ""),
+            getattr(settings, "EMAIL_PORT", ""),
+            getattr(settings, "EMAIL_USE_TLS", ""),
+            getattr(settings, "EMAIL_USE_SSL", ""),
+        )
+        if not users:
+            logger.info(
+                "password_reset_email_send_success email=%s users_count=0 elapsed_ms=%s",
+                email,
+                int((time.monotonic() - started) * 1000),
+            )
+            return
+
+        connection = get_connection(
+            backend="django.core.mail.backends.smtp.EmailBackend",
+            fail_silently=False,
+            host=getattr(settings, "EMAIL_HOST", ""),
+            port=getattr(settings, "EMAIL_PORT", None),
+            username=getattr(settings, "EMAIL_HOST_USER", ""),
+            password=getattr(settings, "EMAIL_HOST_PASSWORD", ""),
+            use_tls=getattr(settings, "EMAIL_USE_TLS", False),
+            use_ssl=getattr(settings, "EMAIL_USE_SSL", False),
+            timeout=getattr(settings, "EMAIL_TIMEOUT", 30),
+        )
+        protocol = "https" if self.request.is_secure() else "http"
+        domain = self.request.get_host()
+        for user in users:
+            context = {
+                "email": email,
+                "domain": domain,
+                "site_name": domain,
+                "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                "user": user,
+                "token": self.token_generator.make_token(user),
+                "protocol": protocol,
+                **(self.extra_email_context or {}),
+            }
+            subject = loader.render_to_string(self.subject_template_name, context)
+            subject = "".join(subject.splitlines())
+            body = loader.render_to_string(self.email_template_name, context)
+            message = EmailMultiAlternatives(
+                subject=subject,
+                body=body,
+                from_email=self.from_email or getattr(settings, "DEFAULT_FROM_EMAIL", ""),
+                to=[email],
+                connection=connection,
+            )
+            if self.html_email_template_name:
+                html_body = loader.render_to_string(self.html_email_template_name, context)
+                message.attach_alternative(html_body, "text/html")
+            message.send(fail_silently=False)
+        logger.info(
+            "password_reset_email_send_success email=%s users_count=%s elapsed_ms=%s",
+            email,
+            len(users),
+            int((time.monotonic() - started) * 1000),
+        )
+
+    def form_valid(self, form):
+        email = form.cleaned_data.get("email", "")
+        logger.info("password_reset_request_received email=%s", email)
+        try:
+            self.send_password_reset_email(form)
+        except Exception:
+            logger.exception("password_reset_request_send_failed email=%s", email)
+            messages.error(
+                self.request,
+                "Не удалось отправить письмо через SMTP. Проверьте настройки EMAIL_HOST/PORT/TLS/логин/пароль.",
+            )
+            return self.form_invalid(form)
+        logger.info("password_reset_request_dispatched email=%s", email)
+        return HttpResponseRedirect(self.get_success_url())
 
 
 WEEKDAY_MAP = {
@@ -2330,17 +2431,11 @@ def course_gradebook_column_create(request, course_id):
 
 @login_required
 def custom_admin_dashboard(request):
-    if not _can_access_management(request.user):
+    from classroom_core.core_admin.views import _can_core_admin
+
+    if not _can_core_admin(request.user):
         raise PermissionDenied
-    context = {
-        "users_count": User.objects.count(),
-        "courses_count": Course.objects.count(),
-        "assignments_count": Assignment.objects.count(),
-        "files_count": File.objects.count(),
-        "pending_enrollments": CourseEnrollmentRequest.objects.filter(status="pending").count(),
-        "is_super_management": _is_super_management(request.user),
-    }
-    return render(request, "classroom_core/admin_dashboard.html", context)
+    return redirect("classroom_core:core_admin_index")
 
 
 def _can_access_management(user):

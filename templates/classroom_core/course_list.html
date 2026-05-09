@@ -1,4 +1,5 @@
 {% extends "classroom_core/base_courses.html" %}
+{% load classroom_tags %}
 
 {% block title %}📚 Мои курсы{% endblock %}
 
@@ -687,7 +688,7 @@
                                 <i class="bi bi-box-arrow-in-right"></i>
                                 Перейти
                             </a>
-                            {% if course.can_edit %}
+                            {% if course|allows_edit:request.user %}
                             <a href="{% url 'classroom_core:course_edit' course.id %}" class="btn-outline-course">
                                 <i class="bi bi-pencil"></i>
                                 Редактировать

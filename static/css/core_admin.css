@@ -1,0 +1,416 @@
+/**
+ * Стили панели управления данными (classroom_core core_admin).
+ * Опираются на переменные темы из css/themes/light.css и dark.css.
+ */
+
+.core-admin {
+  --ca-radius: 14px;
+  --ca-radius-sm: 10px;
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.core-admin__hero {
+  position: relative;
+  padding: 1.75rem 1.75rem 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: var(--ca-radius);
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent-light);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.core-admin__hero::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  height: 4px;
+  background: var(--accent-gradient);
+}
+
+.core-admin__hero-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+.core-admin__title-block h1,
+.core-admin__title-block h2 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+  margin-bottom: 0.35rem;
+}
+
+.core-admin__title-block .lead,
+.core-admin__lead {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+.core-admin__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.core-admin .btn-ca-outline {
+  border: 1px solid var(--border-accent);
+  color: var(--accent-primary);
+  background: var(--bg-card);
+  border-radius: var(--ca-radius-sm);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.core-admin .btn-ca-outline:hover {
+  border-color: var(--border-accent-hover);
+  background: var(--bg-overlay-10);
+  color: var(--accent-primary);
+  box-shadow: var(--accent-shadow);
+}
+
+.core-admin .btn-ca-primary {
+  border: none;
+  color: #fff;
+  background: var(--accent-gradient);
+  border-radius: var(--ca-radius-sm);
+  font-weight: 600;
+  padding: 0.5rem 1.1rem;
+  box-shadow: var(--accent-shadow);
+  transition: transform 0.15s, box-shadow 0.2s;
+}
+
+.core-admin .btn-ca-primary:hover {
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: var(--accent-shadow-hover);
+}
+
+.core-admin .btn-ca-success {
+  border: none;
+  color: #fff;
+  background: var(--status-success-gradient, linear-gradient(135deg, #00b894, #00cec9));
+  border-radius: var(--ca-radius-sm);
+  font-weight: 600;
+  padding: 0.5rem 1.1rem;
+  box-shadow: var(--status-success-shadow);
+}
+
+.core-admin .btn-ca-success:hover {
+  color: #fff;
+  filter: brightness(1.05);
+}
+
+.core-admin .btn-ca-sm {
+  font-size: 0.8125rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+}
+
+.core-admin__notice {
+  padding: 1rem 1.25rem;
+  border-radius: var(--ca-radius-sm);
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  background: var(--status-info-bg-light);
+  border: 1px solid var(--status-info-border);
+}
+
+.core-admin__notice strong {
+  color: var(--status-info);
+  font-weight: 600;
+}
+
+.core-admin__card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent-light);
+  border-radius: var(--ca-radius);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.core-admin__card--flush {
+  padding: 0;
+}
+
+.core-admin__toolbar {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-accent-light);
+  background: linear-gradient(180deg, var(--bg-item) 0%, var(--bg-card) 100%);
+}
+
+.core-admin__toolbar .form-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.core-admin__toolbar .form-control,
+.core-admin__toolbar .form-select {
+  border-radius: var(--ca-radius-sm);
+  border-color: var(--border-accent-light);
+  background: var(--bg-input);
+  color: var(--text-main);
+}
+
+.core-admin__toolbar .form-control:focus,
+.core-admin__toolbar .form-select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.core-admin__bulk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  margin-bottom: 0;
+  background: var(--status-danger-bg);
+  border-bottom: 1px solid var(--status-danger-border);
+}
+
+.core-admin__bulk .btn-outline-danger {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.core-admin__table-wrap {
+  overflow-x: auto;
+}
+
+/* Bootstrap 5 задаёт для .table светлый --bs-table-bg — синхронизируем с темой приложения */
+.core-admin .table.core-admin__table {
+  --bs-table-bg: var(--bg-card);
+  --bs-table-color: var(--text-main);
+  --bs-table-border-color: var(--border-accent-light);
+  --bs-table-striped-bg: var(--bg-item);
+  --bs-table-striped-color: var(--text-main);
+  --bs-table-hover-bg: var(--bg-card-hover);
+  --bs-table-hover-color: var(--text-main);
+  --bs-table-active-bg: var(--bg-card-hover);
+  margin-bottom: 0;
+  color: var(--text-main);
+  background-color: var(--bg-card);
+  vertical-align: middle;
+}
+
+.core-admin__table thead th {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  border-bottom: 2px solid var(--border-accent);
+  padding: 0.85rem 1rem;
+  background-color: var(--bg-item) !important;
+  white-space: nowrap;
+}
+
+.core-admin__table tbody td,
+.core-admin__table tbody th {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+  border-color: var(--border-accent-light);
+  background-color: var(--bg-card) !important;
+  color: var(--text-main);
+}
+
+.core-admin__table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.core-admin__table tbody tr:hover td,
+.core-admin__table tbody tr:hover th {
+  background-color: var(--bg-card-hover) !important;
+}
+
+.core-admin__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.core-admin__table .cell-muted {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.core-admin__table .ca-actions .btn {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.core-admin__pagination {
+  padding: 1rem 1.25rem;
+  background: var(--bg-item);
+  border-top: 1px solid var(--border-accent-light);
+}
+
+.core-admin__pagination .pagination {
+  margin-bottom: 0;
+}
+
+.core-admin__pagination .page-link {
+  border-radius: 8px;
+  margin: 0 0.15rem;
+  border-color: var(--border-accent-light);
+  color: var(--accent-primary);
+  font-weight: 500;
+  background: var(--bg-card);
+}
+
+.core-admin__pagination .page-item.disabled .page-link {
+  color: var(--text-muted);
+  background: transparent;
+}
+
+.core-admin__breadcrumb.breadcrumb {
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+  background: transparent;
+}
+
+.core-admin__breadcrumb .breadcrumb-item a {
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.core-admin__breadcrumb .breadcrumb-item a:hover {
+  text-decoration: underline;
+}
+
+.core-admin__breadcrumb .breadcrumb-item.active {
+  color: var(--text-muted);
+}
+
+/* Форма записи */
+.core-admin-form {
+  max-width: 920px;
+}
+
+.core-admin-form .card {
+  border-radius: var(--ca-radius);
+  border: 1px solid var(--border-accent-light);
+  box-shadow: var(--shadow-card);
+  background: var(--bg-card);
+  overflow: hidden;
+}
+
+.core-admin-form .card-body {
+  padding: 1.5rem 1.75rem;
+}
+
+.core-admin-form .form-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.4rem;
+}
+
+.core-admin-form .form-control,
+.core-admin-form .form-select,
+.core-admin-form textarea {
+  border-radius: var(--ca-radius-sm);
+  border-color: var(--border-accent-light);
+  background: var(--bg-input);
+  color: var(--text-main);
+}
+
+.core-admin-form .form-control:focus,
+.core-admin-form .form-select:focus,
+.core-admin-form textarea:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.core-admin-form .card-footer {
+  background: var(--bg-item);
+  border-top: 1px solid var(--border-accent-light);
+  padding: 1rem 1.75rem;
+}
+
+.core-admin-form .alert-danger {
+  border-radius: var(--ca-radius-sm);
+  border: 1px solid var(--status-danger-border);
+}
+
+/* Удаление */
+.core-admin-delete {
+  max-width: 560px;
+}
+
+.core-admin-delete__panel {
+  padding: 2rem;
+  border-radius: var(--ca-radius);
+  background: var(--bg-card);
+  border: 1px solid var(--status-danger-border);
+  box-shadow: var(--shadow-card);
+}
+
+.core-admin-delete__panel h2 {
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 1rem;
+}
+
+.core-admin-delete__panel p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.core-admin-delete__panel .btn-danger {
+  border-radius: var(--ca-radius-sm);
+  font-weight: 600;
+  padding: 0.55rem 1.25rem;
+}
+
+.core-admin-delete__icon-wrap {
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--status-danger-bg);
+  color: var(--status-danger);
+  border: 1px solid var(--status-danger-border);
+}
+
+.core-admin-form h1,
+.core-admin-form .h3 {
+  color: var(--text-main);
+}
+
+.core-admin-count {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+@media (max-width: 767px) {
+  .core-admin__hero {
+    padding: 1.25rem;
+  }
+
+  .core-admin__table thead th,
+  .core-admin__table tbody td {
+    padding: 0.55rem 0.65rem;
+  }
+}

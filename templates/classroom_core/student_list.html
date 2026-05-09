@@ -1,4 +1,5 @@
 {% extends "classroom_core/base_courses.html" %}
+{% load classroom_tags %}
 
 {% block title %}👥 Студенты{% endblock %}
 
@@ -398,7 +399,7 @@
             </div>
             
             <div class="page-header-actions">
-                {% if course.can_edit %}
+                {% if course|allows_edit:request.user %}
                 <a href="{% url 'classroom_core:student_enroll' course.id %}" class="btn-enroll">
                     <i class="bi bi-person-plus"></i> Зачислить студентов
                 </a>
@@ -477,7 +478,7 @@
                                 {{ student.date_joined|date:"d.m.Y" }}
                             </td>
                             <td data-label="Действия">
-                                {% if course.can_edit %}
+                                {% if course|allows_edit:request.user %}
                                 <a href="{% url 'classroom_core:profile_view_user' student.id %}" 
                                    class="btn-action" 
                                    title="Просмотреть профиль">
