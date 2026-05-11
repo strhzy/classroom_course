@@ -171,7 +171,6 @@ class AssignmentSubmitCombinedForm(forms.Form):
         if user:
             self.fields['storage_file'].queryset = File.objects.filter(
                 Q(uploaded_by=user) | Q(visibility='public') | Q(shared_with=user),
-                is_folder=False,
             ).distinct().order_by('-uploaded_at')
 
     def clean(self):

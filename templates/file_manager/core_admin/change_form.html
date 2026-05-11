@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if is_add %}Добавить{% else %}Изменить{% endif %} {{ verbose_name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/core_admin.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-4 core-admin core-admin-form">
+    <nav aria-label="breadcrumb" class="core-admin__breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'file_manager:fm_core_admin_index' %}">Файловое хранилище — администрирование</a></li>
+            <li class="breadcrumb-item"><a href="{{ changelist_url }}">{{ model_verbose_name_plural }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{% if is_add %}Новая запись{% else %}Запись №{{ object.pk }}{% endif %}</li>
+        </ol>
+    </nav>
+
+    <header class="mb-4">
+        <h1 class="h3 fw-bold">
+            {% if is_add %}Добавить: {{ verbose_name }}{% else %}Изменить: {{ verbose_name }}{% endif %}
+        </h1>
+        {% if not is_add %}
+        <p class="text-muted mb-0 small">{{ object }}</p>
+        {% endif %}
+    </header>
+
+    {% if quota_limits_locked %}
+    <div class="alert alert-warning" role="alert">
+        Поле лимита квоты только для просмотра: приложение использует не локальное файловое хранилище по умолчанию (или облачный бэкенд). Фактическое использование места по-прежнему отображается.
+    </div>
+    {% endif %}
+
+    {% if quota_last_updated %}
+    <p class="text-muted small mb-3">Последнее обновление учёта места: {{ quota_last_updated }}</p>
+    {% endif %}
+
+    {% if django_user_meta %}
+    <div class="alert alert-secondary small mb-3" role="note">
+        Дата регистрации: {{ django_user_meta.date_joined|default:"—" }} · Последний вход: {{ django_user_meta.last_login|default:"—" }}
+        <br>Пароль через эту форму не задаётся; для новой записи пароль отключён до сброса или назначения через <code>manage.py</code>.
+    </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="card">
+        <div class="card-body">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger mb-4" role="alert">{{ form.non_field_errors }}</div>
+            {% endif %}
+            {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+                {{ field }}
+                {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                {% for err in field.errors %}<div class="invalid-feedback d-block">{{ err }}</div>{% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        <div class="card-footer d-flex flex-wrap gap-2 align-items-center">
+            <button type="submit" class="btn btn-ca-primary">Сохранить</button>
+            <a href="{{ changelist_url }}" class="btn btn-ca-outline">К списку</a>
+            {% if not is_add and delete_url %}
+            <a href="{{ delete_url }}" class="btn btn-outline-danger ms-auto">Удалить запись</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+{% endblock %}

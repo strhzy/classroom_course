@@ -48,20 +48,6 @@ class Tag(models.Model ):
     def filter_swatch_attrs(self ):
         return format_html('style="background-color:{};"', self._safe_hex_color())
 
-class FileCategory(models.Model ):
-    name =models.CharField(max_length =100 )
-    description =models.TextField(blank =True )
-    icon =models.CharField(max_length =50 ,default ='📄')
-    order =models.IntegerField(default =0 )
-
-    class Meta :
-        ordering =['order','name']
-        verbose_name ='Категория файлов'
-        verbose_name_plural ='Категории файлов'
-
-    def __str__(self ):
-        return self.name 
-
 class File(models.Model ):
     STORAGE_PROVIDER_CHOICES = [
         ("local", "Local"),
@@ -109,23 +95,7 @@ class File(models.Model ):
     updated_at =models.DateTimeField(auto_now =True )
     version =models.IntegerField(default =1 )
 
-    category =models.ForeignKey(
-    FileCategory ,
-    on_delete =models.SET_NULL ,
-    null =True ,
-    blank =True ,
-    related_name ='files'
-    )
     tags =models.ManyToManyField(Tag ,blank =True ,related_name ='files')
-    folder =models.ForeignKey(
-    'self',
-    on_delete =models.CASCADE ,
-    null =True ,
-    blank =True ,
-    related_name ='subfiles',
-    limit_choices_to ={'is_folder':True }
-    )
-    is_folder =models.BooleanField(default =False )
 
     visibility =models.CharField(
     max_length =10 ,
@@ -164,28 +134,27 @@ class File(models.Model ):
         return self.title 
 
     def save(self ,*args ,**kwargs ):
-        if not self.is_folder:
-            ext = self._detect_extension_for_metadata()
-            file_type_mapping ={
-            'pdf':'pdf',
-            'txt':'txt',
-            'docx':'docx','doc':'docx',
-            'xlsx':'xlsx','xls':'xlsx',
-            'pptx':'pptx','ppt':'pptx',
-            'jpg':'jpg','jpeg':'jpg',
-            'png':'png',
-            'mp4':'mp4',
-            'mp3':'mp3',
-            'zip':'zip','rar':'zip','7z':'zip',
-            }
-            if ext:
-                self.file_type =file_type_mapping.get(ext ,'other')
+        ext = self._detect_extension_for_metadata()
+        file_type_mapping ={
+        'pdf':'pdf',
+        'txt':'txt',
+        'docx':'docx','doc':'docx',
+        'xlsx':'xlsx','xls':'xlsx',
+        'pptx':'pptx','ppt':'pptx',
+        'jpg':'jpg','jpeg':'jpg',
+        'png':'png',
+        'mp4':'mp4',
+        'mp3':'mp3',
+        'zip':'zip','rar':'zip','7z':'zip',
+        }
+        if ext:
+            self.file_type =file_type_mapping.get(ext ,'other')
 
-            if self.file:
-                try :
-                    self.file_size =self.file.size 
-                except :
-                    pass 
+        if self.file:
+            try :
+                self.file_size =self.file.size 
+            except :
+                pass 
 
         super().save(*args ,**kwargs )
 
@@ -203,32 +172,12 @@ class File(models.Model ):
         return ""
 
     def get_file_size_display(self ):
-        if self.is_folder :
-            return self.get_folder_size_display()
-
         size =self.file_size 
         for unit in ['B','KB','MB','GB']:
             if size <1024.0 :
                 return f"{size :.2f} {unit }"
             size /=1024.0 
         return f"{size :.2f} TB"
-
-    def get_folder_size_display(self ):
-        if not self.is_folder :
-            return self.get_file_size_display()
-
-        total_size =sum(f.file_size for f in self.subfiles.all()if not f.is_folder )
-        size =total_size 
-        for unit in ['B','KB','MB','GB']:
-            if size <1024.0 :
-                return f"{size :.2f} {unit }"
-            size /=1024.0 
-        return f"{size :.2f} TB"
-
-    def get_file_count(self ):
-        if not self.is_folder :
-            return 0 
-        return self.subfiles.count()
 
     def can_access(self ,user ):
         profile = getattr(user, "profile", None)
@@ -289,7 +238,7 @@ class File(models.Model ):
         'png':'🖼️',
         'mp4':'🎬',
         'mp3':'🎵',
-        'zip':'📁',
+        'zip':'📦',
         'other':'📎',
         }
         return icon_mapping.get(self.file_type ,'📎')
@@ -425,8 +374,8 @@ class FileActivity(models.Model ):
         )
 class UserStorageQuota(models.Model ):
     user =models.OneToOneField(User ,on_delete =models.CASCADE ,related_name ='storage_quota')
-    total_quota_bytes =models.BigIntegerField(default =5368709120 )
-    used_bytes =models.BigIntegerField(default =0 )
+    total_quota_bytes =models.BigIntegerField(default =5368709120 ,verbose_name ="Лимит")
+    used_bytes =models.BigIntegerField(default =0 ,verbose_name ="Занято")
     last_updated =models.DateTimeField(auto_now =True )
 
     class Meta :
@@ -457,7 +406,6 @@ class UserStorageQuota(models.Model ):
     def update_usage(self ):
         total_size =File.objects.filter(
         uploaded_by =self.user ,
-        is_folder =False 
         ).aggregate(total =models.Sum('file_size'))['total']or 0 
         self.used_bytes =total_size 
         self.save(update_fields =['used_bytes','last_updated'])

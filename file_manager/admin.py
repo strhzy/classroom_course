@@ -3,7 +3,6 @@ from django.contrib import admin
 from django.utils.html import format_html
 from .models import (
     File,
-    FileCategory,
     Tag,
     FileComment,
     FileVersion,
@@ -19,17 +18,6 @@ class FileAdminForm(forms.ModelForm):
         widgets = {
             "tags": forms.CheckboxSelectMultiple(),
         }
-
-@admin.register(FileCategory )
-class FileCategoryAdmin(admin.ModelAdmin ):
-    list_display =['name','icon','order','get_file_count']
-    list_editable =['order']
-    list_filter =['order']
-    search_fields =['name','description']
-
-    def get_file_count(self ,obj ):
-        return obj.files.count()
-    get_file_count.short_description ='Количество файлов'
 
 @admin.register(Tag )
 class TagAdmin(admin.ModelAdmin ):
@@ -71,10 +59,7 @@ class FileAdmin(admin.ModelAdmin):
     date_hierarchy ='uploaded_at'
 
     def title_display(self ,obj ):
-        if obj.is_folder :
-            return format_html('<i class="bi bi-folder2"></i> {}',obj.title )
-        else :
-            return format_html('<i class="bi bi-file-earmark"></i> {}',obj.title )
+        return format_html('<i class="bi bi-file-earmark"></i> {}',obj.title )
     title_display.short_description ='Название'
 
     def file_size_display(self ,obj ):

@@ -1,10 +1,48 @@
-from django.urls import path 
-from . import views 
+from django.urls import path
 
-app_name ='file_manager'
+from . import views
+from .core_admin import views as fm_core_admin_views
 
-urlpatterns =[
-path('',views.file_list ,name ='file_list'),
+app_name = "file_manager"
+
+urlpatterns = [
+    path("management/file-admin/", fm_core_admin_views.fm_admin_index, name="fm_core_admin_index"),
+    path(
+        "management/file-admin/backup/json/",
+        fm_core_admin_views.fm_admin_backup_download,
+        name="fm_core_admin_backup_json",
+    ),
+    path(
+        "management/file-admin/backup/sqlite/",
+        fm_core_admin_views.fm_admin_backup_sqlite_download,
+        name="fm_core_admin_backup_sqlite",
+    ),
+    path(
+        "management/file-admin/<str:model_name>/",
+        fm_core_admin_views.fm_admin_changelist,
+        name="fm_core_admin_changelist",
+    ),
+    path(
+        "management/file-admin/<str:model_name>/add/",
+        fm_core_admin_views.fm_admin_add,
+        name="fm_core_admin_add",
+    ),
+    path(
+        "management/file-admin/<str:model_name>/<int:object_id>/change/",
+        fm_core_admin_views.fm_admin_change,
+        name="fm_core_admin_change",
+    ),
+    path(
+        "management/file-admin/<str:model_name>/<int:object_id>/delete/",
+        fm_core_admin_views.fm_admin_delete,
+        name="fm_core_admin_delete",
+    ),
+    path(
+        "management/file-admin/<str:model_name>/bulk-delete/",
+        fm_core_admin_views.fm_admin_bulk_delete,
+        name="fm_core_admin_bulk_delete",
+    ),
+    path("", views.file_list, name="file_list"),
 path('upload/',views.file_upload ,name ='file_upload'),
 path('<int:file_id>/',views.file_detail ,name ='file_detail'),
 path('<int:file_id>/download/',views.file_download ,name ='file_download'),
@@ -55,5 +93,5 @@ path(
 ),
 path('workspaces/<int:workspace_id>/delete/', views.workspace_delete, name='workspace_delete'),
 path('<int:file_id>/workspaces/add/', views.workspace_add_file, name='workspace_add_file'),
-path('backups/compare/', views.backup_compare, name='backup_compare'),
+path("backups/compare/", views.backup_compare, name="backup_compare"),
 ]

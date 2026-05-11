@@ -16,7 +16,6 @@ def import_yandex_file(user, filename, content):
         title=filename,
         uploaded_by=user,
         visibility="private",
-        is_folder=False,
         storage_provider="yandex_disk",
         yandex_path=remote_path,
         file_size=len(content),

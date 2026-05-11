@@ -1,6 +1,6 @@
 {% extends "file_manager/base_files.html" %}
 
-{% block title %}📁 Мои файлы{% endblock %}
+{% block title %}Мои файлы{% endblock %}
 
 {% block files_content %}
 <style>
@@ -92,7 +92,7 @@
         color: white;
     }
     
-   .btn-folder {
+   .btn-files-extra {
         background: var(--bg-card);
         border: 1px solid var(--border-accent-light);
         border-radius: 8px;
@@ -106,7 +106,7 @@
         gap: 0.5rem;
     }
     
-   .btn-folder:hover {
+   .btn-files-extra:hover {
         background: var(--bg-overlay-25);
         border-color: var(--accent-primary);
         color: var(--text-white);
@@ -259,10 +259,6 @@
     }
     
     
-   .folders-section {
-        margin-bottom: 2rem;
-    }
-    
    .section-title {
         color: var(--text-muted);
         font-weight: 600;
@@ -275,46 +271,6 @@
    .section-title i {
         color: var(--accent-primary);
     }
-    
-   .folder-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-accent-light);
-        border-radius: 10px;
-        padding: 0.85rem;
-        transition: all 0.2s ease;
-        height: 100%;
-    }
-    
-   .folder-card:hover {
-        transform: translateY(-2px);
-        border-color: var(--accent-primary);
-        box-shadow: 0 5px 15px var(--bg-overlay-20);
-    }
-    
-   .folder-icon {
-        width: 48px;
-        height: 48px;
-        background: linear-gradient(135deg, var(--status-success), var(--status-success));
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.5rem;
-        margin-right: 1rem;
-    }
-    
-   .folder-title {
-        color: var(--text-white);
-        font-weight: 600;
-        margin-bottom: 0.2rem;
-    }
-    
-   .folder-stats {
-        color: var(--text-muted);
-        font-size: 0.85rem;
-    }
-    
     
    .files-table {
         width: 100%;
@@ -502,7 +458,7 @@
         }
         
        .btn-upload,
-       .btn-folder {
+       .btn-files-extra {
             flex: 1;
             justify-content: center;
         }
@@ -607,23 +563,23 @@
                         <i class="bi bi-upload"></i> Загрузить
                     </button>
                 </form>
-                <a href="{% url 'file_manager:download_all_files_archive' %}" class="btn-folder">
+                <a href="{% url 'file_manager:download_all_files_archive' %}" class="btn-files-extra">
                     <i class="bi bi-file-earmark-zip"></i> Скачать все архивом
                 </a>
-                <a href="{% url 'file_manager:files_bulk_permissions' %}" class="btn-folder">
+                <a href="{% url 'file_manager:files_bulk_permissions' %}" class="btn-files-extra">
                     <i class="bi bi-sliders"></i> Права на несколько файлов
                 </a>
                 {% if yandex_connected %}
-                <a href="{% url 'file_manager:yandex_picker' %}" class="btn-folder">
+                <a href="{% url 'file_manager:yandex_picker' %}" class="btn-files-extra">
                     <i class="bi bi-cloud-arrow-down"></i> Импорт с Яндекс.Диска
                 </a>
                 {% else %}
-                <a href="{% url 'file_manager:yandex_oauth_start' %}" class="btn-folder">
+                <a href="{% url 'file_manager:yandex_oauth_start' %}" class="btn-files-extra">
                     <i class="bi bi-plug"></i> Подключить Яндекс.Диск
                 </a>
                 {% endif %}
                 {% if can_manage_reference_data %}
-                <a href="{% url 'file_manager:tag_list' %}" class="btn-folder">
+                <a href="{% url 'file_manager:tag_list' %}" class="btn-files-extra">
                     <i class="bi bi-tags"></i> Управление тегами
                 </a>
                 {% endif %}

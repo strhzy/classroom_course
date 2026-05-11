@@ -114,7 +114,7 @@ def generate_preview(file_path ,output_dir ):
     return None 
 
 def search_files(query ,user =None ,file_types =None ,tags =None ,date_from =None ,date_to =None ):
-    files =File.objects.filter(is_folder =False )
+    files =File.objects.all()
 
     if user :
         files =files.filter(

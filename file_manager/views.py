@@ -139,8 +139,8 @@ def get_share_users_queryset(exclude_user_id=None):
 
 def get_editable_files_queryset(user):
     if is_admin_user(user):
-        return File.objects.filter(is_folder=False).order_by("-uploaded_at")
-    return File.objects.filter(uploaded_by=user, is_folder=False).order_by("-uploaded_at")
+        return File.objects.order_by("-uploaded_at")
+    return File.objects.filter(uploaded_by=user).order_by("-uploaded_at")
 
 
 def build_unique_title(user, original_name):
@@ -480,7 +480,6 @@ def create_user_uploaded_file(user, uploaded_file):
                 uploaded_by=user,
                 visibility="private",
                 importance="main",
-                is_folder=False,
                 storage_provider="yandex_disk",
                 yandex_path=yandex_path,
                 file_size=file_size,
@@ -497,7 +496,6 @@ def create_user_uploaded_file(user, uploaded_file):
                 uploaded_by=user,
                 visibility="private",
                 importance="main",
-                is_folder=False,
                 storage_provider="local",
                 yandex_path="",
                 file_size=file_size,
@@ -592,7 +590,7 @@ def file_list(request ):
     tag_objects = list(Tag.objects.filter(id__in=tag_ids)) if tag_ids else None
 
     if is_admin_user(request.user):
-        files = File.objects.filter(is_folder=False)
+        files = File.objects.all()
         query = request.GET.get('query')
         if query:
             files = files.filter(
@@ -980,8 +978,6 @@ def file_version_inline_viewer(request, file_id, version_id):
 
 
 def _resolve_path_for_viewing(file_obj):
-    if file_obj.is_folder:
-        return None, False
     if file_obj.storage_provider == "yandex_disk" and file_obj.yandex_path:
         connection = get_yandex_connection(file_obj.uploaded_by, autocreate_from_social=True)
         if not connection:
@@ -1013,9 +1009,6 @@ def file_viewer(request, file_id):
     file_obj = get_object_or_404(File, id=file_id)
     if not file_obj.can_access(request.user):
         raise PermissionDenied
-    if file_obj.is_folder:
-        messages.error(request, "Папки нельзя открыть в просмотрщике.")
-        return redirect("file_manager:file_list")
 
     ext = (file_obj.get_extension() or "").lower()
     versions = list(file_obj.versions.select_related("changed_by").order_by("-version_number"))
@@ -1669,7 +1662,7 @@ def tag_list(request ):
         raise PermissionDenied
     tags = (
         Tag.objects.annotate(
-            file_count=Count("files", filter=Q(files__is_folder=False))
+            file_count=Count("files")
         )
         .order_by("name")
     )
@@ -1868,7 +1861,7 @@ def yandex_export_file(request, file_id):
         return redirect("file_manager:file_detail", file_id=file_obj.id)
 
     if not file_obj.file:
-        messages.error(request, "Нельзя экспортировать папку или пустой файл")
+        messages.error(request, "Нельзя экспортировать пустой файл")
         return redirect("file_manager:file_detail", file_id=file_obj.id)
 
     yandex_path = f"disk:/{file_obj.title}"
@@ -1885,7 +1878,7 @@ def yandex_export_file(request, file_id):
 
 @login_required
 def download_all_files_archive(request):
-    files = File.objects.filter(uploaded_by=request.user, is_folder=False)
+    files = File.objects.filter(uploaded_by=request.user)
     if files.count() == 0:
         messages.error(request, "Нет файлов для скачивания")
         return redirect("file_manager:file_list")
@@ -1966,7 +1959,6 @@ def workspace_list(request):
         .annotate(
             file_count=Count(
                 "files",
-                filter=Q(files__is_folder=False),
                 distinct=True,
             )
         )
@@ -2021,7 +2013,7 @@ def workspace_detail(request, workspace_id):
         pk=workspace_id,
     )
     is_owner = ws.owner_id == request.user.id
-    workspace_files = ws.files.filter(is_folder=False).order_by("title")
+    workspace_files = ws.files.order_by("title")
     return render(
         request,
         "file_manager/workspace_detail.html",
@@ -2117,7 +2109,7 @@ def workspace_remove_file(request, workspace_id):
         fid = int(request.POST.get("file_id", 0))
     except ValueError:
         fid = 0
-    file_obj = get_object_or_404(File, pk=fid, is_folder=False)
+    file_obj = get_object_or_404(File, pk=fid)
     if not ws.files.filter(pk=file_obj.pk).exists():
         messages.error(request, "Этого файла нет в этом workspace")
         return redirect("file_manager:workspace_detail", workspace_id=ws.pk)
@@ -2145,7 +2137,7 @@ def workspace_delete(request, workspace_id):
 @login_required
 @require_http_methods(["POST"])
 def workspace_add_file(request, file_id):
-    file_obj = get_object_or_404(File, id=file_id, is_folder=False)
+    file_obj = get_object_or_404(File, id=file_id)
     if not file_obj.can_access(request.user):
         raise PermissionDenied
     if not can_edit_file_object(request.user, file_obj):

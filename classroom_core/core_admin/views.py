@@ -63,6 +63,8 @@ def _widgets_for_model(model: type[models.Model]) -> dict[str, forms.Widget]:
             widgets[f.name] = forms.Textarea(attrs={**base, "rows": row_height})
         elif isinstance(f, (models.ForeignKey, models.OneToOneField)):
             widgets[f.name] = forms.Select(attrs={"class": "form-select"})
+        elif getattr(f, "choices", None):
+            widgets[f.name] = forms.Select(attrs={"class": "form-select"})
         elif isinstance(
             f,
             (

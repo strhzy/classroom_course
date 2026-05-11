@@ -310,7 +310,7 @@
                     
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-folder2"></i> Файлы
+                            <i class="bi bi-files"></i> Файлы
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'file_manager:file_list' %}"><i class="bi bi-files"></i> Все файлы</a></li>
@@ -351,6 +351,11 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'classroom_core:core_admin_index' %}"><i class="bi bi-columns-gap"></i> Панель управления курсами</a></li>
+                            <li><a class="dropdown-item" href="{% url 'file_manager:fm_core_admin_index' %}"><i class="bi bi-hdd-stack"></i> Панель файлового хранилища</a></li>
+                            {% if user.is_staff or user.is_superuser %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'file_manager:fm_core_admin_changelist' model_name='django_user' %}"><i class="bi bi-people"></i> Пользователи</a></li>
+                            {% endif %}
                         </ul>
                     </li>
                     {% endif %}

@@ -90,7 +90,8 @@ def get_upload_url(access_token, path, overwrite=True):
     return response.json().get("href")
 
 
-def ensure_folder(access_token, path):
+def ensure_disk_segment(access_token, path):
+    """Создаёт цепочку ресурсов по пути на Яндекс.Диске (API)."""
     response = requests.put(
         YANDEX_DISK_API,
         params={"path": path},
@@ -102,7 +103,7 @@ def ensure_folder(access_token, path):
         response.raise_for_status()
 
 
-def ensure_parent_folders(access_token, file_path):
+def ensure_disk_parent_segments(access_token, file_path):
     path_str = str(file_path)
     if "/" not in path_str:
         return
@@ -125,11 +126,11 @@ def ensure_parent_folders(access_token, file_path):
     current = root
     for part in parts:
         current = f"{current}/{part}"
-        ensure_folder(access_token, current)
+        ensure_disk_segment(access_token, current)
 
 
 def upload_file_bytes(access_token, path, content, overwrite=True):
-    ensure_parent_folders(access_token, path)
+    ensure_disk_parent_segments(access_token, path)
     upload_url = get_upload_url(access_token, path, overwrite=overwrite)
     if not upload_url:
         raise RuntimeError("Не удалось получить upload URL Яндекс.Диска")

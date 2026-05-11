@@ -477,11 +477,9 @@
             </div>
             
             <div class="action-buttons">
-                {% if not file.is_folder %}
                 <a href="{% url 'file_manager:file_viewer' file.id %}" class="action-btn btn-edit">
                     <i class="bi bi-window-fullscreen"></i> Просмотр
                 </a>
-                {% endif %}
                 {% if can_upload_version %}
                 <a href="{% url 'file_manager:file_version_create' file.id %}" class="action-btn btn-edit">
                     <i class="bi bi-arrow-repeat"></i> Новая версия
