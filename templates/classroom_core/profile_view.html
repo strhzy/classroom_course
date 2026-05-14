@@ -512,7 +512,11 @@
                                 </span>
                                 <span class="info-value">
                                     <i class="bi bi-envelope-fill" style="color: var(--accent-primary); opacity: 0.7;"></i>
-                                    {{ profile_user.email|default:"<span class='empty-value'><i class='bi bi-dash'></i>Не указан</span>" }}
+                                    {% if profile_user.email %}
+                                        {{ profile_user.email }}
+                                    {% else %}
+                                        <span class="empty-value"><i class="bi bi-dash"></i>Не указан</span>
+                                    {% endif %}
                                 </span>
                             </div>
                             
@@ -580,30 +584,30 @@
                         {% if profile_user.profile.role == 'student' %}
                         <div class="stats-section">
                             <div class="stat-card">
-                                <div class="stat-value">{{ profile_user.enrolled_courses.count }}</div>
+                                <div class="stat-value">{{ student_stat_courses }}</div>
                                 <div class="stat-label">Курсов</div>
                             </div>
                             <div class="stat-card">
-                                <div class="stat-value">{{ profile_user.submissions.count }}</div>
+                                <div class="stat-value">{{ student_stat_submissions }}</div>
                                 <div class="stat-label">Решений</div>
                             </div>
                             <div class="stat-card">
-                                <div class="stat-value">{{ profile_user.groups.count }}</div>
+                                <div class="stat-value">{{ student_stat_groups }}</div>
                                 <div class="stat-label">Групп</div>
                             </div>
                         </div>
                         {% elif profile_user.profile.role == 'teacher' %}
                         <div class="stats-section">
                             <div class="stat-card">
-                                <div class="stat-value">{{ profile_user.taught_courses.count }}</div>
+                                <div class="stat-value">{{ teacher_stat_courses }}</div>
                                 <div class="stat-label">Курсов</div>
                             </div>
                             <div class="stat-card">
-                                <div class="stat-value">{{ profile_user.assignments.count }}</div>
+                                <div class="stat-value">{{ teacher_stat_assignments }}</div>
                                 <div class="stat-label">Заданий</div>
                             </div>
                             <div class="stat-card">
-                                <div class="stat-value">{{ profile_user.students.count }}</div>
+                                <div class="stat-value">{{ teacher_stat_students }}</div>
                                 <div class="stat-label">Студентов</div>
                             </div>
                         </div>

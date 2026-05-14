@@ -8,16 +8,6 @@ app_name = "file_manager"
 urlpatterns = [
     path("management/file-admin/", fm_core_admin_views.fm_admin_index, name="fm_core_admin_index"),
     path(
-        "management/file-admin/backup/json/",
-        fm_core_admin_views.fm_admin_backup_download,
-        name="fm_core_admin_backup_json",
-    ),
-    path(
-        "management/file-admin/backup/sqlite/",
-        fm_core_admin_views.fm_admin_backup_sqlite_download,
-        name="fm_core_admin_backup_sqlite",
-    ),
-    path(
         "management/file-admin/<str:model_name>/",
         fm_core_admin_views.fm_admin_changelist,
         name="fm_core_admin_changelist",

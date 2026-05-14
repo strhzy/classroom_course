@@ -4,6 +4,9 @@
 
 {% block content %}
 <div class="container py-4">
+    <div class="mb-3 d-flex flex-wrap justify-content-end">
+        {% include "snippets/admin_db_backup_bar.html" with backup_bar_compact=True backup_bar_label="Копия БД:" %}
+    </div>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0">Панель управления курсами</h2>
         <span class="badge text-bg-secondary">{% if is_super_management %}Администратор{% else %}Преподаватель{% endif %}</span>

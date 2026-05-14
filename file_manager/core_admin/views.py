@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-import shutil
-import tempfile
+from collections import OrderedDict
 from decimal import Decimal
-from io import StringIO
 from pathlib import Path
 
 from django import forms
@@ -13,17 +11,18 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import FieldDoesNotExist, PermissionDenied, ValidationError
-from django.core.management import call_command
 from django.core.paginator import Paginator
-from django.db import connections, models
+from django.db import models
 from django.db.models import Q
 from django.forms.models import modelform_factory
-from django.http import Http404, HttpResponse
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
+
 
 from file_manager.core_admin.registry import (
     FM_ADMIN_REGISTRY,
@@ -122,27 +121,137 @@ def _widgets_for_model(model: type[models.Model]) -> dict[str, forms.Widget]:
     return widgets
 
 
-def _make_django_user_form_class():
-    fields = (
-        "username",
-        "email",
-        "first_name",
-        "last_name",
-        "is_active",
-        "is_staff",
-        "is_superuser",
+class DjangoUserPanelForm(forms.ModelForm):
+    """Учётная запись Django в панели: поля профиля + назначение пароля (создание / смена)."""
+
+    new_password1 = forms.CharField(
+        label="Пароль",
+        required=False,
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={"class": "form-control", "autocomplete": "new-password"}
+        ),
+        help_text="",
     )
-    base = {"class": "form-control"}
-    w = {
-        "username": forms.TextInput(attrs=base),
-        "email": forms.EmailInput(attrs=base),
-        "first_name": forms.TextInput(attrs=base),
-        "last_name": forms.TextInput(attrs=base),
-        "is_active": forms.CheckboxInput(attrs={"class": "form-check-input"}),
-        "is_staff": forms.CheckboxInput(attrs={"class": "form-check-input"}),
-        "is_superuser": forms.CheckboxInput(attrs={"class": "form-check-input"}),
-    }
-    return modelform_factory(User, fields=fields, widgets=w)
+    new_password2 = forms.CharField(
+        label="Пароль (ещё раз)",
+        required=False,
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={"class": "form-control", "autocomplete": "new-password"}
+        ),
+        help_text="",
+    )
+
+    class Meta:
+        model = User
+        fields = (
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "is_active",
+            "is_staff",
+            "is_superuser",
+        )
+        widgets = {
+            "username": forms.TextInput(attrs={"class": "form-control"}),
+            "email": forms.EmailInput(attrs={"class": "form-control"}),
+            "first_name": forms.TextInput(attrs={"class": "form-control"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control"}),
+            "is_active": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+            "is_staff": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+            "is_superuser": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields["new_password1"].required = False
+            self.fields["new_password2"].required = False
+            self.fields["new_password1"].help_text = (
+                "Оставьте оба поля пустыми, чтобы не менять пароль. "
+                "Иначе введите новый пароль дважды."
+            )
+            self.fields["new_password2"].help_text = ""
+        else:
+            self.fields["new_password1"].required = True
+            self.fields["new_password2"].required = True
+            self.fields["new_password1"].help_text = (
+                "Начальный пароль для входа по логину и паролю (не хранится в открытом виде)."
+            )
+            self.fields["new_password2"].help_text = "Повторите пароль."
+        order = (
+            "username",
+            "new_password1",
+            "new_password2",
+            "email",
+            "first_name",
+            "last_name",
+            "is_active",
+            "is_staff",
+            "is_superuser",
+        )
+        new_fields = OrderedDict()
+        for name in order:
+            if name in self.fields:
+                new_fields[name] = self.fields[name]
+        for name, fld in self.fields.items():
+            if name not in new_fields:
+                new_fields[name] = fld
+        self.fields = new_fields
+
+    def clean(self):
+        data = super().clean()
+        if not data:
+            return data
+        p1 = data.get("new_password1") or ""
+        p2 = data.get("new_password2") or ""
+        is_new = not self.instance.pk
+        if is_new:
+            if not p1:
+                self.add_error("new_password1", "Введите пароль для нового пользователя.")
+            if not p2:
+                self.add_error("new_password2", "Подтвердите пароль.")
+            if p1 and p2 and p1 != p2:
+                self.add_error("new_password2", "Пароли не совпадают.")
+        else:
+            if p1 or p2:
+                if p1 != p2:
+                    self.add_error("new_password2", "Пароли не совпадают.")
+                if p1 and not p2:
+                    self.add_error("new_password2", "Введите подтверждение пароля.")
+                if p2 and not p1:
+                    self.add_error("new_password1", "Введите новый пароль.")
+        pwd_for_validation = p1 if (is_new or p1) else None
+        if pwd_for_validation:
+            tmp_user = (
+                self.instance
+                if self.instance.pk
+                else User(
+                    username=(data.get("username") or "").strip(),
+                    email=(data.get("email") or "").strip(),
+                )
+            )
+            try:
+                validate_password(pwd_for_validation, tmp_user)
+            except ValidationError as exc:
+                for msg in exc.messages:
+                    self.add_error("new_password1", msg)
+        return data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        pwd = self.cleaned_data.get("new_password1")
+        if pwd:
+            user.set_password(pwd)
+        if commit:
+            user.save()
+        return user
+
+
+def _make_django_user_form_class():
+    return DjangoUserPanelForm
 
 
 def _make_user_storage_quota_form_class():
@@ -426,7 +535,6 @@ def fm_admin_index(request):
                 ),
             }
         )
-    db_engine = settings.DATABASES["default"]["ENGINE"]
     django_users_url = reverse(
         "file_manager:fm_core_admin_changelist",
         kwargs={"model_name": "django_user"},
@@ -436,7 +544,6 @@ def fm_admin_index(request):
         "file_manager/core_admin/index.html",
         {
             "apps_models": apps_models,
-            "is_sqlite": db_engine.endswith("sqlite3"),
             "django_users_url": django_users_url,
             "local_quota_editable": _local_file_quota_editable(),
         },
@@ -572,12 +679,7 @@ def fm_admin_add(request, model_name: str):
         form = FormClass(request.POST, request.FILES, **quota_form_kw)
         if form.is_valid():
             try:
-                if model is User:
-                    obj = form.save(commit=False)
-                    obj.set_unusable_password()
-                    obj.save()
-                else:
-                    obj = form.save()
+                obj = form.save()
             except ValidationError as exc:
                 form.add_error(None, exc)
             else:
@@ -721,44 +823,3 @@ def fm_admin_delete(request, model_name: str, object_id: int):
     )
 
 
-@login_required
-def fm_admin_backup_download(request):
-    _require_fm_admin(request.user)
-    buf = StringIO()
-    call_command(
-        "dumpdata",
-        exclude=["sessions.Session"],
-        natural_foreign=True,
-        indent=2,
-        stdout=buf,
-    )
-    data = buf.getvalue().encode("utf-8")
-    filename = f"backup_{timezone.now().strftime('%Y%m%d_%H%M%S')}.json"
-    response = HttpResponse(data, content_type="application/json; charset=utf-8")
-    response["Content-Disposition"] = f'attachment; filename="{filename}"'
-    return response
-
-
-@login_required
-def fm_admin_backup_sqlite_download(request):
-    _require_fm_admin(request.user)
-    engine = settings.DATABASES["default"]["ENGINE"]
-    if not engine.endswith("sqlite3"):
-        raise Http404
-    db_path = Path(settings.DATABASES["default"]["NAME"])
-    if not db_path.is_file():
-        raise Http404
-
-    connections.close_all()
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".sqlite3") as tmp:
-        tmp_path = Path(tmp.name)
-    try:
-        shutil.copy2(db_path, tmp_path)
-        data = tmp_path.read_bytes()
-    finally:
-        tmp_path.unlink(missing_ok=True)
-
-    filename = f"db_{timezone.now().strftime('%Y%m%d_%H%M%S')}.sqlite3"
-    response = HttpResponse(data, content_type="application/octet-stream")
-    response["Content-Disposition"] = f'attachment; filename="{filename}"'
-    return response

@@ -1,52 +1,424 @@
-{% extends 'base.html' %}
+{% extends "classroom_core/base_courses.html" %}
 
 {% block title %}Заявка на запись на курс{% endblock %}
 
-{% block content %}
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Заявка на запись на курс: {{ course.title }}</h4>
+{% block courses_content %}
+<style>
+    .theme-enroll-request {
+        background: var(--bg-page-gradient);
+        min-height: calc(100vh - 8rem);
+        padding: 1.5rem 0.5rem 2.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .theme-enroll-request {
+            padding: 1rem 0 2rem;
+        }
+    }
+
+    .page-header {
+        animation: enrollHeaderFade 0.5s ease-out;
+        margin-bottom: 1.5rem;
+    }
+
+    @keyframes enrollHeaderFade {
+        from {
+            opacity: 0;
+            transform: translateY(-16px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .page-title {
+        font-size: 1.85rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--text-white), var(--text-muted));
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.35rem;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+    }
+
+    .page-title i {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 2rem;
+    }
+
+    .page-sub {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    .enroll-card {
+        background: var(--bg-card);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--bg-overlay-30);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px var(--shadow-card), 0 0 20px var(--bg-overlay-20);
+        overflow: hidden;
+        animation: enrollCardAppear 0.55s ease-out 0.1s both;
+        max-width: 720px;
+        margin: 0 auto;
+    }
+
+    @keyframes enrollCardAppear {
+        from {
+            opacity: 0;
+            transform: translateY(24px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .enroll-card:hover {
+        box-shadow: 0 14px 36px var(--shadow-card-hover), 0 0 24px var(--border-accent-hover);
+    }
+
+    .card-header-gradient {
+        background: linear-gradient(135deg, var(--bg-overlay-20), var(--status-info-bg));
+        border-bottom: 1px solid var(--bg-overlay-30);
+        padding: 1.15rem 1.5rem;
+    }
+
+    .card-header-gradient h2 {
+        color: var(--text-white);
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        word-break: break-word;
+    }
+
+    .card-header-gradient h2 i {
+        color: var(--accent-primary);
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+
+    .card-body-custom {
+        padding: 1.75rem 1.5rem 2rem;
+    }
+
+    .course-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem 1.25rem;
+        margin-bottom: 1.25rem;
+        padding: 1rem 1.1rem;
+        background: var(--bg-overlay-15);
+        border: 1px solid var(--bg-overlay-30);
+        border-radius: 12px;
+    }
+
+    .course-meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .course-meta-item i {
+        color: var(--accent-primary);
+    }
+
+    .course-meta-item strong {
+        color: var(--text-white);
+        font-weight: 600;
+    }
+
+    .course-desc {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.55;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid var(--bg-overlay-30);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        color: var(--text-muted);
+        font-weight: 600;
+        margin-bottom: 0.65rem;
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 1.05rem;
+    }
+
+    .form-label i {
+        color: var(--accent-primary);
+    }
+
+    .form-label .req {
+        color: var(--status-danger);
+        font-weight: 700;
+    }
+
+    .custom-textarea {
+        background: var(--bg-input);
+        border: 2px solid var(--bg-overlay-30);
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        color: var(--text-white);
+        font-size: 1rem;
+        transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+        width: 100%;
+        resize: vertical;
+        min-height: 140px;
+        font-family: inherit;
+    }
+
+    .custom-textarea:focus {
+        outline: none;
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 3px var(--bg-overlay-20), 0 0 18px var(--bg-overlay-30);
+        background: var(--bg-item-hover);
+    }
+
+    .custom-textarea:hover {
+        border-color: var(--border-accent-hover);
+    }
+
+    .field-hint {
+        color: var(--text-disabled);
+        font-size: 0.88rem;
+        margin-top: 0.5rem;
+        line-height: 1.45;
+    }
+
+    .field-errors {
+        color: var(--status-danger);
+        font-size: 0.9rem;
+        margin-top: 0.45rem;
+    }
+
+    .warning-alert {
+        background: var(--status-warning-bg);
+        border: 1px solid var(--status-warning);
+        border-radius: 12px;
+        padding: 1rem 1.1rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+
+    .warning-alert i {
+        color: var(--status-warning);
+        font-size: 1.25rem;
+        flex-shrink: 0;
+        margin-top: 0.1rem;
+    }
+
+    .warning-alert .warning-text {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+        margin-top: 1.75rem;
+        animation: enrollButtonsAppear 0.45s ease-out 0.35s both;
+    }
+
+    @keyframes enrollButtonsAppear {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 1.75rem;
+        font-weight: 600;
+        color: white;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+        box-shadow: 0 4px 14px var(--bg-overlay-30);
+        flex: 1 1 200px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.55rem;
+        font-size: 1.05rem;
+        cursor: pointer;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 22px var(--accent-glow-strong);
+        background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+        color: white;
+    }
+
+    .btn-cancel {
+        background: var(--bg-overlay-20);
+        border: 1px solid var(--accent-glow-strong);
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        transition: all 0.25s ease;
+        text-decoration: none;
+        flex: 1 1 160px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 1.02rem;
+    }
+
+    .btn-cancel:hover {
+        background: var(--bg-overlay-30);
+        border-color: var(--border-accent-hover);
+        color: var(--text-white);
+        transform: translateY(-2px);
+    }
+
+    .btn-ghost {
+        background: transparent;
+        border: 1px dashed var(--bg-overlay-30);
+        color: var(--text-muted);
+        border-radius: 12px;
+        padding: 0.65rem 1rem;
+        font-size: 0.92rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        width: 100%;
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+
+    .btn-ghost:hover {
+        border-color: var(--accent-primary);
+        color: var(--accent-primary);
+    }
+
+    @media (max-width: 576px) {
+        .page-title {
+            font-size: 1.45rem;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .btn-submit,
+        .btn-cancel {
+            flex: 1 1 auto;
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="theme-enroll-request">
+    <div class="container" style="max-width: 800px;">
+        <header class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-person-plus"></i>
+                Запись на курс
+            </h1>
+            <p class="page-sub">Заполните заявку — преподаватель рассмотрит её и примет решение о зачислении.</p>
+        </header>
+
+        <div class="enroll-card">
+            <div class="card-header-gradient">
+                <h2>
+                    <i class="bi bi-journal-bookmark"></i>
+                    {{ course.title }}
+                </h2>
+            </div>
+            <div class="card-body-custom">
+                <div class="course-meta">
+                    {% if course.instructor %}
+                    <span class="course-meta-item">
+                        <i class="bi bi-person-circle"></i>
+                        <span><strong>Преподаватель:</strong> {{ course.instructor.get_full_name|default:course.instructor.username }}</span>
+                    </span>
+                    {% endif %}
+                    <span class="course-meta-item">
+                        <i class="bi bi-hash"></i>
+                        <span><strong>ID курса:</strong> {{ course.id }}</span>
+                    </span>
                 </div>
-                <div class="card-body">
-                    <p class="text-muted">
-                        {% if course.instructor %}
-                            Преподаватель: {{ course.instructor.get_full_name|default:course.instructor.username }}
+
+                {% if course.description %}
+                <div class="course-desc">{{ course.description|truncatewords:80 }}</div>
+                {% endif %}
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="warning-alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <div class="warning-text">{{ form.non_field_errors }}</div>
+                    </div>
+                    {% endif %}
+
+                    <div class="form-group">
+                        <label for="{{ form.motivation.id_for_label }}" class="form-label">
+                            <i class="bi bi-chat-heart"></i>
+                            Ваша мотивация <span class="req" aria-hidden="true">*</span>
+                        </label>
+                        {{ form.motivation }}
+                        <p class="field-hint">Расскажите, почему вы хотите записаться на этот курс и что планируете получить от обучения.</p>
+                        {% if form.motivation.errors %}
+                        <div class="field-errors">{{ form.motivation.errors }}</div>
                         {% endif %}
-                    </p>
-                    
-                    <p>{{ course.description|truncatewords:50 }}</p>
-                    
-                    <hr>
-                    
-                    <form method="post">
-                        {% csrf_token %}
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.motivation.id_for_label }}" class="form-label">
-                                Ваша мотивация <span class="text-danger">*</span>
-                            </label>
-                            {{ form.motivation }}
-                            <small class="form-text text-muted">
-                                Расскажите, почему вы хотите записаться на этот курс и что планируете получить от обучения.
-                            </small>
-                            {% if form.motivation.errors %}
-                                <div class="text-danger">{{ form.motivation.errors }}</div>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="d-flex justify-content-between">
-                            <a href="{% url 'classroom_core:course_list' %}" class="btn btn-secondary">
-                                Назад к курсам
-                            </a>
-                            <button type="submit" class="btn btn-primary">
-                                Отправить заявку
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+
+                    <div class="button-group">
+                        {% if user.profile.role == 'student' %}
+                        <a href="{% url 'classroom_core:for_enrollment_course_list' %}" class="btn-cancel">
+                            <i class="bi bi-arrow-left"></i>
+                            К доступным курсам
+                        </a>
+                        {% else %}
+                        <a href="{% url 'classroom_core:course_list' %}" class="btn-cancel">
+                            <i class="bi bi-arrow-left"></i>
+                            Мои курсы
+                        </a>
+                        {% endif %}
+                        <button type="submit" class="btn-submit">
+                            <i class="bi bi-send-fill"></i>
+                            Отправить заявку
+                        </button>
+                    </div>
+
+                    <a href="{% url 'classroom_core:course_detail' course.id %}" class="btn-ghost">
+                        <i class="bi bi-eye"></i>
+                        Страница курса без отправки заявки
+                    </a>
+                </form>
             </div>
         </div>
     </div>

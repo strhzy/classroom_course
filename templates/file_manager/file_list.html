@@ -291,6 +291,23 @@
         text-align: left;
     }
     
+    .files-table thead th .th-sort-link {
+        color: inherit;
+        text-decoration: none;
+    }
+    .files-table thead th .th-sort-link:hover {
+        color: var(--accent-primary);
+        text-decoration: underline;
+    }
+    .files-table thead th .th-sort-link.th-sort-active {
+        color: var(--text-main);
+    }
+    .files-table thead th .th-sort-link .sort-ind {
+        font-size: 0.75em;
+        margin-left: 0.15rem;
+        opacity: 0.85;
+    }
+    
    .files-table tbody tr {
         transition: background-color 0.2s ease;
         border-bottom: 1px solid var(--bg-overlay-10);
@@ -346,6 +363,16 @@
         padding: 0.3rem 0.8rem;
         border-radius: 50px;
         font-size: 0.85rem;
+    }
+   .owner-badge {
+        display: inline-block;
+        font-weight: 600;
+        color: var(--text-main);
+        background: var(--bg-item);
+        border: 1px solid var(--border-accent-light);
+        padding: 0.3rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
     }
    .shared-badge {
         background: var(--status-info-bg);
@@ -658,6 +685,17 @@
                         <thead>
                             <tr>
                                 <th>Файл</th>
+                                {% if is_admin_user %}
+                                <th>
+                                    {% if file_list_sort == 'uploaded_by__username' %}
+                                    <a href="{% url 'file_manager:file_list' %}?sort=-uploaded_by__username{% if filter_querystring_no_sort %}&amp;{{ filter_querystring_no_sort }}{% endif %}" class="th-sort-link th-sort-active">Владелец<span class="sort-ind">↑</span></a>
+                                    {% elif file_list_sort == '-uploaded_by__username' %}
+                                    <a href="{% url 'file_manager:file_list' %}?sort=uploaded_by__username{% if filter_querystring_no_sort %}&amp;{{ filter_querystring_no_sort }}{% endif %}" class="th-sort-link th-sort-active">Владелец<span class="sort-ind">↓</span></a>
+                                    {% else %}
+                                    <a href="{% url 'file_manager:file_list' %}?sort=uploaded_by__username{% if filter_querystring_no_sort %}&amp;{{ filter_querystring_no_sort }}{% endif %}" class="th-sort-link">Владелец</a>
+                                    {% endif %}
+                                </th>
+                                {% endif %}
                                 <th>Тип</th>
                                 <th>Размер</th>
                                 <th>Дата</th>
@@ -688,6 +726,11 @@
                                         </div>
                                     </div>
                                 </td>
+                                {% if is_admin_user %}
+                                <td data-label="Владелец">
+                                    <span class="owner-badge">{{ file.uploaded_by.username }}</span>
+                                </td>
+                                {% endif %}
                                 <td data-label="Тип">
                                     <span class="type-badge">{{ file.get_file_type_display }}</span>
                                 </td>
@@ -724,7 +767,7 @@
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="5" class="text-center">
+                                <td colspan="{% if is_admin_user %}6{% else %}5{% endif %}" class="text-center">
                                     <div class="empty-state">
                                         <i class="bi bi-inbox"></i>
                                         <p>Нет файлов</p>

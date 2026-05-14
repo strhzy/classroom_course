@@ -1,0 +1,29 @@
+{# Резервная копия БД: создание .dump и восстановление через pg_restore при PostgreSQL. #}
+{% if show_db_backup %}
+<div class="admin-db-backup d-flex flex-wrap align-items-center gap-2 {% if backup_bar_compact %}small{% endif %}">
+    {% if backup_bar_label %}<span class="text-muted {% if not backup_bar_compact %}me-1{% endif %}">{{ backup_bar_label }}</span>{% endif %}
+    {% if db_backup_postgres_available %}
+    <a class="btn {% if backup_bar_compact %}btn-sm {% endif %}btn-ca-outline" href="{{ db_backup_pg_url }}">
+        <i class="bi bi-database-down"></i> Создать копию (.dump)
+    </a>
+    <form method="post" action="{{ db_backup_pg_restore_url }}" enctype="multipart/form-data" class="d-flex flex-wrap align-items-center gap-2 mb-0">
+        {% csrf_token %}
+        <input type="file" name="dump" accept=".dump,application/octet-stream" required
+               class="form-control {% if backup_bar_compact %}form-control-sm{% endif %}" style="max-width: 16rem;">
+        <div class="form-check mb-0">
+            <input class="form-check-input" type="checkbox" name="clean" value="1" id="id_pg_restore_clean{% if backup_bar_compact %}_c{% else %}_w{% endif %}" checked>
+            <label class="form-check-label" for="id_pg_restore_clean{% if backup_bar_compact %}_c{% else %}_w{% endif %}">С очисткой (--clean)</label>
+        </div>
+        <button type="submit" class="btn {% if backup_bar_compact %}btn-sm {% endif %}btn-outline-danger">
+            <i class="bi bi-database-up"></i> Восстановить из .dump
+        </button>
+    </form>
+    {% else %}
+    <span class="text-muted {% if backup_bar_compact %}small{% endif %}">
+        Создание и восстановление резервной копии (<code>pg_dump -Fc</code> / <code>pg_restore</code>)
+        здесь станут доступны, когда приложение подключено к PostgreSQL (уберите режим SQLite:
+        не задавайте <code>DJANGO_USE_SQLITE=true</code> и проверьте <code>POSTGRES_*</code>).
+    </span>
+    {% endif %}
+</div>
+{% endif %}

@@ -15,6 +15,9 @@
 </style>
 <div class="mgmt-page">
 <div class="container py-2">
+    <div class="mb-3 d-flex flex-wrap justify-content-end">
+        {% include "snippets/admin_db_backup_bar.html" with backup_bar_compact=True backup_bar_label="Копия БД:" %}
+    </div>
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="mb-0 mgmt-title">Курсы</h2>
         <div class="d-flex gap-2">

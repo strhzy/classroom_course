@@ -17,15 +17,16 @@
     </nav>
 
     <header class="core-admin__hero py-3 px-3 px-md-4">
-        <div class="core-admin__hero-inner align-items-center">
+        <div class="core-admin__hero-inner align-items-center d-flex flex-wrap justify-content-between gap-2">
             <div class="core-admin__title-block">
                 <h1 class="h3 mb-0">{{ verbose_name_plural }}</h1>
             </div>
-            {% if show_add_button %}
-            <div class="core-admin__actions">
+            <div class="core-admin__actions d-flex flex-wrap gap-2 align-items-center ms-md-auto">
+                {% if show_add_button %}
                 <a class="btn btn-ca-success" href="{{ add_url }}"><i class="bi bi-plus-lg"></i> Добавить запись</a>
+                {% endif %}
+                {% include "snippets/admin_db_backup_bar.html" with backup_bar_compact=True backup_bar_label="БД:" %}
             </div>
-            {% endif %}
         </div>
     </header>
 

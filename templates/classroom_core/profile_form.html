@@ -486,24 +486,41 @@
                     <div class="card-body-custom">
                         <form method="post" enctype="multipart/form-data">
                             {% csrf_token %}
+                            <input type="hidden" name="access_class" value="{{ form.instance.access_class|default:'main' }}">
 
                             <div class="form-group">
-                                <label for="id_role" class="form-label">
-                                    <i class="bi bi-person-badge"></i>
-                                    Роль <span class="required">*</span>
+                                <label for="{{ form.email.id_for_label }}" class="form-label">
+                                    <i class="bi bi-envelope"></i>
+                                    {{ form.email.label }}
                                 </label>
-                                <select name="role" id="id_role" class="custom-select" required>
-                                    <option value="student" {% if form.role.value == 'student' %}selected{% endif %}>🎓 Студент</option>
-                                    <option value="teacher" {% if form.role.value == 'teacher' %}selected{% endif %}>👨‍🏫 Преподаватель</option>
-                                    <option value="staff" {% if form.role.value == 'staff' %}selected{% endif %}>👥 Сотрудник учебной части</option>
-                                </select>
+                                {{ form.email }}
+                                {% if form.email.help_text %}
                                 <div class="form-text">
                                     <i class="bi bi-info-circle"></i>
-                                    Роль определяет доступные функции в системе
+                                    {{ form.email.help_text }}
+                                </div>
+                                {% endif %}
+                                {% if form.email.errors %}
+                                <div class="form-text" style="color: var(--status-danger);">
+                                    {{ form.email.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="bi bi-person-badge"></i>
+                                    Роль
+                                </label>
+                                <div class="custom-input" style="cursor: default; opacity: 0.95;">
+                                    {{ user.profile.get_role_display }}
+                                </div>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i>
+                                    Роль назначается администратором. При необходимости изменения обратитесь в учебный офис.
                                 </div>
                             </div>
-                            
-                            
+
                             <div class="form-group">
                                 <label for="id_department" class="form-label">
                                     <i class="bi bi-building"></i>

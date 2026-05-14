@@ -1258,9 +1258,29 @@ def profile_view(request ,user_id =None ):
     else :
         user =request.user 
 
-    return render(request ,'classroom_core/profile_view.html',{
-    'profile_user':user 
-    })
+    context = {'profile_user': user}
+    profile = getattr(user, 'profile', None)
+    if profile and profile.role == 'student':
+        context['student_stat_courses'] = user.courses_enrolled.count()
+        context['student_stat_submissions'] = user.assignment_submissions.count()
+        context['student_stat_groups'] = user.groups.count()
+    elif profile and profile.role == 'teacher':
+        courses_qs = Course.objects.filter(
+            Q(instructor=user) | Q(teaching_assistants=user)
+        ).distinct()
+        context['teacher_stat_courses'] = courses_qs.count()
+        context['teacher_stat_assignments'] = Assignment.objects.filter(
+            course__in=courses_qs
+        ).count()
+        enrolled_ids = set()
+        for course in courses_qs.prefetch_related(
+            'students', 'student_groups__students__user'
+        ):
+            for s in course.get_all_enrolled_students():
+                enrolled_ids.add(s.pk)
+        context['teacher_stat_students'] = len(enrolled_ids)
+
+    return render(request ,'classroom_core/profile_view.html',context )
 
 @login_required 
 def profile_edit(request ):

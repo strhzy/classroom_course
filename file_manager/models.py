@@ -127,7 +127,6 @@ class File(models.Model ):
         models.Index(fields =['uploaded_by','-uploaded_at']),
         models.Index(fields =['file_type']),
         models.Index(fields =['visibility']),
-        models.Index(fields =['extracted_text']),
         ]
 
     def __str__(self ):

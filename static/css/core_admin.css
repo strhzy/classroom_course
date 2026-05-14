@@ -404,6 +404,10 @@
   color: var(--accent-primary);
 }
 
+.core-admin__notice.app-caption {
+  color: var(--text-secondary);
+}
+
 @media (max-width: 767px) {
   .core-admin__hero {
     padding: 1.25rem;

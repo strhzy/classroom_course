@@ -17,12 +17,16 @@
         </ol>
     </nav>
 
+    <div class="mb-3">
+        {% include "snippets/admin_db_backup_bar.html" with backup_bar_compact=True backup_bar_label="Резервная копия базы:" %}
+    </div>
+
     <header class="mb-4">
         <h1 class="h3 fw-bold">
             {% if is_add %}Добавить: {{ verbose_name }}{% else %}Изменить: {{ verbose_name }}{% endif %}
         </h1>
         {% if not is_add %}
-        <p class="text-muted mb-0 small">{{ object }}</p>
+        <p class="app-caption mb-0 small">{{ object }}</p>
         {% endif %}
     </header>
 

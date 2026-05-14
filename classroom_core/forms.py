@@ -334,11 +334,24 @@ class StudentGroupForm(forms.ModelForm):
 
 class UserProfileForm(forms.ModelForm):
     """Форма для редактирования профиля пользователя"""
+
+    email = forms.EmailField(
+        label="Электронная почта",
+        required=False,
+        widget=forms.EmailInput(
+            attrs={
+                "class": "custom-input",
+                "placeholder": "name@example.com",
+                "autocomplete": "email",
+            }
+        ),
+        help_text="Указывается в учётной записи; используется для уведомлений и восстановления доступа.",
+    )
+
     class Meta:
         model = UserProfile
-        fields = ['role', 'access_class', 'department', 'position', 'student_group', 'phone', 'avatar']
+        fields = ['access_class', 'department', 'position', 'student_group', 'phone', 'avatar']
         widgets = {
-            'role': forms.Select(attrs={'class': 'form-select'}),
             'access_class': forms.Select(attrs={'class': 'form-select'}),
             'department': forms.TextInput(attrs={'class': 'form-control'}),
             'position': forms.TextInput(attrs={'class': 'form-control'}),
@@ -347,13 +360,41 @@ class UserProfileForm(forms.ModelForm):
             'avatar': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk and getattr(self.instance, "user_id", None):
+            self.fields["email"].initial = (self.instance.user.email or "").strip()
+
+    def clean_email(self):
+        email = (self.cleaned_data.get("email") or "").strip()
+        if not email:
+            return ""
+        user = self.instance.user
+        if User.objects.filter(email__iexact=email).exclude(pk=user.pk).exists():
+            raise ValidationError("Этот адрес почты уже привязан к другой учётной записи.")
+        return email
+
+    def save(self, commit=True):
+        profile = super().save(commit=commit)
+        if commit:
+            user = profile.user
+            user.email = self.cleaned_data.get("email") or ""
+            user.save(update_fields=["email"])
+        return profile
+
 class CourseEnrollmentRequestForm(forms.ModelForm):
     """Форма для подачи заявки на запись на курс"""
     class Meta:
         model = CourseEnrollmentRequest
         fields = ['motivation']
         widgets = {
-            'motivation': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Расскажите, почему вы хотите записаться на этот курс...'}),
+            'motivation': forms.Textarea(
+                attrs={
+                    'class': 'custom-textarea',
+                    'rows': 5,
+                    'placeholder': 'Расскажите, почему вы хотите записаться на этот курс и что планируете получить от обучения…',
+                }
+            ),
         }
 
 class CourseEnrollmentReviewForm(forms.ModelForm):

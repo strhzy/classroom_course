@@ -118,14 +118,14 @@ urlpatterns = [
 
     path('management/core-admin/', core_admin_views.core_admin_index, name='core_admin_index'),
     path(
-        'management/core-admin/backup/json/',
-        core_admin_views.core_admin_backup_download,
-        name='core_admin_backup_json',
+        'management/core-admin/backup/postgres/',
+        core_admin_views.core_admin_backup_postgres_download,
+        name='core_admin_backup_postgres',
     ),
     path(
-        'management/core-admin/backup/sqlite/',
-        core_admin_views.core_admin_backup_sqlite_download,
-        name='core_admin_backup_sqlite',
+        'management/core-admin/backup/postgres/restore/',
+        core_admin_views.core_admin_backup_postgres_restore,
+        name='core_admin_backup_postgres_restore',
     ),
     path('management/core-admin/<str:model_name>/', core_admin_views.core_admin_changelist, name='core_admin_changelist'),
     path('management/core-admin/<str:model_name>/add/', core_admin_views.core_admin_add, name='core_admin_add'),

@@ -22,22 +22,23 @@
                 <p class="core-admin__lead mt-2">Справочники и данные курсов: выберите раздел для просмотра и редактирования записей.</p>
             </div>
             <div class="core-admin__actions">
-                <a class="btn btn-ca-outline" href="{% url 'classroom_core:core_admin_backup_json' %}">
-                    <i class="bi bi-file-earmark-arrow-down"></i> Резервная копия (JSON)
-                </a>
-                {% if is_sqlite %}
-                <a class="btn btn-ca-outline" href="{% url 'classroom_core:core_admin_backup_sqlite' %}">
-                    <i class="bi bi-database-down"></i> Копия базы (SQLite)
-                </a>
-                {% endif %}
+                {% include "snippets/admin_db_backup_bar.html" %}
             </div>
         </div>
     </header>
 
+    {% if show_db_backup and db_backup_postgres_available %}
     <div class="core-admin__notice">
-        <strong>JSON</strong> — переносимая выгрузка данных (все приложения проекта, кроме сессий). Удобно для архива или переноса на другой сервер.
-        {% if is_sqlite %}<br><strong>Файл SQLite</strong> — полная копия файла базы. Перед снимком на продакшене при необходимости ограничьте активную запись.{% endif %}
+        <strong>Резервное копирование:</strong> кнопка «Создать копию (.dump)» — снимок
+        <code>pg_dump -Fc</code>; форма рядом — восстановление через <code>pg_restore</code>.
+        Восстановление перезаписывает данные в базе; при «С очисткой» выполняется <code>--clean</code>.
     </div>
+    {% elif show_db_backup %}
+    <div class="core-admin__notice app-caption">
+        Резервное копирование в формате PostgreSQL станет доступно после переключения приложения на PostgreSQL
+        (см. подсказку в блоке над таблицей).
+    </div>
+    {% endif %}
 
     <div class="core-admin__card core-admin__card--flush">
         <div class="core-admin__table-wrap">
@@ -59,7 +60,7 @@
                         </td>
                     </tr>
                     {% empty %}
-                    <tr><td colspan="3" class="text-muted py-4 text-center">Нет зарегистрированных разделов.</td></tr>
+                    <tr><td colspan="3" class="app-caption py-4 text-center">Нет зарегистрированных разделов.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>

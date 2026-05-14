@@ -1,0 +1,91 @@
+/**
+ * Единые правки поверх Bootstrap 5 + темы (light/dark):
+ * читаемый вторичный текст, подсказки к полям, подписи в админ-панелях.
+ */
+
+.main-content .app-caption,
+.core-admin .app-caption {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.main-content .text-muted,
+.core-admin .text-muted,
+.core-admin .small.text-muted {
+  color: var(--text-secondary) !important;
+}
+
+.main-content .form-text,
+.core-admin .form-text {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-top: 0.35rem;
+}
+
+.main-content .invalid-feedback,
+.core-admin .invalid-feedback {
+  color: var(--status-danger-light, var(--status-danger));
+  font-size: 0.875rem;
+}
+
+.main-content .form-label,
+.core-admin .form-label {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.main-content .form-control,
+.main-content .form-select,
+.core-admin .form-control,
+.core-admin .form-select {
+  color: var(--text-main);
+  background-color: var(--bg-input);
+  border-color: var(--border-accent-light);
+}
+
+.main-content .form-control::placeholder,
+.core-admin .form-control::placeholder {
+  color: var(--text-muted);
+  opacity: 0.9;
+}
+
+.main-content .form-control:focus,
+.main-content .form-select:focus,
+.core-admin .form-control:focus,
+.core-admin .form-select:focus {
+  color: var(--text-main);
+  background-color: var(--bg-input);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.main-content .alert-secondary,
+.core-admin .alert-secondary {
+  background: var(--bg-item);
+  border-color: var(--border-accent-light);
+  color: var(--text-main);
+}
+
+.main-content .alert-warning,
+.core-admin .alert-warning {
+  color: var(--text-main);
+}
+
+.core-admin .form-check-label {
+  color: var(--text-main);
+}
+
+.core-admin-form .form-check {
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
+.core-admin .breadcrumb {
+  --bs-breadcrumb-divider-color: var(--text-muted);
+}
+
+.core-admin .breadcrumb-item.active {
+  color: var(--text-secondary);
+}

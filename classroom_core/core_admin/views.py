@@ -2,26 +2,22 @@
 
 from __future__ import annotations
 
-import shutil
-import tempfile
-from io import StringIO
-from pathlib import Path
-
 from django import forms
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import FieldDoesNotExist, PermissionDenied, ValidationError
-from django.core.management import call_command
 from django.core.paginator import Paginator
-from django.db import connections, models
+from django.db import models
 from django.db.models import Q
 from django.forms.models import modelform_factory
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_http_methods
+
+from classroom.pg_backup import is_postgresql, pg_dump_to_bytes, pg_restore_from_uploaded_dump
 
 from classroom_core.core_admin.registry import CORE_ADMIN_REGISTRY, get_config
 
@@ -192,13 +188,11 @@ def core_admin_index(request):
                 "changelist_url": reverse("classroom_core:core_admin_changelist", kwargs={"model_name": name}),
             }
         )
-    db_engine = settings.DATABASES["default"]["ENGINE"]
     return render(
         request,
         "classroom_core/core_admin/index.html",
         {
             "apps_models": apps_models,
-            "is_sqlite": db_engine.endswith("sqlite3"),
         },
     )
 
@@ -409,46 +403,49 @@ def core_admin_delete(request, model_name: str, object_id: int):
     )
 
 
-@login_required
-def core_admin_backup_download(request):
-    """Выгрузка данных в JSON (без таблицы сессий)."""
-    _require_core_admin(request.user)
-    buf = StringIO()
-    call_command(
-        "dumpdata",
-        exclude=["sessions.Session"],
-        natural_foreign=True,
-        indent=2,
-        stdout=buf,
-    )
-    data = buf.getvalue().encode("utf-8")
-    filename = f"backup_{timezone.now().strftime('%Y%m%d_%H%M%S')}.json"
-    response = HttpResponse(data, content_type="application/json; charset=utf-8")
-    response["Content-Disposition"] = f'attachment; filename="{filename}"'
-    return response
+def _redirect_after_pg_backup(request, fallback_viewname: str):
+    ref = request.META.get("HTTP_REFERER")
+    if ref and url_has_allowed_host_and_scheme(
+        url=ref,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        return redirect(ref)
+    return redirect(reverse(fallback_viewname))
 
 
 @login_required
-def core_admin_backup_sqlite_download(request):
-    """Скачать файл SQLite (только для sqlite3)."""
+def core_admin_backup_postgres_download(request):
+    """Скачать дамп PostgreSQL (формат custom, pg_restore)."""
     _require_core_admin(request.user)
-    engine = settings.DATABASES["default"]["ENGINE"]
-    if not engine.endswith("sqlite3"):
+    if not is_postgresql():
         raise Http404
-    db_path = Path(settings.DATABASES["default"]["NAME"])
-    if not db_path.is_file():
-        raise Http404
-
-    connections.close_all()
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".sqlite3") as tmp:
-        tmp_path = Path(tmp.name)
     try:
-        shutil.copy2(db_path, tmp_path)
-        data = tmp_path.read_bytes()
-    finally:
-        tmp_path.unlink(missing_ok=True)
-
-    filename = f"db_{timezone.now().strftime('%Y%m%d_%H%M%S')}.sqlite3"
+        data = pg_dump_to_bytes()
+    except RuntimeError as exc:
+        return HttpResponse(str(exc), status=503, content_type="text/plain; charset=utf-8")
+    filename = f"db_{timezone.now().strftime('%Y%m%d_%H%M%S')}.dump"
     response = HttpResponse(data, content_type="application/octet-stream")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
     return response
+
+
+@login_required
+@require_http_methods(["POST"])
+def core_admin_backup_postgres_restore(request):
+    """Восстановление текущей БД из загруженного дампа custom-формата (pg_restore)."""
+    _require_core_admin(request.user)
+    if not is_postgresql():
+        raise Http404
+    dump = request.FILES.get("dump")
+    if not dump:
+        messages.error(request, "Выберите файл дампа (.dump).")
+        return _redirect_after_pg_backup(request, "classroom_core:core_admin_index")
+    clean = request.POST.get("clean") in ("1", "on", "true", "yes")
+    try:
+        pg_restore_from_uploaded_dump(dump, clean=clean)
+    except (ValueError, RuntimeError, OSError, FileNotFoundError) as exc:
+        messages.error(request, str(exc))
+    else:
+        messages.success(request, "База данных восстановлена из дампа PostgreSQL.")
+    return _redirect_after_pg_backup(request, "classroom_core:core_admin_index")

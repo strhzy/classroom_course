@@ -1,0 +1,176 @@
+/**
+ * Страницы восстановления пароля (и единый стиль «карточка авторизации» в приложении).
+ * Переменные темы: themes/light.css, themes/dark.css; базовые поля — app-ui-overrides.css.
+ */
+
+.auth-flow {
+  min-height: min(72vh, 620px);
+}
+
+.auth-flow .auth-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent-light);
+  border-radius: 20px;
+  box-shadow: var(--shadow-card), 0 0 0 1px var(--bg-overlay-10);
+  overflow: hidden;
+}
+
+.auth-flow .auth-card__accent {
+  height: 4px;
+  background: var(--accent-gradient);
+}
+
+.auth-flow .auth-card__body {
+  padding: 2rem 1.75rem 1.75rem;
+}
+
+@media (min-width: 576px) {
+  .auth-flow .auth-card__body {
+    padding: 2.25rem 2rem 2rem;
+  }
+}
+
+.auth-flow .auth-card__icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  margin-bottom: 1rem;
+  background: var(--bg-overlay-15);
+  color: var(--accent-primary);
+  border: 1px solid var(--border-accent-light);
+}
+
+.auth-flow .auth-card__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+  line-height: 1.25;
+}
+
+.auth-flow .auth-card__lead {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  margin-bottom: 1.5rem;
+}
+
+.auth-flow .auth-card__form .form-label {
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 0.35rem;
+}
+
+.auth-flow .auth-card__form input[type="email"],
+.auth-flow .auth-card__form input[type="text"],
+.auth-flow .auth-card__form input[type="password"] {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: var(--text-main);
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-accent-light);
+  border-radius: 12px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-flow .auth-card__form input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.auth-flow .auth-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.65rem 1.15rem;
+  border-radius: 12px;
+  background: var(--accent-gradient);
+  box-shadow: var(--accent-shadow);
+  transition: filter 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+}
+
+.auth-flow .auth-btn-primary:hover {
+  color: #fff;
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow: var(--accent-shadow-hover);
+}
+
+.auth-flow .auth-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-accent);
+  color: var(--accent-primary);
+  background: var(--bg-card);
+  font-weight: 600;
+  padding: 0.6rem 1.1rem;
+  border-radius: 12px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.auth-flow .auth-btn-outline:hover {
+  background: var(--bg-overlay-10);
+  border-color: var(--border-accent-hover);
+  color: var(--accent-primary);
+}
+
+.auth-flow .auth-card__footer {
+  margin-top: 1.35rem;
+  padding-top: 1.15rem;
+  border-top: 1px solid var(--border-accent-light);
+  text-align: center;
+}
+
+.auth-flow .auth-card__footer a {
+  color: var(--accent-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-flow .auth-card__footer a:hover {
+  text-decoration: underline;
+}
+
+.auth-flow .auth-alert {
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--status-danger-border);
+  background: var(--status-danger-bg);
+  color: var(--text-main);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.auth-flow .auth-success-panel {
+  text-align: center;
+  padding: 0.5rem 0 0.25rem;
+}
+
+.auth-flow .auth-success-panel .auth-card__icon {
+  margin-left: auto;
+  margin-right: auto;
+  background: var(--status-success-bg-light);
+  color: var(--status-success);
+  border-color: var(--status-success-border);
+}
+
+.auth-flow .auth-success-panel .auth-card__lead {
+  max-width: 28rem;
+  margin-left: auto;
+  margin-right: auto;
+}

@@ -22,14 +22,7 @@
                 <p class="core-admin__lead mt-2">Справочники и данные приложения file_manager: модели, квоты, связи с Яндекс.Диском и workspace.</p>
             </div>
             <div class="core-admin__actions">
-                <a class="btn btn-ca-outline" href="{% url 'file_manager:fm_core_admin_backup_json' %}">
-                    <i class="bi bi-file-earmark-arrow-down"></i> Резервная копия (JSON)
-                </a>
-                {% if is_sqlite %}
-                <a class="btn btn-ca-outline" href="{% url 'file_manager:fm_core_admin_backup_sqlite' %}">
-                    <i class="bi bi-database-down"></i> Копия базы (SQLite)
-                </a>
-                {% endif %}
+                {% include "snippets/admin_db_backup_bar.html" %}
             </div>
         </div>
     </header>
@@ -45,10 +38,16 @@
         {% endif %}
     </div>
 
+    {% if show_db_backup and db_backup_postgres_available %}
     <div class="core-admin__notice">
-        <strong>JSON</strong> — выгрузка данных проекта (кроме сессий).
-        {% if is_sqlite %}<br><strong>SQLite</strong> — полная копия файла базы.{% endif %}
+        <strong>Резервное копирование:</strong> общая база приложения — кнопка «Создать копию (.dump)»
+        и восстановление из файла того же формата (как на панели курсов).
     </div>
+    {% elif show_db_backup %}
+    <div class="core-admin__notice app-caption">
+        Резервное копирование PostgreSQL станет доступно после переключения приложения на PostgreSQL.
+    </div>
+    {% endif %}
 
     <div class="core-admin__card core-admin__card--flush mt-3">
         <div class="core-admin__table-wrap">
@@ -70,7 +69,7 @@
                         </td>
                     </tr>
                     {% empty %}
-                    <tr><td colspan="3" class="text-muted py-4 text-center">Нет разделов.</td></tr>
+                    <tr><td colspan="3" class="app-caption py-4 text-center">Нет разделов.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>

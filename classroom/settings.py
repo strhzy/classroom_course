@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 import os
 from pathlib import Path
+from urllib.parse import quote, urlparse, urlunparse
 
 from dotenv import load_dotenv
 
@@ -37,6 +38,54 @@ def env_int(name, default=0):
         return default
 
 
+# По умолчанию: PostgreSQL + Redis. Только для особого случая: DJANGO_USE_SQLITE=true.
+USE_SQLITE = env_bool("DJANGO_USE_SQLITE", False)
+
+
+def _running_in_container() -> bool:
+    """Docker/Podman: /.dockerenv или явная метка из образа."""
+    return Path("/.dockerenv").exists() or env_bool("DJANGO_RUNNING_IN_CONTAINER", False)
+
+
+def _docker_host_network() -> bool:
+    """web с network_mode: host (Linux): исходящий трафик как у хоста; имён db/redis в DNS нет."""
+    return env_bool("DJANGO_DOCKER_HOST_NETWORK", False)
+
+
+def _postgres_host_for_app() -> str:
+    """В bridge-compose хост БД — сервис db, если в .env localhost. При host network — без подмены."""
+    raw = (os.getenv("POSTGRES_HOST") or "").strip()
+    if _docker_host_network() and not USE_SQLITE:
+        return raw if raw else "127.0.0.1"
+    if _running_in_container() and not USE_SQLITE:
+        if raw.lower() in ("localhost", "127.0.0.1", "::1", ""):
+            return "db"
+    return raw if raw else "localhost"
+
+
+def _redis_url_for_container(url: str, service_host: str = "redis") -> str:
+    """Подмена localhost в Redis URL на имя сервиса compose (redis), кроме host network."""
+    if (
+        _docker_host_network()
+        or not _running_in_container()
+        or env_bool("CHANNEL_LAYER_IN_MEMORY", False)
+    ):
+        return url
+    p = urlparse(url)
+    hn = (p.hostname or "").lower()
+    if hn not in ("localhost", "127.0.0.1", ""):
+        return url
+    port = f":{p.port}" if p.port else ""
+    userinfo = ""
+    if p.username is not None:
+        userinfo = quote(p.username, safe="")
+        if p.password is not None:
+            userinfo += ":" + quote(p.password, safe="")
+        userinfo += "@"
+    netloc = f"{userinfo}{service_host}{port}"
+    return urlunparse((p.scheme or "redis", netloc, p.path, p.params, p.query, p.fragment))
+
+
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-dev-key-change-me")
 DEBUG = env_bool("DJANGO_DEBUG", True)
 ALLOWED_HOSTS = [host.strip() for host in os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",") if host.strip()]
@@ -51,6 +100,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'channels',
     'django.contrib.staticfiles',
+    'whitenoise.runserver_nostatic',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -62,6 +112,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -83,6 +134,7 @@ TEMPLATES =[
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'classroom.context_processors.db_backup_nav',
             ],
         },
     },
@@ -90,17 +142,50 @@ TEMPLATES =[
 
 ASGI_APPLICATION = 'classroom.asgi.application'
 
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer'
-    }
-}
+
 DATABASES = {
-    'default': {
-    'ENGINE': 'django.db.backends.sqlite3',
-    'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB", "classroom"),
+        "USER": os.getenv("POSTGRES_USER", "classroom"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", ""),
+        "HOST": _postgres_host_for_app(),
+        "PORT": os.getenv("POSTGRES_PORT", "5432"),
+        "CONN_MAX_AGE": env_int("DATABASE_CONN_MAX_AGE", 60),
+        "CONN_HEALTH_CHECKS": True,
     }
 }
+
+REDIS_URL = _redis_url_for_container(os.getenv("REDIS_URL", "redis://127.0.0.1:6379/0"))
+REDIS_CACHE_URL = _redis_url_for_container(os.getenv("REDIS_CACHE_URL", "redis://127.0.0.1:6379/1"))
+
+if env_bool("CHANNEL_LAYER_IN_MEMORY", False):
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        }
+    }
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "classroom-default",
+        }
+    }
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [REDIS_URL],
+            },
+        },
+    }
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": REDIS_CACHE_URL,
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS =[
     {
@@ -126,8 +211,17 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+_static_dir = BASE_DIR / "static"
+STATICFILES_DIRS = [_static_dir] if _static_dir.is_dir() else []
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -182,27 +276,83 @@ SERVER_EMAIL = os.getenv("SERVER_EMAIL", DEFAULT_FROM_EMAIL)
 if EMAIL_USE_TLS and EMAIL_USE_SSL:
     EMAIL_USE_SSL = False
 
-SECURE_SSL_REDIRECT = False
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
-SECURE_HSTS_SECONDS = 0
-SECURE_HSTS_INCLUDE_SUBDOMAINS = False
-SECURE_HSTS_PRELOAD = False
+CSRF_TRUSTED_ORIGINS = [
+    x.strip()
+    for x in os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
+    if x.strip()
+]
 
-# Полный путь к soffice / LibreOffice (опционально). Иначе ищется в PATH.
+SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", False)
+SESSION_COOKIE_SECURE = env_bool("DJANGO_SESSION_COOKIE_SECURE", False)
+CSRF_COOKIE_SECURE = env_bool("DJANGO_CSRF_COOKIE_SECURE", False)
+SECURE_HSTS_SECONDS = env_int("DJANGO_SECURE_HSTS_SECONDS", 0)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", False)
+SECURE_HSTS_PRELOAD = env_bool("DJANGO_SECURE_HSTS_PRELOAD", False)
+
+if env_bool("DJANGO_BEHIND_PROXY", False):
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+SERVE_MEDIA_FROM_DJANGO = env_bool("DJANGO_SERVE_MEDIA", not DEBUG)
+
 LIBREOFFICE_PATH = os.getenv("LIBREOFFICE_PATH", "").strip()
 
-# ConvertAPI (https://www.convertapi.com/) — облачная конвертация Office→PDF (опционально).
 CONVERTAPI_SECRET = os.getenv("CONVERTAPI_SECRET", "").strip()
 
-# ClamAV (clamd): проверка загружаемых файлов. Нужен пакет clamd и работающий демон clamd.
 CLAMAV_ENABLED = env_bool("CLAMAV_ENABLED", False)
 CLAMAV_FAIL_OPEN = env_bool(
     "CLAMAV_FAIL_OPEN",
     True,
-)  # если демон недоступен — всё равно принять файл (с предупреждением)
+)
+
 CLAMAV_SOCKET_PATH = os.getenv("CLAMAV_SOCKET_PATH", "/var/run/clamav/clamd.ctl").strip()
 CLAMAV_USE_TCP = env_bool("CLAMAV_USE_TCP", False)
 CLAMAV_TCP_HOST = os.getenv("CLAMAV_TCP_HOST", "127.0.0.1").strip()
 CLAMAV_TCP_PORT = env_int("CLAMAV_TCP_PORT", 3310)
+
+
+def _log_level(name: str, default: str) -> str:
+    allowed = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
+    v = (os.getenv(name) or default).strip().upper()
+    return v if v in allowed else (default if default in allowed else "INFO")
+
+
+_LOG_ROOT = _log_level("DJANGO_LOG_LEVEL", "DEBUG" if DEBUG else "INFO")
+_YANDEX_OAUTH_LOG_LEVEL = _log_level(
+    "DJANGO_YANDEX_OAUTH_LOG_LEVEL",
+    "DEBUG" if DEBUG else "INFO",
+)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "classroom.yandex_oauth": {
+            "handlers": ["console"],
+            "level": _YANDEX_OAUTH_LOG_LEVEL,
+            "propagate": False,
+        },
+        "allauth": {
+            "handlers": ["console"],
+            "level": _log_level("DJANGO_ALLAUTH_LOG_LEVEL", "WARNING"),
+            "propagate": False,
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": _LOG_ROOT,
+    },
+}
+
+SOCIALACCOUNT_ADAPTER = "classroom.social_adapter.LoggingSocialAccountAdapter"
 

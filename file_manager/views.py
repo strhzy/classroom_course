@@ -104,6 +104,23 @@ def is_teacher_user(user):
     return _user_role(user) == "teacher"
 
 
+_FILE_LIST_SORT_FIELDS = frozenset(
+    {
+        "-uploaded_at",
+        "uploaded_at",
+        "title",
+        "-title",
+        "file_type",
+        "-file_type",
+        "file_size",
+        "-file_size",
+    }
+)
+_FILE_LIST_SORT_FIELDS_ADMIN = _FILE_LIST_SORT_FIELDS | frozenset(
+    {"uploaded_by__username", "-uploaded_by__username"}
+)
+
+
 def can_manage_reference_data(user):
     return is_admin_user(user) or is_teacher_user(user)
 
@@ -621,7 +638,8 @@ def file_list(request ):
 
     favorite_through = File.favorite.through
     files = (
-        files.annotate(
+        files.select_related("uploaded_by")
+        .annotate(
             is_favorite_for_user=Exists(
                 favorite_through.objects.filter(
                     file_id=OuterRef("pk"),
@@ -631,7 +649,13 @@ def file_list(request ):
         )
         .prefetch_related("tags")
     )
-    sort_by = request.GET.get("sort", "-uploaded_at")
+    sort_raw = request.GET.get("sort", "-uploaded_at")
+    allowed_sort = (
+        _FILE_LIST_SORT_FIELDS_ADMIN
+        if is_admin_user(request.user)
+        else _FILE_LIST_SORT_FIELDS
+    )
+    sort_by = sort_raw if sort_raw in allowed_sort else "-uploaded_at"
     files = files.order_by(sort_by)
 
     paginator =Paginator(files ,20 )
@@ -648,6 +672,9 @@ def file_list(request ):
     if 'page' in filter_params:
         del filter_params['page']
     filter_querystring = filter_params.urlencode()
+    filter_params_no_sort = filter_params.copy()
+    filter_params_no_sort.pop("sort", None)
+    filter_querystring_no_sort = filter_params_no_sort.urlencode()
 
     context ={
     'page_obj':page_obj ,
@@ -657,6 +684,8 @@ def file_list(request ):
     'tags':Tag.objects.all(),
     'selected_tag_ids': tag_ids,
     'filter_querystring': filter_querystring,
+    'filter_querystring_no_sort': filter_querystring_no_sort,
+    'file_list_sort': sort_by,
     'storage_quota':storage_quota ,
     'yandex_connected': bool(yandex_connection),
     'can_manage_reference_data': can_manage_reference_data(request.user),
@@ -772,7 +801,7 @@ def file_preview(request ,file_id ):
 
     if not file_obj.can_access(request.user ):
         raise PermissionDenied 
-
+    # добавлены разные форматы файлов для предпросмотра
     file_ext = (file_obj.get_extension() or "").lower()
     content_type = 'application/octet-stream'
     if file_ext in ['txt', 'csv', 'log', 'md', 'json', 'xml', 'yaml', 'yml']:
@@ -818,7 +847,7 @@ def file_preview(request ,file_id ):
             return response
     raise Http404
 
-
+# Добавлено преобразование в PDF для предпросмотра документов
 @login_required
 def office_pdf_preview(request, file_id):
     file_obj = get_object_or_404(File, id=file_id)
