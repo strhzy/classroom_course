@@ -51,6 +51,24 @@ def _pg_conn_args() -> list[str]:
     return args + [str(name)]
 
 
+def _pg_restore_conn_args() -> list[str]:
+    """
+    Аргументы подключения для pg_restore.
+
+    В отличие от pg_dump, у pg_restore ровно один позиционный аргумент — путь к архиву.
+    Имя базы нужно передавать как -d DBNAME, иначе имя БД ошибочно читается как имя файла архива,
+    а реальный .dump оказывается «вторым» файлом → «too many command-line arguments».
+    """
+    db = settings.DATABASES["default"]
+    name = db.get("NAME") or ""
+    user = db.get("USER") or ""
+    host = db.get("HOST") or "localhost"
+    port = str(db.get("PORT") or "5432")
+    if not str(name).strip():
+        raise RuntimeError("В настройках БД не задано имя базы (NAME).")
+    return ["-h", host, "-p", port, "-U", user, "-d", str(name)]
+
+
 def run_pg_dump_custom_format(output_file: Path) -> None:
     """Снимок в формате custom (-Fc), подходит для pg_restore."""
     if not is_postgresql():
@@ -90,7 +108,7 @@ def run_pg_restore_custom_format(
         _pg_bin("pg_restore"),
         "--verbose",
         "--no-owner",
-        *_pg_conn_args(),
+        *_pg_restore_conn_args(),
     ]
     if clean:
         cmd.extend(["--clean", "--if-exists"])
