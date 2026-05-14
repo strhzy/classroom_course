@@ -11,11 +11,21 @@ ENV PYTHONUNBUFFERED=1 \
 
 RUN printf 'Acquire::http::Timeout "120";\nAcquire::Retries "5";\n' > /etc/apt/apt.conf.d/99network
 
+# Клиент PostgreSQL той же мажорной версии, что и сервер (compose: postgres:16*), иначе pg_dump/pg_restore
+# падают с «server version mismatch».
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        postgresql-client \
+        ca-certificates \
+        curl \
+        gnupg \
+    && curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+        | gpg --dearmor -o /usr/share/keyrings/postgresql.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/postgresql.gpg] http://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" \
+        > /etc/apt/sources.list.d/pgdg.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        postgresql-client-16 \
         redis-tools \
-        libpq5 \
         clamav-daemon \
         clamav-freshclam \
     && rm -rf /var/lib/apt/lists/*

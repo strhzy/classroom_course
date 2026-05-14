@@ -25,7 +25,7 @@ def _pg_bin(name: str) -> str:
     if not path:
         raise RuntimeError(
             f"Команда «{name}» не найдена в PATH. Установите клиент PostgreSQL "
-            "(пакет postgresql-client в образе Docker)."
+            "той же мажорной версии, что и сервер (в Docker: postgresql-client-16 при postgres:16)."
         )
     return path
 
